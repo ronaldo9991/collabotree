@@ -1,0 +1,325 @@
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
+import { Footer } from "@/components/Footer";
+import {
+  UserCheck,
+  Upload,
+  Search,
+  MessageCircle,
+  CreditCard,
+  Star,
+  Shield,
+  Clock,
+  CheckCircle,
+  FileText,
+  Users,
+  Zap,
+  Download,
+  ThumbsUp,
+  AlertCircle,
+  Calendar,
+  ArrowRight,
+  GraduationCap
+} from "lucide-react";
+
+const timelineSteps = [
+  {
+    step: "01",
+    icon: UserCheck,
+    title: "Create Account",
+    description: "Sign up with your university email and complete your profile with academic credentials.",
+    category: "Getting Started",
+    details: ["University email verification", "Academic profile setup", "Identity confirmation"]
+  },
+  {
+    step: "02", 
+    icon: Shield,
+    title: "Academic Verification",
+    description: "Upload your student ID for automated verification using our OCR technology.",
+    category: "Getting Started",
+    details: ["ID card scan", "OCR processing", "Instant verification"]
+  },
+  {
+    step: "03",
+    icon: Upload,
+    title: "Create Services", 
+    description: "List your skills and expertise with detailed portfolios and competitive pricing.",
+    category: "For Students",
+    details: ["Service portfolios", "Flexible pricing", "Skill showcasing"]
+  },
+  {
+    step: "04",
+    icon: MessageCircle,
+    title: "Receive Orders", 
+    description: "Get matched with buyers and communicate project requirements through our platform.",
+    category: "For Students",
+    details: ["Order notifications", "Real-time chat", "Requirement clarity"]
+  },
+  {
+    step: "05",
+    icon: CheckCircle,
+    title: "Deliver Excellence",
+    description: "Complete projects with our integrated tools and receive secure payments.",
+    category: "For Students",
+    details: ["File delivery system", "Milestone tracking", "Secure payments"]
+  },
+  {
+    step: "06",
+    icon: Search,
+    title: "Browse Talent",
+    description: "Discover verified student services with advanced filtering and detailed profiles.",
+    category: "For Buyers",
+    details: ["Advanced search", "Student profiles", "Portfolio reviews"]
+  },
+  {
+    step: "07",
+    icon: CreditCard,
+    title: "Place Orders",
+    description: "Select services, communicate requirements, and track progress in real-time.",
+    category: "For Buyers",
+    details: ["Easy ordering", "Progress tracking", "Direct communication"]
+  },
+  {
+    step: "08",
+    icon: Star,
+    title: "Receive Results",
+    description: "Get high-quality deliverables with revision options and feedback system.",
+    category: "For Buyers",
+    details: ["Quality assurance", "Revision system", "Rating feedback"]
+  }
+];
+
+
+const platformFeatures = [
+  {
+    icon: Shield,
+    title: "Verified Students Only",
+    description: "Every service provider is authenticated through university credentials and ID verification.",
+    stats: "100% verified"
+  },
+  {
+    icon: Zap,
+    title: "Lightning Fast",
+    description: "Average project completion in 3-5 days with real-time progress tracking.",
+    stats: "3-5 days avg"
+  },
+  {
+    icon: CreditCard,
+    title: "Secure Payments",
+    description: "Escrow protection with 7-day buyer guarantee and automated payout system.",
+    stats: "7-day protection"
+  },
+  {
+    icon: Star,
+    title: "Quality Assured",
+    description: "Comprehensive review system with dispute resolution and satisfaction guarantee.",
+    stats: "4.9★ average"
+  }
+];
+
+
+export default function HowItWorks() {
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="pt-20 sm:pt-24 pb-12 sm:pb-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            <Badge className="mb-4 sm:mb-6 bg-primary/10 text-primary border-primary/20 px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm" data-testid="how-it-works-badge">
+              Platform Overview
+            </Badge>
+            <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
+              How CollaboTree Works
+            </h1>
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8 px-4 sm:px-0">
+              A comprehensive platform connecting verified university students with global buyers 
+              through secure, professional project collaboration.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
+              <Button size="lg" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base" data-testid="hire-talent-btn">
+                <Link href="/api/login">Hire Talent</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base" data-testid="explore-talent-btn">
+                <Link href="/marketplace">Explore Talent</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Timeline Process Flow */}
+      <section className="py-12 sm:py-16 lg:py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Simple Step-by-Step Process</h2>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4 sm:px-0">
+              From account creation to project completion - your journey on CollaboTree
+            </p>
+          </div>
+          
+          {/* Timeline Container */}
+          <div className="relative max-w-5xl mx-auto">
+            {/* Timeline Line - Always visible */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gradient-to-b from-primary via-secondary to-accent"></div>
+            
+            {/* Timeline Steps */}
+            <div className="space-y-8 sm:space-y-12 lg:space-y-16">
+              {timelineSteps.map((timelineStep, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50, y: 30 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.15, ease: "easeOut" }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  className={`relative flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} gap-4 sm:gap-6 lg:gap-12`}
+                  data-testid={`timeline-step-${index}`}
+                >
+                  {/* Content Card */}
+                  <div className={`w-full sm:w-5/12 ${index % 2 === 0 ? 'text-right pr-2 sm:pr-4' : 'text-left pl-2 sm:pl-4'}`}>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 hover:shadow-xl transition-all duration-300 shadow-lg">
+                        <CardContent className="p-4 sm:p-5 lg:p-6">
+                          <div className="mb-4">
+                            <Badge variant="outline" className={`mb-3 text-xs sm:text-sm ${index % 2 === 0 ? 'float-right' : 'float-left'}`}>
+                              {timelineStep.category}
+                            </Badge>
+                            <div className="clear-both"></div>
+                            <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-2 leading-tight">{timelineStep.title}</h3>
+                            <p className="text-xs sm:text-sm lg:text-base text-muted-foreground leading-relaxed">
+                              {timelineStep.description}
+                            </p>
+                          </div>
+                          <ul className={`space-y-2 text-xs sm:text-sm ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                            {timelineStep.details.map((detail, detailIndex) => (
+                              <motion.li 
+                                key={detailIndex} 
+                                initial={{ opacity: 0, x: index % 2 === 0 ? 10 : -10 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: detailIndex * 0.1 }}
+                                className={`flex items-center gap-2 ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+                              >
+                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                                <span>{detail}</span>
+                              </motion.li>
+                            ))}
+                          </ul>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </div>
+                  
+                  {/* Timeline Node - Always visible */}
+                  <div className="relative z-10 flex-shrink-0">
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      whileInView={{ scale: 1, rotate: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1, type: "spring", stiffness: 200 }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg border-3 sm:border-4 border-background relative"
+                    >
+                      <timelineStep.icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-white" />
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: index * 0.15 + 0.3 }}
+                        className="absolute -top-6 sm:-top-7 lg:-top-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-full shadow-md"
+                      >
+                        {timelineStep.step}
+                      </motion.div>
+                    </motion.div>
+                  </div>
+                  
+                  {/* Spacer for alignment */}
+                  <div className="w-full sm:w-5/12 flex-shrink-0"></div>
+                  
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Platform Features */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-muted/20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Platform Advantages</h2>
+              <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4 sm:px-0">
+                Built for trust, security, and exceptional results in every project collaboration.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {platformFeatures.map((feature, index) => (
+                <Card key={index} className="glass-card bg-card/30 text-center hover-lift" data-testid={`platform-feature-${index}`}>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
+                      <feature.icon className="h-6 w-6 sm:h-8 sm:w-8" />
+                    </div>
+                    <h4 className="text-base sm:text-lg font-semibold mb-2">{feature.title}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-3 leading-relaxed px-2 sm:px-0">
+                      {feature.description}
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      {feature.stats}
+                    </Badge>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <Card className="glass-card bg-card/80 backdrop-blur-12 border-primary/20 max-w-4xl mx-auto">
+              <CardContent className="p-6 sm:p-8 lg:p-12">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Ready to Start Collaborating?</h2>
+                <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
+                  Join thousands of verified students and global buyers creating successful 
+                  project partnerships on CollaboTree.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
+                  <Button size="lg" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base bg-gradient-to-r from-primary to-secondary" data-testid="join-as-student">
+                    <Link href="/api/login">Join as Student</Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base" data-testid="hire-talent-cta">
+                    <Link href="/marketplace">Hire Talent</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+      
+      {/* Footer */}
+      <Footer />
+    </div>
+  );
+}
