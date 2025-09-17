@@ -235,7 +235,7 @@ export default function AdminDashboard() {
           <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
             Admin Dashboard
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent text-gradient-fix" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             Welcome back, {(() => {
               // Get first name from full_name or email
               const fullName = user?.full_name;

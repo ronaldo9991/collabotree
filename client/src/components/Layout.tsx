@@ -72,57 +72,67 @@ export function Layout({ children }: LayoutProps) {
             <div className="lg:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-2">
+                  <Button variant="ghost" size="sm" className="p-2 mobile-menu-button">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-lg font-semibold">Menu</h2>
-                    {/* Theme Toggle for Mobile */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={toggleTheme}
-                      className="p-2 rounded-lg hover:bg-muted/20 transition-colors"
-                      data-testid="mobile-theme-toggle"
-                    >
-                      {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                      <span className="ml-2 text-sm">{theme === "light" ? "Dark" : "Light"}</span>
-                    </Button>
-                  </div>
-                  <nav className="flex flex-col gap-4">
-                    {navigation.map((item) => (
-                      item.show && (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors p-3 rounded-lg hover:bg-muted/20"
-                          onClick={() => setMobileMenuOpen(false)}
-                          data-testid={`mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
-                        >
-                          <item.icon className="h-4 w-4" />
-                          {item.name}
-                        </Link>
-                      )
-                    ))}
+                <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-card/95 backdrop-blur-12 border-l border-border/50 mobile-sheet-content">
+                  <div className="flex flex-col h-full">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-border/30">
+                      <h2 className="text-xl font-bold text-foreground">Menu</h2>
+                      {/* Theme Toggle for Mobile */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={toggleTheme}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/30 transition-colors border border-border/20 mobile-theme-toggle"
+                        data-testid="mobile-theme-toggle"
+                      >
+                        {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                        <span className="text-sm font-medium">{theme === "light" ? "Dark" : "Light"}</span>
+                      </Button>
+                    </div>
                     
-                    <div className="border-t border-border my-4" />
-                    <div className="text-sm font-medium text-muted-foreground px-3">Demo Dashboards</div>
-                    {dashboardNavigation.map((item) => (
-                      item.show && (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className="flex items-center gap-3 text-sm font-medium text-foreground hover:text-primary transition-colors p-3 rounded-lg hover:bg-muted/20"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <item.icon className="h-4 w-4" />
-                          {item.name}
-                        </Link>
-                      )
-                    ))}
-                  </nav>
+                    {/* Navigation */}
+                    <nav className="flex flex-col gap-2 flex-1">
+                      {navigation.map((item) => (
+                        item.show && (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-colors p-4 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/10 mobile-nav-item"
+                            onClick={() => setMobileMenuOpen(false)}
+                            data-testid={`mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          >
+                            <item.icon className="h-5 w-5 flex-shrink-0" />
+                            {item.name}
+                          </Link>
+                        )
+                      ))}
+                      
+                      {/* Separator */}
+                      <div className="border-t border-border/30 my-6" />
+                      
+                      {/* Demo Dashboards Section */}
+                      <div className="space-y-2">
+                        <div className="text-sm font-semibold text-muted-foreground px-4 py-2 uppercase tracking-wide">Demo Dashboards</div>
+                        {dashboardNavigation.map((item) => (
+                          item.show && (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-colors p-4 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/10 mobile-nav-item"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <item.icon className="h-5 w-5 flex-shrink-0" />
+                              {item.name}
+                            </Link>
+                          )
+                        ))}
+                      </div>
+                    </nav>
+                  </div>
                 </SheetContent>
               </Sheet>
             </div>

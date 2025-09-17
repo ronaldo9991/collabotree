@@ -184,6 +184,23 @@ export const applicationsApi = {
       throw new Error('Only students can apply to projects')
     }
 
+    // Check if user has already applied to this project
+    const { data: existingApplication, error: checkError } = await supabase
+      .from('project_applications')
+      .select('id, status')
+      .eq('project_id', projectId)
+      .eq('student_id', user.id)
+      .single()
+
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
+      console.error('Error checking existing application:', checkError)
+      throw new Error('Failed to check existing application')
+    }
+
+    if (existingApplication) {
+      throw new Error('You have already applied to this project')
+    }
+
     const { data, error } = await supabase
       .from('project_applications')
       .insert({
@@ -200,6 +217,23 @@ export const applicationsApi = {
     }
 
     return data
+  },
+
+  // Check if user has already applied to a project
+  async hasUserAppliedToProject(projectId: string, userId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('project_applications')
+      .select('id')
+      .eq('project_id', projectId)
+      .eq('student_id', userId)
+      .single()
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+      console.error('Error checking application status:', error)
+      return false
+    }
+
+    return !!data
   },
 
   // Get applications for a project

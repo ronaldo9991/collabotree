@@ -22,6 +22,7 @@ export default function ProjectDetail() {
   const [project, setProject] = useState<ProjectWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
   const [applicationData, setApplicationData] = useState({
     cover_letter: '',
     bid_amount: '',
@@ -33,7 +34,7 @@ export default function ProjectDetail() {
     if (projectId) {
       fetchProject();
     }
-  }, [projectId]);
+  }, [projectId, user?.id]);
 
   const fetchProject = async () => {
     if (!projectId) return;
@@ -42,6 +43,12 @@ export default function ProjectDetail() {
       setLoading(true);
       const data = await projectsApi.getProjectById(projectId);
       setProject(data);
+
+      // Check if user has already applied to this project
+      if (user?.id && user.role === 'student') {
+        const applied = await applicationsApi.hasUserAppliedToProject(projectId, user.id);
+        setHasApplied(applied);
+      }
     } catch (error) {
       console.error('Error fetching project:', error);
       toast({
@@ -76,6 +83,9 @@ export default function ProjectDetail() {
         description: "Your application has been submitted successfully!",
       });
 
+      // Update application status
+      setHasApplied(true);
+
       // Reset form
       setApplicationData({ cover_letter: '', bid_amount: '' });
     } catch (error) {
@@ -109,7 +119,7 @@ export default function ProjectDetail() {
     );
   }
 
-  const canApply = user?.role === 'student' && project.status === 'open';
+  const canApply = user?.role === 'student' && project.status === 'open' && !hasApplied;
   const isOwner = user?.id === project.created_by;
 
   return (
@@ -288,6 +298,16 @@ export default function ProjectDetail() {
                       </div>
                     </DialogContent>
                   </Dialog>
+                ) : hasApplied ? (
+                  <div className="text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <CheckCircle className="h-6 w-6 text-green-500 mr-2" />
+                      <span className="text-green-600 font-medium">Application Submitted</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm">
+                      You have already applied to this project. You can apply to other projects from this student.
+                    </p>
+                  </div>
                 ) : isOwner ? (
                   <div className="text-center text-muted-foreground">
                     <p>This is your project</p>

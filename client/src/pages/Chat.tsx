@@ -240,7 +240,7 @@ export default function Chat() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto h-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -297,10 +297,10 @@ export default function Chat() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="glass-card bg-card/50 backdrop-blur-12 h-[500px] flex flex-col">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 min-h-[500px] max-h-[80vh] flex flex-col">
             <CardContent className="flex-1 flex flex-col p-0">
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto chat-messages-area">
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
@@ -315,27 +315,17 @@ export default function Chat() {
                       key={message.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                      className={`chat-message-container ${message.sender_id === user?.id ? 'user-message' : 'other-message'}`}
                     >
-                      <div className={`max-w-[70%] ${message.sender_id === user?.id ? 'order-2' : 'order-1'}`}>
-                        <div
-                          className={`rounded-lg px-4 py-2 ${
-                            message.sender_id === user?.id
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted'
-                          }`}
-                        >
-                          <p className="text-sm">{message.body}</p>
-                        </div>
-                        <div className={`flex items-center gap-1 mt-1 ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
-                            {formatTime(message.created_at)}
-                          </span>
-                          {message.sender_id === user?.id && (
-                            <CheckCircle className="h-3 w-3 text-primary" />
-                          )}
-                        </div>
+                      <div className="chat-message-bubble">
+                        <p className="chat-message-text">{message.body}</p>
+                      </div>
+                      <div className={`chat-timestamp ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
+                        <Clock className="h-3 w-3" />
+                        <span>{formatTime(message.created_at)}</span>
+                        {message.sender_id === user?.id && (
+                          <CheckCircle className="h-3 w-3 text-primary" />
+                        )}
                       </div>
                     </motion.div>
                   ))
@@ -344,7 +334,7 @@ export default function Chat() {
               </div>
 
               {/* Message Input */}
-              <div className="border-t border-border/30 p-4">
+              <div className="p-4">
                 <div className="flex gap-2">
                   <Input
                     value={newMessage}

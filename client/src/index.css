@@ -167,6 +167,133 @@
       background-color: hsl(218, 84%, 8%, 0.9); /* Better contrast on mobile */
       border-color: hsl(199, 89%, 48%, 0.2);
     }
+    
+    /* Mobile form optimizations */
+    .glass-card {
+      margin: 0.5rem;
+      border-radius: 1rem;
+    }
+    
+    /* Mobile button optimizations */
+    button, [role="button"] {
+      min-height: 44px; /* Touch target size */
+      font-size: 1rem;
+    }
+    
+    /* Mobile input optimizations */
+    input, textarea, select {
+      min-height: 44px;
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Mobile tab optimizations */
+    .tabs-list {
+      min-height: 44px;
+    }
+    
+    .tabs-trigger {
+      min-height: 44px;
+      font-size: 0.875rem;
+    }
+  }
+  
+  /* Extra small screens */
+  @media (max-width: 480px) {
+    .container-unified {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    .glass-card {
+      margin: 0.25rem;
+    }
+    
+    h1 {
+      font-size: 1.75rem;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  /* Enhanced Dashboard Tab Styling */
+  .tabs-list {
+    border-width: 2px !important;
+    border-color: hsl(var(--primary) / 0.3) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  .tabs-trigger {
+    border-radius: 0.5rem !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+  }
+  
+  .tabs-trigger[data-state="active"] {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .tabs-trigger[data-state="inactive"]:hover {
+    background-color: hsl(var(--primary) / 0.1) !important;
+  }
+  
+  /* Dark mode enhancements */
+  .dark .tabs-list {
+    border-color: hsl(var(--primary) / 0.4) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .dark .tabs-trigger[data-state="inactive"]:hover {
+    background-color: hsl(var(--primary) / 0.2) !important;
+  }
+  
+  /* Mobile Navigation Enhancements */
+  @media (max-width: 768px) {
+    /* Mobile sheet/drawer optimizations */
+    [data-radix-collection-item] {
+      touch-action: manipulation !important;
+    }
+    
+    /* Mobile menu button */
+    .mobile-menu-button {
+      min-height: 44px !important;
+      min-width: 44px !important;
+      padding: 0.75rem !important;
+    }
+    
+    /* Mobile navigation items */
+    .mobile-nav-item {
+      min-height: 48px !important;
+      padding: 1rem !important;
+      font-size: 1rem !important;
+      line-height: 1.5 !important;
+    }
+    
+    /* Mobile theme toggle */
+    .mobile-theme-toggle {
+      min-height: 44px !important;
+      padding: 0.75rem 1rem !important;
+      font-size: 0.875rem !important;
+    }
+    
+    /* Mobile sheet content */
+    .mobile-sheet-content {
+      width: 280px !important;
+      max-width: 85vw !important;
+    }
+    
+    @media (min-width: 640px) {
+      .mobile-sheet-content {
+        width: 320px !important;
+      }
+    }
   }
 
   /* Golden Ratio Typography System */
@@ -479,7 +606,191 @@ select:focus {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-/* Print styles */
+  /* Chat message bubble overrides - AGGRESSIVE FIX */
+  .chat-message-bubble,
+  .chat-message-bubble *,
+  .chat-message-bubble::before,
+  .chat-message-bubble::after {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    background: transparent !important;
+    color: hsl(var(--foreground)) !important;
+    text-decoration: none !important;
+  }
+  
+  /* Professional chat message styling with borders */
+  .chat-message-bubble {
+    display: block !important;
+    margin: 0.5rem 0 !important;
+    padding: 0.75rem 1rem !important;
+    color: hsl(var(--foreground)) !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 0.75rem !important;
+    max-width: 70% !important;
+    word-wrap: break-word !important;
+    line-height: 1.4 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* User message styling (right side) */
+  .chat-message-container.user-message .chat-message-bubble {
+    background: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    border-color: hsl(var(--primary)) !important;
+  }
+  
+  /* Other user message styling (left side) */
+  .chat-message-container.other-message .chat-message-bubble {
+    background: hsl(var(--card)) !important;
+    color: hsl(var(--card-foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+  
+  /* Hover effects for better interactivity */
+  .chat-message-bubble:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-1px) !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  /* Dark mode adjustments */
+  .dark .chat-message-container.other-message .chat-message-bubble {
+    background: hsl(var(--card)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+  
+  .dark .chat-message-bubble:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  /* Ensure chat can handle many messages */
+  .chat-messages-area {
+    scroll-behavior: smooth !important;
+  }
+  
+  /* Custom scrollbar for chat */
+  .chat-messages-area::-webkit-scrollbar {
+    width: 6px !important;
+  }
+  
+  .chat-messages-area::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  
+  .chat-messages-area::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted)) !important;
+    border-radius: 3px !important;
+  }
+  
+  .chat-messages-area::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary)) !important;
+  }
+  
+  /* Message grouping and spacing */
+  .chat-message-container {
+    margin-bottom: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* User messages (right aligned) */
+  .chat-message-container.user-message {
+    align-items: flex-end !important;
+  }
+  
+  /* Other user messages (left aligned) */
+  .chat-message-container.other-message {
+    align-items: flex-start !important;
+  }
+  
+  /* Professional chat area styling */
+  .chat-messages-area {
+    padding: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    min-height: 400px !important;
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
+  }
+  
+  /* Message timestamp styling */
+  .chat-timestamp {
+    font-size: 0.75rem !important;
+    color: hsl(var(--muted-foreground)) !important;
+    margin-top: 0.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+  }
+  
+  /* Message text styling */
+  .chat-message-text {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    color: hsl(var(--foreground)) !important;
+    margin: 0 !important;
+  }
+  
+  /* Target the entire chat messages area */
+  .chat-message-bubble,
+  div[class*="chat"],
+  div[class*="message"] {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  
+  /* Allow proper borders for chat messages */
+  .chat-message-bubble {
+    /* Borders are now properly styled above */
+  }
+  
+  /* Remove borders only from input area separator */
+  div[class*="p-4"]:not(.chat-message-bubble) {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+  }
+
+  /* Fix text rendering issues */
+  .text-gradient-fix {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Ensure gradient text renders properly */
+  h1, h2, h3, h4, h5, h6 {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-display: swap;
+  }
+  
+  /* Force proper character rendering */
+  .dashboard-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.025em !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1 !important;
+    font-display: swap !important;
+    unicode-bidi: normal !important;
+    direction: ltr !important;
+  }
+
+  /* Print styles */
 @media print {
   .glass-card {
     @apply bg-white border border-primary;

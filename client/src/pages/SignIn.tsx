@@ -111,40 +111,42 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 sm:p-6">
+      <div className="w-full max-w-md mx-auto">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Welcome to CollaboTree
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Connect with top university talent worldwide
           </p>
         </div>
 
         <Card className="glass-card bg-card/80 backdrop-blur-12 border-border/50 shadow-2xl">
-          <CardHeader className="text-center pb-4">
-            <CardTitle>Get Started</CardTitle>
-            <CardDescription>
+          <CardHeader className="text-center pb-3 sm:pb-4 px-4 sm:px-6">
+            <CardTitle className="text-lg sm:text-xl">Get Started</CardTitle>
+            <CardDescription className="text-sm sm:text-base">
               Sign in to your account or create a new one
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-primary/10">
+              <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6 bg-primary/10 h-10 sm:h-12">
                 <TabsTrigger 
                   value="login" 
-                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-primary/70"
+                  className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-primary/70 text-xs sm:text-sm"
                 >
-                  <LogIn className="h-5 w-5" />
-                  Sign In
+                  <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden xs:inline">Sign In</span>
+                  <span className="xs:hidden">Login</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="register" 
-                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-primary/70"
+                  className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-primary/70 text-xs sm:text-sm"
                 >
-                  <UserPlus className="h-5 w-5" />
-                  Register
+                  <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden xs:inline">Register</span>
+                  <span className="xs:hidden">Sign Up</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -194,7 +196,7 @@ export default function SignIn() {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="w-full h-11 sm:h-12 text-sm sm:text-base bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
                     disabled={loading}
                   >
                     {loading ? 'Signing In...' : 'Sign In'}
@@ -344,7 +346,7 @@ export default function SignIn() {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="w-full h-11 sm:h-12 text-sm sm:text-base bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
                     disabled={loading}
                   >
                     {loading ? 'Creating Account...' : `Register as ${registerData.role === 'student' ? 'Student' : 'Buyer'}`}

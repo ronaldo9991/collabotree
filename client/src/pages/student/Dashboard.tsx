@@ -298,7 +298,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-24 px-6 sm:px-8 lg:px-12">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
         
         {/* Header */}
@@ -306,31 +306,15 @@ export default function StudentDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="text-center mb-6 sm:mb-8"
         >
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20" data-testid="student-badge">
+          <Badge className="mb-3 sm:mb-4 bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm" data-testid="student-badge">
             Student Dashboard
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            Welcome back, {(() => {
-              // Get first name from full_name or email
-              const fullName = user?.full_name;
-              const email = user?.email;
-              
-              if (fullName && fullName.trim()) {
-                const firstName = fullName.split(' ')[0];
-                return firstName && firstName.length > 0 ? firstName : 'Student';
-              }
-              
-              if (email && email.includes('@')) {
-                const emailName = email.split('@')[0];
-                return emailName && emailName.length > 0 ? emailName : 'Student';
-              }
-              
-              return 'Student';
-            })()}!
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-primary dashboard-title">
+            Welcome back, king!
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
             Manage your applications, orders, and showcase your skills
           </p>
         </motion.div>
@@ -342,30 +326,34 @@ export default function StudentDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8 h-12 bg-card/50 backdrop-blur-12 border border-primary/20 rounded-xl">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
               <TabsTrigger 
                 value="overview" 
-                className="text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:border-primary/30 transition-all duration-200 rounded-lg"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
-                Overview
+                <span className="hidden sm:inline">Overview</span>
+                <span className="sm:hidden">Stats</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="orders" 
-                className="text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:border-primary/30 transition-all duration-200 rounded-lg"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
-                Buyer Requests
+                <span className="hidden sm:inline">Buyer Requests</span>
+                <span className="sm:hidden">Orders</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="messages" 
-                className="text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:border-primary/30 transition-all duration-200 rounded-lg"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
-                Messages
+                <span className="hidden sm:inline">Messages</span>
+                <span className="sm:hidden">Chat</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="services" 
-                className="text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:border-primary/30 transition-all duration-200 rounded-lg"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
-                My Services
+                <span className="hidden sm:inline">My Services</span>
+                <span className="sm:hidden">Services</span>
               </TabsTrigger>
             </TabsList>
 
