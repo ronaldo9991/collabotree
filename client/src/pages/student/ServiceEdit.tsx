@@ -11,9 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Save, Eye, DollarSign, Tag, FileText, Package } from "lucide-react";
 import { motion } from "framer-motion";
-import { mockServicesWithOwners } from "@/data/mockData";
+import { projectsApi } from "@/lib/api";
 
 const serviceSchema = z.object({
   title: z.string().min(10, "Title must be at least 10 characters").max(100, "Title must be less than 100 characters"),
@@ -38,12 +39,11 @@ export default function ServiceEdit() {
   const { id } = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [tagInput, setTagInput] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Find service from mock data
-  const service = mockServicesWithOwners.find(s => s.id === id);
+  const [service, setService] = useState<any>(null);
 
   const form = useForm<ServiceFormData>({
     resolver: zodResolver(serviceSchema),
@@ -58,21 +58,66 @@ export default function ServiceEdit() {
   });
 
   useEffect(() => {
-    if (service) {
-      form.reset({
-        title: service.title,
-        description: service.description,
-        pricingCents: service.pricingCents,
-        deliveryDays: service.deliveryDays,
-        tags: service.tags || [],
-        revisionNote: "",
-      });
-      setSelectedTags(service.tags || []);
-      setIsLoading(false);
-    } else {
-      setIsLoading(false);
-    }
-  }, [service, form]);
+    const fetchService = async () => {
+      if (!id || !user) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const serviceData = await projectsApi.getProjectById(id);
+        
+        if (!serviceData) {
+          toast({
+            title: "Service Not Found",
+            description: "The service you're trying to edit doesn't exist.",
+            variant: "destructive",
+          });
+          navigate("/dashboard/student");
+          return;
+        }
+
+        // Check if user owns this service
+        if (serviceData.created_by !== user.id) {
+          toast({
+            title: "Access Denied",
+            description: "You can only edit your own services.",
+            variant: "destructive",
+          });
+          navigate("/dashboard/student");
+          return;
+        }
+
+        setService(serviceData);
+        
+        // Convert budget from dollars to cents for the form
+        const budgetInCents = serviceData.budget ? serviceData.budget * 100 : 5000;
+        
+        form.reset({
+          title: serviceData.title || "",
+          description: serviceData.description || "",
+          pricingCents: budgetInCents,
+          deliveryDays: 7, // Default since this isn't stored in projects table
+          tags: serviceData.tags || [],
+          revisionNote: "",
+        });
+        
+        setSelectedTags(serviceData.tags || []);
+      } catch (error) {
+        console.error('Error fetching service:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load service data. Please try again.",
+          variant: "destructive",
+        });
+        navigate("/dashboard/student");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchService();
+  }, [id, user, form, toast, navigate]);
 
   const addTag = (tag: string) => {
     if (tag && !selectedTags.includes(tag) && selectedTags.length < 5) {
@@ -97,18 +142,36 @@ export default function ServiceEdit() {
   };
 
   const onSubmit = async (data: ServiceFormData) => {
-    try {
-      // In a real app, this would make an API call
+    if (!user || !service) {
       toast({
-        title: "Demo Mode",
-        description: "This is a demo application. Service updates are not processed.",
+        title: "Error",
+        description: "Authentication or service data missing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Update the project/service
+      const updateData = {
+        title: data.title,
+        description: data.description,
+        budget: data.pricingCents / 100, // Convert cents back to dollars
+        tags: data.tags,
+        // Add cover_url if we had image editing capability
+      };
+
+      await projectsApi.updateProject(service.id, updateData);
+      
+      toast({
+        title: "Service Updated!",
+        description: "Your service has been successfully updated.",
       });
       
-      // Simulate success and redirect
-      setTimeout(() => {
-        navigate("/dashboard/student");
-      }, 1000);
+      // Redirect back to dashboard
+      navigate("/dashboard/student");
     } catch (error) {
+      console.error('Error updating service:', error);
       toast({
         title: "Error",
         description: "Failed to update service. Please try again.",

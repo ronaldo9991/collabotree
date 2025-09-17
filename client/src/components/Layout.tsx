@@ -3,9 +3,12 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { CommandPalette } from "./CommandPalette";
 import { useTheme } from "./ThemeProvider";
-import { Network, Search, Moon, Sun, Home, ShoppingCart, FileText, Users, Menu } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Network, Search, Moon, Sun, Home, ShoppingCart, FileText, Users, Menu, LogOut, Settings, User } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,6 +18,7 @@ export function Layout({ children }: LayoutProps) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
   const [location] = useLocation();
 
   const navigation = [
@@ -27,7 +31,7 @@ export function Layout({ children }: LayoutProps) {
   const dashboardNavigation = [
     { name: "Student Dashboard", href: "/dashboard/student", icon: Home, show: true },
     { name: "Buyer Dashboard", href: "/dashboard/buyer", icon: ShoppingCart, show: true },
-    { name: "Admin Dashboard", href: "/admin", icon: Users, show: true },
+    { name: "Admin Dashboard", href: "/dashboard/admin", icon: Users, show: true },
   ];
 
   const toggleTheme = () => {
@@ -158,10 +162,66 @@ export function Layout({ children }: LayoutProps) {
                 <Search className="h-4 w-4" />
               </Button>
 
-              {/* Demo Mode Badge */}
-              <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                Demo Mode
-              </Badge>
+              {/* Auth Actions */}
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.avatar} alt={user.full_name} />
+                        <AvatarFallback>
+                          {user.full_name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user.full_name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={
+                        user.role === 'student' ? '/dashboard/student/settings' :
+                        user.role === 'buyer' ? '/dashboard/buyer/settings' :
+                        user.role === 'admin' ? '/dashboard/admin/settings' :
+                        '/profile'
+                      } className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  asChild
+                  data-testid="sign-in-button"
+                >
+                  <Link href="/signin">
+                    Sign In
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -95,28 +95,28 @@ const timelineSteps = [
 
 const platformFeatures = [
   {
-    icon: Shield,
-    title: "Verified Students Only",
-    description: "Every service provider is authenticated through university credentials and ID verification.",
-    stats: "100% verified"
+    title: "Elite Academic Network",
+    description: "Connect with the brightest minds from Stanford, MIT, Harvard, and 500+ top universities worldwide. Every student is rigorously verified through institutional credentials.",
+    stats: "500+ Universities",
+    highlight: "Academic Excellence"
   },
   {
-    icon: Zap,
-    title: "Lightning Fast",
-    description: "Average project completion in 3-5 days with real-time progress tracking.",
-    stats: "3-5 days avg"
+    title: "Intelligent Project Matching",
+    description: "Our advanced AI analyzes your requirements and matches you with students who have the exact skills and academic background for your project needs.",
+    stats: "95% Match Rate",
+    highlight: "AI-Powered"
   },
   {
-    icon: CreditCard,
-    title: "Secure Payments",
-    description: "Escrow protection with 7-day buyer guarantee and automated payout system.",
-    stats: "7-day protection"
+    title: "Enterprise-Grade Security",
+    description: "Bank-level encryption, secure escrow payments, and comprehensive dispute resolution ensure your projects and payments are always protected.",
+    stats: "100% Secure",
+    highlight: "Bank-Level"
   },
   {
-    icon: Star,
-    title: "Quality Assured",
-    description: "Comprehensive review system with dispute resolution and satisfaction guarantee.",
-    stats: "4.9★ average"
+    title: "Premium Quality Guarantee",
+    description: "Every project comes with unlimited revisions, quality assurance, and our satisfaction guarantee. We ensure exceptional results or your money back.",
+    stats: "99.7% Satisfaction",
+    highlight: "Guaranteed"
   }
 ];
 
@@ -125,8 +125,8 @@ export default function HowItWorks() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="pt-20 sm:pt-24 pb-12 sm:pb-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-padding-y">
+        <div className="container-unified">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,8 +156,8 @@ export default function HowItWorks() {
       </section>
 
       {/* Timeline Process Flow */}
-      <section className="py-12 sm:py-16 lg:py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-padding-y">
+        <div className="container-unified">
           <div className="text-center mb-8 sm:mb-12 lg:mb-16">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Simple Step-by-Step Process</h2>
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4 sm:px-0">
@@ -188,7 +188,7 @@ export default function HowItWorks() {
                       whileHover={{ scale: 1.02, y: -5 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 hover:shadow-xl transition-all duration-300 shadow-lg">
+                      <Card className="glass-card bg-accent/20 backdrop-blur-12 border-2 border-accent/50 hover:border-accent/70 hover:shadow-xl transition-all duration-300 shadow-lg">
                         <CardContent className="p-4 sm:p-5 lg:p-6">
                           <div className="mb-4">
                             <Badge variant="outline" className={`mb-3 text-xs sm:text-sm ${index % 2 === 0 ? 'float-right' : 'float-left'}`}>
@@ -252,34 +252,49 @@ export default function HowItWorks() {
 
 
       {/* Platform Features */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-muted/20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-padding-y bg-muted/20">
+        <div className="container-unified">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Platform Advantages</h2>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                Why Choose CollaboTree
+              </h2>
               <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4 sm:px-0">
-                Built for trust, security, and exceptional results in every project collaboration.
+                Experience the future of academic talent collaboration with our cutting-edge platform designed for excellence, innovation, and unmatched results.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {platformFeatures.map((feature, index) => (
-                <Card key={index} className="glass-card bg-card/30 text-center hover-lift" data-testid={`platform-feature-${index}`}>
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
-                      <feature.icon className="h-6 w-6 sm:h-8 sm:w-8" />
+                <Card key={index} className="glass-card bg-gradient-to-br from-card/50 to-card/30 text-center hover-lift border-border/30 hover:border-primary/30 group transition-all duration-300" data-testid={`platform-feature-${index}`}>
+                  <CardContent className="p-6 sm:p-8 relative overflow-hidden">
+                    {/* Subtle gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <div className="relative z-10">
+                      {/* Highlight badge */}
+                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-4">
+                        <span className="text-xs font-medium text-primary">{feature.highlight}</span>
+                      </div>
+                      
+                      <h4 className="text-lg sm:text-xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                        {feature.title}
+                      </h4>
+                      
+                      <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                        {feature.description}
+                      </p>
+                      
+                      <div className="flex items-center justify-center">
+                        <Badge variant="secondary" className="text-xs font-semibold bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary">
+                          {feature.stats}
+                        </Badge>
+                      </div>
                     </div>
-                    <h4 className="text-base sm:text-lg font-semibold mb-2">{feature.title}</h4>
-                    <p className="text-xs sm:text-sm text-muted-foreground mb-3 leading-relaxed px-2 sm:px-0">
-                      {feature.description}
-                    </p>
-                    <Badge variant="outline" className="text-xs">
-                      {feature.stats}
-                    </Badge>
                   </CardContent>
                 </Card>
               ))}
@@ -289,15 +304,15 @@ export default function HowItWorks() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section-padding-y bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
+        <div className="container-unified">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <Card className="glass-card bg-card/80 backdrop-blur-12 border-primary/20 max-w-4xl mx-auto">
+            <Card className="glass-card bg-primary/25 backdrop-blur-12 border-primary/30 hover:border-primary/50 max-w-4xl mx-auto">
               <CardContent className="p-6 sm:p-8 lg:p-12">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">Ready to Start Collaborating?</h2>
                 <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">

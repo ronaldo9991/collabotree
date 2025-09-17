@@ -353,40 +353,46 @@ export default function Landing() {
 
   const features = [
     {
-      icon: Shield,
-      title: "Verified Excellence",
-      description: "Every student is thoroughly verified through university credentials, ensuring authentic and qualified talent for your projects.",
+      title: "Academic Excellence Network",
+      description: "Connect with the world's brightest minds from Stanford, MIT, Harvard, and 500+ prestigious universities. Every student is rigorously verified through institutional credentials and academic achievements.",
       gradient: "from-primary to-secondary",
+      highlight: "Elite Universities",
+      stats: "500+ Institutions"
     },
     {
-      icon: Award,
-      title: "Premium Quality",
-      description: "Access top-tier student talent from leading universities worldwide, delivering exceptional results every time.",
+      title: "Intelligent Talent Matching",
+      description: "Our advanced AI algorithms analyze your project requirements and match you with students who have the exact academic background, skills, and expertise needed for exceptional results.",
       gradient: "from-accent to-primary",
+      highlight: "AI-Powered",
+      stats: "95% Match Rate"
     },
     {
-      icon: Target,
-      title: "AI-Powered Matching",
-      description: "Our intelligent system connects you with the perfect student talent based on your specific project requirements.",
+      title: "Lightning-Fast Delivery",
+      description: "Experience rapid project completion with dedicated student professionals who understand the importance of deadlines and deliver high-quality work within your timeline requirements.",
       gradient: "from-secondary to-accent",
+      highlight: "Rapid Results",
+      stats: "3-5 Days Avg"
     },
     {
-      icon: Zap,
-      title: "Fast Delivery",
-      description: "Get your projects completed quickly with dedicated student freelancers who understand deadlines matter.",
+      title: "Global Academic Community",
+      description: "Access a diverse talent pool spanning continents, bringing fresh perspectives, innovative approaches, and cultural diversity to your projects from the world's leading academic institutions.",
       gradient: "from-primary to-accent",
+      highlight: "Worldwide",
+      stats: "50+ Countries"
     },
     {
-      icon: Globe,
-      title: "Global Talent Pool",
-      description: "Connect with verified students from top universities across the globe, bringing diverse skills and fresh perspectives.",
+      title: "Enterprise-Grade Security",
+      description: "Your projects and payments are protected with military-grade encryption, secure escrow systems, and comprehensive dispute resolution ensuring complete peace of mind.",
       gradient: "from-accent to-secondary",
+      highlight: "Bank-Level",
+      stats: "100% Secure"
     },
     {
-      icon: Lock,
-      title: "Secure Platform",
-      description: "Your projects and payments are protected with enterprise-grade security and comprehensive dispute resolution.",
+      title: "Premium Quality Assurance",
+      description: "Every project comes with unlimited revisions, comprehensive quality checks, and our satisfaction guarantee. We ensure exceptional results or provide a full refund.",
       gradient: "from-secondary to-primary",
+      highlight: "Guaranteed",
+      stats: "99.7% Success"
     },
   ];
 
@@ -734,7 +740,7 @@ export default function Landing() {
                       whileHover={{ scale: 1.02, y: -5 }}
                     >
                 <Card 
-                  className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-card overflow-hidden flex flex-col group"
+                  className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] overflow-hidden flex flex-col group border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80"
                   aria-label={project.title}
                 >
                   {/* Project Image with Gradient Overlay */}
@@ -744,7 +750,7 @@ export default function Landing() {
                       alt={project.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 group-hover:from-primary/30 group-hover:via-secondary/15 group-hover:to-accent/30 transition-all duration-200" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
                   <CardContent className="p-4 md:p-5 xl:p-6 flex-1 flex flex-col">
@@ -922,7 +928,7 @@ export default function Landing() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <Card 
-                  className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-card overflow-hidden flex flex-col group"
+                  className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] overflow-hidden flex flex-col group border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80"
                   aria-label={project.title}
                 >
                   {/* Project Image with Gradient Overlay */}
@@ -932,7 +938,7 @@ export default function Landing() {
                       alt={project.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 group-hover:from-primary/30 group-hover:via-secondary/15 group-hover:to-accent/30 transition-all duration-200" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
                   <CardContent className="p-4 md:p-5 xl:p-6 flex-1 flex flex-col">
@@ -1052,9 +1058,11 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Why Choose CollaboTree?</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              The Future of Academic Talent
+            </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Access the world's brightest student talent through our trusted platform designed for exceptional results.
+              Experience the next generation of talent collaboration with our revolutionary platform that connects you with the world's most brilliant academic minds.
             </p>
           </motion.div>
 
@@ -1081,30 +1089,24 @@ export default function Landing() {
                   </div>
                   
                   <CardContent className="p-8 relative z-10">
-                    {/* Enhanced icon with floating animation */}
-                    <div className="relative mb-6">
-                      <div className={`w-14 h-14 bg-gradient-to-r ${feature.gradient} rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
-                        <feature.icon className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
-                      </div>
-                      {/* Floating particles effect */}
-                      <div className={`absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r ${feature.gradient} rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-all duration-300`}></div>
-                      <div className={`absolute -bottom-1 -left-1 w-2 h-2 bg-gradient-to-r ${feature.gradient} rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200`}></div>
+                    {/* Highlight badge */}
+                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-6">
+                      <span className="text-xs font-medium text-primary">{feature.highlight}</span>
                     </div>
                     
-                    {/* Content with better typography */}
+                    {/* Content with enhanced typography */}
                     <div className="space-y-4">
-                      <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">{feature.title}</h3>
+                      <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-secondary transition-all duration-300">
+                        {feature.title}
+                      </h3>
                       <p className="text-muted-foreground leading-relaxed text-sm group-hover:text-foreground/80 transition-colors duration-300">
                         {feature.description}
                       </p>
                       
-                      {/* Progress indicator */}
+                      {/* Stats badge */}
                       <div className="pt-4">
-                        <div className="w-full bg-border/30 rounded-full h-1">
-                          <div 
-                            className={`h-1 bg-gradient-to-r ${feature.gradient} rounded-full transition-all duration-1000 ease-out group-hover:w-full`}
-                            style={{ width: '0%' }}
-                          ></div>
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10">
+                          <span className="text-xs font-semibold text-primary">{feature.stats}</span>
                         </div>
                       </div>
                     </div>

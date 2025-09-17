@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,10 +7,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Link } from "wouter";
-import { Search, Filter, Star, Clock, FolderSync, Heart, MapPin, Sparkles, TrendingUp, Code, Smartphone, PaintBucket } from "lucide-react";
+import { Search, Filter, Star, Clock, FolderSync, Heart, MapPin, Sparkles, TrendingUp, Code, Smartphone, PaintBucket, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
-import { mockServicesWithOwners } from "@/data/mockData";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { projectsApi, ordersApi, type ProjectWithDetails } from "@/lib/api";
 
 // Category icon mapping
 const categoryIcons: { [key: string]: any } = {
@@ -23,55 +25,106 @@ const categoryIcons: { [key: string]: any } = {
   'default': Code
 };
 
+// Updated interface to match our new data structure
+interface ProjectCardData extends ProjectWithDetails {
+  // Additional fields for display
+  rating?: number;
+  totalReviews?: number;
+  orders?: number;
+}
+
 export default function ExploreTalent() {
+  const { toast } = useToast();
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceRange, setPriceRange] = useState([0, 2500]);
   const [deliveryDays, setDeliveryDays] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [projects, setProjects] = useState<ProjectCardData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([
+    { value: "all", label: "All Categories" }
+  ]);
 
-  // Use mock data instead of API calls
-  const services = mockServicesWithOwners;
+  // Fetch projects from Supabase
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        
+        const filters = {
+          search: search || undefined,
+          category: category !== 'all' ? category : undefined,
+          minBudget: priceRange[0] > 0 ? priceRange[0] : undefined,
+          maxBudget: priceRange[1] < 2500 ? priceRange[1] : undefined,
+        };
 
-  // Categories (hardcoded for now - could be fetched from API later)
-  const slugify = (str: string) => str.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
-  const categories = [
-    { value: "all", label: "All Categories" },
-    { value: "web-development", label: "Web Development" },
-    { value: "design", label: "Design" },
-    { value: "graphic-design", label: "Graphic Design" },
-    { value: "full-stack-development", label: "Full-Stack Development" },
-    { value: "ai-and-machine-learning", label: "AI & Machine Learning" },
-    { value: "mobile-development", label: "Mobile Development" }
-  ];
-
-  // Client-side filtering for category (since API doesn't support category filter yet)
-  const filteredServices = services?.filter((service) => {
-    // Filter by category - for now we'll do basic matching
-    if (category !== "all" && service.tags) {
-      const hasMatchingTag = service.tags.some(tag => 
-        slugify(tag).includes(category) || category.includes(slugify(tag))
-      );
-      if (!hasMatchingTag) {
-        return false;
+        const data = await projectsApi.getOpenProjects(filters);
+        
+        // Use real data only - no mock data
+        setProjects(data);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load projects. Please try again.",
+          variant: "destructive",
+        });
+        setProjects([]);
+      } finally {
+        setLoading(false);
       }
-    }
-    
-    return true;
+    };
+
+    fetchProjects();
+  }, [search, category, priceRange, sortBy, toast]);
+
+  // Set up categories from project tags
+  useEffect(() => {
+    // Extract unique categories from project tags
+    const uniqueCategories = new Set<string>();
+    projects.forEach(project => {
+      if (project.tags) {
+        project.tags.forEach(tag => uniqueCategories.add(tag));
+      }
+    });
+
+    const categoryOptions = Array.from(uniqueCategories).map(cat => ({
+      value: cat.toLowerCase().replace(/\s+/g, '-'),
+      label: cat,
+    }));
+
+    setCategories([
+      { value: "all", label: "All Categories" },
+      ...categoryOptions,
+    ]);
+  }, [projects]);
+
+  // Helper function for slugify
+  const slugify = (str: string) => str.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
+
+  // Client-side filtering and sorting
+  const filteredProjects = projects?.filter((project) => {
+    const price = project.budget || 0;
+    return price >= priceRange[0] && price <= priceRange[1];
   });
 
-  const sortedServices = filteredServices?.sort((a, b) => {
+  const sortedProjects = filteredProjects?.sort((a, b) => {
     switch (sortBy) {
       case "price-low":
-        return a.pricingCents - b.pricingCents;
+        return (a.budget || 0) - (b.budget || 0);
       case "price-high":
-        return b.pricingCents - a.pricingCents;
+        return (b.budget || 0) - (a.budget || 0);
       case "rating":
-        return parseFloat(b.avgRating || '0') - parseFloat(a.avgRating || '0');
+        return (b.rating || 0) - (a.rating || 0);
       case "delivery":
-        return a.deliveryDays - b.deliveryDays;
+        // Mock delivery time based on budget
+        const aDelivery = Math.max(1, Math.floor((a.budget || 0) / 200));
+        const bDelivery = Math.max(1, Math.floor((b.budget || 0) / 200));
+        return aDelivery - bDelivery;
       default:
-        return 0; // newest - keep original order
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // newest
     }
   });
 
@@ -212,18 +265,33 @@ export default function ExploreTalent() {
               animate="visible"
               variants={containerVariants}
             >
-              {sortedServices?.length === 0 ? (
+              {sortedProjects?.length === 0 ? (
                 <div className="col-span-full text-center py-12">
                   <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Search className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">No talent found</h3>
+                  <h3 className="text-lg font-medium mb-2">No projects found</h3>
                   <p className="text-muted-foreground">
-                    Try adjusting your search criteria or browse all talent.
+                    Try adjusting your search criteria or browse all projects.
                   </p>
                 </div>
+              ) : loading ? (
+                // Loading skeleton
+                [...Array(6)].map((_, index) => (
+                  <motion.div key={index} variants={itemVariants} className="h-full flex">
+                    <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 h-full flex flex-col">
+                      <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
+                      <CardContent className="p-4 flex-1 flex flex-col space-y-3">
+                        <div className="h-4 bg-muted/20 animate-pulse rounded" />
+                        <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
+                        <div className="flex-1" />
+                        <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))
               ) : (
-                sortedServices?.map((project) => (
+                sortedProjects?.map((project) => (
                   <motion.div key={project.id} variants={itemVariants} className="h-full flex">
                     <ProjectCard project={project} />
                   </motion.div>
@@ -240,28 +308,80 @@ export default function ExploreTalent() {
   );
 }
 
-function ProjectCard({ project }: { project: any }) {
+function ProjectCard({ project }: { project: ProjectCardData }) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const { toast } = useToast();
+  const { user } = useAuth();
+  
   // Get category icon based on tags or use default
-  const getIconForService = (tags: string[] | null) => {
+  const getIconForProject = (tags: string[] | null) => {
     if (!tags) return categoryIcons['default'];
     for (const tag of tags) {
       if (categoryIcons[tag]) return categoryIcons[tag];
     }
     return categoryIcons['default'];
   };
-  const IconComponent = getIconForService(project.tags);
+  const IconComponent = getIconForProject(project.tags);
+
+  const handleHireNow = async (project: ProjectCardData) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to hire talent.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (user.role !== 'buyer') {
+      toast({
+        title: "Access Denied",
+        description: "Only buyers can hire talent.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create order
+      await ordersApi.createOrder({
+        project_id: project.id,
+        seller_id: project.created_by,
+        type: 'hire',
+        amount_cents: (project.budget || 0) * 100,
+      });
+
+      toast({
+        title: "Hire Request Sent!",
+        description: "Your hire request has been sent to the student. They will review and respond soon.",
+      });
+    } catch (error) {
+      console.error('Error hiring:', error);
+      toast({
+        title: "Hire Failed",
+        description: "Failed to send hire request. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
-    <Card className="glass-card bg-card/50 backdrop-blur-12 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer group h-full flex flex-col" data-testid={`project-${project.id}`}>
+    <Card className="glass-card bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer group h-full flex flex-col border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80" data-testid={`project-${project.id}`}>
       <Link href={`/service/${project.id}`}>
         {/* Project Image */}
         <div className="relative w-full h-48 overflow-hidden rounded-t-lg bg-muted/10 flex items-center justify-center">
-          {/* Placeholder for service image - could be added to Service interface later */}
-          <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center rounded-t-lg">
-            <IconComponent className="h-16 w-16 text-muted-foreground" />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 group-hover:from-primary/30 group-hover:via-secondary/15 group-hover:to-accent/30 transition-all duration-200" />
+          {project.cover_url ? (
+            <img 
+              src={project.cover_url} 
+              alt={project.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-[#00B2FF]/30 via-[#4AC8FF]/35 to-[#8FE5FF]/30 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] flex items-center justify-center rounded-t-lg">
+              <IconComponent className="h-16 w-16 text-muted-foreground" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
           
           {/* Favorite Button */}
           <Button
@@ -280,39 +400,36 @@ function ProjectCard({ project }: { project: any }) {
       </Link>
       
       <CardContent className="p-4 flex-1 flex flex-col">
-        {/* Student Info */}
+        {/* Creator Info */}
         <div className="flex items-center gap-2 mb-3">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={project.owner.avatarUrl || undefined} />
             <AvatarFallback>
-              {(project.owner.fullName || '').split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+              {(project.creator?.full_name || '').split(' ').map((n: string) => n[0]).join('').toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1">
-              <div className="font-medium text-sm truncate">{project.owner.fullName}</div>
-              {project.owner.isVerified && (
-                <Badge variant="secondary" className="text-xs px-1 py-0">
-                  ✓
-                </Badge>
-              )}
+              <div className="font-medium text-sm truncate">{project.creator?.full_name || 'Creator'}</div>
+              <Badge variant="secondary" className="text-xs px-1 py-0">
+                ✓
+              </Badge>
             </div>
             <div className="text-xs text-muted-foreground flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              {project.owner.university}
+              {project.creator?.role === 'student' ? 'Student' : 'Buyer'}
             </div>
           </div>
           <div className="flex items-center gap-1">
             <Star className="h-3 w-3 text-yellow-400 fill-current" />
-            <span className="text-sm font-medium">{parseFloat(project.avgRating || '0').toFixed(1)}</span>
-            <span className="text-xs text-muted-foreground">({project.ratingCount})</span>
+            <span className="text-sm font-medium">{project.rating?.toFixed(1) || '5.0'}</span>
+            <span className="text-xs text-muted-foreground">({project.totalReviews || 0})</span>
           </div>
         </div>
 
         {/* Category Badge */}
         <Badge variant="secondary" className="w-fit rounded-full text-xs mb-3 flex items-center gap-1">
           <IconComponent className="h-3 w-3" />
-          {project.tags?.[0] || 'Service'}
+          {project.tags?.[0] || 'Project'}
         </Badge>
 
         {/* Project Info */}
@@ -324,18 +441,18 @@ function ProjectCard({ project }: { project: any }) {
         
         <div className="flex-1">
           <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-3 min-h-[4.5rem]">
-            {project.description}
+            {project.description || 'No description available'}
           </p>
         </div>
         
         <div className="flex items-center gap-4 mb-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
-            <span>{project.deliveryDays} days</span>
+            <span>{Math.max(1, Math.floor((project.budget || 0) / 200))} days</span>
           </div>
           <div className="flex items-center gap-1">
             <FolderSync className="h-3 w-3" />
-            <span>Revisions</span>
+            <span>{project.orders || 0} orders</span>
           </div>
         </div>
 
@@ -355,13 +472,26 @@ function ProjectCard({ project }: { project: any }) {
 
         <div className="flex items-center justify-between mt-auto">
           <div className="text-xl font-bold text-primary">
-            ${(project.pricingCents / 100).toFixed(0)}
+            ${(project.budget || 0).toFixed(0)}
           </div>
-          <Button size="sm" variant="outline" asChild data-testid={`view-project-${project.id}`}>
-            <Link href={`/service/${project.id}`}>
-              View Details
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" asChild data-testid={`view-project-${project.id}`}>
+              <Link href={`/service/${project.id}`}>
+                View Details
+              </Link>
+            </Button>
+            <Button 
+              size="sm" 
+              data-testid={`hire-now-${project.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleHireNow(project);
+              }}
+            >
+              Hire Now
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

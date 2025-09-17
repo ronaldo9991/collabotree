@@ -29,6 +29,9 @@ export function Footer() {
       { name: "Terms of Service", href: "/terms" },
       { name: "Cookie Policy", href: "/cookies" },
       { name: "Dispute Resolution", href: "/disputes" },
+    { name: "Test Login", href: "/test-login" },
+    { name: "Test Chat", href: "/test-chat" },
+    { name: "Admin Access", href: "/admin/signin" },
     ],
   };
 
@@ -47,7 +50,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-sky-400 via-sky-500/90 to-blue-500/80 dark:from-background dark:via-muted/20 dark:to-muted/40 border-t border-border/50 text-white dark:text-foreground">
+    <footer className="relative bg-gradient-to-br from-sky-400 via-sky-500/90 to-blue-500/80 dark:bg-[#0A1A3A] dark:bg-gradient-to-br dark:from-[#0A1A3A] dark:via-[#0A1A3A] dark:to-[#0A1A3A] border-t border-border/50 text-white dark:text-foreground">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-grid-small-white/[0.02] dark:bg-grid-small-white/[0.02]" />
       

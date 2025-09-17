@@ -18,8 +18,8 @@
   --background: hsl(194, 100%, 94%); /* #CDF5FD - Sky */
   --foreground: hsl(218, 84%, 11%); /* #0F172A - Ink */
   
-  --muted: hsl(215, 16%, 47%); /* #64748B - Muted Text */
-  --muted-foreground: hsl(215, 16%, 47%);
+  --muted: hsl(199, 100%, 50%, 0.1); /* Light blue instead of grey */
+  --muted-foreground: hsl(199, 100%, 50%, 0.7);
   
   --card: hsl(0, 0%, 100%, 0.8);
   --card-foreground: hsl(218, 84%, 11%);
@@ -116,8 +116,8 @@
   --secondary: hsl(199, 66%, 66%);
   --secondary-foreground: hsl(218, 84%, 11%);
   
-  --muted: hsl(215, 16%, 57%);
-  --muted-foreground: hsl(215, 16%, 57%);
+  --muted: hsl(199, 89%, 48%, 0.15); /* Light blue instead of grey for dark mode */
+  --muted-foreground: hsl(199, 89%, 48%, 0.8);
   
   --accent: hsl(195, 89%, 72%);
   --accent-foreground: hsl(218, 84%, 11%);
@@ -482,7 +482,7 @@ select:focus {
 /* Print styles */
 @media print {
   .glass-card {
-    @apply bg-white border border-gray-300;
+    @apply bg-white border border-primary;
     backdrop-filter: none;
   }
 }

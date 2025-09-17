@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,531 +17,483 @@ import {
   Eye,
   FileText,
   Shield,
-  BarChart3
+  BarChart3,
+  Loader2,
+  Settings,
+  UserCheck,
+  Activity
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
-interface VerificationRequest {
-  id: string;
-  studentName: string;
-  email: string;
-  university: string;
-  idCardUrl: string;
-  ocrData: {
-    name: string;
-    studentId: string;
-    confidence: number;
-  };
-  status: "pending" | "approved" | "rejected";
-  submitDate: string;
-}
-
-interface Dispute {
-  id: string;
-  orderId: string;
-  orderTitle: string;
-  buyer: string;
-  seller: string;
-  amount: number;
-  reason: string;
-  evidence: string[];
-  status: "open" | "investigating" | "resolved";
-  reportDate: string;
-}
-
-interface MetricData {
+interface RealTimeStats {
+  totalUsers: number;
   totalStudents: number;
+  totalBuyers: number;
   verifiedStudents: number;
+  totalProjects: number;
+  activeProjects: number;
+  completedProjects: number;
   totalOrders: number;
-  totalGMV: number;
-  activeDisputes: number;
-  monthlyGrowth: number;
+  totalRevenue: number;
+  pendingVerifications: number;
+}
+
+interface RecentUser {
+  id: string;
+  full_name: string;
+  email: string;
+  role: string;
+  created_at: string;
+  verified?: boolean;
+}
+
+interface RecentProject {
+  id: string;
+  title: string;
+  created_by: string;
+  owner_role: string;
+  status: string;
+  budget?: number;
+  created_at: string;
 }
 
 export default function AdminDashboard() {
   const { toast } = useToast();
-  
-  // Mock data - static for demo
-  const [verificationRequests] = useState<VerificationRequest[]>([
-    {
-      id: "1",
-      studentName: "Emma Wilson",
-      email: "emma.wilson@stanford.edu",
-      university: "Stanford University",
-      idCardUrl: "https://example.com/id1.jpg",
-      ocrData: {
-        name: "Emma Wilson",
-        studentId: "20230001",
-        confidence: 0.95
-      },
-      status: "pending",
-      submitDate: "2025-01-09"
-    },
-    {
-      id: "2",
-      studentName: "James Chen",
-      email: "james.chen@mit.edu",
-      university: "MIT",
-      idCardUrl: "https://example.com/id2.jpg",
-      ocrData: {
-        name: "James Chen",
-        studentId: "20230002",
-        confidence: 0.88
-      },
-      status: "pending",
-      submitDate: "2025-01-08"
-    },
-    {
-      id: "3",
-      studentName: "Lisa Garcia",
-      email: "lisa.garcia@harvard.edu",
-      university: "Harvard University",
-      idCardUrl: "https://example.com/id3.jpg",
-      ocrData: {
-        name: "Lisa Garcia",
-        studentId: "20230003",
-        confidence: 0.92
-      },
-      status: "approved",
-      submitDate: "2025-01-07"
-    }
-  ]);
-
-  const [disputes] = useState<Dispute[]>([
-    {
-      id: "1",
-      orderId: "ORD-001",
-      orderTitle: "Website Development",
-      buyer: "John Smith",
-      seller: "Alex Chen",
-      amount: 250,
-      reason: "Deliverables not meeting requirements",
-      evidence: ["screenshot1.png", "requirements.pdf"],
-      status: "investigating",
-      reportDate: "2025-01-09"
-    },
-    {
-      id: "2",
-      orderId: "ORD-002",
-      orderTitle: "Logo Design",
-      buyer: "Sarah Johnson",
-      seller: "Mike Rodriguez",
-      amount: 75,
-      reason: "Late delivery and poor quality",
-      evidence: ["original_design.png", "final_design.png"],
-      status: "open",
-      reportDate: "2025-01-08"
-    }
-  ]);
-
-  const [metrics] = useState<MetricData>({
-    totalStudents: 1247,
-    verifiedStudents: 892,
-    totalOrders: 3456,
-    totalGMV: 125680,
-    activeDisputes: 12,
-    monthlyGrowth: 15.2
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
+  const [stats, setStats] = useState<RealTimeStats>({
+    totalUsers: 0,
+    totalStudents: 0,
+    totalBuyers: 0,
+    verifiedStudents: 0,
+    totalProjects: 0,
+    activeProjects: 0,
+    completedProjects: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+    pendingVerifications: 0,
   });
+  const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
+  const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleVerificationAction = async (requestId: string, action: "approve" | "reject") => {
-    toast({
-      title: "Demo Mode",
-      description: `This is a demo application. Verification ${action} is not processed.`,
-    });
-  };
+  useEffect(() => {
+    if (user?.role !== 'admin') {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access the admin dashboard.",
+        variant: "destructive",
+      });
+      return;
+    }
+    fetchAdminData();
+  }, [user, toast]);
 
-  const getVerificationStatusColor = (status: string) => {
-    switch (status) {
-      case "pending": return "bg-yellow-500";
-      case "approved": return "bg-green-500";
-      case "rejected": return "bg-red-500";
-      default: return "bg-gray-500";
+  const fetchAdminData = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch all users and their counts
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('id, full_name, email, role, created_at');
+
+      if (usersError) throw usersError;
+
+      // Fetch students data
+      const { data: students, error: studentsError } = await supabase
+        .from('students')
+        .select('user_id, is_verified');
+
+      if (studentsError) throw studentsError;
+
+      // Fetch projects data
+      const { data: projects, error: projectsError } = await supabase
+        .from('projects')
+        .select('id, title, created_by, owner_role, status, budget, created_at');
+
+      if (projectsError) throw projectsError;
+
+      // Fetch orders data
+      const { data: orders, error: ordersError } = await supabase
+        .from('orders')
+        .select('id, amount_cents, status, created_at');
+
+      if (ordersError) throw ordersError;
+
+      // Calculate real-time stats
+      const totalUsers = users?.length || 0;
+      const totalStudents = users?.filter(u => u.role === 'student').length || 0;
+      const totalBuyers = users?.filter(u => u.role === 'buyer').length || 0;
+      const verifiedStudents = students?.filter(s => s.is_verified).length || 0;
+      const totalProjects = projects?.length || 0;
+      const activeProjects = projects?.filter(p => p.status === 'open' || p.status === 'in_progress').length || 0;
+      const completedProjects = projects?.filter(p => p.status === 'completed').length || 0;
+      const totalOrders = orders?.length || 0;
+      const totalRevenue = orders?.filter(o => o.status === 'paid').reduce((sum, o) => sum + (o.amount_cents / 100), 0) || 0;
+      const pendingVerifications = students?.filter(s => !s.is_verified).length || 0;
+
+      setStats({
+        totalUsers,
+        totalStudents,
+        totalBuyers,
+        verifiedStudents,
+        totalProjects,
+        activeProjects,
+        completedProjects,
+        totalOrders,
+        totalRevenue,
+        pendingVerifications,
+      });
+
+      // Set recent users (last 5)
+      const sortedUsers = users?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5) || [];
+      setRecentUsers(sortedUsers.map(u => ({
+        ...u,
+        verified: students?.find(s => s.user_id === u.id)?.is_verified
+      })));
+
+      // Set recent projects (last 5)
+      const sortedProjects = projects?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5) || [];
+      setRecentProjects(sortedProjects);
+
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load admin dashboard data.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getDisputeStatusColor = (status: string) => {
-    switch (status) {
-      case "open": return "bg-red-500";
-      case "investigating": return "bg-yellow-500";
-      case "resolved": return "bg-green-500";
-      default: return "bg-gray-500";
+  const handleVerifyStudent = async (studentId: string, verified: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('students')
+        .update({ is_verified: verified })
+        .eq('user_id', studentId);
+
+      if (error) {
+        console.error('Verification error:', error);
+        throw error;
+      }
+
+      toast({
+        title: "Success",
+        description: `Student ${verified ? 'verified' : 'unverified'} successfully.`,
+      });
+
+      // Refresh data
+      fetchAdminData();
+    } catch (error) {
+      console.error('Error updating student verification:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update student verification.",
+        variant: "destructive",
+      });
     }
   };
+
+  if (!user || user.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Shield className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <p className="text-muted-foreground">You don't have permission to access this area.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-24 px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto">
+        
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
         >
-          <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground">
-              Platform management and oversight
-            </p>
-          </div>
-          <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-            Demo Mode
+          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+            Admin Dashboard
           </Badge>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            Welcome back, {(() => {
+              // Get first name from full_name or email
+              const fullName = user?.full_name;
+              const email = user?.email;
+              
+              if (fullName && fullName.trim()) {
+                const firstName = fullName.split(' ')[0];
+                return firstName && firstName.length > 0 ? firstName : 'Admin';
+              }
+              
+              if (email && email.includes('@')) {
+                const emailName = email.split('@')[0];
+                return emailName && emailName.length > 0 ? emailName : 'Admin';
+              }
+              
+              return 'Admin';
+            })()}!
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Manage your platform and oversee all operations
+          </p>
         </motion.div>
 
-        {/* Metrics Overview */}
+        {/* Real-time Stats */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
         >
-          <Card className="glass-card bg-card/50 border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Total Students</CardTitle>
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 text-center">
+            <CardHeader className="pb-4">
+              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
+                <Users className="h-8 w-8" />
+              </div>
+              <CardTitle className="text-xl">Total Users</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{metrics.totalStudents.toLocaleString()}</div>
+              <div className="text-3xl font-bold text-primary mb-2">{stats.totalUsers}</div>
+              <p className="text-sm text-muted-foreground">
+                {stats.totalStudents} Students • {stats.totalBuyers} Buyers
+              </p>
             </CardContent>
           </Card>
-          
-          <Card className="glass-card bg-card/50 border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Verified</CardTitle>
+
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 text-center">
+            <CardHeader className="pb-4">
+              <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
+                <UserCheck className="h-8 w-8" />
+              </div>
+              <CardTitle className="text-xl">Verified Students</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-500">{metrics.verifiedStudents.toLocaleString()}</div>
-              <div className="text-xs text-muted-foreground">
-                {((metrics.verifiedStudents / metrics.totalStudents) * 100).toFixed(1)}%
+              <div className="text-3xl font-bold text-secondary mb-2">{stats.verifiedStudents}</div>
+              <p className="text-sm text-muted-foreground">
+                {stats.pendingVerifications} pending verification
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 text-center">
+            <CardHeader className="pb-4">
+              <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
+                <Package className="h-8 w-8" />
+              </div>
+              <CardTitle className="text-xl">Projects</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-accent mb-2">{stats.totalProjects}</div>
+              <p className="text-sm text-muted-foreground">
+                {stats.activeProjects} active • {stats.completedProjects} completed
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 text-center">
+            <CardHeader className="pb-4">
+              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
+                <DollarSign className="h-8 w-8" />
+              </div>
+              <CardTitle className="text-xl">Revenue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-primary mb-2">${Math.round(stats.totalRevenue)}</div>
+              <p className="text-sm text-muted-foreground">
+                {stats.totalOrders} total orders
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Management Sections */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+        >
+          {/* Recent Users */}
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                Recent Users
+              </CardTitle>
+              <CardDescription>Latest user registrations on the platform</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentUsers.length > 0 ? (
+                  recentUsers.map((user, index) => (
+                    <div
+                      key={user.id}
+                      className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium">{user.full_name}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant={user.role === 'student' ? 'default' : 'secondary'} className="text-xs">
+                            {user.role}
+                          </Badge>
+                          {user.role === 'student' && (
+                            <Badge variant={user.verified ? 'default' : 'outline'} className="text-xs">
+                              {user.verified ? 'Verified' : 'Pending'}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      {user.role === 'student' && (
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant={user.verified ? "outline" : "default"}
+                            onClick={() => handleVerifyStudent(user.id, !user.verified)}
+                          >
+                            {user.verified ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-4">
+                    <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p>No users found</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
-          
-          <Card className="glass-card bg-card/50 border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Total Orders</CardTitle>
+
+          {/* Recent Projects */}
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-primary" />
+                Recent Projects
+              </CardTitle>
+              <CardDescription>Latest projects created on the platform</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{metrics.totalOrders.toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="glass-card bg-card/50 border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">GMV</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-primary">${metrics.totalGMV.toLocaleString()}</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="glass-card bg-card/50 border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Disputes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-500">{metrics.activeDisputes}</div>
-              <div className="text-xs text-muted-foreground">Active</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="glass-card bg-card/50 border-border/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Growth</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-500">+{metrics.monthlyGrowth}%</div>
-              <div className="text-xs text-muted-foreground">This month</div>
+              <div className="space-y-4">
+                {recentProjects.length > 0 ? (
+                  recentProjects.map((project, index) => (
+                    <div
+                      key={project.id}
+                      className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="font-medium">{project.title}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {project.status}
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {project.owner_role}
+                          </Badge>
+                          {project.budget && (
+                            <span className="text-xs text-muted-foreground">
+                              ${project.budget}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(project.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-4">
+                    <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p>No projects found</p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Main Content Tabs */}
+        {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="mt-8"
         >
-          <Tabs defaultValue="verifications" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="verifications" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Verifications
-              </TabsTrigger>
-              <TabsTrigger value="disputes" className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                Disputes
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center gap-2">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-primary" />
+                Admin Quick Actions
+              </CardTitle>
+              <CardDescription>Platform management tools and utilities</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Button 
+                className="justify-start gap-2" 
+                variant="outline"
+                onClick={() => fetchAdminData()}
+              >
+                <Activity className="h-4 w-4" />
+                Refresh Data
+              </Button>
+              <Button 
+                className="justify-start gap-2" 
+                variant="outline"
+                onClick={() => toast({
+                  title: "Feature Coming Soon",
+                  description: "User management panel will be available in the next update.",
+                })}
+              >
+                <Users className="h-4 w-4" />
+                Manage Users
+              </Button>
+              <Button 
+                className="justify-start gap-2" 
+                variant="outline"
+                onClick={() => toast({
+                  title: "Feature Coming Soon",
+                  description: "Analytics dashboard will be available in the next update.",
+                })}
+              >
                 <BarChart3 className="h-4 w-4" />
-                Analytics
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="verifications" className="mt-6">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold">Student Verification Queue</h2>
-                  <Badge variant="secondary">
-                    {verificationRequests.filter(req => req.status === "pending").length} Pending
-                  </Badge>
-                </div>
-                
-                <div className="space-y-4">
-                  {verificationRequests.map((request) => (
-                    <Card key={request.id} className="glass-card bg-card/50 border-border/50">
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg">{request.studentName}</CardTitle>
-                            <CardDescription>{request.email}</CardDescription>
-                            <p className="text-sm text-muted-foreground mt-1">{request.university}</p>
-                          </div>
-                          <Badge 
-                            variant="secondary"
-                            className={`${getVerificationStatusColor(request.status)} text-white`}
-                          >
-                            {request.status}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        {/* OCR Data */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
-                          <div>
-                            <p className="text-sm font-medium">Extracted Name</p>
-                            <p className="text-sm text-muted-foreground">{request.ocrData.name}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">Student ID</p>
-                            <p className="text-sm text-muted-foreground">{request.ocrData.studentId}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">Confidence</p>
-                            <div className="flex items-center gap-2">
-                              <Progress value={request.ocrData.confidence * 100} className="flex-1" />
-                              <span className="text-sm text-muted-foreground">
-                                {(request.ocrData.confidence * 100).toFixed(0)}%
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        {request.status === "pending" && (
-                          <div className="flex gap-2 pt-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex items-center gap-1"
-                              data-testid={`view-id-${request.id}`}
-                              onClick={() => toast({
-                                title: "Demo Mode",
-                                description: "This is a demo application. ID card viewing is not available.",
-                              })}
-                            >
-                              <Eye className="h-3 w-3" />
-                              View ID Card
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="flex items-center gap-1 bg-green-500 hover:bg-green-600"
-                              onClick={() => handleVerificationAction(request.id, "approve")}
-                              data-testid={`approve-${request.id}`}
-                            >
-                              <CheckCircle className="h-3 w-3" />
-                              Approve
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="flex items-center gap-1"
-                              onClick={() => handleVerificationAction(request.id, "reject")}
-                              data-testid={`reject-${request.id}`}
-                            >
-                              <XCircle className="h-3 w-3" />
-                              Reject
-                            </Button>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                  {verificationRequests.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No verification requests at this time.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="disputes" className="mt-6">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-semibold">Disputes Center</h2>
-                  <Badge variant="secondary" className="bg-red-500 text-white">
-                    {disputes.filter(dispute => dispute.status !== "resolved").length} Active
-                  </Badge>
-                </div>
-                
-                <div className="space-y-4">
-                  {disputes.map((dispute) => (
-                    <Card key={dispute.id} className="glass-card bg-card/50 border-border/50">
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg">
-                              Order #{dispute.orderId} - {dispute.orderTitle}
-                            </CardTitle>
-                            <CardDescription>
-                              {dispute.buyer} vs {dispute.seller}
-                            </CardDescription>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Amount: ${dispute.amount} • Reported: {new Date(dispute.reportDate).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <Badge 
-                            variant="secondary"
-                            className={`${getDisputeStatusColor(dispute.status)} text-white`}
-                          >
-                            {dispute.status}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        {/* Dispute Reason */}
-                        <div className="p-4 bg-muted/50 rounded-lg">
-                          <p className="text-sm font-medium mb-1">Reason</p>
-                          <p className="text-sm text-muted-foreground">{dispute.reason}</p>
-                        </div>
-
-                        {/* Evidence */}
-                        <div>
-                          <p className="text-sm font-medium mb-2">Evidence ({dispute.evidence.length} files)</p>
-                          <div className="flex flex-wrap gap-2">
-                            {dispute.evidence.map((file, index) => (
-                              <Badge key={index} variant="outline" className="flex items-center gap-1">
-                                <FileText className="h-3 w-3" />
-                                {file}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Actions */}
-                        {dispute.status !== "resolved" && (
-                          <div className="flex gap-2 pt-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="flex items-center gap-1"
-                              onClick={() => toast({
-                                title: "Demo Mode",
-                                description: "This is a demo application. Contact functionality is not available.",
-                              })}
-                            >
-                              <MessageCircle className="h-3 w-3" />
-                              Contact Parties
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              className="flex items-center gap-1"
-                              onClick={() => toast({
-                                title: "Demo Mode",
-                                description: "This is a demo application. Investigation functionality is not available.",
-                              })}
-                            >
-                              <CheckCircle className="h-3 w-3" />
-                              Investigate
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => toast({
-                                title: "Demo Mode",
-                                description: "This is a demo application. Order details viewing is not available.",
-                              })}
-                            >
-                              View Order Details
-                            </Button>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                  {disputes.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No active disputes. Great job maintaining platform quality!
-                    </div>
-                  )}
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="analytics" className="mt-6">
-              <div className="space-y-6">
-                <h2 className="text-xl font-semibold">Platform Analytics</h2>
-                
-                {/* Analytics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <Card className="glass-card bg-card/50 border-border/50">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Users className="h-5 w-5 text-blue-500" />
-                        User Growth
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="text-2xl font-bold">+{metrics.monthlyGrowth}%</div>
-                      <p className="text-sm text-muted-foreground">
-                        Monthly user registration growth rate
-                      </p>
-                      <div className="bg-muted/50 h-32 rounded-lg flex items-center justify-center">
-                        <p className="text-muted-foreground">Chart placeholder</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-card bg-card/50 border-border/50">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <DollarSign className="h-5 w-5 text-green-500" />
-                        Revenue Trends
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="text-2xl font-bold">${metrics.totalGMV.toLocaleString()}</div>
-                      <p className="text-sm text-muted-foreground">
-                        Total Gross Marketplace Value
-                      </p>
-                      <div className="bg-muted/50 h-32 rounded-lg flex items-center justify-center">
-                        <p className="text-muted-foreground">Chart placeholder</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-card bg-card/50 border-border/50">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-purple-500" />
-                        Order Volume
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="text-2xl font-bold">{metrics.totalOrders.toLocaleString()}</div>
-                      <p className="text-sm text-muted-foreground">
-                        Total orders processed
-                      </p>
-                      <div className="bg-muted/50 h-32 rounded-lg flex items-center justify-center">
-                        <p className="text-muted-foreground">Chart placeholder</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+                View Analytics
+              </Button>
+              <Button 
+                className="justify-start gap-2" 
+                variant="outline"
+                onClick={() => navigate("/dashboard/admin/settings")}
+              >
+                <Settings className="h-4 w-4" />
+                Settings
+              </Button>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </div>
