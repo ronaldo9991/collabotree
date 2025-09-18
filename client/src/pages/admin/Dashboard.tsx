@@ -26,7 +26,7 @@ import {
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase";
+// import { supabase } from "@/lib/supabase";
 
 interface RealTimeStats {
   totalUsers: number;

@@ -178,9 +178,9 @@ export function Layout({ children }: LayoutProps) {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar} alt={user.full_name} />
+                        <AvatarImage src="" alt={user.name} />
                         <AvatarFallback>
-                          {user.full_name.split(' ').map(n => n[0]).join('')}
+                          {user.name.split(' ').map((n: string) => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -188,7 +188,7 @@ export function Layout({ children }: LayoutProps) {
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.full_name}</p>
+                        <p className="text-sm font-medium leading-none">{user.name}</p>
                         <p className="text-xs leading-none text-muted-foreground">
                           {user.email}
                         </p>
@@ -203,9 +203,9 @@ export function Layout({ children }: LayoutProps) {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href={
-                        user.role === 'student' ? '/dashboard/student/settings' :
-                        user.role === 'buyer' ? '/dashboard/buyer/settings' :
-                        user.role === 'admin' ? '/dashboard/admin/settings' :
+                        user.role === 'STUDENT' ? '/dashboard/student/settings' :
+                        user.role === 'BUYER' ? '/dashboard/buyer/settings' :
+                        user.role === 'ADMIN' ? '/dashboard/admin/settings' :
                         '/profile'
                       } className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />

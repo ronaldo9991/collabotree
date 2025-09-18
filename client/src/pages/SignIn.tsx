@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import { LogIn, UserPlus, GraduationCap, ShoppingCart, Eye, EyeOff, AlertCircle 
 
 export default function SignIn() {
   const [, setLocation] = useLocation();
-  const { login, register } = useAuth();
+  const { login, register, user } = useAuth();
   
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -40,23 +40,29 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('login');
 
+  // Handle redirect after successful login/register
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'STUDENT') {
+        setLocation('/dashboard/student');
+      } else if (user.role === 'BUYER') {
+        setLocation('/dashboard/buyer');
+      } else if (user.role === 'ADMIN') {
+        setLocation('/dashboard/admin');
+      } else {
+        setLocation('/dashboard');
+      }
+    }
+  }, [user, setLocation]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const user = await login(loginData.email, loginData.password);
-      // Redirect based on user role
-      if (user?.role === 'student') {
-        setLocation('/dashboard/student');
-      } else if (user?.role === 'buyer') {
-        setLocation('/dashboard/buyer');
-      } else if (user?.role === 'admin') {
-        setLocation('/dashboard/admin');
-      } else {
-        setLocation('/dashboard');
-      }
+      await login(loginData.email, loginData.password);
+      // Redirect will be handled by useEffect
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Login failed');
     } finally {
@@ -85,24 +91,15 @@ export default function SignIn() {
     try {
       const user = await register({
         email: registerData.email,
-        fullName: registerData.fullName,
+        name: registerData.fullName, // Backend expects 'name', not 'fullName'
+        username: registerData.username, // Add username field
         password: registerData.password,
-        role: registerData.role,
-        university: registerData.role === 'student' ? registerData.university : undefined,
-        skills: registerData.role === 'student' ? registerData.skills : undefined,
-        companyName: registerData.role === 'buyer' ? registerData.companyName : undefined,
-        industry: registerData.role === 'buyer' ? registerData.industry : undefined,
+        role: registerData.role.toUpperCase() as 'BUYER' | 'STUDENT', // Convert to uppercase
+        bio: registerData.role === 'student' ? `Student at ${registerData.university}` : 
+             registerData.role === 'buyer' ? `Company: ${registerData.companyName}` : undefined,
+        skills: registerData.role === 'student' ? registerData.skills : [],
       });
-      // Redirect based on user role
-      if (user?.role === 'student') {
-        setLocation('/dashboard/student');
-      } else if (user?.role === 'buyer') {
-        setLocation('/dashboard/buyer');
-      } else if (user?.role === 'admin') {
-        setLocation('/dashboard/admin');
-      } else {
-        setLocation('/dashboard');
-      }
+      // Redirect will be handled by useEffect
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Registration failed');
     } finally {
@@ -242,6 +239,16 @@ export default function SignIn() {
                       value={registerData.fullName}
                       onChange={(e) => setRegisterData({ ...registerData, fullName: e.target.value })}
                       required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="register-username">Username</Label>
+                    <Input
+                      id="register-username"
+                      placeholder="johndoe123"
+                      value={registerData.username}
+                      onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
                     />
                   </div>
 

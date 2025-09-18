@@ -1,133 +1,189 @@
-import { useState } from "react";
-import { useLocation } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
-import { ordersApi, projectsApi } from "@/lib/api";
-import { ArrowLeft, MessageCircle, Plus } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { io, Socket } from 'socket.io-client';
+import { useAuth } from '@/contexts/AuthContext';
 
-export default function TestChat() {
-  const [, navigate] = useLocation();
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const [creating, setCreating] = useState(false);
+interface Message {
+  id: string;
+  body: string;
+  sender: {
+    id: string;
+    name: string;
+  };
+  createdAt: string;
+  readBy: Array<{
+    userId: string;
+    userName: string;
+    readAt: string;
+  }>;
+}
 
-  const createTestOrder = async () => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to create test orders.",
-        variant: "destructive",
-      });
-      return;
-    }
+const TestChat: React.FC = () => {
+  const { user, tokens } = useAuth();
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [isConnected, setIsConnected] = useState(false);
+  const [hireId, setHireId] = useState('test-hire-123');
 
-    try {
-      setCreating(true);
+  useEffect(() => {
+    if (!user || !tokens) return;
 
-      // First, get or create a test project
-      const projects = await projectsApi.getOpenProjects({});
-      let testProject;
+    // Initialize Socket.IO connection
+    const newSocket = io('http://localhost:4000', {
+      auth: {
+        token: tokens.accessToken,
+      },
+    });
 
-      if (projects.length > 0) {
-        testProject = projects[0];
-      } else {
-        // Create a test project if none exist
-        testProject = await projectsApi.createProject({
-          title: "Test Chat Project",
-          description: "This is a test project for chat functionality",
-          budget: 100,
-          tags: ["Test", "Chat"],
-          owner_role: 'student' as const,
-          cover_url: null,
-        });
-      }
+    newSocket.on('connect', () => {
+      console.log('Connected to chat server');
+      setIsConnected(true);
+      
+      // Join the test chat room
+      newSocket.emit('chat:join', { hireId });
+    });
 
-      // Create a test order
-      const testOrder = await ordersApi.createOrder({
-        project_id: testProject.id,
-        seller_id: testProject.created_by,
-        type: 'hire',
-        amount_cents: 10000, // $100
-      });
+    newSocket.on('disconnect', () => {
+      console.log('Disconnected from chat server');
+      setIsConnected(false);
+    });
 
-      toast({
-        title: "Test Order Created!",
-        description: `Order ID: ${testOrder.id}`,
-      });
+    newSocket.on('chat:joined', (data) => {
+      console.log('Joined chat room:', data);
+    });
 
-      // Navigate to chat
-      navigate(`/chat/${testOrder.id}`);
-    } catch (error) {
-      console.error('Error creating test order:', error);
-      toast({
-        title: "Error",
-        description: `Failed to create test order: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        variant: "destructive",
-      });
-    } finally {
-      setCreating(false);
+    newSocket.on('chat:message:new', (message) => {
+      console.log('New message received:', message);
+      setMessages(prev => [message, ...prev]);
+    });
+
+    newSocket.on('chat:message:read', (data) => {
+      console.log('Message read:', data);
+    });
+
+    newSocket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
+  }, [user, tokens, hireId]);
+
+  const sendMessage = () => {
+    if (!socket || !newMessage.trim()) return;
+
+    socket.emit('chat:message:send', {
+      hireId,
+      body: newMessage.trim(),
+    });
+
+    setNewMessage('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Please log in to access chat</h1>
+          <p>You need to be authenticated to use the chat feature.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/dashboard")}
-          className="mb-6"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
-        </Button>
-
-        <Card className="glass-card bg-card/50 backdrop-blur-12">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-primary" />
-              Test Chat System
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              This page helps you test the chat system by creating a test order and opening the chat.
-            </p>
-            
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Current User:</p>
-              <p className="text-sm text-muted-foreground">
-                {user ? `${user.full_name} (${user.role})` : 'Not signed in'}
-              </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-white rounded-lg shadow-lg">
+          <div className="p-4 border-b">
+            <h1 className="text-2xl font-bold">Test Chat</h1>
+            <div className="flex items-center gap-4 mt-2">
+              <div className={`px-2 py-1 rounded text-sm ${
+                isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {isConnected ? 'Connected' : 'Disconnected'}
+              </div>
+              <div className="text-sm text-gray-600">
+                User: {user.name} ({user.role})
+              </div>
+              <div className="text-sm text-gray-600">
+                Hire ID: {hireId}
+              </div>
             </div>
+          </div>
 
-            <Button
-              onClick={createTestOrder}
-              disabled={creating || !user}
-              className="w-full"
-            >
-              {creating ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating Test Order...
-                </>
-              ) : (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Test Order & Open Chat
-                </>
-              )}
-            </Button>
-
-            {!user && (
-              <p className="text-sm text-muted-foreground text-center">
-                Please sign in to test the chat system.
-              </p>
+          <div className="h-96 overflow-y-auto p-4 space-y-4">
+            {messages.length === 0 ? (
+              <div className="text-center text-gray-500">
+                No messages yet. Start a conversation!
+              </div>
+            ) : (
+              messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${
+                    message.sender.id === user.id ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  <div
+                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.sender.id === user.id
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-800'
+                    }`}
+                  >
+                    <div className="text-sm font-medium mb-1">
+                      {message.sender.name}
+                    </div>
+                    <div className="text-sm">{message.body}</div>
+                    <div className="text-xs opacity-75 mt-1">
+                      {new Date(message.createdAt).toLocaleTimeString()}
+                    </div>
+                    {message.readBy.length > 0 && (
+                      <div className="text-xs opacity-75 mt-1">
+                        Read by: {message.readBy.map(r => r.userName).join(', ')}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+
+          <div className="p-4 border-t">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type a message..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={!isConnected}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={!isConnected || !newMessage.trim()}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default TestChat;

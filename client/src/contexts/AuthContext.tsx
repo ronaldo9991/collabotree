@@ -1,92 +1,172 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { auth, type AuthUser } from '@/lib/auth';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  username?: string;
+  role: 'BUYER' | 'STUDENT' | 'ADMIN';
+  bio?: string;
+  skills?: string;
+  createdAt: string;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
 
 interface AuthContextType {
-  user: AuthUser | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<AuthUser | null>;
-  register: (data: RegisterData) => Promise<AuthUser | null>;
-  logout: () => void;
-  updateProfile: (data: Partial<AuthUser>) => Promise<void>;
-  updateStudentProfile: (data: any) => Promise<void>;
-  updateBuyerProfile: (data: any) => Promise<void>;
+  user: User | null;
+  tokens: AuthTokens | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => Promise<void>;
+  refreshToken: () => Promise<void>;
+  isLoading: boolean;
+  isAuthenticated: boolean;
 }
 
 interface RegisterData {
   email: string;
-  fullName: string;
   password: string;
-  role: 'student' | 'buyer';
-  university?: string;
+  name: string;
+  username?: string;
+  role?: 'BUYER' | 'STUDENT' | 'ADMIN';
+  bio?: string;
   skills?: string[];
-  companyName?: string;
-  industry?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+const API_BASE_URL = 'http://localhost:4000/api';
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [tokens, setTokens] = useState<AuthTokens | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const isAuthenticated = !!user && !!tokens;
 
-  // Initialize auth state (development mode)
+  const refreshToken = async () => {
+    try {
+      if (!tokens?.refreshToken) {
+        throw new Error('No refresh token available');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken: tokens.refreshToken }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Token refresh failed');
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } = data.data;
+      const newTokens = { accessToken, refreshToken: newRefreshToken };
+      
+      setTokens(newTokens);
+      localStorage.setItem('auth_tokens', JSON.stringify(newTokens));
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      logout();
+      throw error;
+    }
+  };
+
+  // Initialize auth state from localStorage
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const currentUser = await auth.getCurrentUser();
-        setUser(currentUser);
+        const storedTokens = localStorage.getItem('auth_tokens');
+        if (storedTokens) {
+          const parsedTokens = JSON.parse(storedTokens);
+          setTokens(parsedTokens);
+          
+          // Verify token and get user info
+          const response = await fetch(`${API_BASE_URL}/me`, {
+            headers: {
+              'Authorization': `Bearer ${parsedTokens.accessToken}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data.data.user);
+          } else {
+            // Token is invalid, clear storage
+            localStorage.removeItem('auth_tokens');
+            setTokens(null);
+          }
+        }
       } catch (error) {
         console.error('Auth initialization error:', error);
+        localStorage.removeItem('auth_tokens');
+        setTokens(null);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string): Promise<AuthUser | null> => {
+  const login = async (email: string, password: string) => {
     try {
-      const { user, error } = await auth.signIn(email, password);
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
       }
-      setUser(user);
-      return user;
+
+      const { user: userData, accessToken, refreshToken } = data.data;
+      
+      const authTokens = { accessToken, refreshToken };
+      setUser(userData);
+      setTokens(authTokens);
+      localStorage.setItem('auth_tokens', JSON.stringify(authTokens));
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
   };
 
-  const register = async (data: RegisterData): Promise<AuthUser | null> => {
+  const register = async (data: RegisterData) => {
     try {
-      const { user, error } = await auth.signUp(data.email, data.password, {
-        fullName: data.fullName,
-        role: data.role,
-        university: data.university,
-        skills: data.skills,
-        companyName: data.companyName,
-        industry: data.industry,
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
       });
 
-      if (error) {
-        throw new Error(error.message);
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Registration failed');
       }
-      setUser(user);
-      return user;
+
+      const { user: userData, accessToken, refreshToken } = responseData.data;
+      
+      const authTokens = { accessToken, refreshToken };
+      setUser(userData);
+      setTokens(authTokens);
+      localStorage.setItem('auth_tokens', JSON.stringify(authTokens));
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -95,70 +175,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      await auth.signOut();
-      setUser(null);
+      if (tokens?.refreshToken) {
+        await fetch(`${API_BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refreshToken: tokens.refreshToken }),
+        });
+      }
     } catch (error) {
       console.error('Logout error:', error);
-    }
-  };
-
-  const updateProfile = async (data: Partial<AuthUser>) => {
-    if (!user) throw new Error('No user logged in');
-    
-    try {
-      const { user: updatedUser, error } = await auth.updateProfile(user.id, data);
-      if (error) {
-        throw new Error(error.message);
-      }
-      setUser(updatedUser);
-    } catch (error) {
-      console.error('Profile update error:', error);
-      throw error;
-    }
-  };
-
-  const updateStudentProfile = async (data: any) => {
-    if (!user || user.role !== 'student') throw new Error('No student user logged in');
-    
-    try {
-      const { student, error } = await auth.updateStudentProfile(user.id, data);
-      if (error) {
-        throw new Error(error.message);
-      }
-      // Update user with new student profile
-      setUser({ ...user, student });
-    } catch (error) {
-      console.error('Student profile update error:', error);
-      throw error;
-    }
-  };
-
-  const updateBuyerProfile = async (data: any) => {
-    if (!user || user.role !== 'buyer') throw new Error('No buyer user logged in');
-    
-    try {
-      const { buyer, error } = await auth.updateBuyerProfile(user.id, data);
-      if (error) {
-        throw new Error(error.message);
-      }
-      // Update user with new buyer profile
-      setUser({ ...user, buyer });
-    } catch (error) {
-      console.error('Buyer profile update error:', error);
-      throw error;
+    } finally {
+      setUser(null);
+      setTokens(null);
+      localStorage.removeItem('auth_tokens');
     }
   };
 
   const value: AuthContextType = {
     user,
-    loading,
+    tokens,
     login,
     register,
     logout,
-    updateProfile,
-    updateStudentProfile,
-    updateBuyerProfile,
+    refreshToken,
+    isLoading,
+    isAuthenticated,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {isLoading ? (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
 };
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export default AuthContext;

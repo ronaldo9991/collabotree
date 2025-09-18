@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { chatApi, ordersApi } from "@/lib/api";
+import { api } from "@/lib/api";
 import { 
   ArrowLeft, 
   Send, 
@@ -70,7 +70,7 @@ export default function Chat() {
       console.log('Fetching order with ID:', orderId);
       
       // Get order details
-      const orderData = await ordersApi.getOrder(orderId!);
+      const orderData = await api.getOrder(orderId!);
       console.log('Order data:', orderData);
       setOrder(orderData);
 
@@ -86,7 +86,7 @@ export default function Chat() {
       }
 
       // Get or create chat thread
-      const chatThread = await chatApi.getOrCreateThread(
+      const chatThread = await api.getOrCreateThread(
         orderData.project_id,
         orderData.buyer_id,
         orderData.seller_id
@@ -95,7 +95,7 @@ export default function Chat() {
       setThread(chatThread);
 
       // Get existing messages
-      const existingMessages = await chatApi.getMessages(chatThread.id);
+      const existingMessages = await api.getMessages(chatThread.id);
       console.log('Existing messages:', existingMessages);
       setMessages(existingMessages);
 
@@ -142,7 +142,7 @@ export default function Chat() {
         userRole: user?.role
       });
       
-      const sentMessage = await chatApi.sendMessage(thread.id, newMessage.trim());
+      const sentMessage = await api.sendMessage(thread.id, newMessage.trim());
       setNewMessage("");
       
       // Add the sent message to the current messages array (avoid duplicates)

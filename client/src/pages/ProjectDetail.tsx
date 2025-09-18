@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { projectsApi, applicationsApi, type ProjectWithDetails } from "@/lib/api";
+import { api } from "@/lib/api";
 
 export default function ProjectDetail() {
   const [, params] = useRoute("/service/:id");
@@ -41,11 +41,11 @@ export default function ProjectDetail() {
 
     try {
       setLoading(true);
-      const data = await projectsApi.getProjectById(projectId);
+      const data = await api.getProject(projectId);
       setProject(data);
 
       // Check if user has already applied to this project
-      if (user?.id && user.role === 'student') {
+      if (user?.id && user.role === 'STUDENT') {
         const applied = await applicationsApi.hasUserAppliedToProject(projectId, user.id);
         setHasApplied(applied);
       }
@@ -62,7 +62,7 @@ export default function ProjectDetail() {
   };
 
   const handleApply = async () => {
-    if (!project || !user || user.role !== 'student') {
+    if (!project || !user || user.role !== 'STUDENT') {
       toast({
         title: "Error",
         description: "Only students can apply to projects.",
@@ -73,7 +73,7 @@ export default function ProjectDetail() {
 
     try {
       setApplying(true);
-      await applicationsApi.applyToProject(project.id, {
+      await api.applyToProject(project.id, {
         cover_letter: applicationData.cover_letter,
         bid_amount: applicationData.bid_amount ? parseFloat(applicationData.bid_amount) : undefined,
       });

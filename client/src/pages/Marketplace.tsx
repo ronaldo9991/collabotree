@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { projectsApi, ordersApi, type ProjectWithDetails } from "@/lib/api";
+import { api } from "@/lib/api";
 
 // Category icon mapping
 const categoryIcons: { [key: string]: any } = {

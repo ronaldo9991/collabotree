@@ -27,7 +27,7 @@ import {
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { ordersApi } from "@/lib/api";
+import { api } from "@/lib/api";
 
 interface OrderWithDetails {
   id: string;
@@ -79,7 +79,7 @@ export default function BuyerOrders() {
 
       try {
         setLoading(true);
-        const userOrders = await ordersApi.getUserOrders(user.id);
+        const userOrders = await api.getUserOrders(user.id);
         setOrders(userOrders);
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -142,7 +142,7 @@ export default function BuyerOrders() {
           });
           break;
         case 'cancel':
-          await ordersApi.cancelOrder(orderId);
+          await api.cancelOrder(orderId);
           toast({
             title: "Order Cancelled",
             description: "Order has been cancelled.",
@@ -158,7 +158,7 @@ export default function BuyerOrders() {
       }
       
       // Refresh orders
-      const userOrders = await ordersApi.getUserOrders(user!.id);
+      const userOrders = await api.getUserOrders(user!.id);
       setOrders(userOrders);
     } catch (error) {
       console.error('Error updating order:', error);

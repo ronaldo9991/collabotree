@@ -36,7 +36,7 @@ import {
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { ordersApi, projectsApi } from "@/lib/api";
+import { api } from "@/lib/api";
 
 interface OrderStats {
   totalSpent: number;
@@ -72,13 +72,13 @@ interface OrderWithDetails {
   };
   seller: {
     id: string;
-    full_name: string;
+    name: string;
     email: string;
     role: string;
   };
   buyer: {
     id: string;
-    full_name: string;
+    name: string;
     email: string;
     role: string;
   };
@@ -87,7 +87,17 @@ interface OrderWithDetails {
 export default function BuyerDashboard() {
   const { toast } = useToast();
   const { user } = useAuth();
+  
+  // Debug logging
+  console.log('BuyerDashboard rendered, user:', user);
   const [, navigate] = useLocation();
+  
+  // If no user, redirect to sign in
+  if (!user) {
+    console.log('No user, redirecting to signin');
+    navigate('/signin');
+    return null;
+  }
   const [searchTerm, setSearchTerm] = useState("");
   const [stats, setStats] = useState<OrderStats>({
     totalSpent: 0,
@@ -113,25 +123,28 @@ export default function BuyerDashboard() {
 
       try {
         setLoading(true);
+        console.log('Fetching orders for user:', user.id);
         
         // Fetch real orders data using the orders API
-        const userOrders = await ordersApi.getUserOrders(user.id);
+        const userOrdersResponse = await api.getOrders({ buyerId: user.id });
+        console.log('Orders response:', userOrdersResponse);
+        const userOrders = Array.isArray(userOrdersResponse.data) ? userOrdersResponse.data : [];
         setOrders(userOrders);
         
-        // Also fetch projects created by this buyer
-        const buyerProjects = await projectsApi.getUserProjects(user.id);
+        // Also fetch projects created by this buyer (services)
+        const buyerProjects = await api.getServices({ ownerId: user.id });
 
         // Calculate real stats from data
         const totalSpent = userOrders
-          .filter(order => order.status === 'paid')
-          .reduce((sum, order) => sum + (order.amount_cents / 100), 0);
+          .filter((order: any) => order.status === 'paid')
+          .reduce((sum: number, order: any) => sum + (order.amountCents / 100), 0);
         
-        const activeOrders = userOrders.filter(order => 
+        const activeOrders = userOrders.filter((order: any) => 
           ['pending', 'paid', 'accepted'].includes(order.status)
         ).length;
         
-        const completedProjects = userOrders.filter(order => 
-          order.status === 'paid'
+        const completedProjects = userOrders.filter((order: any) => 
+          order.status === 'completed'
         ).length;
 
         setStats({
@@ -142,7 +155,7 @@ export default function BuyerDashboard() {
         });
 
         // Create recent activity from real orders data
-        const activities = userOrders.slice(0, 4).map((order) => ({
+        const activities = userOrders.slice(0, 4).map((order: any) => ({
           id: order.id,
           type: order.status,
           description: `Order for ${order.project?.title || 'project'} (${order.status})`,
@@ -165,7 +178,7 @@ export default function BuyerDashboard() {
         
         toast({
           title: "Error",
-          description: "Failed to load dashboard data.",
+          description: "Failed to load dashboard data: " + (error as Error).message,
           variant: "destructive",
         });
       } finally {
@@ -211,6 +224,18 @@ export default function BuyerDashboard() {
     return `$${(amountCents / 100).toFixed(2)}`;
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
@@ -227,15 +252,18 @@ export default function BuyerDashboard() {
           </Badge>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-primary dashboard-title">
             Welcome back, {(() => {
-              // Get first name from full_name or email
-              const fullName = user?.full_name;
-              const email = user?.email;
+              // Prioritize username, then first name, then email name
+              if (user?.username) {
+                return user.username;
+              }
               
+              const fullName = user?.name;
               if (fullName && fullName.trim()) {
                 const firstName = fullName.split(' ')[0];
                 return firstName && firstName.length > 0 ? firstName : 'Buyer';
               }
               
+              const email = user?.email;
               if (email && email.includes('@')) {
                 const emailName = email.split('@')[0];
                 return emailName && emailName.length > 0 ? emailName : 'Buyer';
@@ -504,7 +532,7 @@ export default function BuyerDashboard() {
                               <div className="flex items-center gap-6 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                   <UserIcon className="h-4 w-4" />
-                                  <span>Student: {order.seller?.full_name || 'Unknown'}</span>
+                                  <span>Student: {order.seller?.name || 'Unknown'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <DollarSign className="h-4 w-4" />
@@ -585,11 +613,11 @@ export default function BuyerDashboard() {
                               <div className="flex items-center gap-4">
                                 <Avatar className="h-12 w-12">
                                   <AvatarFallback>
-                                    {order.seller?.full_name?.split(' ').map(n => n[0]).join('') || 'S'}
+                                    {order.seller?.name?.split(' ').map(n => n[0]).join('') || 'S'}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <h3 className="font-semibold">{order.seller?.full_name || 'Unknown Student'}</h3>
+                                  <h3 className="font-semibold">{order.seller?.name || 'Unknown Student'}</h3>
                                   <p className="text-sm text-muted-foreground">{order.project?.title || 'Untitled Project'}</p>
                                   <p className="text-xs text-muted-foreground">{formatAmount(order.amount_cents)} • {formatDate(order.created_at)}</p>
                                 </div>

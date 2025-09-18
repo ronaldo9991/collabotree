@@ -15,12 +15,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Save, Rocket, Package, DollarSign, Clock, Tag, FileText, Upload, Image, X } from "lucide-react";
 import { motion } from "framer-motion";
-import { projectsApi } from "@/lib/api";
+import { api } from "@/lib/api";
 
 const serviceSchema = z.object({
-  title: z.string().min(10, "Title must be at least 10 characters").max(100, "Title must be less than 100 characters"),
-  description: z.string().min(50, "Description must be at least 50 characters").max(2000, "Description must be less than 2000 characters"),
-  pricingCents: z.number().min(500, "Minimum price is $5").max(500000, "Maximum price is $5000"),
+  title: z.string().min(1, "Title is required").max(200, "Title must be less than 200 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters").max(2000, "Description must be less than 2000 characters"),
+  pricingCents: z.number().min(100, "Minimum price is $1").max(10000000, "Maximum price is $100,000"),
   deliveryDays: z.number().min(1, "Minimum delivery time is 1 day").max(30, "Maximum delivery time is 30 days"),
   tags: z.array(z.string()).min(1, "At least one tag is required").max(5, "Maximum 5 tags allowed"),
   coverImage: z.string().optional(),
@@ -145,7 +145,7 @@ export default function ServiceCreate() {
       return;
     }
 
-    if (user.role !== 'student') {
+    if (user.role !== 'STUDENT') {
       toast({
         title: "Access Denied", 
         description: "Only students can create services.",
@@ -155,17 +155,14 @@ export default function ServiceCreate() {
     }
 
     try {
-                // Create project as a service offering
-                const projectData = {
-                  title: data.title,
-                  description: data.description,
-                  budget: data.pricingCents / 100, // Convert cents to dollars
-                  tags: data.tags,
-                  owner_role: 'student' as const,
-                  cover_url: data.coverImage || null, // Include uploaded image
-                };
+      // Create service with the correct data structure
+      const serviceData = {
+        title: data.title,
+        description: data.description,
+        priceCents: data.pricingCents, // Keep as cents for backend
+      };
 
-      await projectsApi.createProject(projectData);
+      await api.createService(serviceData);
       
       toast({
         title: "Service Created Successfully!",

@@ -1,0 +1,38 @@
+import { Router } from 'express';
+import authRoutes from './auth.routes.js';
+import meRoutes from './me.routes.js';
+import usersRoutes from './users.routes.js';
+import servicesRoutes from './services.routes.js';
+import hiresRoutes from './hires.routes.js';
+import ordersRoutes from './orders.routes.js';
+import chatRoutes from './chat.routes.js';
+import reviewsRoutes from './reviews.routes.js';
+import disputesRoutes from './disputes.routes.js';
+import notificationsRoutes from './notifications.routes.js';
+import walletRoutes from './wallet.routes.js';
+
+const router = Router();
+
+// Health check endpoint
+router.get('/health', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'CollaboTree API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// API routes
+router.use('/auth', authRoutes);
+router.use('/me', meRoutes);
+router.use('/users', usersRoutes);
+router.use('/services', servicesRoutes);
+router.use('/hires', hiresRoutes);
+router.use('/orders', ordersRoutes);
+router.use('/chat', chatRoutes);
+router.use('/reviews', reviewsRoutes);
+router.use('/disputes', disputesRoutes);
+router.use('/notifications', notificationsRoutes);
+router.use('/wallet', walletRoutes);
+
+export default router;

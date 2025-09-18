@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { projectsApi, ordersApi, type ProjectWithDetails } from "@/lib/api";
+import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface Service {
@@ -65,7 +65,7 @@ export default function Services() {
 
     try {
       // Find the original project to get the creator ID
-      const projects = await projectsApi.getOpenProjects({});
+      const projects = await api.getProjects({});
       const project = projects.find(p => p.id === service.id);
       
       if (!project) {
@@ -78,7 +78,7 @@ export default function Services() {
       }
 
       // Create order
-      await ordersApi.createOrder({
+      await api.createOrder({
         project_id: service.id,
         seller_id: project.created_by,
         type: 'hire',
@@ -106,7 +106,7 @@ export default function Services() {
         setLoading(true);
         
         // Fetch open projects from the database
-        const projects = await projectsApi.getOpenProjects({});
+        const projects = await api.getProjects({});
         
         // Convert projects to services format
         const servicesData: Service[] = projects.map((project: ProjectWithDetails) => ({

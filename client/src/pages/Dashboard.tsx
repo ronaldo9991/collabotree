@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Dashboard() {
-  const { user, loading } = useAuth();
+  const { user, isLoading: loading } = useAuth();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -15,13 +15,13 @@ export default function Dashboard() {
     if (user) {
       // Redirect to role-specific dashboard
       switch (user.role) {
-        case 'student':
+        case 'STUDENT':
           setLocation('/dashboard/student');
           break;
-        case 'buyer':
+        case 'BUYER':
           setLocation('/dashboard/buyer');
           break;
-        case 'admin':
+        case 'ADMIN':
           setLocation('/dashboard/admin');
           break;
         default:
@@ -41,7 +41,14 @@ export default function Dashboard() {
     );
   }
 
-  return null;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+        <p className="text-muted-foreground">Redirecting to your dashboard...</p>
+      </div>
+    </div>
+  );
 }
 
 

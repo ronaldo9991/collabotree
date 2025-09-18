@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Save, Eye, DollarSign, Tag, FileText, Package } from "lucide-react";
 import { motion } from "framer-motion";
-import { projectsApi } from "@/lib/api";
+import { api } from "@/lib/api";
 
 const serviceSchema = z.object({
   title: z.string().min(10, "Title must be at least 10 characters").max(100, "Title must be less than 100 characters"),
@@ -65,7 +65,7 @@ export default function ServiceEdit() {
       }
 
       try {
-        const serviceData = await projectsApi.getProjectById(id);
+        const serviceData = await api.getProject(id);
         
         if (!serviceData) {
           toast({
@@ -161,7 +161,7 @@ export default function ServiceEdit() {
         // Add cover_url if we had image editing capability
       };
 
-      await projectsApi.updateProject(service.id, updateData);
+      await api.updateProject(service.id, updateData);
       
       toast({
         title: "Service Updated!",
