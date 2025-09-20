@@ -136,6 +136,9 @@ export default function ServiceCreate() {
   };
 
   const onSubmit = async (data: ServiceFormData) => {
+    console.log('Service creation form submitted:', data);
+    console.log('Current user:', user);
+
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -146,8 +149,9 @@ export default function ServiceCreate() {
     }
 
     if (user.role !== 'STUDENT') {
+      console.error('User role is not STUDENT:', user.role);
       toast({
-        title: "Access Denied", 
+        title: "Access Denied",
         description: "Only students can create services.",
         variant: "destructive",
       });
@@ -159,23 +163,30 @@ export default function ServiceCreate() {
       const serviceData = {
         title: data.title,
         description: data.description,
-        priceCents: data.pricingCents, // Keep as cents for backend
+        priceCents: data.pricingCents,
+        isActive: true, // Explicitly set to active
       };
 
+      console.log('Sending service data to API:', serviceData);
+
       const result = await api.createService(serviceData);
-      
+
+      console.log('Service created successfully:', result);
+
       toast({
         title: "Service Created Successfully!",
         description: "Your service is now live and available for buyers.",
       });
-      
+
       // Redirect to student dashboard
       navigate("/dashboard/student");
     } catch (error) {
       console.error('Error creating service:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error message:', errorMessage);
       toast({
         title: "Error",
-        description: `Failed to create service: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: `Failed to create service: ${errorMessage}`,
         variant: "destructive",
       });
     }

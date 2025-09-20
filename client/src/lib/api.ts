@@ -19,10 +19,19 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     // Get auth token from localStorage
-    const tokens = localStorage.getItem('auth_tokens');
-    const authToken = tokens ? JSON.parse(tokens).accessToken : null;
+    let authToken = null;
+    try {
+      const tokens = localStorage.getItem('auth_tokens');
+      if (tokens) {
+        const parsedTokens = JSON.parse(tokens);
+        authToken = parsedTokens.accessToken;
+      }
+    } catch (error) {
+      console.error('Error parsing auth tokens:', error);
+      localStorage.removeItem('auth_tokens');
+    }
 
     const config: RequestInit = {
       headers: {
@@ -179,7 +188,7 @@ class ApiClient {
       });
     }
     const queryString = searchParams.toString();
-    return this.request(`/orders${queryString ? `?${queryString}` : ''}`);
+    return this.request(`/orders/mine${queryString ? `?${queryString}` : ''}`);
   }
 
   async getOrder(orderId: string) {
@@ -198,11 +207,6 @@ class ApiClient {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     });
-  }
-
-  // Hire request endpoints
-  async getHireRequest(hireId: string) {
-    return this.request(`/hires/${hireId}`);
   }
 
   // Chat endpoints

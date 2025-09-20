@@ -319,7 +319,7 @@ export default function ExploreTalent() {
         {/* Results Section */}
         <div>
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch auto-rows-fr"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
@@ -424,7 +424,7 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
   };
 
   return (
-    <Card className="glass-card bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer group h-full flex flex-col border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80" data-testid={`project-${project.id}`}>
+    <Card className="glass-card bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full flex flex-col border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80" data-testid={`project-${project.id}`}>
       <Link href={`/service/${project.id}`}>
         {/* Project Image */}
         <div className="relative w-full h-48 overflow-hidden rounded-t-lg bg-muted/10 flex items-center justify-center">

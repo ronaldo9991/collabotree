@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const isAuthenticated = !!user && !!tokens;
 
+
   const refreshToken = async () => {
     try {
       if (!tokens?.refreshToken) {
@@ -85,30 +86,45 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const initAuth = async () => {
       try {
         const storedTokens = localStorage.getItem('auth_tokens');
-        if (storedTokens) {
-          const parsedTokens = JSON.parse(storedTokens);
-          setTokens(parsedTokens);
-          
-          // Verify token and get user info
-          const response = await fetch(`${API_BASE_URL}/me`, {
-            headers: {
-              'Authorization': `Bearer ${parsedTokens.accessToken}`,
-            },
-          });
 
-          if (response.ok) {
-            const data = await response.json();
-            setUser(data.data.user);
-          } else {
-            // Token is invalid, clear storage
+        if (storedTokens) {
+          try {
+            const parsedTokens = JSON.parse(storedTokens);
+
+            if (!parsedTokens.accessToken) {
+              throw new Error('No access token found');
+            }
+
+            setTokens(parsedTokens);
+
+            // Verify token and get user info
+            const response = await fetch(`${API_BASE_URL}/me`, {
+              headers: {
+                'Authorization': `Bearer ${parsedTokens.accessToken}`,
+              },
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              setUser(data.data.user);
+            } else {
+              // Token is invalid, clear storage
+              localStorage.removeItem('auth_tokens');
+              setTokens(null);
+              setUser(null);
+            }
+          } catch (parseError) {
+            console.error('Error parsing stored tokens:', parseError);
             localStorage.removeItem('auth_tokens');
             setTokens(null);
+            setUser(null);
           }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
         localStorage.removeItem('auth_tokens');
         setTokens(null);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }

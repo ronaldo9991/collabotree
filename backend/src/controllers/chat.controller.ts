@@ -72,7 +72,7 @@ export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' }, // Oldest first
       take: limit + 1, // Take one extra to check if there are more
     });
 
@@ -198,8 +198,6 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
       chatRoom = await prisma.chatRoom.create({
         data: {
           hireRequestId: hireRequest.id,
-          buyerId: hireRequest.buyerId,
-          studentId: hireRequest.studentId,
         }
       });
     }

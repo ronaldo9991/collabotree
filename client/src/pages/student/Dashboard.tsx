@@ -772,7 +772,7 @@ export default function StudentDashboard() {
                 {/* Hire Requests Section */}
                 {applications.length > 0 && (
                   <div className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4">Pending Hire Requests ({applications.length})</h3>
+                    <h3 className="text-lg font-semibold mb-4">Hire Requests ({applications.length})</h3>
                     <div className="space-y-4">
                       {applications.map((application) => (
                         <Card key={application.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
@@ -781,10 +781,23 @@ export default function StudentDashboard() {
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-3">
                                   <h3 className="text-lg font-semibold">{application.service?.title || 'Service Request'}</h3>
-                                  <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                                  <Badge className={
+                                    application.status === 'ACCEPTED' 
+                                      ? 'bg-green-100 text-green-800 border-green-200'
+                                      : application.status === 'REJECTED'
+                                      ? 'bg-red-100 text-red-800 border-red-200'
+                                      : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                                  }>
                                     <span className="flex items-center gap-1">
-                                      <Clock className="h-4 w-4" />
-                                      Pending
+                                      {application.status === 'ACCEPTED' ? (
+                                        <CheckCircle className="h-4 w-4" />
+                                      ) : application.status === 'REJECTED' ? (
+                                        <XCircle className="h-4 w-4" />
+                                      ) : (
+                                        <Clock className="h-4 w-4" />
+                                      )}
+                                      {application.status === 'ACCEPTED' ? 'Accepted' : 
+                                       application.status === 'REJECTED' ? 'Rejected' : 'Pending'}
                                     </span>
                                   </Badge>
                                 </div>
@@ -810,23 +823,39 @@ export default function StudentDashboard() {
                               </div>
                               
                               <div className="flex items-center gap-2 ml-4">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleAcceptHireRequest(application.id)}
-                                  className="gap-2"
-                                >
-                                  <CheckCircle className="h-4 w-4" />
-                                  Accept
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleRejectHireRequest(application.id)}
-                                  className="gap-2"
-                                >
-                                  <X className="h-4 w-4" />
-                                  Reject
-                                </Button>
+                                {application.status === 'PENDING' ? (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleAcceptHireRequest(application.id)}
+                                      className="gap-2"
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                      Accept
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleRejectHireRequest(application.id)}
+                                      className="gap-2"
+                                    >
+                                      <X className="h-4 w-4" />
+                                      Reject
+                                    </Button>
+                                  </>
+                                ) : application.status === 'ACCEPTED' ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => navigate(`/chat/${application.id}`)}
+                                    className="gap-2"
+                                  >
+                                    <MessageCircle className="h-4 w-4" />
+                                    Open Chat
+                                  </Button>
+                                ) : (
+                                  <span className="text-sm text-muted-foreground">Request Rejected</span>
+                                )}
                               </div>
                             </div>
                           </CardContent>

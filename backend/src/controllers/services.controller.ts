@@ -8,12 +8,21 @@ import { parsePagination, createPaginationResult } from '../utils/pagination.js'
 
 export const createService = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    // Debug logging
+    console.log('Creating service for user:', req.user?.id, 'Role:', req.user?.role);
+
     const validatedData = createServiceSchema.parse(req.body);
+
+    // Ensure the user is a student
+    if (req.user!.role !== 'STUDENT') {
+      return sendError(res, 'Only students can create services', 403);
+    }
 
     const service = await prisma.service.create({
       data: {
         ...validatedData,
         ownerId: req.user!.id,
+        isActive: true, // Ensure service is active by default
       },
       include: {
         owner: {
@@ -27,8 +36,10 @@ export const createService = async (req: AuthenticatedRequest, res: Response) =>
       },
     });
 
+    console.log('Service created successfully:', service.id);
     return sendCreated(res, service, 'Service created successfully');
   } catch (error) {
+    console.error('Error creating service:', error);
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
     }

@@ -102,13 +102,13 @@ export const setupChatGateway = (io: SocketIOServer) => {
         const roomName = `hire:${hireId}`;
         socket.join(roomName);
         
-        socket.emit('chat:joined', { 
-          hireId, 
+        socket.emit('chat:joined', {
+          hireId,
           roomName,
-          message: 'Successfully joined chat room' 
+          message: 'Successfully joined chat room'
         });
 
-        console.log(`User ${socket.user!.id} joined room ${roomName}`);
+        console.log(`✅ User ${socket.user!.id} successfully joined room ${roomName}`);
       } catch (error) {
         console.error('Error joining chat room:', error);
         socket.emit('error', { message: 'Failed to join chat room' });
@@ -119,6 +119,8 @@ export const setupChatGateway = (io: SocketIOServer) => {
     socket.on('chat:message:send', async (data: { hireId: string; body: string }) => {
       try {
         const { hireId, body } = data;
+
+        console.log(`🔍 Received message send request from user ${socket.user!.id}:`, data);
 
         if (!hireId || !body?.trim()) {
           socket.emit('error', { message: 'Hire ID and message body are required' });
@@ -145,19 +147,22 @@ export const setupChatGateway = (io: SocketIOServer) => {
         });
 
         if (!hireRequest) {
+          console.error(`❌ Hire request not found: ${hireId}`);
           socket.emit('error', { message: 'Hire request not found' });
           return;
         }
 
         if (hireRequest.status !== 'ACCEPTED') {
+          console.error(`❌ Chat not available for hire request ${hireId}, status: ${hireRequest.status}`);
           socket.emit('error', { message: 'Chat is only available for accepted hire requests' });
           return;
         }
 
         // Check if user is a participant
-        if (hireRequest.buyerId !== socket.user!.id && 
-            hireRequest.studentId !== socket.user!.id && 
+        if (hireRequest.buyerId !== socket.user!.id &&
+            hireRequest.studentId !== socket.user!.id &&
             socket.user!.role !== 'ADMIN') {
+          console.error(`❌ Access denied for user ${socket.user!.id} to hire request ${hireId}`);
           socket.emit('error', { message: 'Access denied' });
           return;
         }
@@ -165,6 +170,7 @@ export const setupChatGateway = (io: SocketIOServer) => {
         // Create chat room if it doesn't exist
         let chatRoom = hireRequest.chatRoom;
         if (!chatRoom) {
+          console.log(`📝 Creating new chat room for hire request ${hireId}`);
           chatRoom = await prisma.chatRoom.create({
             data: { hireRequestId: hireId },
             select: { id: true }
@@ -172,6 +178,7 @@ export const setupChatGateway = (io: SocketIOServer) => {
         }
 
         // Create message
+        console.log(`💾 Creating message in database...`);
         const message = await prisma.message.create({
           data: {
             roomId: chatRoom.id,
@@ -198,9 +205,14 @@ export const setupChatGateway = (io: SocketIOServer) => {
           },
         });
 
-        // Emit message to all users in the room
+        console.log(`✅ Message created with ID: ${message.id}`);
+
+        // Emit message to all users in the room except the sender
         const roomName = `hire:${hireId}`;
-        io.to(roomName).emit('chat:message:new', {
+        const socketCount = io.sockets.adapter.rooms.get(roomName)?.size || 0;
+        console.log(`📡 Broadcasting message to room ${roomName} (${socketCount} connected clients)`);
+
+        const messageData = {
           id: message.id,
           body: message.body,
           sender: message.sender,
@@ -210,11 +222,17 @@ export const setupChatGateway = (io: SocketIOServer) => {
             userName: r.user.name,
             readAt: r.readAt,
           })),
-        });
+        };
 
-        console.log(`Message sent in room ${roomName} by user ${socket.user!.id}`);
+        // Broadcast to room except sender
+        socket.to(roomName).emit('chat:message:new', messageData);
+
+        // Also emit back to sender to confirm successful send (but they already have optimistic update)
+        socket.emit('chat:message:sent', messageData);
+
+        console.log(`✅ Message broadcasted to room ${roomName}`);
       } catch (error) {
-        console.error('Error sending message:', error);
+        console.error('❌ Error sending message:', error);
         socket.emit('error', { message: 'Failed to send message' });
       }
     });

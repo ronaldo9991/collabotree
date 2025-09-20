@@ -10,21 +10,25 @@ import { createNotification, createNotificationForUsers } from '../domain/notifi
 
 export const createHireRequest = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    // Debug logging
+    console.log('Creating hire request for user:', req.user?.id, 'Role:', req.user?.role);
+
     const validatedData = createHireRequestSchema.parse(req.body);
 
     // Check if service exists and is active
     const service = await prisma.service.findUnique({
       where: { id: validatedData.serviceId },
-      select: { 
-        id: true, 
-        ownerId: true, 
+      select: {
+        id: true,
+        ownerId: true,
         isActive: true,
         title: true,
-        priceCents: true 
+        priceCents: true
       }
     });
 
     if (!service || !service.isActive) {
+      console.log('Service not found or inactive:', validatedData.serviceId);
       return sendNotFound(res, 'Service not found or inactive');
     }
 
@@ -35,11 +39,12 @@ export const createHireRequest = async (req: AuthenticatedRequest, res: Response
 
     // Check if user is a buyer
     if (req.user!.role !== 'BUYER') {
+      console.log('User role is not buyer:', req.user?.role);
       return sendError(res, 'Only buyers can create hire requests', 403);
     }
 
     // Check if there's already a pending or accepted hire request for this service
-    const existingHire = await prisma.hireRequest.findFirst({
+    const existingHireForService = await prisma.hireRequest.findFirst({
       where: {
         buyerId: req.user!.id,
         serviceId: validatedData.serviceId,
@@ -47,8 +52,21 @@ export const createHireRequest = async (req: AuthenticatedRequest, res: Response
       }
     });
 
-    if (existingHire) {
+    if (existingHireForService) {
       return sendConflict(res, 'You already have a pending or accepted hire request for this service');
+    }
+
+    // Check if buyer already has a pending or accepted hire request with this student
+    const existingHireForStudent = await prisma.hireRequest.findFirst({
+      where: {
+        buyerId: req.user!.id,
+        studentId: service.ownerId,
+        status: { in: ['PENDING', 'ACCEPTED'] }
+      }
+    });
+
+    if (existingHireForStudent) {
+      return sendConflict(res, 'You already have a pending or accepted hire request with this student');
     }
 
     const hireRequest = await prisma.hireRequest.create({
@@ -88,9 +106,9 @@ export const createHireRequest = async (req: AuthenticatedRequest, res: Response
     // Create notification for student
     await createNotification(
       service.ownerId,
-      'HIRE_ACCEPTED', // Using existing type for new hire request
+      'HIRE_REQUESTED', // Correct notification type for new hire request
       'New Hire Request',
-      `You have received a new hire request for "${service.title}" from ${req.user!.id}`
+      `You have received a new hire request for "${service.title}" from ${req.user!.name}`
     );
 
     return sendCreated(res, hireRequest, 'Hire request created successfully');
@@ -248,7 +266,7 @@ export const acceptHireRequest = async (req: AuthenticatedRequest, res: Response
       return sendError(res, 'Hire request is not pending', 400);
     }
 
-    // Update hire request status and create chat room
+    // Update hire request status, create chat room, and create order
     const updatedHireRequest = await prisma.$transaction(async (tx) => {
       // Update hire request
       const updated = await tx.hireRequest.update({
@@ -287,6 +305,18 @@ export const acceptHireRequest = async (req: AuthenticatedRequest, res: Response
         },
       });
 
+      // Create order automatically
+      await tx.order.create({
+        data: {
+          buyerId: hireRequest.buyerId,
+          studentId: hireRequest.studentId,
+          serviceId: hireRequest.serviceId,
+          hireRequestId: hireRequest.id,
+          priceCents: hireRequest.priceCents || hireRequest.service.priceCents,
+          status: 'PENDING',
+        },
+      });
+
       return updated;
     });
 
@@ -295,10 +325,10 @@ export const acceptHireRequest = async (req: AuthenticatedRequest, res: Response
       [hireRequest.buyerId, hireRequest.studentId],
       'HIRE_ACCEPTED',
       'Hire Request Accepted',
-      `Your hire request for "${hireRequest.service.title}" has been accepted!`
+      `Your hire request for "${hireRequest.service.title}" has been accepted! An order has been created automatically.`
     );
 
-    return sendSuccess(res, updatedHireRequest, 'Hire request accepted successfully');
+    return sendSuccess(res, updatedHireRequest, 'Hire request accepted and order created successfully');
   } catch (error) {
     throw error;
   }
