@@ -20,24 +20,18 @@ import { motion } from "framer-motion";
 
 interface ChatMessage {
   id: number;
-  thread_id: string;
-  sender_id: string;
+  roomId: string;
+  senderId: string;
   body: string;
-  created_at: string;
-}
-
-interface ChatThread {
-  id: string;
-  project_id: string;
-  buyer_id: string;
-  seller_id: string;
-  last_msg_at: string | null;
-  msg_count: number;
-  created_at: string;
+  createdAt: string;
+  sender?: {
+    id: string;
+    name: string;
+  };
 }
 
 export default function Chat() {
-  const { orderId } = useParams();
+  const { hireId } = useParams();
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -45,8 +39,7 @@ export default function Chat() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [order, setOrder] = useState<any>(null);
-  const [thread, setThread] = useState<ChatThread | null>(null);
+  const [hireRequest, setHireRequest] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -58,24 +51,24 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
-    if (orderId && user?.id) {
-      fetchOrderAndInitializeChat();
+    if (hireId && user?.id) {
+      fetchHireRequestAndInitializeChat();
     }
-  }, [orderId, user?.id]);
+  }, [hireId, user?.id]);
 
-  const fetchOrderAndInitializeChat = async () => {
+  const fetchHireRequestAndInitializeChat = async () => {
     try {
       setLoading(true);
       
-      console.log('Fetching order with ID:', orderId);
+      console.log('Fetching hire request with ID:', hireId);
       
-      // Get order details
-      const orderData = await api.getOrder(orderId!);
-      console.log('Order data:', orderData);
-      setOrder(orderData);
+      // Get hire request details
+      const hireRequestData = await api.getHireRequest(hireId!);
+      console.log('Hire request data:', hireRequestData);
+      setHireRequest(hireRequestData);
 
-      // Check if user is part of this order
-      if (user?.id !== orderData.buyer_id && user?.id !== orderData.seller_id) {
+      // Check if user is part of this hire request
+      if (user?.id !== hireRequestData.buyerId && user?.id !== hireRequestData.studentId) {
         toast({
           title: "Access Denied",
           description: "You don't have permission to view this chat.",
@@ -85,97 +78,72 @@ export default function Chat() {
         return;
       }
 
-      // Get or create chat thread
-      const chatThread = await api.getOrCreateThread(
-        orderData.project_id,
-        orderData.buyer_id,
-        orderData.seller_id
-      );
-      console.log('Chat thread:', chatThread);
-      setThread(chatThread);
+      // Check if hire request is accepted
+      if (hireRequestData.status !== 'ACCEPTED') {
+        toast({
+          title: "Chat Not Available",
+          description: "Chat is only available for accepted hire requests.",
+          variant: "destructive",
+        });
+        navigate("/dashboard");
+        return;
+      }
 
-      // Get existing messages
-      const existingMessages = await api.getMessages(chatThread.id);
-      console.log('Existing messages:', existingMessages);
-      setMessages(existingMessages);
-
-      // Subscribe to new messages (only from other users)
-      const subscription = chatApi.subscribeToMessages(chatThread.id, (newMessage) => {
-        // Only add messages from other users, not from the current user
-        if (newMessage.sender_id !== user?.id) {
-          setMessages(prev => {
-            // Check if message already exists to prevent duplicates
-            const messageExists = prev.some(msg => msg.id === newMessage.id);
-            if (messageExists) {
-              return prev;
-            }
-            return [...prev, newMessage];
-          });
-        }
-      });
-
-      return () => {
-        subscription.unsubscribe();
-      };
+      // Fetch chat messages
+      await fetchMessages();
+      
     } catch (error) {
-      console.error('Error initializing chat:', error);
-      console.error('Error details:', error);
+      console.error('Error fetching hire request:', error);
       toast({
         title: "Error",
-        description: `Failed to load chat: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: "Failed to load chat. Please try again.",
         variant: "destructive",
       });
+      navigate("/dashboard");
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchMessages = async () => {
+    try {
+      const messagesData = await api.getChatMessages(hireId!);
+      console.log('Messages data:', messagesData);
+      
+      if (messagesData.success && messagesData.data && messagesData.data.data) {
+        setMessages(messagesData.data.data);
+      } else if (Array.isArray(messagesData)) {
+        setMessages(messagesData);
+      } else {
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      setMessages([]);
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !thread || sending) return;
+    if (!newMessage.trim() || sending) return;
 
     try {
       setSending(true);
-      console.log('Attempting to send message:', {
-        threadId: thread.id,
-        message: newMessage.trim(),
-        userId: user?.id,
-        userRole: user?.role
-      });
       
-      const sentMessage = await api.sendMessage(thread.id, newMessage.trim());
-      setNewMessage("");
+      const result = await api.sendMessage(hireId!, newMessage.trim());
+      console.log('Message sent:', result);
       
-      // Add the sent message to the current messages array (avoid duplicates)
-      setMessages(prevMessages => {
-        // Check if message already exists to prevent duplicates
-        const messageExists = prevMessages.some(msg => msg.id === sentMessage.id);
-        if (messageExists) {
-          return prevMessages;
-        }
-        return [...prevMessages, sentMessage];
-      });
-      
-      console.log('Message sent successfully');
+      if (result.success) {
+        setNewMessage("");
+        // Add the new message to the list
+        setMessages(prev => [...prev, result.data]);
+      } else {
+        throw new Error(result.error || 'Failed to send message');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
-      
-      // Provide more specific error messages
-      let errorMessage = "Failed to send message. Please try again.";
-      if (error instanceof Error) {
-        if (error.message.includes('Not authenticated')) {
-          errorMessage = "Please sign in again to send messages.";
-        } else if (error.message.includes('Permission denied') || error.message.includes('Row Level Security')) {
-          errorMessage = "Permission denied. Please refresh and try again.";
-        } else if (error.message.includes('Network')) {
-          errorMessage = "Network error. Please check your connection.";
-        } else {
-          errorMessage = `Error: ${error.message}`;
-        }
-      }
-      
       toast({
         title: "Error",
-        description: errorMessage,
+        description: "Failed to send message. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -191,8 +159,13 @@ export default function Chat() {
   };
 
   const getOtherUser = () => {
-    if (!order || !user) return null;
-    return user.id === order.buyer_id ? order.seller : order.buyer;
+    if (!hireRequest || !user) return null;
+    
+    if (user.id === hireRequest.buyerId) {
+      return hireRequest.student;
+    } else {
+      return hireRequest.buyer;
+    }
   };
 
   const formatTime = (timestamp: string) => {
@@ -204,34 +177,36 @@ export default function Chat() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] via-[#1A1F3A] to-[#2D1B69] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading chat...</p>
         </div>
       </div>
     );
   }
 
-  if (!loading && (!order || !thread)) {
+  if (!hireRequest) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Chat Not Found</h2>
-          <p className="text-muted-foreground mb-4">
-            {!order ? "Order not found or you don't have permission to view this chat." : "Chat thread could not be created."}
-          </p>
-          <div className="space-y-2">
-            <Button onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] via-[#1A1F3A] to-[#2D1B69] flex items-center justify-center">
+        <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 max-w-md mx-auto">
+          <CardContent className="p-12 text-center">
+            <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Chat Not Found</h2>
+            <p className="text-muted-foreground mb-6">
+              Hire request not found or you don't have permission to view this chat.
+            </p>
+            <Button onClick={() => navigate("/dashboard")} className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
               Back to Dashboard
             </Button>
-            <div className="text-xs text-muted-foreground">
-              Order ID: {orderId}
-            </div>
-          </div>
-        </div>
+            {hireId && (
+              <p className="text-sm text-muted-foreground mt-4">
+                Hire Request ID: {hireId}
+              </p>
+            )}
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -239,75 +214,57 @@ export default function Chat() {
   const otherUser = getOtherUser();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto h-full">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/dashboard")}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-          
-          <Card className="glass-card bg-card/50 backdrop-blur-12">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback>
-                      {otherUser?.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="text-lg">
-                      {otherUser?.full_name || 'User'}
-                    </CardTitle>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className="text-xs">
-                        {otherUser?.role === 'student' ? 'Student' : 'Buyer'}
-                      </Badge>
-                      <Badge 
-                        variant={order.status === 'accepted' ? 'default' : 'outline'}
-                        className="text-xs"
-                      >
-                        {order.status}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">${(order.amount_cents / 100).toFixed(2)}</p>
-                  <p className="text-xs text-muted-foreground">{order.project?.title}</p>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-        </motion.div>
-
-        {/* Chat Messages */}
+    <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] via-[#1A1F3A] to-[#2D1B69]">
+      <div className="container mx-auto px-4 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          transition={{ duration: 0.6 }}
         >
-          <Card className="glass-card bg-card/50 backdrop-blur-12 min-h-[500px] max-h-[80vh] flex flex-col">
-            <CardContent className="flex-1 flex flex-col p-0">
-              {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto chat-messages-area">
-                {messages.length === 0 ? (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-center">
-                      <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No messages yet</p>
-                      <p className="text-sm text-muted-foreground">Start the conversation!</p>
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 h-[calc(100vh-3rem)] flex flex-col">
+            {/* Chat Header */}
+            <CardHeader className="border-b border-primary/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate("/dashboard")}
+                    className="gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback>
+                        {otherUser?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h2 className="text-lg font-semibold">
+                        {otherUser?.name || 'Unknown User'}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        {hireRequest.service?.title || 'Service Chat'}
+                      </p>
                     </div>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  Accepted
+                </Badge>
+              </div>
+            </CardHeader>
+
+            {/* Messages Area */}
+            <CardContent className="flex-1 flex flex-col p-0">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {messages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
                   </div>
                 ) : (
                   messages.map((message) => (
@@ -315,17 +272,29 @@ export default function Chat() {
                       key={message.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`chat-message-container ${message.sender_id === user?.id ? 'user-message' : 'other-message'}`}
+                      transition={{ duration: 0.3 }}
+                      className={`flex ${message.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="chat-message-bubble">
-                        <p className="chat-message-text">{message.body}</p>
-                      </div>
-                      <div className={`chat-timestamp ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
-                        <Clock className="h-3 w-3" />
-                        <span>{formatTime(message.created_at)}</span>
-                        {message.sender_id === user?.id && (
-                          <CheckCircle className="h-3 w-3 text-primary" />
-                        )}
+                      <div className={`flex gap-3 max-w-[70%] ${message.senderId === user?.id ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <Avatar className="h-8 w-8 flex-shrink-0">
+                          <AvatarFallback>
+                            {message.sender?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className={`rounded-lg px-4 py-2 ${
+                          message.senderId === user?.id 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <p className="text-sm">{message.body}</p>
+                          <p className={`text-xs mt-1 ${
+                            message.senderId === user?.id 
+                              ? 'text-primary-foreground/70' 
+                              : 'text-muted-foreground'
+                          }`}>
+                            {formatTime(message.createdAt)}
+                          </p>
+                        </div>
                       </div>
                     </motion.div>
                   ))
@@ -334,7 +303,7 @@ export default function Chat() {
               </div>
 
               {/* Message Input */}
-              <div className="p-4">
+              <div className="border-t border-primary/20 p-4">
                 <div className="flex gap-2">
                   <Input
                     value={newMessage}
@@ -347,7 +316,7 @@ export default function Chat() {
                   <Button
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim() || sending}
-                    size="sm"
+                    className="gap-2"
                   >
                     {sending ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

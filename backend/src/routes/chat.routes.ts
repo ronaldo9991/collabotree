@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getMessages, markMessagesAsRead } from '../controllers/chat.controller.js';
+import { getMessages, markMessagesAsRead, sendMessage } from '../controllers/chat.controller.js';
 import { authenticateToken, requireAuth } from '../middleware/auth.js';
 import { requireAcceptedHire } from '../middleware/requireAcceptedHire.js';
 import { chatLimiter } from '../middleware/rateLimit.js';
@@ -15,6 +15,7 @@ router.use(requireAuth);
 router.use(chatLimiter);
 
 router.get('/rooms/:hireId/messages', requireAcceptedHire, asyncHandler(getMessages));
+router.post('/rooms/:hireId/messages', requireAcceptedHire, asyncHandler(sendMessage));
 router.post('/rooms/:hireId/read', requireAcceptedHire, asyncHandler(markMessagesAsRead));
 
 export default router;

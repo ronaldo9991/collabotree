@@ -52,7 +52,7 @@ function Router() {
       <Route path="/dashboard/student/settings" component={StudentSettings} />
       <Route path="/dashboard/buyer" component={BuyerDashboard} />
         <Route path="/dashboard/buyer/orders" component={BuyerOrders} />
-        <Route path="/chat/:orderId" component={Chat} />
+        <Route path="/chat/:hireId" component={Chat} />
         {/* <Route path="/test-chat" component={TestChat} /> */}
       <Route path="/dashboard/buyer/settings" component={BuyerSettings} />
       <Route path="/dashboard/admin" component={AdminDashboard} />

@@ -17,23 +17,8 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { ProjectWithDetails, Service } from "@/types/projects";
 
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  rating: number;
-  reviews: number;
-  deliveryTime: string;
-  seller: {
-    name: string;
-    avatar?: string;
-    rating: number;
-  };
-  tags: string[];
-  image?: string;
-}
 
 export default function Services() {
   const { user } = useAuth();

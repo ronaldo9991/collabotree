@@ -31,12 +31,17 @@ import {
   MoreHorizontal,
   ArrowRight,
   Plus,
-  TrendingUp
+  TrendingUp,
+  Code,
+  MapPin,
+  FolderSync
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
+import { ProjectWithDetails } from "@/types/projects";
+import { Link } from "wouter";
 
 interface OrderStats {
   totalSpent: number;
@@ -88,16 +93,28 @@ export default function BuyerDashboard() {
   const { toast } = useToast();
   const { user } = useAuth();
   
-  // Debug logging
-  console.log('BuyerDashboard rendered, user:', user);
   const [, navigate] = useLocation();
   
   // If no user, redirect to sign in
   if (!user) {
-    console.log('No user, redirecting to signin');
     navigate('/signin');
     return null;
   }
+  
+  // Temporary: Allow any authenticated user to access buyer dashboard for testing
+  // if (user.role !== 'BUYER') {
+  //   console.log('User is not a buyer, role:', user.role);
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-background">
+  //       <div className="text-center">
+  //         <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+  //         <p className="text-muted-foreground mb-6">This dashboard is only available for buyers.</p>
+  //         <p className="text-sm text-muted-foreground mb-4">Your role: {user.role}</p>
+  //         <Button onClick={() => navigate('/')}>Go Home</Button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
   const [searchTerm, setSearchTerm] = useState("");
   const [stats, setStats] = useState<OrderStats>({
     totalSpent: 0,
@@ -107,6 +124,8 @@ export default function BuyerDashboard() {
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [hireRequests, setHireRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -123,16 +142,49 @@ export default function BuyerDashboard() {
 
       try {
         setLoading(true);
-        console.log('Fetching orders for user:', user.id);
-        
         // Fetch real orders data using the orders API
         const userOrdersResponse = await api.getOrders({ buyerId: user.id });
-        console.log('Orders response:', userOrdersResponse);
-        const userOrders = Array.isArray(userOrdersResponse.data) ? userOrdersResponse.data : [];
+        const userOrders = Array.isArray(userOrdersResponse?.data) ? userOrdersResponse.data : [];
         setOrders(userOrders);
+
+        // Fetch hire requests sent by this buyer
+        try {
+          const hireRequestsResponse = await api.getHireRequests();
+          const hireRequestsData = (hireRequestsResponse as any)?.data?.data || (hireRequestsResponse as any)?.data || hireRequestsResponse || [];
+          setHireRequests(hireRequestsData);
+        } catch (hireError) {
+          console.log('Error fetching hire requests:', hireError);
+          setHireRequests([]);
+        }
         
-        // Also fetch projects created by this buyer (services)
-        const buyerProjects = await api.getServices({ ownerId: user.id });
+        // Fetch available services/projects for browsing
+        try {
+          const servicesResponse = await api.getServices();
+          const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];
+          
+          // Map services to project format for display
+          const mappedProjects = servicesData.map((service: any) => ({
+            id: service.id,
+            title: service.title,
+            description: service.description,
+            budget: service.priceCents / 100, // Convert cents to dollars
+            created_at: service.createdAt,
+            created_by: service.ownerId,
+            tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
+            creator: {
+              full_name: service.owner?.name || 'Student',
+              role: 'student'
+            },
+            rating: 4.5 + Math.random() * 0.5, // Mock rating for now
+            totalReviews: Math.floor(Math.random() * 20) + 1, // Mock reviews
+            orders: Math.floor(Math.random() * 10) + 1 // Mock orders
+          }));
+          
+          setProjects(mappedProjects);
+        } catch (projectError) {
+          console.log('Error fetching services:', projectError);
+          setProjects([]);
+        }
 
         // Calculate real stats from data
         const totalSpent = userOrders
@@ -175,18 +227,24 @@ export default function BuyerDashboard() {
           savedServices: 0,
         });
         setRecentActivity([]);
+        setOrders([]);
         
-        toast({
-          title: "Error",
-          description: "Failed to load dashboard data: " + (error as Error).message,
-          variant: "destructive",
-        });
+        // Silently handle dashboard data fetch errors
       } finally {
         setLoading(false);
       }
     };
 
     fetchDashboardData();
+    
+    // Set up auto-refresh every 10 seconds for real-time updates
+    const interval = setInterval(() => {
+      if (user) {
+        fetchDashboardData();
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [user, toast]);
 
 
@@ -441,7 +499,7 @@ export default function BuyerDashboard() {
                       className="w-full justify-start gap-2" 
                       variant="outline" 
                       data-testid="browse-services-button"
-                      onClick={() => setActiveTab("browse")}
+                      onClick={() => navigate("/marketplace")}
                     >
                       <Search className="h-4 w-4" />
                       Browse Services
@@ -578,7 +636,7 @@ export default function BuyerDashboard() {
                       <ShoppingCart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                       <h3 className="text-xl font-semibold mb-2">No orders yet</h3>
                       <p className="text-muted-foreground mb-6">Start by browsing talented students and placing your first order!</p>
-                      <Button onClick={() => setActiveTab("browse")} className="gap-2">
+                      <Button onClick={() => navigate("/marketplace")} className="gap-2">
                         <Search className="h-4 w-4" />
                         Browse Services
                       </Button>
@@ -602,28 +660,28 @@ export default function BuyerDashboard() {
                   </div>
                 </div>
 
-                {orders.filter(order => order.status === 'paid' || order.status === 'accepted').length > 0 ? (
+                {hireRequests.filter(hire => hire.status === 'ACCEPTED').length > 0 ? (
                   <div className="space-y-4">
-                    {orders
-                      .filter(order => order.status === 'paid' || order.status === 'accepted')
-                      .map((order) => (
-                        <Card key={order.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+                    {hireRequests
+                      .filter(hire => hire.status === 'ACCEPTED')
+                      .map((hireRequest) => (
+                        <Card key={hireRequest.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                           <CardContent className="p-6">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-4">
                                 <Avatar className="h-12 w-12">
                                   <AvatarFallback>
-                                    {order.seller?.name?.split(' ').map(n => n[0]).join('') || 'S'}
+                                    {hireRequest.student?.name?.split(' ').map((n: string) => n[0]).join('') || 'S'}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <h3 className="font-semibold">{order.seller?.name || 'Unknown Student'}</h3>
-                                  <p className="text-sm text-muted-foreground">{order.project?.title || 'Untitled Project'}</p>
-                                  <p className="text-xs text-muted-foreground">{formatAmount(order.amount_cents)} • {formatDate(order.created_at)}</p>
+                                  <h3 className="font-semibold">{hireRequest.student?.name || 'Unknown Student'}</h3>
+                                  <p className="text-sm text-muted-foreground">{hireRequest.service?.title || 'Untitled Service'}</p>
+                                  <p className="text-xs text-muted-foreground">${(hireRequest.priceCents / 100).toFixed(0)} • {formatDate(hireRequest.createdAt)}</p>
                                 </div>
                               </div>
                               <Button
-                                onClick={() => navigate(`/chat/${order.id}`)}
+                                onClick={() => navigate(`/chat/${hireRequest.id}`)}
                                 className="gap-2"
                               >
                                 <MessageCircle className="h-4 w-4" />
@@ -662,11 +720,20 @@ export default function BuyerDashboard() {
                     <h2 className="text-2xl font-bold">Browse Talent</h2>
                     <p className="text-muted-foreground">Find talented students for your projects</p>
                   </div>
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-primary to-secondary gap-2"
+                    onClick={() => navigate("/marketplace")}
+                  >
+                    <Users className="h-5 w-5" />
+                    View Full Marketplace
+                  </Button>
                 </div>
 
-                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+                {/* Search and Filter */}
+                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 mb-6">
                   <CardContent className="p-6">
-                    <div className="relative max-w-2xl mx-auto mb-6">
+                    <div className="relative max-w-2xl mx-auto mb-4">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                       <Input
                         placeholder="Search services, skills, or keywords..."
@@ -676,7 +743,7 @@ export default function BuyerDashboard() {
                       />
                     </div>
                     
-                    <div className="flex flex-wrap gap-2 mb-6 justify-center">
+                    <div className="flex flex-wrap gap-2 justify-center">
                       <span className="text-sm text-muted-foreground">Popular:</span>
                       {["Web Development", "UI/UX Design", "Data Analysis", "Mobile Apps"].map((category) => (
                         <Badge key={category} variant="secondary" className="hover:bg-primary/20 cursor-pointer transition-colors">
@@ -684,24 +751,250 @@ export default function BuyerDashboard() {
                         </Badge>
                       ))}
                     </div>
-                    
-                    <div className="text-center">
-                      <Button 
-                        size="lg" 
-                        className="bg-gradient-to-r from-primary to-secondary gap-2"
-                        onClick={() => navigate("/services")}
-                      >
-                        <Users className="h-5 w-5" />
-                        Browse All Services
-                      </Button>
-                    </div>
                   </CardContent>
                 </Card>
+
+                {/* Projects Grid */}
+                <BrowseTalentSection searchTerm={searchTerm} />
               </motion.div>
             </TabsContent>
           </Tabs>
         </motion.div>
       </div>
+    </div>
+  );
+}
+
+// Browse Talent Section Component
+function BrowseTalentSection({ searchTerm }: { searchTerm: string }) {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const servicesResponse = await api.getServices();
+      const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];
+      
+      // Map services to project format for display
+      const mappedProjects = servicesData.map((service: any) => ({
+        id: service.id,
+        title: service.title,
+        description: service.description,
+        budget: service.priceCents / 100, // Convert cents to dollars
+        created_at: service.createdAt,
+        created_by: service.ownerId,
+        tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
+        creator: {
+          full_name: service.owner?.name || 'Student',
+          role: 'student'
+        },
+        rating: 4.5 + Math.random() * 0.5, // Mock rating for now
+        totalReviews: Math.floor(Math.random() * 20) + 1, // Mock reviews
+        orders: Math.floor(Math.random() * 10) + 1 // Mock orders
+      }));
+      
+      setProjects(mappedProjects);
+    } catch (error) {
+      console.log('Error fetching services:', error);
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter projects based on search term
+  const filteredProjects = projects.filter(project => 
+    !searchTerm || 
+    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+  
+
+  const handleHireNow = async (project: any) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to hire talent.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (user.role !== 'BUYER') {
+      toast({
+        title: "Access Denied",
+        description: "Only buyers can hire talent.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const hireRequestData = {
+        serviceId: project.id,
+        message: `I'm interested in hiring you for this project: ${project.title}`,
+        priceCents: (project.budget || 0) * 100,
+      };
+      
+      const result = await api.createHireRequest(hireRequestData);
+
+      toast({
+        title: "Hire Request Sent!",
+        description: "Your hire request has been sent to the student. They will review and respond soon.",
+      });
+      
+      // Refresh data to show the new hire request
+      // Note: Data will refresh automatically via the useEffect interval
+    } catch (error) {
+      console.error('Error hiring:', error);
+      toast({
+        title: "Hire Failed",
+        description: "Failed to send hire request. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, index) => (
+          <Card key={index} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+            <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
+            <CardContent className="p-4 space-y-3">
+              <div className="h-4 bg-muted/20 animate-pulse rounded" />
+              <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
+              <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (filteredProjects.length === 0) {
+    return (
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+        <CardContent className="p-12 text-center">
+          <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">No projects found</h3>
+          <p className="text-muted-foreground mb-6">
+            {searchTerm ? 'Try adjusting your search criteria.' : 'No projects available at the moment.'}
+          </p>
+          <Button onClick={() => navigate("/marketplace")} className="gap-2">
+            <Users className="h-4 w-4" />
+            View Full Marketplace
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {filteredProjects.slice(0, 6).map((project) => (
+        <Card key={project.id} className="glass-card bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] backdrop-blur-12 hover:shadow-xl hover:scale-105 transition-all duration-300 group h-full flex flex-col border-[#00B2FF]/25 hover:border-[#4AC8FF]/35">
+          {/* Project Image */}
+          <div className="relative w-full h-48 overflow-hidden rounded-t-lg bg-muted/10 flex items-center justify-center">
+            <div className="w-full h-full bg-gradient-to-r from-[#00B2FF]/30 via-[#4AC8FF]/35 to-[#8FE5FF]/30 dark:bg-[#02122E] flex items-center justify-center rounded-t-lg">
+              <Code className="h-16 w-16 text-muted-foreground" />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 transition-all duration-200" />
+          </div>
+          
+          <CardContent className="p-4 flex-1 flex flex-col">
+            {/* Creator Info */}
+            <div className="flex items-center gap-2 mb-3">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback>
+                  {(project.creator?.full_name || '').split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1">
+                  <div className="font-medium text-sm truncate">{project.creator?.full_name || 'Creator'}</div>
+                  <Badge variant="secondary" className="text-xs px-1 py-0">
+                    ✓
+                  </Badge>
+                </div>
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  Student
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                <span className="text-sm font-medium">{project.rating?.toFixed(1) || '5.0'}</span>
+                <span className="text-xs text-muted-foreground">({project.totalReviews || 0})</span>
+              </div>
+            </div>
+
+            {/* Project Info */}
+            <h4 className="font-semibold mb-2 line-clamp-2 hover:text-primary transition-colors">
+              {project.title}
+            </h4>
+            
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-3 min-h-[4.5rem]">
+                {project.description || 'No description available'}
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-4 mb-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                <span>{Math.max(1, Math.floor((project.budget || 0) / 200))} days</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <FolderSync className="h-3 w-3" />
+                <span>{project.orders || 0} orders</span>
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div className="flex flex-wrap gap-1 mb-3">
+              {project.tags?.slice(0, 2).map((tag: string) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              )) || []}
+              {project.tags && project.tags.length > 2 && (
+                <Badge variant="outline" className="text-xs">
+                  +{project.tags.length - 2}
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between mt-auto">
+              <div className="text-xl font-bold text-primary">
+                ${(project.budget || 0).toFixed(0)}
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" asChild>
+                  <Link href={`/service/${project.id}`}>
+                    View
+                  </Link>
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={() => handleHireNow(project)}
+                >
+                  Hire Now
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

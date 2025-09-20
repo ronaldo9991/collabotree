@@ -6,11 +6,11 @@ import { asyncHandler } from '../middleware/error.js';
 
 const router = Router();
 
-// Public routes
+// Public routes (no authentication required)
 router.get('/', asyncHandler(getServices));
 router.get('/:id', asyncHandler(getService));
 
-// Protected routes
+// Protected routes (authentication required)
 router.use(authenticateToken);
 router.use(requireAuth);
 

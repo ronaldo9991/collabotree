@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import { sendSuccess, sendError, sendValidationError, sendNotFound } from '../utils/responses.js';
-import { getMessagesSchema, markMessagesReadSchema } from '../validations/chat.js';
+import { getMessagesSchema, markMessagesReadSchema, sendMessageSchema } from '../validations/chat.js';
 import { AuthenticatedRequest } from '../types/express.js';
 import { createCursorPaginationResult } from '../utils/pagination.js';
 
@@ -148,6 +148,80 @@ export const markMessagesAsRead = async (req: AuthenticatedRequest, res: Respons
     }
 
     return sendSuccess(res, null, 'Messages marked as read');
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return sendValidationError(res, error.errors);
+    }
+    throw error;
+  }
+};
+
+export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const validatedData = sendMessageSchema.parse({
+      ...req.params,
+      ...req.body
+    });
+
+    // Verify hire request exists and is accepted
+    const hireRequest = await prisma.hireRequest.findUnique({
+      where: { id: validatedData.hireId },
+      select: {
+        id: true,
+        buyerId: true,
+        studentId: true,
+        status: true,
+        chatRoom: {
+          select: { id: true }
+        }
+      }
+    });
+
+    if (!hireRequest) {
+      return sendNotFound(res, 'Hire request not found');
+    }
+
+    if (hireRequest.status !== 'ACCEPTED') {
+      return sendError(res, 'Chat is only available for accepted hire requests', 403);
+    }
+
+    // Check if user is a participant
+    if (hireRequest.buyerId !== req.user!.id && 
+        hireRequest.studentId !== req.user!.id && 
+        req.user!.role !== 'ADMIN') {
+      return sendError(res, 'Access denied', 403);
+    }
+
+    // Create or get chat room
+    let chatRoom = hireRequest.chatRoom;
+    if (!chatRoom) {
+      chatRoom = await prisma.chatRoom.create({
+        data: {
+          hireRequestId: hireRequest.id,
+          buyerId: hireRequest.buyerId,
+          studentId: hireRequest.studentId,
+        }
+      });
+    }
+
+    // Create message
+    const message = await prisma.message.create({
+      data: {
+        roomId: chatRoom.id,
+        senderId: req.user!.id,
+        body: validatedData.message,
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    });
+
+    return sendSuccess(res, message, 'Message sent successfully');
   } catch (error) {
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);

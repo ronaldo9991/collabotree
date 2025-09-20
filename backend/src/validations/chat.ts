@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 export const sendMessageSchema = z.object({
-  body: z.string().min(1, 'Message cannot be empty').max(2000, 'Message is too long'),
+  hireId: z.string().cuid('Invalid hire ID'),
+  message: z.string().min(1, 'Message cannot be empty').max(2000, 'Message is too long'),
 });
 
 export const getMessagesSchema = z.object({

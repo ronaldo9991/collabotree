@@ -38,6 +38,12 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
+        console.error('API Error:', {
+          url,
+          status: response.status,
+          error: data.error,
+          hasToken: !!authToken
+        });
         throw new Error(data.error || `HTTP ${response.status}`);
       }
 
@@ -63,13 +69,6 @@ class ApiClient {
     });
   }
 
-  async refreshToken(refreshToken: string) {
-    return this.request('/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({ refreshToken }),
-    });
-  }
-
   async logout(refreshToken?: string) {
     return this.request('/auth/logout', {
       method: 'POST',
@@ -87,10 +86,6 @@ class ApiClient {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
-  }
-
-  async getUserProfile(userId: string) {
-    return this.request(`/users/${userId}`);
   }
 
   // Services endpoints
@@ -131,6 +126,11 @@ class ApiClient {
     });
   }
 
+  // Projects endpoints (alias for services for marketplace)
+  async getProjects(params?: Record<string, any>) {
+    return this.getServices(params);
+  }
+
   // Hire requests endpoints
   async getHireRequests(params?: Record<string, any>) {
     const searchParams = new URLSearchParams();
@@ -164,10 +164,8 @@ class ApiClient {
     });
   }
 
-  async cancelHireRequest(hireId: string) {
-    return this.request(`/hires/${hireId}/cancel`, {
-      method: 'PATCH',
-    });
+  async getHireRequest(hireId: string) {
+    return this.request(`/hires/${hireId}`);
   }
 
   // Orders endpoints
@@ -181,7 +179,11 @@ class ApiClient {
       });
     }
     const queryString = searchParams.toString();
-    return this.request(`/orders/mine${queryString ? `?${queryString}` : ''}`);
+    return this.request(`/orders${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getOrder(orderId: string) {
+    return this.request(`/orders/${orderId}`);
   }
 
   async createOrder(data: any) {
@@ -198,11 +200,9 @@ class ApiClient {
     });
   }
 
-  async payOrder(orderId: string, paymentData?: any) {
-    return this.request(`/orders/${orderId}/pay`, {
-      method: 'PATCH',
-      body: JSON.stringify(paymentData || {}),
-    });
+  // Hire request endpoints
+  async getHireRequest(hireId: string) {
+    return this.request(`/hires/${hireId}`);
   }
 
   // Chat endpoints
@@ -217,6 +217,13 @@ class ApiClient {
     }
     const queryString = searchParams.toString();
     return this.request(`/chat/rooms/${hireId}/messages${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async sendMessage(hireId: string, message: string) {
+    return this.request(`/chat/rooms/${hireId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ message }),
+    });
   }
 
   async markMessagesAsRead(hireId: string) {
@@ -263,62 +270,6 @@ class ApiClient {
   async markNotificationAsRead(notificationId: string) {
     return this.request(`/notifications/${notificationId}/read`, {
       method: 'PATCH',
-    });
-  }
-
-  async markAllNotificationsAsRead() {
-    return this.request('/notifications/read-all', {
-      method: 'PATCH',
-    });
-  }
-
-  async getUnreadNotificationCount() {
-    return this.request('/notifications/unread-count');
-  }
-
-  // Wallet endpoints
-  async getWalletBalance() {
-    return this.request('/wallet/balance');
-  }
-
-  async getWalletEntries(params?: Record<string, any>) {
-    const searchParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, String(value));
-        }
-      });
-    }
-    const queryString = searchParams.toString();
-    return this.request(`/wallet/entries${queryString ? `?${queryString}` : ''}`);
-  }
-
-  // Disputes endpoints
-  async getDisputes(params?: Record<string, any>) {
-    const searchParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          searchParams.append(key, String(value));
-        }
-      });
-    }
-    const queryString = searchParams.toString();
-    return this.request(`/disputes${queryString ? `?${queryString}` : ''}`);
-  }
-
-  async createDispute(data: any) {
-    return this.request('/disputes', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateDisputeStatus(disputeId: string, status: string) {
-    return this.request(`/disputes/${disputeId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
     });
   }
 }

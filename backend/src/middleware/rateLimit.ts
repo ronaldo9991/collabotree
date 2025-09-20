@@ -4,7 +4,7 @@ import { env } from '../config/env.js';
 // General rate limiting
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 1000, // Increased for development - Limit each IP to 1000 requests per windowMs
   message: {
     success: false,
     error: 'Too many requests from this IP, please try again later.',
@@ -16,7 +16,7 @@ export const generalLimiter = rateLimit({
 // Strict rate limiting for authentication endpoints
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Increased for development - Limit each IP to 50 requests per windowMs
+  max: 200, // Increased for development - Limit each IP to 200 requests per windowMs
   message: {
     success: false,
     error: 'Too many authentication attempts, please try again later.',
@@ -29,7 +29,7 @@ export const authLimiter = rateLimit({
 // Moderate rate limiting for API endpoints
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each IP to 50 requests per windowMs
+  max: 500, // Increased for development - Limit each IP to 500 requests per windowMs
   message: {
     success: false,
     error: 'Too many API requests, please try again later.',
@@ -41,7 +41,7 @@ export const apiLimiter = rateLimit({
 // Chat rate limiting (more permissive for real-time features)
 export const chatLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 30, // Limit each IP to 30 chat requests per minute
+  max: 100, // Increased for development - Limit each IP to 100 chat requests per minute
   message: {
     success: false,
     error: 'Too many chat messages, please slow down.',

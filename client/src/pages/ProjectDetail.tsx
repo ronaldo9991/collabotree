@@ -14,6 +14,7 @@ import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
+import { ProjectWithDetails } from "@/types/projects";
 
 export default function ProjectDetail() {
   const [, params] = useRoute("/service/:id");

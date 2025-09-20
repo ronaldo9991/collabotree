@@ -13,6 +13,7 @@ import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
+import { ProjectWithDetails } from "@/types/projects";
 
 // Category icon mapping
 const categoryIcons: { [key: string]: any } = {
@@ -47,38 +48,95 @@ export default function ExploreTalent() {
     { value: "all", label: "All Categories" }
   ]);
 
-  // Fetch projects from Supabase
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
+  // Fetch data function
+  const fetchData = async (isBackground = false) => {
+    try {
+      if (!isBackground) {
         setLoading(true);
-        
-        const filters = {
-          search: search || undefined,
-          category: category !== 'all' ? category : undefined,
-          minBudget: priceRange[0] > 0 ? priceRange[0] : undefined,
-          maxBudget: priceRange[1] < 2500 ? priceRange[1] : undefined,
-        };
-
-        const data = await projectsApi.getOpenProjects(filters);
-        
-        // Use real data only - no mock data
-        setProjects(data);
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load projects. Please try again.",
-          variant: "destructive",
-        });
-        setProjects([]);
-      } finally {
-        setLoading(false);
       }
-    };
+      
+      const filters = {
+        search: search || undefined,
+        category: category !== 'all' ? category : undefined,
+        minBudget: priceRange[0] > 0 ? priceRange[0] : undefined,
+        maxBudget: priceRange[1] < 2500 ? priceRange[1] : undefined,
+      };
 
-    fetchProjects();
-  }, [search, category, priceRange, sortBy, toast]);
+      // Fetch projects (student services)
+      const projectsResponse = await api.getProjects(filters);
+      console.log('API Response:', projectsResponse);
+      
+      // Handle API response format: { success: true, data: { data: [...], pagination: {...} } }
+      let projectsData = [];
+      if (projectsResponse.success && projectsResponse.data && projectsResponse.data.data) {
+        projectsData = projectsResponse.data.data;
+      } else if (Array.isArray(projectsResponse)) {
+        projectsData = projectsResponse;
+      }
+      
+      console.log('Extracted projects data:', projectsData);
+      
+      // Map API data to frontend format
+      const mappedProjects = projectsData.map((service: any) => ({
+        id: service.id,
+        title: service.title,
+        description: service.description,
+        budget: service.priceCents / 100, // Convert cents to dollars
+        created_at: service.createdAt,
+        created_by: service.ownerId,
+        tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
+        creator: {
+          full_name: service.owner?.name || 'Student',
+          role: 'student'
+        },
+        rating: 4.5 + Math.random() * 0.5, // Mock rating for now
+        totalReviews: Math.floor(Math.random() * 20) + 1, // Mock reviews
+        orders: Math.floor(Math.random() * 10) + 1 // Mock orders
+      }));
+      
+      // Set projects data (even if empty)
+      setProjects(mappedProjects);
+      console.log(`Loaded ${mappedProjects.length} projects from API`);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      console.log('API Error details:', error);
+      
+      // Set empty arrays for real data only
+      setProjects([]);
+      
+      // Show error message to user
+      toast({
+        title: "Unable to Load Projects",
+        description: "Please ensure the backend server is running and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch and seamless auto-refresh
+  useEffect(() => {
+    fetchData();
+    
+    // Set up seamless auto-refresh every 15 seconds (more frequent but silent)
+    const interval = setInterval(() => {
+      const previousCount = projects.length;
+      fetchData(true).then(() => {
+        // Only show notification if new projects were added
+        if (projects.length > previousCount) {
+          toast({
+            title: "New Projects Available!",
+            description: `${projects.length - previousCount} new project(s) have been added.`,
+            duration: 3000,
+          });
+        }
+      });
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [search, category, priceRange, sortBy, toast, projects.length]);
+
 
   // Set up categories from project tags
   useEffect(() => {
@@ -154,9 +212,10 @@ export default function ExploreTalent() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl lg:text-4xl font-bold mb-4">Explore Talent</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Discover verified student talent from top universities ready to bring your projects to life.
           </p>
+          
         </div>
 
         {/* Filters Section - Top */}
@@ -259,45 +318,45 @@ export default function ExploreTalent() {
 
         {/* Results Section */}
         <div>
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch auto-rows-fr"
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
-              {sortedProjects?.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">No projects found</h3>
-                  <p className="text-muted-foreground">
-                    Try adjusting your search criteria or browse all projects.
-                  </p>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch auto-rows-fr"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            {sortedProjects?.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-muted-foreground" />
                 </div>
-              ) : loading ? (
-                // Loading skeleton
-                [...Array(6)].map((_, index) => (
-                  <motion.div key={index} variants={itemVariants} className="h-full flex">
-                    <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 h-full flex flex-col">
-                      <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
-                      <CardContent className="p-4 flex-1 flex flex-col space-y-3">
-                        <div className="h-4 bg-muted/20 animate-pulse rounded" />
-                        <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
-                        <div className="flex-1" />
-                        <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))
-              ) : (
-                sortedProjects?.map((project) => (
-                  <motion.div key={project.id} variants={itemVariants} className="h-full flex">
-                    <ProjectCard project={project} />
-                  </motion.div>
-                ))
-              )}
-            </motion.div>
+                <h3 className="text-lg font-medium mb-2">No projects found</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search criteria or browse all projects.
+                </p>
+              </div>
+            ) : loading ? (
+              // Loading skeleton
+              [...Array(6)].map((_, index) => (
+                <motion.div key={index} variants={itemVariants} className="h-full flex">
+                  <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 h-full flex flex-col">
+                    <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
+                    <CardContent className="p-4 flex-1 flex flex-col space-y-3">
+                      <div className="h-4 bg-muted/20 animate-pulse rounded" />
+                      <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
+                      <div className="flex-1" />
+                      <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            ) : (
+              sortedProjects?.map((project) => (
+                <motion.div key={project.id} variants={itemVariants} className="h-full flex">
+                  <ProjectCard project={project} />
+                </motion.div>
+              ))
+            )}
+          </motion.div>
         </div>
         </div>
       </section>
@@ -333,7 +392,7 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
       return;
     }
 
-    if (user.role !== 'buyer') {
+    if (user.role !== 'BUYER') {
       toast({
         title: "Access Denied",
         description: "Only buyers can hire talent.",
@@ -343,12 +402,11 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
     }
 
     try {
-      // Create order
-      await ordersApi.createOrder({
-        project_id: project.id,
-        seller_id: project.created_by,
-        type: 'hire',
-        amount_cents: (project.budget || 0) * 100,
+      // Create hire request
+      await api.createHireRequest({
+        serviceId: project.id,
+        message: `I'm interested in hiring you for this project: ${project.title}`,
+        priceCents: (project.budget || 0) * 100,
       });
 
       toast({

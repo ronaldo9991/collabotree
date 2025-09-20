@@ -22,7 +22,7 @@ const serviceSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters").max(2000, "Description must be less than 2000 characters"),
   pricingCents: z.number().min(100, "Minimum price is $1").max(10000000, "Maximum price is $100,000"),
   deliveryDays: z.number().min(1, "Minimum delivery time is 1 day").max(30, "Maximum delivery time is 30 days"),
-  tags: z.array(z.string()).min(1, "At least one tag is required").max(5, "Maximum 5 tags allowed"),
+  tags: z.array(z.string()).min(0, "Tags are optional").max(5, "Maximum 5 tags allowed").optional(),
   coverImage: z.string().optional(),
 });
 
@@ -162,7 +162,7 @@ export default function ServiceCreate() {
         priceCents: data.pricingCents, // Keep as cents for backend
       };
 
-      await api.createService(serviceData);
+      const result = await api.createService(serviceData);
       
       toast({
         title: "Service Created Successfully!",
@@ -175,7 +175,7 @@ export default function ServiceCreate() {
       console.error('Error creating service:', error);
       toast({
         title: "Error",
-        description: "Failed to create service. Please try again.",
+        description: `Failed to create service: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     }
