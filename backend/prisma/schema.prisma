@@ -47,15 +47,16 @@ model User {
 }
 
 model Service {
-  id          String   @id @default(cuid())
-  ownerId     String
-  title       String
-  description String
-  priceCents  Int
-  coverImage  String?  // Add cover image field
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  ownerId       String
+  title         String
+  description   String
+  priceCents    Int
+  coverImage    String?  // Add cover image field
+  isActive      Boolean  @default(true)
+  isTopSelection Boolean @default(false) // Admin can mark services as top selections
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
   owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)

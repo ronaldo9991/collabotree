@@ -51,6 +51,84 @@ export const createService = async (req: AuthenticatedRequest, res: Response) =>
   }
 };
 
+// Public version for homepage (no authentication required)
+export const getPublicServices = async (req: any, res: Response) => {
+  try {
+    const validatedData = getServicesSchema.parse(req.query);
+    const pagination = parsePagination(validatedData);
+
+    // Build where clause
+    const where: any = {
+      isActive: true,
+    };
+
+    if (validatedData.q) {
+      where.OR = [
+        { title: { contains: validatedData.q, mode: 'insensitive' } },
+        { description: { contains: validatedData.q, mode: 'insensitive' } },
+      ];
+    }
+
+    if (validatedData.minPrice) {
+      where.priceCents = { ...where.priceCents, gte: validatedData.minPrice };
+    }
+
+    if (validatedData.maxPrice) {
+      where.priceCents = { ...where.priceCents, lte: validatedData.maxPrice };
+    }
+
+    if (validatedData.ownerId) {
+      where.ownerId = validatedData.ownerId;
+    }
+
+    // Build orderBy clause
+    const orderBy: any = {};
+    if (validatedData.sortBy) {
+      orderBy[validatedData.sortBy] = validatedData.sortOrder || 'desc';
+    } else {
+      orderBy.createdAt = 'desc'; // Default to newest first
+    }
+
+    const [services, total] = await Promise.all([
+      prisma.service.findMany({
+        where,
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              bio: true,
+              university: true,
+              skills: true,
+              isVerified: true,
+              idCardUrl: true,
+              verifiedAt: true,
+            },
+          },
+          _count: {
+            select: {
+              hireRequests: true,
+              orders: true,
+            },
+          },
+        },
+        orderBy,
+        take: pagination.take,
+        skip: pagination.skip,
+      }),
+      prisma.service.count({ where }),
+    ]);
+
+    const result = createPaginationResult(services, total, pagination);
+    return sendSuccess(res, result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return sendValidationError(res, error.errors);
+    }
+    throw error;
+  }
+};
+
 export const getServices = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const validatedData = getServicesSchema.parse(req.query);

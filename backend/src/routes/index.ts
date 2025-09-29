@@ -11,6 +11,9 @@ import disputesRoutes from './disputes.routes.js';
 import notificationsRoutes from './notifications.routes.js';
 import walletRoutes from './wallet.routes.js';
 import verificationRoutes from './verification.routes.js';
+import adminRoutes from './admin.routes.js';
+import { getPublicTopSelectionServices } from '../controllers/admin.controller.js';
+import { getPublicServices } from '../controllers/services.controller.js';
 
 const router = Router();
 
@@ -22,6 +25,10 @@ router.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Public routes for homepage (no authentication required)
+router.get('/public/top-selections', getPublicTopSelectionServices);
+router.get('/public/services', getPublicServices);
 
 // API routes
 router.use('/auth', authRoutes);
@@ -36,5 +43,6 @@ router.use('/disputes', disputesRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/wallet', walletRoutes);
 router.use('/verification', verificationRoutes);
+router.use('/admin', adminRoutes);
 
 export default router;
