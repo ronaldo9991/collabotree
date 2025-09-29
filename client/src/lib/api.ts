@@ -43,8 +43,11 @@ class ApiClient {
     };
 
     try {
+      console.log('Making API request:', { url, method: config.method, hasToken: !!authToken });
       const response = await fetch(url, config);
       const data = await response.json();
+
+      console.log('API response:', { url, status: response.status, data });
 
       if (!response.ok) {
         console.error('API Error:', {

@@ -225,41 +225,61 @@ export default function AdminDashboard() {
   const fetchAdminData = async () => {
     try {
       setLoading(true);
+      console.log('Fetching admin data...');
+      console.log('Current user:', user);
+      console.log('Auth token:', localStorage.getItem('auth_tokens'));
 
       // Fetch admin stats
+      console.log('Fetching admin stats...');
       const statsResponse = await api.getAdminStats({ period: 'week' });
+      console.log('Stats response:', statsResponse);
       if (statsResponse.success && statsResponse.data) {
         setStats(statsResponse.data as AdminStats);
       }
 
       // Fetch recent messages
+      console.log('Fetching messages...');
       const messagesResponse = await api.getAllMessages({ limit: 20 });
+      console.log('Messages response:', messagesResponse);
       if (messagesResponse.success && messagesResponse.data) {
         const responseData = messagesResponse.data as any;
         setMessages(responseData.data || []);
       }
 
       // Fetch all services
+      console.log('Fetching services...');
       const servicesResponse = await api.getAllServices({ limit: 50 });
+      console.log('Services response:', servicesResponse);
       if (servicesResponse.success && servicesResponse.data) {
         const responseData = servicesResponse.data as any;
         setServices(responseData.services || []);
       }
 
       // Fetch top selection services
+      console.log('Fetching top selections...');
       const topSelectionResponse = await api.getTopSelectionServices();
+      console.log('Top selection response:', topSelectionResponse);
       if (topSelectionResponse.success && topSelectionResponse.data) {
         setTopSelectionServices(topSelectionResponse.data as Service[]);
       }
 
       // Fetch pending verifications
+      console.log('Fetching pending verifications...');
       const verificationResponse = await api.getPendingVerifications();
+      console.log('Verification response:', verificationResponse);
       if (verificationResponse.success && verificationResponse.data) {
         setPendingVerifications(verificationResponse.data as any[]);
       }
 
+      console.log('Admin data fetch completed successfully');
+
     } catch (error) {
       console.error('Error fetching admin data:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : 'Unknown'
+      });
       toast({
         title: "Error",
         description: "Failed to load admin dashboard data.",
