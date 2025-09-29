@@ -482,10 +482,6 @@ export default function Landing() {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Hand-picked by our admin team. These featured projects showcase the highest quality and most exceptional work from our verified student talent.
             </p>
-            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-              <Star className="h-4 w-4 text-primary" />
-              <span>Admin curated • {topSelectionProjects.length} featured projects</span>
-            </div>
           </motion.div>
 
           {/* Carousel with External Navigation */}
@@ -691,10 +687,6 @@ export default function Landing() {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Fresh opportunities from our talented student community. Discover the latest projects and innovations from verified students worldwide.
             </p>
-            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span>Live updates • {newProjects.length} new projects</span>
-            </div>
           </motion.div>
 
           {/* Carousel with External Navigation */}

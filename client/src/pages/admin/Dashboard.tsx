@@ -408,14 +408,8 @@ export default function AdminDashboard() {
             Welcome back, {user?.name || 'Admin'}!
           </h1>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-            Manage the platform, monitor messages, and control featured content
+            Manage the platform, monitor messages, and control top selections
           </p>
-          {lastUpdated && (
-            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span>Live updates • Last refreshed: {lastUpdated.toLocaleTimeString()}</span>
-            </div>
-          )}
         </motion.div>
 
         {/* Tabs Navigation */}
