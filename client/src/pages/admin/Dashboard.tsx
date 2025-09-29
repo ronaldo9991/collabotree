@@ -410,6 +410,12 @@ export default function AdminDashboard() {
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
             Manage the platform, monitor messages, and control featured content
           </p>
+          {lastUpdated && (
+            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span>Live updates • Last refreshed: {lastUpdated.toLocaleTimeString()}</span>
+            </div>
+          )}
         </motion.div>
 
         {/* Tabs Navigation */}
@@ -561,7 +567,7 @@ export default function AdminDashboard() {
                       <CardContent>
                         <div className="text-3xl font-bold text-purple-500 mb-2">{stats.services.topSelections}</div>
               <p className="text-sm text-muted-foreground">
-                          Top selections
+                          Featured services
               </p>
             </CardContent>
           </Card>
@@ -772,7 +778,7 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                       <Star className="h-5 w-5 text-primary" />
-                      Top Selections ({topSelectionServices.length})
+                      Currently Featured ({topSelectionServices.length})
               </CardTitle>
                     <CardDescription>Services currently shown on the homepage</CardDescription>
             </CardHeader>
@@ -787,10 +793,10 @@ export default function AdminDashboard() {
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <h3 className="font-medium">{service.title}</h3>
-                                  <Badge variant="default" className="text-xs">
-                                    <Star className="h-3 w-3 mr-1" />
-                                    Top Selection
-                                  </Badge>
+                                <Badge variant="default" className="text-xs">
+                                  <Star className="h-3 w-3 mr-1" />
+                                  Featured
+                                </Badge>
                               </div>
                               <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{service.description}</p>
                               <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -820,8 +826,8 @@ export default function AdminDashboard() {
                       ) : (
                         <div className="text-center text-muted-foreground py-8">
                           <Star className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                          <p>No top selections yet</p>
-                          <p className="text-sm">Select services from the list below to add them</p>
+                          <p>No services featured yet</p>
+                          <p className="text-sm">Select services from the list below to feature them</p>
                         </div>
                       )}
                     </div>
@@ -835,7 +841,7 @@ export default function AdminDashboard() {
                       <Package className="h-5 w-5 text-primary" />
                       All Services ({filteredServices.length})
                     </CardTitle>
-                    <CardDescription>Click the star to add a service to top selections</CardDescription>
+                    <CardDescription>Click the star to feature a service on the homepage</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -855,7 +861,7 @@ export default function AdminDashboard() {
                                 {service.isTopSelection && (
                                   <Badge variant="default" className="text-xs">
                                     <Star className="h-3 w-3 mr-1" />
-                                    Top Selection
+                                    Featured
                                   </Badge>
                                 )}
                                 <Badge variant={service.isActive ? 'default' : 'secondary'} className="text-xs">
