@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
@@ -13,29 +13,36 @@ import { api } from "@/lib/api";
 export default function Landing() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentNewProjectSlide, setCurrentNewProjectSlide] = useState(0);
-  const [realProjects, setRealProjects] = useState<any[]>([]);
+  const [topSelectionProjects, setTopSelectionProjects] = useState<any[]>([]);
+  const [newProjects, setNewProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch real projects from backend
+  // Fetch projects from backend
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const response = await api.getServices();
-        const servicesData = (response as any)?.data?.data || (response as any)?.data || response || [];
         
-        // Map services to project format for display
-        const mappedProjects = servicesData.map((service: any) => ({
+        // Fetch top selection services (admin-curated) - public endpoint
+        const topSelectionResponse = await api.getPublicTopSelectionServices();
+        let topSelectionServices = [];
+        
+        if (topSelectionResponse.success && topSelectionResponse.data) {
+          topSelectionServices = topSelectionResponse.data as any[];
+        }
+        
+        // Map top selection services to project format
+        const mappedTopSelectionProjects = topSelectionServices.map((service: any) => ({
           id: service.id,
           title: service.title,
           description: service.description,
           price: `$${service.priceCents / 100}`,
-          deliveryTime: "7 days", // Default delivery time
+          deliveryTime: "7 days",
           student: {
             name: service.owner?.name || 'Student',
-            university: service.owner?.university || 'University', // Use actual university or default
-            major: 'Computer Science', // Default major
-            avatar: '', // No avatar for now
+            university: service.owner?.university || 'University',
+            major: 'Computer Science',
+            avatar: '',
             verified: service.owner?.isVerified || false
           },
           category: 'Service',
@@ -44,205 +51,56 @@ export default function Landing() {
           image: service.coverImage || null
         }));
 
-        setRealProjects(mappedProjects);
+        setTopSelectionProjects(mappedTopSelectionProjects);
+
+        // Fetch all recent services for "New Projects" section - public endpoint
+        const allServicesResponse = await api.getPublicServices({ limit: 20, sortBy: 'createdAt', sortOrder: 'desc' });
+        const allServicesData = (allServicesResponse as any)?.data?.data || (allServicesResponse as any)?.data || allServicesResponse || [];
+        
+        // Map all services to project format for new projects
+        const mappedNewProjects = allServicesData.map((service: any) => ({
+          id: service.id,
+          title: service.title,
+          description: service.description,
+          price: `$${service.priceCents / 100}`,
+          deliveryTime: "7 days",
+          student: {
+            name: service.owner?.name || 'Student',
+            university: service.owner?.university || 'University',
+            major: 'Computer Science',
+            avatar: '',
+            verified: service.owner?.isVerified || false
+          },
+          category: 'Service',
+          icon: Code,
+          tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : [],
+          image: service.coverImage || null,
+          createdAt: service.createdAt
+        }));
+
+        setNewProjects(mappedNewProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
-        setRealProjects([]);
+        setTopSelectionProjects([]);
+        setNewProjects([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProjects();
-  }, []);
-  
-  const topProjects = [
-    {
-      id: 1,
-      title: "E-commerce Website with React & Node.js",
-      description: "Complete e-commerce platform with payment integration, admin dashboard, and user authentication. Built with modern tech stack including React, Node.js, and MongoDB.",
-      price: "$1,200",
-      rating: 5.0,
-      reviews: 18,
-      deliveryTime: "7 days",
-      student: {
-        name: "Sarah Chen",
-        university: "Stanford University",
-        major: "Computer Science",
-        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Web Development",
-      icon: Code,
-      tags: ["React", "Node.js", "MongoDB", "Payment Gateway"],
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 2,
-      title: "Mobile App UI/UX Design & Prototype",
-      description: "Professional mobile app design with user research, wireframes, high-fidelity mockups, and interactive prototype. Includes user testing and design system.",
-      price: "$800",
-      rating: 4.9,
-      reviews: 24,
-      deliveryTime: "5 days",
-      student: {
-        name: "Alex Rodriguez",
-        university: "MIT",
-        major: "Design & Technology",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Design",
-      icon: Smartphone,
-      tags: ["Figma", "Prototyping", "User Research", "UI/UX"],
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 3,
-      title: "Brand Identity & Logo Design Package",
-      description: "Complete brand identity including logo design, color palette, typography, business cards, and brand guidelines. Perfect for startups and small businesses.",
-      price: "$650",
-      rating: 4.8,
-      reviews: 31,
-      deliveryTime: "4 days",
-      student: {
-        name: "Emma Thompson",
-        university: "Harvard University",
-        major: "Visual Arts",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Graphic Design",
-      icon: PaintBucket,
-      tags: ["Logo Design", "Branding", "Adobe Creative", "Identity"],
-      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 4,
-      title: "Research Paper & Data Analysis",
-      description: "Comprehensive research and data analysis for academic or business purposes. Includes statistical analysis, visualization, and detailed reporting with citations.",
-      price: "$450",
-      rating: 4.9,
-      reviews: 15,
-      deliveryTime: "6 days",
-      student: {
-        name: "Michael Chang",
-        university: "UC Berkeley",
-        major: "Data Science",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Research & Writing",
-      icon: FileText,
-      tags: ["Research", "Data Analysis", "Statistics", "Academic"],
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 5,
-      title: "Business Strategy & Market Analysis",
-      description: "Professional business strategy development with market research, competitive analysis, financial projections, and presentation materials for investors.",
-      price: "$950",
-      rating: 5.0,
-      reviews: 12,
-      deliveryTime: "8 days",
-      student: {
-        name: "Sophie Williams",
-        university: "Wharton School",
-        major: "Business Administration",
-        avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Business & Strategy",
-      icon: BarChart3,
-      tags: ["Strategy", "Market Research", "Business Plan", "Analysis"],
-      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 6,
-      title: "Full-Stack Web Application Development",
-      description: "Modern web application with React, TypeScript, Node.js, and PostgreSQL. Includes authentication, real-time features, and admin dashboard.",
-      price: "$1,500",
-      rating: 4.9,
-      reviews: 22,
-      deliveryTime: "10 days",
-      student: {
-        name: "David Kim",
-        university: "Carnegie Mellon",
-        major: "Software Engineering",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Full-Stack Development",
-      icon: Code,
-      tags: ["React", "TypeScript", "Node.js", "PostgreSQL"],
-      image: "https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 7,
-      title: "AI Chatbot Development & Integration",
-      description: "Custom AI chatbot with natural language processing, integrated with your website or app. Includes training, deployment, and documentation.",
-      price: "$1,100",
-      rating: 4.8,
-      reviews: 16,
-      deliveryTime: "7 days",
-      student: {
-        name: "Aria Patel",
-        university: "MIT",
-        major: "Artificial Intelligence",
-        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "AI & Machine Learning",
-      icon: Bot,
-      tags: ["AI", "Chatbot", "NLP", "Integration"],
-      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 8,
-      title: "3D Product Visualization & Animation",
-      description: "Professional 3D modeling and animation for product showcases, architectural visualization, or marketing materials. High-quality renders included.",
-      price: "$750",
-      rating: 5.0,
-      reviews: 19,
-      deliveryTime: "6 days",
-      student: {
-        name: "Lucas Foster",
-        university: "ArtCenter College",
-        major: "3D Design",
-        avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "3D Design & Animation",
-      icon: Sparkles,
-      tags: ["3D Modeling", "Animation", "Rendering", "Visualization"],
-      image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 9,
-      title: "Digital Marketing Strategy & Campaign",
-      description: "Comprehensive digital marketing strategy with SEO optimization, social media campaigns, content creation, and performance analytics.",
-      price: "$900",
-      rating: 4.7,
-      reviews: 28,
-      deliveryTime: "5 days",
-      student: {
-        name: "Maya Johnson",
-        university: "Northwestern University",
-        major: "Marketing & Communications",
-        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Digital Marketing",
-      icon: TrendingUp,
-      tags: ["SEO", "Social Media", "Content Strategy", "Analytics"],
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    }
-  ];
+    
+    // Set up auto-refresh every 10 seconds for real-time updates
+    const interval = setInterval(() => {
+      fetchProjects();
+    }, 10000);
 
+    return () => clearInterval(interval);
+  }, []);
 
   const projectsPerSlide = 3;
-  const totalSlides = Math.ceil(topProjects.length / projectsPerSlide);
-  const totalNewProjectSlides = Math.ceil(realProjects.length / projectsPerSlide);
+  const totalSlides = Math.ceil(Math.max(topSelectionProjects.length, 1) / projectsPerSlide);
+  const totalNewProjectSlides = Math.ceil(Math.max(newProjects.length, 1) / projectsPerSlide);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -262,12 +120,12 @@ export default function Landing() {
 
   const getCurrentProjects = () => {
     const startIndex = currentSlide * projectsPerSlide;
-    return topProjects.slice(startIndex, startIndex + projectsPerSlide);
+    return topSelectionProjects.slice(startIndex, startIndex + projectsPerSlide);
   };
 
   const getCurrentNewProjects = () => {
     const startIndex = currentNewProjectSlide * projectsPerSlide;
-    return realProjects.slice(startIndex, startIndex + projectsPerSlide);
+    return newProjects.slice(startIndex, startIndex + projectsPerSlide);
   };
 
   // Auto-slide functionality removed - user wants manual control only
@@ -622,8 +480,12 @@ export default function Landing() {
           >
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">Top Selection</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover exceptional work from our verified student talent. These featured projects showcase the quality and expertise available on CollaboTree.
+              Hand-picked by our admin team. These featured projects showcase the highest quality and most exceptional work from our verified student talent.
             </p>
+            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+              <Star className="h-4 w-4 text-primary" />
+              <span>Admin curated • {topSelectionProjects.length} featured projects</span>
+            </div>
           </motion.div>
 
           {/* Carousel with External Navigation */}
@@ -650,7 +512,18 @@ export default function Landing() {
                 transition={{ duration: 0.5 }}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
-                  {getCurrentProjects().map((project, index) => (
+                {topSelectionProjects.length === 0 ? (
+                  <div className="col-span-full text-center py-12">
+                    <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Package className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-medium mb-2">No Featured Projects Yet</h3>
+                    <p className="text-muted-foreground">
+                      Our admin team hasn't selected any projects for the top selection yet. Check back later!
+                    </p>
+                  </div>
+                ) : (
+                  getCurrentProjects().map((project, index) => (
                     <motion.div 
                       key={`${currentSlide}-${project.id}`}
                       className="w-full h-full flex"
@@ -743,7 +616,8 @@ export default function Landing() {
                   </CardContent>
                 </Card>
                   </motion.div>
-                ))}
+                  ))
+                )}
               </div>
             </motion.div>
             </div>
@@ -817,6 +691,10 @@ export default function Landing() {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Fresh opportunities from our talented student community. Discover the latest projects and innovations from verified students worldwide.
             </p>
+            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span>Live updates • {newProjects.length} new projects</span>
+            </div>
           </motion.div>
 
           {/* Carousel with External Navigation */}
@@ -850,14 +728,14 @@ export default function Landing() {
                     </div>
                   ))}
                 </div>
-              ) : realProjects.length === 0 ? (
+              ) : newProjects.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Users className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">No Projects Available</h3>
+                  <h3 className="text-lg font-medium mb-2">No New Projects Yet</h3>
                   <p className="text-muted-foreground">
-                    Check back later for new student projects.
+                    No new projects have been created yet. Students are working on creating their first services!
                   </p>
                 </div>
               ) : (

@@ -302,6 +302,93 @@ class ApiClient {
   async getPendingVerifications() {
     return this.request('/verification/pending');
   }
+
+  async rejectStudent(studentId: string, reason?: string) {
+    return this.request(`/verification/reject/${studentId}`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  }
+
+  async testVerificationEndpoint() {
+    return this.request('/verification/health');
+  }
+
+  // Admin endpoints
+  async getAdminStats(params?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = searchParams.toString();
+    return this.request(`/admin/stats${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getAllMessages(params?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = searchParams.toString();
+    return this.request(`/admin/messages${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getAllServices(params?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = searchParams.toString();
+    return this.request(`/admin/services${queryString ? `?${queryString}` : ''}`);
+  }
+
+  // Public version for homepage (no authentication required)
+  async getPublicTopSelectionServices() {
+    return this.request('/public/top-selections');
+  }
+
+  // Public version for homepage (no authentication required)
+  async getPublicServices(params?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = searchParams.toString();
+    return this.request(`/public/services${queryString ? `?${queryString}` : ''}`);
+  }
+
+  // Admin version (requires authentication)
+  async getTopSelectionServices() {
+    return this.request('/admin/services/top-selections');
+  }
+
+  async updateTopSelection(serviceId: string, isTopSelection: boolean) {
+    return this.request('/admin/services/top-selection', {
+      method: 'PATCH',
+      body: JSON.stringify({ serviceId, isTopSelection }),
+    });
+  }
+
+  // Get full conversation for a service
+  async getServiceConversation(serviceId: string) {
+    return this.request(`/admin/services/${serviceId}/conversation`);
+  }
 }
 
 export const api = new ApiClient();

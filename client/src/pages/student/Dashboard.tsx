@@ -1196,31 +1196,68 @@ function StudentVerification() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // For demo purposes, we'll simulate file upload
-    // In a real app, you'd upload to a file storage service
-    const mockFileUrl = `https://example.com/id-cards/${Date.now()}-${file.name}`;
-    
-    try {
-      setUploading(true);
-      const response = await api.uploadIdCard(mockFileUrl);
-      
-      if (response.success) {
-        toast({
-          title: "ID Card Uploaded",
-          description: "Your student ID card has been uploaded successfully. Verification is pending review.",
-        });
-        fetchVerificationStatus();
-      } else {
-        throw new Error(response.error || 'Upload failed');
-      }
-    } catch (error) {
-      console.error('Error uploading ID card:', error);
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
       toast({
-        title: "Upload Failed",
-        description: "Failed to upload ID card. Please try again.",
+        title: "Invalid File Type",
+        description: "Please upload an image file (JPG, PNG, GIF, etc.)",
         variant: "destructive",
       });
-    } finally {
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload an image smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setUploading(true);
+      
+      // Convert file to base64 for upload
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64String = e.target?.result as string;
+        
+        try {
+          console.log('Uploading ID card, base64 length:', base64String.length);
+          const response = await api.uploadIdCard(base64String);
+          
+          if (response.success) {
+            console.log('ID card uploaded successfully:', response.data);
+            toast({
+              title: "ID Card Uploaded",
+              description: "Your student ID card has been uploaded successfully. Verification is pending review.",
+            });
+            fetchVerificationStatus();
+          } else {
+            throw new Error(response.error || 'Upload failed');
+          }
+        } catch (error) {
+          console.error('Error uploading ID card:', error);
+          toast({
+            title: "Upload Failed",
+            description: "Failed to upload ID card. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setUploading(false);
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error processing file:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to process file. Please try again.",
+        variant: "destructive",
+      });
       setUploading(false);
     }
   };

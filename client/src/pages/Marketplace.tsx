@@ -226,108 +226,108 @@ export default function ExploreTalent() {
           
         </div>
 
-        {/* Filters Section - Top */}
-        <div className="mb-8">
-          <Card className="glass-card bg-card/50 backdrop-blur-12 p-6">
-            <h3 className="font-semibold mb-6 flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filter Results
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-              {/* Search */}
-              <div className="xl:col-span-2">
-                <label className="block text-sm font-medium mb-2">Search</label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search talent..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10"
-                    data-testid="search-input"
-                  />
+        {/* Main Content Layout */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Filters Sidebar */}
+          <div className="w-full lg:w-64 flex-shrink-0 order-2 lg:order-1">
+            <Card className="glass-card bg-card/50 backdrop-blur-12 p-3 sticky top-4">
+              <h3 className="font-semibold mb-3 flex items-center gap-2 text-xs">
+                <Filter className="h-3 w-3" />
+                Filter Results
+              </h3>
+              
+              <div className="space-y-3">
+                {/* Search */}
+                <div>
+                  <label className="block text-xs font-medium mb-1">Search</label>
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                    <Input
+                      placeholder="Search talent..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="pl-7 h-7 text-xs"
+                      data-testid="search-input"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Category</label>
-                <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger data-testid="category-select">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                {/* Category */}
+                <div>
+                  <label className="block text-xs font-medium mb-1">Category</label>
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger data-testid="category-select" className="h-7 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map(cat => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Delivery Time */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Delivery Time</label>
-                <Select value={deliveryDays} onValueChange={setDeliveryDays}>
-                  <SelectTrigger data-testid="delivery-select">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Any Delivery</SelectItem>
-                    <SelectItem value="1">24 hours</SelectItem>
-                    <SelectItem value="3">3 days</SelectItem>
-                    <SelectItem value="7">1 week</SelectItem>
-                    <SelectItem value="14">2 weeks</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                {/* Delivery Time */}
+                <div>
+                  <label className="block text-xs font-medium mb-1">Delivery Time</label>
+                  <Select value={deliveryDays} onValueChange={setDeliveryDays}>
+                    <SelectTrigger data-testid="delivery-select" className="h-7 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Any Delivery</SelectItem>
+                      <SelectItem value="1">24 hours</SelectItem>
+                      <SelectItem value="3">3 days</SelectItem>
+                      <SelectItem value="7">1 week</SelectItem>
+                      <SelectItem value="14">2 weeks</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Sort By */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Sort By</label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger data-testid="sort-select">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="delivery">Fastest Delivery</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                {/* Sort By */}
+                <div>
+                  <label className="block text-xs font-medium mb-1">Sort By</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger data-testid="sort-select" className="h-7 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest</SelectItem>
+                      <SelectItem value="rating">Highest Rated</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="delivery">Fastest Delivery</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Price Range - Full Width Row */}
-            <div className="mt-6">
-              <label className="block text-sm font-medium mb-2">Price Range</label>
-              <div className="max-w-md">
-                <div className="px-3 py-2 border border-border rounded-lg bg-background">
-                  <Slider
-                    value={priceRange}
-                    onValueChange={setPriceRange}
-                    max={2500}
-                    step={50}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                    <span>${priceRange[0]}</span>
-                    <span>${priceRange[1]}</span>
+                {/* Price Range */}
+                <div>
+                  <label className="block text-xs font-medium mb-1">Price Range</label>
+                  <div className="px-1 py-1 border border-border rounded bg-background">
+                    <Slider
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                      max={2500}
+                      step={50}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>${priceRange[0]}</span>
+                      <span>${priceRange[1]}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Card>
-        </div>
+            </Card>
+          </div>
 
-        {/* Results Section */}
-        <div>
+          {/* Results Section */}
+          <div className="flex-1 min-w-0 order-1 lg:order-2">
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
@@ -365,6 +365,7 @@ export default function ExploreTalent() {
               ))
             )}
           </motion.div>
+          </div>
         </div>
         </div>
       </section>
@@ -512,20 +513,20 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
           <Button 
             variant="outline" 
             size="sm"
-            className="flex-1"
+            className="flex-1 min-w-[100px] text-center justify-center items-center px-1"
             asChild 
             data-testid={`view-project-${project.id}`}
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <Link href={`/service/${project.id}`}>
+            <Link href={`/service/${project.id}`} className="w-full text-center text-xs whitespace-nowrap">
               View Details
             </Link>
           </Button>
           <Button 
             size="sm"
-            className="flex-1"
+            className="flex-1 min-w-[80px] text-center justify-center items-center px-1"
             data-testid={`hire-now-${project.id}`}
             onClick={(e) => {
               e.preventDefault();
@@ -533,7 +534,7 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
               handleHireNow(project);
             }}
           >
-            Hire Now
+            <span className="text-xs whitespace-nowrap">Hire Now</span>
           </Button>
         </div>
       </CardContent>

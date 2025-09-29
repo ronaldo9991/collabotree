@@ -20,4 +20,7 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  },
 });
