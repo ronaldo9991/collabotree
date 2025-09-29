@@ -1,26 +1,37 @@
 import { Request, Response } from 'express';
-import { prisma } from '../db/prisma';
-import { logger } from '../config/logger';
+import { z } from 'zod';
+import { prisma } from '../db/prisma.js';
+import { sendSuccess, sendError } from '../utils/responses.js';
+import { AuthenticatedRequest } from '../types/express.js';
+import { uploadIdCardSchema, verifyStudentSchema, rejectStudentSchema } from '../validations/verification.js';
+import { createNotification } from '../domain/notifications.js';
 
 export class VerificationController {
   // Upload student ID card
-  static async uploadIdCard(req: Request, res: Response) {
+  static async uploadIdCard(req: AuthenticatedRequest, res: Response) {
     try {
+      const validatedData = uploadIdCardSchema.parse(req);
       const userId = req.user?.id;
-      if (!userId) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
+
+      if (!userId || req.user?.role !== 'STUDENT') {
+        return sendError(res, 'Only students can upload ID cards', 403);
       }
 
-      const { idCardUrl } = req.body;
-      if (!idCardUrl) {
-        return res.status(400).json({ success: false, error: 'ID card URL is required' });
+      // Check if user is already verified
+      const existingUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { isVerified: true }
+      });
+
+      if (existingUser?.isVerified) {
+        return sendError(res, 'You are already verified', 400);
       }
 
       // Update user with ID card URL
       const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: { 
-          idCardUrl,
+          idCardUrl: validatedData.body.idCardUrl,
           updatedAt: new Date()
         },
         select: {
@@ -33,25 +44,24 @@ export class VerificationController {
         }
       });
 
-      logger.info(`Student ${userId} uploaded ID card`);
+      console.log(`Student ${userId} uploaded ID card. URL length: ${validatedData.body.idCardUrl.length}`);
 
-      res.json({
-        success: true,
-        data: updatedUser,
-        message: 'ID card uploaded successfully. Verification is pending review.'
-      });
+      return sendSuccess(res, updatedUser, 'ID card uploaded successfully. Verification is pending review.');
     } catch (error) {
-      logger.error('Error uploading ID card:', error);
-      res.status(500).json({ success: false, error: 'Failed to upload ID card' });
+      if (error instanceof z.ZodError) {
+        return sendError(res, 'Validation failed', 422, error.errors);
+      }
+      console.error('Error uploading ID card:', error);
+      return sendError(res, 'Failed to upload ID card', 500);
     }
   }
 
   // Get verification status
-  static async getVerificationStatus(req: Request, res: Response) {
+  static async getVerificationStatus(req: AuthenticatedRequest, res: Response) {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
+        return sendError(res, 'Unauthorized', 401);
       }
 
       const user = await prisma.user.findUnique({
@@ -68,47 +78,36 @@ export class VerificationController {
       });
 
       if (!user) {
-        return res.status(404).json({ success: false, error: 'User not found' });
+        return sendError(res, 'User not found', 404);
       }
 
-      res.json({
-        success: true,
-        data: {
-          isVerified: user.isVerified,
-          idCardUrl: user.idCardUrl,
-          verifiedAt: user.verifiedAt,
-          hasUploadedId: !!user.idCardUrl
-        }
-      });
+      const verificationData = {
+        isVerified: user.isVerified,
+        idCardUrl: user.idCardUrl,
+        verifiedAt: user.verifiedAt,
+        hasUploadedId: !!user.idCardUrl
+      };
+
+      return sendSuccess(res, verificationData);
     } catch (error) {
-      logger.error('Error getting verification status:', error);
-      res.status(500).json({ success: false, error: 'Failed to get verification status' });
+      console.error('Error getting verification status:', error);
+      return sendError(res, 'Failed to get verification status', 500);
     }
   }
 
   // Admin: Verify student (for admin use)
-  static async verifyStudent(req: Request, res: Response) {
+  static async verifyStudent(req: AuthenticatedRequest, res: Response) {
     try {
-      const { studentId } = req.params;
+      const validatedData = verifyStudentSchema.parse(req);
       const adminId = req.user?.id;
 
-      if (!adminId) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
-      }
-
-      // Check if user is admin
-      const admin = await prisma.user.findUnique({
-        where: { id: adminId },
-        select: { role: true }
-      });
-
-      if (!admin || admin.role !== 'ADMIN') {
-        return res.status(403).json({ success: false, error: 'Admin access required' });
+      if (!adminId || req.user?.role !== 'ADMIN') {
+        return sendError(res, 'Admin access required', 403);
       }
 
       // Verify the student
       const verifiedStudent = await prisma.user.update({
-        where: { id: studentId },
+        where: { id: validatedData.params.studentId },
         data: {
           isVerified: true,
           verifiedAt: new Date(),
@@ -123,39 +122,98 @@ export class VerificationController {
         }
       });
 
-      logger.info(`Admin ${adminId} verified student ${studentId}`);
+      // Create notification for student
+      await createNotification(
+        validatedData.params.studentId,
+        'ORDER_CREATED', // Using existing type for verification
+        'Verification Approved!',
+        'Your student ID has been verified. You can now access all student features.'
+      );
 
-      res.json({
-        success: true,
-        data: verifiedStudent,
-        message: 'Student verified successfully'
-      });
+      console.log(`Admin ${adminId} verified student ${validatedData.params.studentId}`);
+
+      return sendSuccess(res, verifiedStudent, 'Student verified successfully');
     } catch (error) {
-      logger.error('Error verifying student:', error);
-      res.status(500).json({ success: false, error: 'Failed to verify student' });
+      if (error instanceof z.ZodError) {
+        return sendError(res, 'Validation failed', 422, error.errors);
+      }
+      console.error('Error verifying student:', error);
+      return sendError(res, 'Failed to verify student', 500);
+    }
+  }
+
+  // Admin: Reject student verification
+  static async rejectStudent(req: AuthenticatedRequest, res: Response) {
+    try {
+      const validatedData = rejectStudentSchema.parse(req);
+      const adminId = req.user?.id;
+
+      if (!adminId || req.user?.role !== 'ADMIN') {
+        return sendError(res, 'Admin access required', 403);
+      }
+
+      // Remove ID card URL to allow re-upload
+      const rejectedStudent = await prisma.user.update({
+        where: { id: validatedData.params.studentId },
+        data: {
+          idCardUrl: null,
+          updatedAt: new Date()
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isVerified: true,
+          idCardUrl: true
+        }
+      });
+
+      // Create notification for student
+      await createNotification(
+        validatedData.params.studentId,
+        'ORDER_CREATED', // Using existing type for verification
+        'Verification Rejected',
+        validatedData.body.reason || 'Your student ID verification was rejected. Please upload a clearer photo and try again.'
+      );
+
+      console.log(`Admin ${adminId} rejected student ${validatedData.params.studentId}`);
+
+      return sendSuccess(res, rejectedStudent, 'Student verification rejected');
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return sendError(res, 'Validation failed', 422, error.errors);
+      }
+      console.error('Error rejecting student:', error);
+      return sendError(res, 'Failed to reject student', 500);
     }
   }
 
   // Admin: Get all pending verifications
-  static async getPendingVerifications(req: Request, res: Response) {
+  static async getPendingVerifications(req: AuthenticatedRequest, res: Response) {
     try {
       const adminId = req.user?.id;
+      const userRole = req.user?.role;
+
+      console.log(`Admin verification request - User ID: ${adminId}, Role: ${userRole}`);
 
       if (!adminId) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
+        console.error('No admin ID found in request');
+        return sendError(res, 'Authentication required', 401);
       }
 
-      // Check if user is admin
-      const admin = await prisma.user.findUnique({
-        where: { id: adminId },
-        select: { role: true }
-      });
-
-      if (!admin || admin.role !== 'ADMIN') {
-        return res.status(403).json({ success: false, error: 'Admin access required' });
+      if (userRole !== 'ADMIN') {
+        console.error(`User ${adminId} with role ${userRole} attempted to access admin verification`);
+        return sendError(res, 'Admin access required', 403);
       }
+
+      // Test database connection first
+      console.log('Testing database connection...');
+      await prisma.$queryRaw`SELECT 1`;
+      console.log('Database connection successful');
 
       // Get students with uploaded ID cards but not verified
+      console.log('Querying database for pending verifications...');
+      
       const pendingVerifications = await prisma.user.findMany({
         where: {
           role: 'STUDENT',
@@ -167,19 +225,23 @@ export class VerificationController {
           name: true,
           email: true,
           idCardUrl: true,
+          university: true,
           createdAt: true,
           updatedAt: true
         },
         orderBy: { updatedAt: 'desc' }
       });
 
-      res.json({
-        success: true,
-        data: pendingVerifications
-      });
+      console.log(`Found ${pendingVerifications.length} pending verifications`);
+      if (pendingVerifications.length > 0) {
+        console.log(`First verification ID card URL length: ${pendingVerifications[0].idCardUrl?.length || 0}`);
+      }
+
+      return sendSuccess(res, pendingVerifications);
     } catch (error) {
-      logger.error('Error getting pending verifications:', error);
-      res.status(500).json({ success: false, error: 'Failed to get pending verifications' });
+      console.error('Error getting pending verifications:', error);
+      console.error('Error details:', error);
+      return sendError(res, 'Failed to get pending verifications', 500);
     }
   }
 }
