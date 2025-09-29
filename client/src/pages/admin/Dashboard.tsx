@@ -198,14 +198,28 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     console.log('Admin dashboard - Current user:', user);
+    console.log('User role:', user?.role);
+    console.log('Is authenticated:', !!user);
+    
+    if (!user) {
+      console.error('User not authenticated');
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to access the admin dashboard.",
+        variant: "destructive",
+      });
+      navigate('/login');
+      return;
+    }
     
     if (user?.role !== 'ADMIN') {
       console.error('Access denied - User role:', user?.role);
       toast({
         title: "Access Denied",
-        description: `You don't have permission to access the admin dashboard. Your role: ${user?.role || 'None'}`,
+        description: `You don't have permission to access the admin dashboard. Your role: ${user?.role || 'None'}. Please log in as an admin.`,
         variant: "destructive",
       });
+      navigate('/');
       return;
     }
     
@@ -395,6 +409,47 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
           <p className="text-muted-foreground">You don't have permission to access this area.</p>
         </div>
+      </div>
+    );
+  }
+
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/20 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>Please log in to access the admin dashboard</CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button onClick={() => navigate('/login')} className="w-full">
+              Go to Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show access denied if user is not admin
+  if (user.role !== 'ADMIN') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/20 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle>Access Denied</CardTitle>
+            <CardDescription>You need admin privileges to access this dashboard</CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-sm text-muted-foreground mb-4">
+              Your role: <strong>{user.role}</strong>
+            </p>
+            <Button onClick={() => navigate('/')} variant="outline" className="w-full">
+              Go Home
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
