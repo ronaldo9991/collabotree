@@ -311,8 +311,8 @@ export default function BuyerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-12">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 section-padding-y">
+      <div className="container-unified">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="flex items-center justify-center gap-2 mb-4">

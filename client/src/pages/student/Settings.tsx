@@ -1,175 +1,60 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "wouter";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   ArrowLeft, 
   Save, 
   User, 
-  Shield, 
-  Bell, 
-  Eye, 
-  Lock,
-  Trash2,
-  Upload,
   GraduationCap,
-  Award,
-  Globe,
   Mail,
-  Phone,
-  MapPin,
+  Calendar,
+  Lock,
   Loader2,
-  MessageCircle,
-  Briefcase
+  CheckCircle,
+  Shield,
+  MapPin,
+  Phone
 } from "lucide-react";
-
-const profileSchema = z.object({
-  full_name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  university: z.string().min(2, "University name is required"),
-  skills: z.array(z.string()).min(1, "At least one skill is required"),
-  bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
-  phone: z.string().optional(),
-  location: z.string().optional(),
-  website: z.string().url("Invalid website URL").optional().or(z.literal("")),
-  hourlyRate: z.number().min(5, "Minimum rate is $5/hour").max(200, "Maximum rate is $200/hour").optional(),
-});
-
-const notificationSchema = z.object({
-  emailNotifications: z.boolean(),
-  pushNotifications: z.boolean(),
-  marketingEmails: z.boolean(),
-  projectUpdates: z.boolean(),
-  newMessages: z.boolean(),
-  applicationUpdates: z.boolean(),
-});
-
-const securitySchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
-
-type ProfileFormData = z.infer<typeof profileSchema>;
-type NotificationFormData = z.infer<typeof notificationSchema>;
-type SecurityFormData = z.infer<typeof securitySchema>;
-
-const skillOptions = [
-  "Web Development", "Mobile App Development", "UI/UX Design", "Graphic Design",
-  "Data Analysis", "Machine Learning", "Content Writing", "Copywriting",
-  "Digital Marketing", "SEO", "Social Media", "Video Editing",
-  "Animation", "Photography", "Translation", "Tutoring",
-  "Research", "Python", "JavaScript", "React", "Node.js"
-];
 
 export default function StudentSettings() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const { user, updateProfile } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-
-  const profileForm = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      full_name: user?.full_name || "",
+  const [formData, setFormData] = useState({
+    name: user?.name || user?.full_name || "",
       email: user?.email || "",
-      university: user?.student?.university || "",
-      skills: user?.student?.skills || [],
+    university: user?.university || "",
       bio: "",
       phone: "",
       location: "",
-      website: "",
-      hourlyRate: 25,
-    },
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
   });
 
-  const notificationForm = useForm<NotificationFormData>({
-    resolver: zodResolver(notificationSchema),
-    defaultValues: {
-      emailNotifications: true,
-      pushNotifications: true,
-      marketingEmails: false,
-      projectUpdates: true,
-      newMessages: true,
-      applicationUpdates: true,
-    },
-  });
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-  const securityForm = useForm<SecurityFormData>({
-    resolver: zodResolver(securitySchema),
-  });
-
-  useEffect(() => {
-    if (user?.student?.skills) {
-      setSelectedSkills(user.student.skills);
-      profileForm.setValue("skills", user.student.skills);
-    }
-  }, [user, profileForm]);
-
-  const onProfileSubmit = async (data: ProfileFormData) => {
+  const handleSaveProfile = async () => {
     setLoading(true);
     try {
-      // Update user profile
-      const { error: userError } = await supabase
-        .from('users')
-        .update({
-          full_name: data.full_name,
-          email: data.email,
-        })
-        .eq('id', user?.id);
-
-      if (userError) throw userError;
-
-      // Update student profile
-      const { error: studentError } = await supabase
-        .from('students')
-        .update({
-          university: data.university,
-          skills: data.skills,
-        })
-        .eq('id', user?.id);
-
-      if (studentError) throw studentError;
-
-      // Update localStorage
-      const updatedUser = {
-        ...user,
-        full_name: data.full_name,
-        email: data.email,
-        student: {
-          ...user?.student,
-          university: data.university,
-          skills: data.skills,
-        }
-      };
-      localStorage.setItem('collabotree_user', JSON.stringify(updatedUser));
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
         title: "Profile Updated",
-        description: "Your profile has been updated successfully.",
+        description: "Your profile information has been updated successfully.",
       });
     } catch (error) {
-      console.error('Error updating profile:', error);
       toast({
         title: "Update Failed",
         description: "Failed to update profile. Please try again.",
@@ -180,49 +65,60 @@ export default function StudentSettings() {
     }
   };
 
-  const onNotificationSubmit = async (data: NotificationFormData) => {
+  const handleChangePassword = async () => {
+    if (formData.newPassword !== formData.confirmPassword) {
     toast({
-      title: "Notifications Updated",
-      description: "Your notification preferences have been saved.",
-    });
-  };
+        title: "Password Mismatch",
+        description: "New password and confirm password do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const onSecuritySubmit = async (data: SecurityFormData) => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
     toast({
       title: "Password Updated",
       description: "Your password has been changed successfully.",
     });
-    securityForm.reset();
-  };
-
-  const addSkill = (skill: string) => {
-    if (skill && !selectedSkills.includes(skill) && selectedSkills.length < 10) {
-      const newSkills = [...selectedSkills, skill];
-      setSelectedSkills(newSkills);
-      profileForm.setValue("skills", newSkills);
+      
+      // Clear password fields
+      setFormData(prev => ({ 
+        ...prev, 
+        currentPassword: "", 
+        newPassword: "", 
+        confirmPassword: "" 
+      }));
+    } catch (error) {
+      toast({
+        title: "Password Update Failed",
+        description: "Failed to update password. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const removeSkill = (skillToRemove: string) => {
-    const newSkills = selectedSkills.filter(skill => skill !== skillToRemove);
-    setSelectedSkills(newSkills);
-    profileForm.setValue("skills", newSkills);
   };
 
   if (!user || user.role !== 'STUDENT') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center section-padding-y">
+        <div className="container-unified">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
           <p className="text-muted-foreground">Only students can access this page.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 section-padding-y">
+      <div className="container-unified">
         
         {/* Header */}
         <motion.div
@@ -236,276 +132,184 @@ export default function StudentSettings() {
             className="mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+            Back to Student Dashboard
           </Button>
           
           <div className="text-center">
             <h1 className="text-3xl font-bold mb-2">Student Settings</h1>
             <p className="text-muted-foreground">
-              Manage your profile, preferences, and account settings
+              Manage your student profile and account settings
             </p>
           </div>
         </motion.div>
 
-        {/* Settings Tabs */}
+        <div className="max-w-2xl mx-auto space-y-6">
+          
+          {/* User Information Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 h-12">
-              <TabsTrigger value="profile" className="flex items-center gap-2 text-sm font-medium px-4 py-2">
-                <User className="h-4 w-4" />
-                Profile
-              </TabsTrigger>
-              <TabsTrigger value="account" className="flex items-center gap-2 text-sm font-medium px-4 py-2">
-                <Shield className="h-4 w-4" />
-                Account
-              </TabsTrigger>
-              <TabsTrigger value="notifications" className="flex items-center gap-2 text-sm font-medium px-4 py-2">
-                <Bell className="h-4 w-4" />
-                Notifications
-              </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-2 text-sm font-medium px-4 py-2">
-                <Lock className="h-4 w-4" />
-                Security
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Profile Tab */}
-            <TabsContent value="profile" className="mt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
-                {/* Profile Photo */}
-                <Card className="glass-card bg-card/50 backdrop-blur-12">
+            <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Upload className="h-5 w-5 text-primary" />
-                      Profile Photo
+                  <User className="h-5 w-5 text-primary" />
+                  Your Information
                     </CardTitle>
+                <CardDescription>
+                  Your current student account details
+                </CardDescription>
                   </CardHeader>
-                  <CardContent className="text-center space-y-4">
-                    <div className="mx-auto w-32 h-32 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
-                      {profilePhoto ? (
-                        <img src={profilePhoto} alt="Profile" className="w-full h-full rounded-full object-cover" />
-                      ) : (
-                        <User className="h-16 w-16 text-white" />
-                      )}
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                    <div className="p-3 bg-muted/30 rounded-lg border">
+                      {user?.name || user?.full_name || "Not provided"}
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Email Address</label>
+                    <div className="p-3 bg-muted/30 rounded-lg border">
+                      {user?.email || "Not provided"}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">University</label>
+                    <div className="p-3 bg-muted/30 rounded-lg border">
+                      {user?.university || "Not provided"}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Role</label>
+                    <div className="p-3 bg-muted/30 rounded-lg border">
+                      <Badge className="bg-primary/10 text-primary border-primary/20">
+                        <GraduationCap className="h-3 w-3 mr-1" />
+                        Student
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Verification Status</label>
+                    <div className="p-3 bg-muted/30 rounded-lg border">
+                      <Badge className={user?.isVerified ? "bg-green-100 text-green-800 border-green-200" : "bg-yellow-100 text-yellow-800 border-yellow-200"}>
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        {user?.isVerified ? "Verified" : "Pending"}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Account Status</label>
+                    <div className="p-3 bg-muted/30 rounded-lg border">
+                      <Badge className="bg-green-100 text-green-800 border-green-200">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Active
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
                     <div className="space-y-2">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload Photo
-                      </Button>
-                      <p className="text-xs text-muted-foreground">
-                        JPG, PNG up to 2MB
-                      </p>
+                  <label className="text-sm font-medium text-muted-foreground">Member Since</label>
+                  <div className="p-3 bg-muted/30 rounded-lg border">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Unknown"}
+                    </div>
+                  </div>
                     </div>
                   </CardContent>
                 </Card>
+          </motion.div>
 
-                {/* Profile Form */}
-                <div className="lg:col-span-2">
-                  <Form {...profileForm}>
-                    <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
-                      <Card className="glass-card bg-card/50 backdrop-blur-12">
+          {/* Profile Update Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <GraduationCap className="h-5 w-5 text-primary" />
-                            Basic Information
+                  Update Profile
                           </CardTitle>
+                <CardDescription>
+                  Update your student profile information
+                </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={profileForm.control}
-                              name="full_name"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Full Name</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="John Doe" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={profileForm.control}
-                              name="email"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Email Address</FormLabel>
-                                  <FormControl>
-                                    <Input type="email" placeholder="john@university.edu" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Full Name</label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
+                      placeholder="Enter your full name"
                             />
                           </div>
 
-                          <FormField
-                            control={profileForm.control}
-                            name="university"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>University</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Stanford University" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={profileForm.control}
-                              name="phone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Phone Number</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="+1 (555) 123-4567" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={profileForm.control}
-                              name="location"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Location</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="San Francisco, CA" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email Address</label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      placeholder="Enter your email address"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">University</label>
+                  <Input
+                    value={formData.university}
+                    onChange={(e) => handleInputChange("university", e.target.value)}
+                    placeholder="Enter your university name"
                             />
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                              control={profileForm.control}
-                              name="website"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Website/Portfolio</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="https://yourportfolio.com" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={profileForm.control}
-                              name="hourlyRate"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Hourly Rate (USD)</FormLabel>
-                                  <FormControl>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Phone Number</label>
                                     <Input 
-                                      type="number" 
-                                      placeholder="25" 
-                                      {...field}
-                                      onChange={(e) => field.onChange(Number(e.target.value))}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      placeholder="Enter your phone number"
                             />
                           </div>
 
-                          <FormField
-                            control={profileForm.control}
-                            name="bio"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Bio</FormLabel>
-                                <FormControl>
-                                  <Textarea 
-                                    placeholder="Tell potential clients about yourself, your experience, and what makes you unique..."
-                                    rows={4}
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormDescription>
-                                  A compelling bio helps clients understand your expertise and personality.
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </CardContent>
-                      </Card>
-
-                      {/* Skills Section */}
-                      <Card className="glass-card bg-card/50 backdrop-blur-12">
-                        <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                            <Award className="h-5 w-5 text-primary" />
-                            Skills & Expertise
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div>
-                            <Label className="text-sm font-medium mb-2 block">
-                              Selected Skills ({selectedSkills.length}/10)
-                            </Label>
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {selectedSkills.map((skill) => (
-                                <Badge
-                                  key={skill}
-                                  variant="secondary"
-                                  className="flex items-center gap-1"
-                                >
-                                  {skill}
-                                  <button
-                                    type="button"
-                                    onClick={() => removeSkill(skill)}
-                                    className="ml-1 hover:text-destructive"
-                                  >
-                                    ×
-                                  </button>
-                                </Badge>
-                              ))}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Location</label>
+                    <Input
+                      value={formData.location}
+                      onChange={(e) => handleInputChange("location", e.target.value)}
+                      placeholder="Enter your location"
+                    />
                             </div>
                           </div>
 
-                          <div>
-                            <Label className="text-sm font-medium mb-2 block">Add Skills</Label>
-                            <div className="flex flex-wrap gap-2">
-                              {skillOptions
-                                .filter(skill => !selectedSkills.includes(skill))
-                                .map((skill) => (
-                                <Badge
-                                  key={skill}
-                                  variant="outline"
-                                  className="cursor-pointer hover:bg-primary/10"
-                                  onClick={() => addSkill(skill)}
-                                >
-                                  + {skill}
-                                </Badge>
-                              ))}
-                            </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Bio</label>
+                  <Textarea
+                    value={formData.bio}
+                    onChange={(e) => handleInputChange("bio", e.target.value)}
+                    placeholder="Tell us about yourself, your skills, and interests..."
+                    rows={4}
+                  />
                           </div>
-                        </CardContent>
-                      </Card>
 
                       <Button 
-                        type="submit" 
+                  onClick={handleSaveProfile}
+                  disabled={loading}
                         className="w-full"
-                        disabled={loading}
                       >
                         {loading ? (
                           <>
@@ -519,248 +323,79 @@ export default function StudentSettings() {
                           </>
                         )}
                       </Button>
-                    </form>
-                  </Form>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Account Tab */}
-            <TabsContent value="account" className="mt-6">
-              <div className="space-y-6">
-                <Card className="glass-card bg-card/50 backdrop-blur-12">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="h-5 w-5 text-primary" />
-                      Account Status
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Verification Status</p>
-                        <p className="text-sm text-muted-foreground">
-                          {user.student?.verified ? "Your account is verified" : "Complete verification to access all features"}
-                        </p>
-                      </div>
-                      <Badge variant={user.student?.verified ? "default" : "secondary"}>
-                        {user.student?.verified ? "Verified" : "Pending"}
-                      </Badge>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Account Type</p>
-                        <p className="text-sm text-muted-foreground">Student account with service creation privileges</p>
-                      </div>
-                      <Badge variant="outline">Student</Badge>
-                    </div>
                   </CardContent>
                 </Card>
-              </div>
-            </TabsContent>
+          </motion.div>
 
-            {/* Notifications Tab */}
-            <TabsContent value="notifications" className="mt-6">
-              <Form {...notificationForm}>
-                <form onSubmit={notificationForm.handleSubmit(onNotificationSubmit)} className="space-y-6">
-                  <Card className="glass-card bg-card/50 backdrop-blur-12">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Bell className="h-5 w-5 text-primary" />
-                        Notification Preferences
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      {[
-                        { 
-                          name: "emailNotifications", 
-                          label: "Email Notifications", 
-                          description: "Receive important updates and alerts via email",
-                          icon: Mail,
-                          category: "Essential"
-                        },
-                        { 
-                          name: "pushNotifications", 
-                          label: "Push Notifications", 
-                          description: "Get real-time browser notifications for urgent updates",
-                          icon: Bell,
-                          category: "Essential"
-                        },
-                        { 
-                          name: "projectUpdates", 
-                          label: "Project Updates", 
-                          description: "Get notified about project status changes and milestones",
-                          icon: Briefcase,
-                          category: "Career"
-                        },
-                        { 
-                          name: "newMessages", 
-                          label: "New Messages", 
-                          description: "Receive alerts for new messages from buyers",
-                          icon: MessageCircle,
-                          category: "Communication"
-                        },
-                        { 
-                          name: "applicationUpdates", 
-                          label: "Application Updates", 
-                          description: "Updates on your job applications and project status",
-                          icon: User,
-                          category: "Career"
-                        },
-                        { 
-                          name: "marketingEmails", 
-                          label: "Marketing Emails", 
-                          description: "Receive promotional content and platform updates",
-                          icon: Mail,
-                          category: "Marketing"
-                        },
-                      ].map((item) => (
-                        <FormField
-                          key={item.name}
-                          control={notificationForm.control}
-                          name={item.name as keyof NotificationFormData}
-                          render={({ field }) => (
-                            <div className="flex items-center justify-between p-5 rounded-xl border border-border/20 bg-gradient-to-r from-card/40 to-card/20 hover:from-card/60 hover:to-card/40 transition-all duration-200 hover:shadow-md hover:border-primary/30">
-                              <div className="flex items-center gap-4 flex-1">
-                                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 shadow-sm">
-                                  <item.icon className="h-6 w-6 text-primary" />
-                                </div>
-                                <div className="space-y-1 flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <Label className="text-base font-medium">{item.label}</Label>
-                                    <Badge variant="secondary" className="text-xs px-2 py-1 bg-primary/10 text-primary border-primary/20">
-                                      {item.category}
-                                    </Badge>
-                                  </div>
-                                  <p className="text-sm text-muted-foreground">{item.description}</p>
-                                </div>
-                              </div>
-                              <div className="ml-4">
-                                <button
-                                  type="button"
-                                  onClick={() => field.onChange(!field.value)}
-                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                                    field.value 
-                                      ? 'bg-gradient-to-r from-primary to-secondary' 
-                                      : 'bg-muted/50 border border-border/50'
-                                  }`}
-                                >
-                                  <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform ${
-                                      field.value ? 'translate-x-6' : 'translate-x-1'
-                                    }`}
-                                  />
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        />
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  <div className="flex justify-end pt-4">
-                    <Button type="submit" className="px-8 py-2 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90">
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Notification Preferences
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </TabsContent>
-
-            {/* Security Tab */}
-            <TabsContent value="security" className="mt-6">
-              <div className="space-y-6">
-                <Form {...securityForm}>
-                  <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-6">
-                    <Card className="glass-card bg-card/50 backdrop-blur-12">
+          {/* Password Change Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Lock className="h-5 w-5 text-primary" />
                           Change Password
                         </CardTitle>
+                <CardDescription>
+                  Update your account password
+                </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        <FormField
-                          control={securityForm.control}
-                          name="currentPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Current Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={securityForm.control}
-                          name="newPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>New Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={securityForm.control}
-                          name="confirmPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Confirm New Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </CardContent>
-                    </Card>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Current Password</label>
+                  <Input
+                    type="password"
+                    value={formData.currentPassword}
+                    onChange={(e) => handleInputChange("currentPassword", e.target.value)}
+                    placeholder="Enter current password"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">New Password</label>
+                  <Input
+                    type="password"
+                    value={formData.newPassword}
+                    onChange={(e) => handleInputChange("newPassword", e.target.value)}
+                    placeholder="Enter new password"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Confirm New Password</label>
+                  <Input
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                    placeholder="Confirm new password"
+                  />
+                </div>
 
-                    <Button type="submit" className="w-full">
+                <Button 
+                  onClick={handleChangePassword}
+                  disabled={loading || !formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
+                  className="w-full"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
                       <Lock className="mr-2 h-4 w-4" />
-                      Update Password
-                    </Button>
-                  </form>
-                </Form>
-
-                <Card className="glass-card bg-card/50 backdrop-blur-12 border-destructive/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-destructive">
-                      <Trash2 className="h-5 w-5" />
-                      Danger Zone
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Delete Account</p>
-                        <p className="text-sm text-muted-foreground">
-                          Permanently delete your account and all associated data
-                        </p>
-                      </div>
-                      <Button variant="destructive" size="sm">
-                        Delete Account
+                      Change Password
+                    </>
+                  )}
                       </Button>
-                    </div>
                   </CardContent>
                 </Card>
+          </motion.div>
+
               </div>
-            </TabsContent>
-          </Tabs>
-        </motion.div>
       </div>
     </div>
   );
