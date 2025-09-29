@@ -1,0 +1,211 @@
+🌐 Public Pages
+1. Home (/)
+
+Purpose: First impression, convert visitors into action.
+Audience: Both buyers (companies) & students.
+Content & Flow:
+
+Hero: Badge “⭐ Verified Students Only”, big H1 with gradient words, short subcopy, CTAs (Explore Marketplace / How It Works).
+
+Trust Strip: Animated counters (2,500+ verified, 98% success, 24h response).
+
+Top 5 Student Projects: Showcase grid with image, title, price, Verified badge, CTA “View Project”.
+
+Features Grid (6 cards): Verified Students, Quality, Global Reach, Safe Payments, Dispute Resolution, Communication.
+
+Category Pills: Quick browse for Web Dev, Design, Data, Content, Research, Tutoring.
+
+Testimonials: Buyers & students carousel.
+
+FAQ: 6 expandable items.
+
+Footer: Links to Terms, Privacy, Support, “Back to Home”.
+Actions: Click CTAs, browse top projects, navigate categories.
+
+2. About (/about)
+
+Purpose: Build brand trust, explain mission.
+Audience: Global companies + students.
+Content & Flow:
+
+Hero Tagline: Collaborate. Create. Thrive.
+
+Mission & vision: Why CollaboTree exists.
+
+Stats: Universities, categories, countries.
+
+Values & roadmap.
+
+CTA: Explore Marketplace.
+Actions: Read credibility info, go to Marketplace.
+
+3. Marketplace (/marketplace)
+
+Purpose: Let buyers explore and find services fast.
+Audience: Primarily buyers.
+Content & Flow:
+
+Search bar + filters (Category, Budget, Delivery, Rating, Country).
+
+Card grid: Service image, title, price, rating, student avatar + Verified badge.
+
+Quick-view modal: package summary + Start Order.
+Actions: Filter, view, start order, save to favorites.
+
+4. Service Detail (/service/[slug])
+
+Purpose: Convert buyer interest into purchase.
+Audience: Buyer looking at one student’s project.
+Content & Flow:
+
+Gallery of images.
+
+Title, tags, rating distribution.
+
+Seller panel: avatar, Verified badge, country.
+
+Packages (Basic/Standard/Premium): features, delivery, price.
+
+Reviews list.
+
+CTAs: Start Order, Message Student.
+Actions: Buy a package, chat with student, leave review after completion.
+
+5. How It Works (/how-it-works)
+
+Purpose: Explain platform clearly.
+Audience: Buyers & students new to CollaboTree.
+Content & Flow:
+
+Two flows:
+
+Buyer: Explore → Order & Chat → Approve & Review.
+
+Student: Verify & Publish → Deliver → Get Paid.
+
+Timeline/steps with large icons.
+
+CTA: Explore Marketplace (buyers) / Create Service (students).
+Actions: Follow flow → Marketplace or Service Creation.
+
+6. Verify (/verify)
+
+Purpose: Gate student publishing with academic proof.
+Audience: Students only.
+Content & Flow:
+
+Step 1: Academic email domain check (.edu, .ac.*).
+
+Step 2: ID upload (OCR stub UI).
+
+Status: pending/approved/rejected.
+Actions: Complete verification, resubmit if rejected.
+
+7. Auth (/auth/sign-in, /auth/sign-up)
+
+Purpose: Onboard students & buyers.
+Audience: Everyone.
+Content & Flow:
+
+Role selection (Student / Buyer).
+
+OAuth login (Google, GitHub, Microsoft).
+
+Student with non-academic email → unverified → redirect /verify.
+Actions: Register, login, choose role.
+
+8. Legal (/legal/terms, /legal/privacy)
+
+Purpose: Compliance, trust.
+Audience: Everyone.
+Content & Flow:
+
+Terms of Service, GDPR notice, moderation policy.
+
+Privacy policy, data handling.
+Actions: Read policies.
+
+📊 Dashboards
+9. Student Dashboard (/dashboard/student)
+
+Purpose: Let students manage their services & earnings.
+Audience: Students.
+Content & Flow:
+
+KPIs: Orders, Earnings (MTD), Completion rate, Avg rating.
+
+My Projects: Table of Draft / Active / Paused services.
+
+Create Wizard: 3 steps → Basics → Packages → Gallery & Publish.
+
+Edit Project: Reopen as draft, republish.
+
+Orders: Table → open Order Room.
+
+Messages: Threads with buyers.
+
+Verification Status: Badge + link to /verify.
+
+Payouts (stub): Summary totals.
+Actions: Create/edit/publish projects, respond to buyers, track orders.
+
+10. Buyer Dashboard (/dashboard/buyer)
+
+Purpose: Help buyers manage purchases.
+Audience: Buyers.
+Content & Flow:
+
+KPIs: Active Orders, Spend YTD, Avg response time.
+
+Orders: Table of services bought, status chips.
+
+Messages: Threads with students.
+
+Favorites: Saved services grid.
+
+Recommendations: Suggested projects by category.
+Actions: Manage orders, chat with students, save projects, leave reviews.
+
+11. Admin Dashboard (/dashboard/admin)
+
+Purpose: Operate platform.
+Audience: Admin only.
+Content & Flow:
+
+Verifications Queue: Approve/reject student IDs.
+
+Disputes: List, manage, change status.
+
+Metrics: New users, services, orders, disputes trend.
+
+User Management: Search, ban/unban.
+Actions: Verify students, resolve disputes, track platform health.
+
+💬 Communication & Orders
+12. Messages (/messages/[threadId])
+
+Purpose: Realtime chat between buyer & student.
+Audience: Logged-in buyers/students.
+Content & Flow:
+
+Chat window with Supabase realtime.
+
+Typing indicators, read receipts.
+
+Attachments via Uploadcare.
+Actions: Send messages, share files, link orders.
+
+13. Order Room (/orders/[orderId])
+
+Purpose: Deliver projects safely.
+Audience: Buyers & students.
+Content & Flow:
+
+Milestone timeline with due dates/files.
+
+Requirements panel (buyer input).
+
+Deliverables: student uploads → buyer accepts or requests changes.
+
+Dispute button → admin queue.
+Actions: Track progress, deliver work, accept or dispute.

@@ -1,0 +1,93 @@
+Scope (DO NOT change anything else)
+- Keep the current site design, layout, and colors exactly as they are.
+- Implement ONLY:
+  1) Sign-In Page + Sign-In Modal (same UI reused)
+  2) CTA Popup for "Hire Talent" and "Join as Student"
+  3) New dashboards for Student and Buyer (simple, minimal, matching existing style)
+
+Design & Colors
+- Reuse existing color tokens, typography, spacing, and components.
+- No new color palette. No global style changes.
+
+Routing (keep current scheme; add only these)
+- /signin  (page)
+- /dashboard/student
+- /dashboard/buyer
+
+Auth Flow (mockable)
+- Sign-In supports email+password (and placeholder social buttons).
+- On successful sign-in:
+  - If user.role === "student" → redirect to /dashboard/student
+  - If user.role === "buyer"   → redirect to /dashboard/buyer
+- Provide a simple role switcher in dev mode (only visible if ENV DEV) to test redirects.
+
+Components to Add (match existing cards/buttons)
+1) SignInCard
+   - Max width 420px, centered; same surface, border, radius, and shadow as current cards.
+   - Fields: Email, Password, “Remember me”, “Forgot password?”
+   - Buttons row: [Continue] (primary), secondary text link for “Create account”.
+   - Small links under form:
+       • “Continue as Buyer”
+       • “Continue as Student”
+   - Errors show inline under inputs (do not use toasts for basic errors).
+
+2) SignInModal
+   - Reuse SignInCard inside a modal.
+   - Triggered from header “Sign In” button (open modal instead of navigating).
+   - Modal has close (X), click-outside, Esc to close.
+   - When submitted → same redirect logic as SignInCard.
+
+3) CTA Popup (Hire Talent / Join as Student)
+   - Modal with two large buttons:
+       • Hire Talent → go to /signin (prefill role=buyer) or open SignInModal with role=buyer.
+       • Join as Student → go to /signin (prefill role=student) or open SignInModal with role=student.
+   - Include one line of helper text under each option.
+   - Do not change header layout; just bind the existing “Hire Talent” and “Join as Student” buttons to open this popup.
+
+Dashboards (keep minimal, same style)
+4) StudentDashboard (/dashboard/student)
+   - Page title: “Student Dashboard”
+   - Row of 3 stat cards (match existing card style):
+       • Active Projects • Messages • Payouts Pending
+   - Two-column layout:
+       • Left: “My Projects” table (Title · Buyer · Status · Budget · Due · Actions [View | Chat])
+       • Right: “Messages” preview list (last 5 threads)
+   - Primary action button at top-right: “Create Offer” (same button style as site).
+   - Empty states use same card style and iconography as current site.
+
+5) BuyerDashboard (/dashboard/buyer)
+   - Page title: “Buyer Dashboard”
+   - Row of 3 stat cards:
+       • Active Orders • In Review • Amount Spent (MTD)
+   - Two-column layout:
+       • Left: “Orders” table (Project · Student · Status · Amount · Delivery · Actions [View | Chat | Approve])
+       • Right: “Shortlisted” list (reuse existing project card style, compact)
+   - Primary action button at top-right: “New Project Brief” → opens drawer with fields:
+       • Title, Summary, Skills/Tags, Budget, Timeline, Attachments, Submit.
+
+Behavior & UX (match existing site feel)
+- Cards: same radius, border, shadow, padding as current project cards.
+- Tables: compact rows; sticky header; small zebra tint (use existing neutrals).
+- All modals/drawers:
+   • Centered (modal) or right-sided (drawer), same blur/shadow style as existing overlays if any.
+   • Focus-trap, Esc to close, click-outside to close.
+- Buttons: reuse current primary/secondary classes; no new variants.
+- Spacing: use the site’s current spacing scale; do not alter global paddings.
+
+Data (sample/demo)
+- Provide small mock arrays for projects, orders, messages to render lists/tables.
+- Keep data in local state or a mock service; no external APIs required.
+
+Acceptance Criteria
+- Existing pages (Home, About, Explore Talent, How it Works, Footer) remain pixel-unchanged.
+- Colors remain exactly the same.
+- Header “Sign In” opens SignInModal; “Hire Talent” opens CTA Popup (with option to continue as Buyer).
+- /signin works and redirects to the correct dashboard based on selected/returned role.
+- /dashboard/student and /dashboard/buyer render with simple stat cards + table + messages list.
+- Fully responsive (1 column on mobile; 2 columns on tablet/desktop).
+- Keyboard accessible: Tab focus order, Enter submits, Esc closes modal, aria-labels set on dialogs.
+
+Deliverables
+- Components: SignInCard, SignInModal, CTAPopup, DrawerProjectBrief, StatCard, DataTable, MessagePreview.
+- Routes/pages: /signin, /dashboard/student, /dashboard/buyer.
+- Minimal mock data and role-based redirect logic.

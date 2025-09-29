@@ -1,0 +1,49 @@
+Fix padding and spacing across the entire CollaboTree website so it always looks correct on full-screen and smaller devices.
+
+# Global Padding Rules
+- Use a unified container system like the navbar spacing (logo + Hire Talent button).
+- Container is centered and never touches screen edges.
+- Horizontal padding:
+  • Desktop (≥1280px): px-20
+  • Tablet (≥768px): px-10
+  • Mobile (<768px): px-6
+- Vertical padding:
+  • Section top/bottom: py-20 desktop, py-14 tablet, py-10 mobile
+  • Inside cards: p-8 desktop, p-6 tablet, p-4 mobile
+- Replace all `w-screen` with `w-full` so content stays inside padding.
+
+# Navbar
+- Keep current spacing between CollaboTree logo and “Hire Talent” button as baseline.
+- Height fixed at 64px (h-16).
+- Container uses same px values as above.
+
+# Hero Section
+- Grid gap: gap-12 desktop, gap-8 tablet, gap-6 mobile.
+- Text block max-width: max-w-xl for readability.
+- Ensure hero image respects container padding.
+
+# Cards (Projects, Features, Pricing, Testimonials)
+- Outer padding: use same container px values.
+- Inner padding: p-8 desktop, p-6 tablet, p-4 mobile.
+- Consistent gap-4 between card sections (title → desc → tags → meta → price bar).
+- Price bar: full width inside card, padding px-5 py-3.
+
+# Footer
+- Horizontal padding matches navbar.
+- Top padding: pt-20 desktop, pt-14 tablet, pt-10 mobile.
+- Bottom padding: pb-10 all devices.
+- Column gaps: gap-12 desktop, gap-8 tablet, gap-6 mobile.
+
+# Responsive Adjustments
+- Desktop: 3-column grids with gap-8
+- Tablet: 2-column grids with gap-6
+- Mobile: single column with gap-5
+- Always reduce section paddings by ~30% on tablet and ~50% on mobile.
+
+# Accessibility
+- Ensure no content bleeds to the edge on any device.
+- All focus states use ring-2 ring-blue-400.
+- Max line width ~70 characters for readability.
+
+# Goal
+Make sure every page section, hero, card, and footer uses the **same horizontal and vertical padding system as the navbar baseline**, so the design looks consistent and professional at any screen size.
