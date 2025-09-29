@@ -209,7 +209,7 @@ export default function BuyerSettings() {
     });
   };
 
-  if (!user || user.role !== 'buyer') {
+  if (!user || user.role !== 'BUYER') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -164,7 +164,7 @@ export default function AdminSettings() {
     });
   };
 
-  if (!user || user.role !== 'admin') {
+  if (!user || user.role !== 'ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

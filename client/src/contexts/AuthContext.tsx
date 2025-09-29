@@ -7,7 +7,11 @@ export interface User {
   username?: string;
   role: 'BUYER' | 'STUDENT' | 'ADMIN';
   bio?: string;
+  university?: string;
   skills?: string;
+  isVerified?: boolean;
+  idCardUrl?: string;
+  verifiedAt?: string;
   createdAt: string;
 }
 

@@ -4,6 +4,7 @@ export const createServiceSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
   description: z.string().min(10, 'Description must be at least 10 characters').max(2000, 'Description is too long'),
   priceCents: z.number().int().min(100, 'Price must be at least $1.00').max(10000000, 'Price is too high'), // $0.01 to $100,000
+  coverImage: z.string().optional(), // Add cover image validation
   isActive: z.boolean().optional().default(true),
 });
 
@@ -11,6 +12,7 @@ export const updateServiceSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title is too long').optional(),
   description: z.string().min(10, 'Description must be at least 10 characters').max(2000, 'Description is too long').optional(),
   priceCents: z.number().int().min(100, 'Price must be at least $1.00').max(10000000, 'Price is too high').optional(),
+  coverImage: z.string().optional(), // Add cover image validation
   isActive: z.boolean().optional(),
 });
 

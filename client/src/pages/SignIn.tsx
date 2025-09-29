@@ -95,6 +95,7 @@ export default function SignIn() {
         username: registerData.username, // Add username field
         password: registerData.password,
         role: registerData.role.toUpperCase() as 'BUYER' | 'STUDENT', // Convert to uppercase
+        university: registerData.role === 'student' ? registerData.university : undefined,
         bio: registerData.role === 'student' ? `Student at ${registerData.university}` : 
              registerData.role === 'buyer' ? `Company: ${registerData.companyName}` : undefined,
         skills: registerData.role === 'student' ? registerData.skills : [],

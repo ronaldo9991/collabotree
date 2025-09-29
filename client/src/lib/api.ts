@@ -140,6 +140,10 @@ class ApiClient {
     return this.getServices(params);
   }
 
+  async getProject(id: string) {
+    return this.getService(id);
+  }
+
   // Hire requests endpoints
   async getHireRequests(params?: Record<string, any>) {
     const searchParams = new URLSearchParams();
@@ -275,6 +279,28 @@ class ApiClient {
     return this.request(`/notifications/${notificationId}/read`, {
       method: 'PATCH',
     });
+  }
+
+  // Verification endpoints
+  async uploadIdCard(idCardUrl: string) {
+    return this.request('/verification/upload-id-card', {
+      method: 'POST',
+      body: JSON.stringify({ idCardUrl }),
+    });
+  }
+
+  async getVerificationStatus() {
+    return this.request('/verification/status');
+  }
+
+  async verifyStudent(studentId: string) {
+    return this.request(`/verification/verify/${studentId}`, {
+      method: 'POST',
+    });
+  }
+
+  async getPendingVerifications() {
+    return this.request('/verification/pending');
   }
 }
 

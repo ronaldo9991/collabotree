@@ -355,17 +355,17 @@ export default function AdminDashboard() {
                         <p className="font-medium">{user.full_name}</p>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant={user.role === 'student' ? 'default' : 'secondary'} className="text-xs">
+                          <Badge variant={user.role === 'STUDENT' ? 'default' : 'secondary'} className="text-xs">
                             {user.role}
                           </Badge>
-                          {user.role === 'student' && (
+                          {user.role === 'STUDENT' && (
                             <Badge variant={user.verified ? 'default' : 'outline'} className="text-xs">
                               {user.verified ? 'Verified' : 'Pending'}
                             </Badge>
                           )}
                         </div>
                       </div>
-                      {user.role === 'student' && (
+                      {user.role === 'STUDENT' && (
                         <div className="flex gap-1">
                           <Button
                             size="sm"

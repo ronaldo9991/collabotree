@@ -187,8 +187,13 @@ export default function BuyerDashboard() {
         
         // Fetch available services for browsing
         try {
+          console.log('🔍 Fetching services for buyer dashboard...');
           const servicesResponse = await api.getServices();
+          console.log('📊 Services API response:', servicesResponse);
+          
           const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];
+          console.log('📋 Extracted services data:', servicesData);
+          console.log('📊 Number of services found:', servicesData.length);
           
           // Map services to project format for display
           const mappedServices = servicesData.map((service: any) => ({
@@ -196,21 +201,26 @@ export default function BuyerDashboard() {
             title: service.title,
             description: service.description,
             budget: service.priceCents / 100,
+            cover_url: service.coverImage, // Map coverImage to cover_url
             created_at: service.createdAt,
             created_by: service.ownerId,
             tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
             creator: {
               full_name: service.owner?.name || 'Student',
-              role: 'student'
+              role: 'student',
+              isVerified: service.owner?.isVerified || false,
+              idCardUrl: service.owner?.idCardUrl,
+              verifiedAt: service.owner?.verifiedAt
             },
             rating: 4.5 + Math.random() * 0.5,
             totalReviews: Math.floor(Math.random() * 20) + 1,
             orders: Math.floor(Math.random() * 10) + 1
           }));
 
+          console.log('🎯 Mapped services for display:', mappedServices);
           setBrowseServices(mappedServices);
         } catch (projectError) {
-          console.log('Error fetching services:', projectError);
+          console.error('❌ Error fetching services:', projectError);
           setBrowseServices([]);
         }
 
@@ -669,12 +679,18 @@ function BrowseTalentSection({ searchTerm, projects, hireRequests, onHireSuccess
   const [, navigate] = useLocation();
 
   // Filter projects based on search term
+  console.log('🔍 BrowseTalentSection - projects received:', projects);
+  console.log('🔍 BrowseTalentSection - searchTerm:', searchTerm);
+  
   const filteredProjects = projects.filter(project => 
     !searchTerm || 
     project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     project.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+  
+  console.log('🎯 BrowseTalentSection - filteredProjects:', filteredProjects);
+  console.log('📊 BrowseTalentSection - filteredProjects.length:', filteredProjects.length);
   
   // Check if buyer has already hired this specific project
   const hasHiredProject = (project: any) => {
@@ -796,57 +812,139 @@ function BrowseTalentSection({ searchTerm, projects, hireRequests, onHireSuccess
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
       {filteredProjects.map((project) => (
-        <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 hover:border-primary/30 transition-colors group h-full flex flex-col">
-          <CardContent className="p-6 flex-1 flex flex-col">
-            <div className="flex-1">
-            <h4 className="font-semibold mb-2 line-clamp-2 hover:text-primary transition-colors">
-              {project.title}
-            </h4>
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                {project.description}
-              </p>
-            </div>
-            
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                    {project.creator?.full_name?.split(' ').map((n: string) => n[0]).join('') || 'S'}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm text-muted-foreground">{project.creator?.full_name || 'Student'}</span>
-              </div>
-              <div className="text-right">
-                <div className="font-semibold">${project.budget}</div>
-                <div className="text-xs text-muted-foreground">per project</div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-4">
-                  <Button 
-                    onClick={() => handleHireNow(project)}
-                disabled={hasHiredProject(project)}
-                className="flex-1 gap-2"
-                variant={hasHiredProject(project) ? "secondary" : "default"}
-              >
-                {hasHiredProject(project) ? (
-                  <>
-                    <MessageCircle className="h-4 w-4" />
-                    Message
-                  </>
-                ) : (
-                  <>
-                    <Users className="h-4 w-4" />
-                    Hire Now
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div key={project.id} className="h-full flex">
+          <ProjectCard 
+            project={project} 
+            onHireNow={handleHireNow}
+            hasHiredProject={hasHiredProject(project)}
+          />
+        </div>
       ))}
     </div>
+  );
+}
+
+// Project Card Component (same as marketplace)
+function ProjectCard({ project, onHireNow, hasHiredProject }: {
+  project: any;
+  onHireNow: (project: any) => void;
+  hasHiredProject: boolean;
+}) {
+  const [, navigate] = useLocation();
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Icon component for placeholder
+  const IconComponent = ({ className }: { className?: string }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    </svg>
+  );
+
+
+  return (
+    <Card className="glass-card bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col h-full border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80 overflow-hidden" data-testid={`project-${project.id}`}>
+      {/* Project Image */}
+      <div className="relative w-full h-56 overflow-hidden rounded-t-lg bg-muted/10 flex items-center justify-center">
+        {project.cover_url ? (
+          <img 
+            src={project.cover_url} 
+            alt={project.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-[#00B2FF]/30 via-[#4AC8FF]/35 to-[#8FE5FF]/30 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] flex items-center justify-center rounded-t-lg">
+            <IconComponent className="h-16 w-16 text-muted-foreground" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
+        
+        {/* Favorite Button */}
+        <Button
+          size="sm"
+          variant="ghost"
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsFavorite(!isFavorite);
+          }}
+        >
+          <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+        </Button>
+      </div>
+      
+      <CardContent className="p-4 flex flex-col h-full">
+        {/* Simple Header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="text-xs">
+                {(project.creator?.full_name || '').split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex items-center gap-1">
+              <span className="text-sm font-medium">{project.creator?.full_name || 'Student'}</span>
+              {project.creator?.isVerified && (
+                <Badge variant="secondary" className="text-xs px-1 py-0 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  ✓
+                </Badge>
+              )}
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-lg font-bold text-[#00B2FF]">${project.budget}</div>
+          </div>
+        </div>
+
+        {/* Project Title */}
+        <h3 
+          className="font-semibold text-lg mb-2 line-clamp-2 hover:text-[#00B2FF] transition-colors cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            navigate(`/project/${project.id}`);
+          }}
+        >
+          {project.title}
+        </h3>
+
+        {/* Project Description */}
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-3 flex-1 min-h-0">
+          {project.description.length > 80 ? `${project.description.substring(0, 80)}...` : project.description}
+        </p>
+
+        {/* Action Buttons */}
+        <div className="pt-2 mt-auto">
+          <div className="flex gap-2">
+            <Button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(`/project/${project.id}`);
+              }}
+              variant="outline" 
+              size="sm"
+              className="flex-1 text-xs px-3 py-1 h-8"
+            >
+              View Details
+            </Button>
+            <Button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onHireNow(project);
+              }}
+              disabled={hasHiredProject}
+              className="flex-1 text-xs px-3 py-1 h-8"
+              variant={hasHiredProject ? "secondary" : "default"}
+            >
+              {hasHiredProject ? "Message" : "Hire Now"}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -10,6 +10,7 @@ export const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
   username: z.string().min(3, 'Username must be at least 3 characters').max(20, 'Username is too long').regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores').optional(),
   role: z.enum(['BUYER', 'STUDENT', 'ADMIN']).optional().default('BUYER'),
+  university: z.string().max(100, 'University name is too long').optional(),
   bio: z.string().max(500, 'Bio is too long').optional(),
   skills: z.array(z.string()).max(20, 'Too many skills').optional().default([]),
 });

@@ -10,6 +10,7 @@ import reviewsRoutes from './reviews.routes.js';
 import disputesRoutes from './disputes.routes.js';
 import notificationsRoutes from './notifications.routes.js';
 import walletRoutes from './wallet.routes.js';
+import verificationRoutes from './verification.routes.js';
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use('/reviews', reviewsRoutes);
 router.use('/disputes', disputesRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/wallet', walletRoutes);
+router.use('/verification', verificationRoutes);
 
 export default router;

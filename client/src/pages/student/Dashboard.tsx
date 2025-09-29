@@ -33,7 +33,10 @@ import {
   Users,
   Heart,
   X,
-  Play
+  Play,
+  Upload,
+  Shield,
+  CheckCircle2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -535,42 +538,13 @@ export default function StudentDashboard() {
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-8">
-              {/* Verification Status */}
+              {/* Student Verification */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
-                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20" data-testid="verification-card">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="h-6 w-6 text-primary" />
-                        <div>
-                          <Badge 
-                            variant="default"
-                            className="bg-primary/20 text-primary"
-                            data-testid="verification-status"
-                          >
-                            ✓ Verified Student
-                          </Badge>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Your account is verified and ready for business
-                          </p>
-                        </div>
-                      </div>
-                      {false && (
-                        <Button 
-                          variant="outline" 
-                          data-testid="complete-verification-button"
-                          onClick={handleCompleteVerification}
-                        >
-                          Complete Verification
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <StudentVerification />
               </motion.div>
 
               {/* Key Stats */}
@@ -1184,5 +1158,170 @@ export default function StudentDashboard() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// Student Verification Component
+function StudentVerification() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [verificationStatus, setVerificationStatus] = useState({
+    isVerified: false,
+    hasUploadedId: false,
+    idCardUrl: null as string | null,
+    verifiedAt: null as string | null
+  });
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchVerificationStatus();
+  }, []);
+
+  const fetchVerificationStatus = async () => {
+    try {
+      setLoading(true);
+      const response = await api.getVerificationStatus();
+      if (response.success) {
+        setVerificationStatus(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching verification status:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // For demo purposes, we'll simulate file upload
+    // In a real app, you'd upload to a file storage service
+    const mockFileUrl = `https://example.com/id-cards/${Date.now()}-${file.name}`;
+    
+    try {
+      setUploading(true);
+      const response = await api.uploadIdCard(mockFileUrl);
+      
+      if (response.success) {
+        toast({
+          title: "ID Card Uploaded",
+          description: "Your student ID card has been uploaded successfully. Verification is pending review.",
+        });
+        fetchVerificationStatus();
+      } else {
+        throw new Error(response.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading ID card:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload ID card. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20" data-testid="verification-card">
+      <CardContent className="p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-full bg-primary/10">
+              {verificationStatus.isVerified ? (
+                <CheckCircle2 className="h-6 w-6 text-green-600" />
+              ) : (
+                <Shield className="h-6 w-6 text-primary" />
+              )}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-lg font-semibold">Student Verification</h3>
+                {verificationStatus.isVerified ? (
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                    ✓ Verified
+                  </Badge>
+                ) : verificationStatus.hasUploadedId ? (
+                  <Badge variant="secondary">
+                    Pending Review
+                  </Badge>
+                ) : (
+                  <Badge variant="outline">
+                    Not Verified
+                  </Badge>
+                )}
+              </div>
+              
+              {verificationStatus.isVerified ? (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Your student status is verified! Your projects will show a verification badge.
+                  </p>
+                  {verificationStatus.verifiedAt && (
+                    <p className="text-xs text-muted-foreground">
+                      Verified on {new Date(verificationStatus.verifiedAt).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+              ) : verificationStatus.hasUploadedId ? (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Your ID card has been uploaded and is under review. You'll be notified once verification is complete.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Only verified students will show the verification symbol in their project cards.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Upload your student ID card to get verified. Only verified students will show the verification symbol in their project cards.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      id="id-card-upload"
+                      accept="image/*,.pdf"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('id-card-upload')?.click()}
+                      disabled={uploading}
+                      className="flex items-center gap-2"
+                    >
+                      {uploading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                      {uploading ? 'Uploading...' : 'Upload ID Card'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

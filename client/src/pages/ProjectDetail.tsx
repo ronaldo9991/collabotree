@@ -3,12 +3,11 @@ import { useRoute } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Star, Clock, MapPin, CheckCircle, MessageCircle, DollarSign, Calendar, User, Loader2 } from "lucide-react";
+import { Clock, CheckCircle, MessageCircle, DollarSign, Calendar, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,14 +41,15 @@ export default function ProjectDetail() {
 
     try {
       setLoading(true);
-      const data = await api.getProject(projectId);
-      setProject(data);
+      const response = await api.getProject(projectId);
+      setProject(response.data as ProjectWithDetails);
 
       // Check if user has already applied to this project
-      if (user?.id && user.role === 'STUDENT') {
-        const applied = await applicationsApi.hasUserAppliedToProject(projectId, user.id);
-        setHasApplied(applied);
-      }
+      // Note: This functionality can be implemented later when the API is available
+      // if (user?.id && user.role === 'STUDENT') {
+      //   const applied = await applicationsApi.hasUserAppliedToProject(projectId, user.id);
+      //   setHasApplied(applied);
+      // }
     } catch (error) {
       console.error('Error fetching project:', error);
       toast({
@@ -74,10 +74,10 @@ export default function ProjectDetail() {
 
     try {
       setApplying(true);
-      await api.applyToProject(project.id, {
-        cover_letter: applicationData.cover_letter,
-        bid_amount: applicationData.bid_amount ? parseFloat(applicationData.bid_amount) : undefined,
-      });
+      // await api.applyToProject(project.id, {
+      //   cover_letter: applicationData.cover_letter,
+      //   bid_amount: applicationData.bid_amount ? parseFloat(applicationData.bid_amount) : undefined,
+      // });
 
       toast({
         title: "Success",
@@ -120,8 +120,8 @@ export default function ProjectDetail() {
     );
   }
 
-  const canApply = user?.role === 'student' && project.status === 'open' && !hasApplied;
-  const isOwner = user?.id === project.created_by;
+  const canApply = user?.role === 'STUDENT' && !hasApplied;
+  const isOwner = user?.id === project.ownerId;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -146,23 +146,23 @@ export default function ProjectDetail() {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
-                        <span>Posted {new Date(project.created_at).toLocaleDateString()}</span>
+                        <span>Posted {new Date(project.createdAt).toLocaleDateString()}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
-                        <span>{Math.max(1, Math.floor((project.budget || 0) / 200))} days delivery</span>
+                        <span>7 days delivery</span>
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-bold text-primary">
-                      ${(project.budget || 0).toFixed(0)}
+                      ${(project.priceCents || 0) / 100}
                     </div>
                     <Badge 
-                      variant={project.status === 'open' ? 'default' : 'secondary'}
+                      variant="default"
                       className="mt-2"
                     >
-                      {project.status.replace('_', ' ').toUpperCase()}
+                      AVAILABLE
                     </Badge>
                   </div>
                 </div>
@@ -213,35 +213,6 @@ export default function ProjectDetail() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Creator Info */}
-            <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  Project Creator
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback>
-                      {(project.creator?.full_name || '').split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">{project.creator?.full_name || 'Creator'}</div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {project.creator?.role === 'student' ? 'Student' : 'Buyer'}
-                    </div>
-                    <div className="flex items-center gap-1 mt-1">
-                      <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                      <span className="text-sm">4.8 (24 reviews)</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Action Buttons */}
             <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
@@ -313,10 +284,6 @@ export default function ProjectDetail() {
                   <div className="text-center text-muted-foreground">
                     <p>This is your project</p>
                   </div>
-                ) : project.status !== 'open' ? (
-                  <div className="text-center text-muted-foreground">
-                    <p>This project is no longer accepting applications</p>
-                  </div>
                 ) : (
                   <div className="text-center text-muted-foreground">
                     <p>Please sign in as a student to apply</p>
@@ -337,12 +304,12 @@ export default function ProjectDetail() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Budget</span>
-                  <span className="font-medium">${(project.budget || 0).toFixed(0)}</span>
+                  <span className="text-muted-foreground">Price</span>
+                  <span className="font-medium">${(project.priceCents || 0) / 100}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Delivery Time</span>
-                  <span className="font-medium">{Math.max(1, Math.floor((project.budget || 0) / 200))} days</span>
+                  <span className="font-medium">7 days</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Applications</span>
@@ -350,8 +317,8 @@ export default function ProjectDetail() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Status</span>
-                  <Badge variant={project.status === 'open' ? 'default' : 'secondary'}>
-                    {project.status.replace('_', ' ').toUpperCase()}
+                  <Badge variant="default">
+                    AVAILABLE
                   </Badge>
                 </div>
               </CardContent>

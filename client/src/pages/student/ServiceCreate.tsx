@@ -164,6 +164,7 @@ export default function ServiceCreate() {
         title: data.title,
         description: data.description,
         priceCents: data.pricingCents,
+        coverImage: data.coverImage, // Include cover image
         isActive: true, // Explicitly set to active
       };
 

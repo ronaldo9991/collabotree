@@ -8,10 +8,53 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Footer } from "@/components/Footer";
+import { api } from "@/lib/api";
 
 export default function Landing() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentNewProjectSlide, setCurrentNewProjectSlide] = useState(0);
+  const [realProjects, setRealProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch real projects from backend
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await api.getServices();
+        const servicesData = (response as any)?.data?.data || (response as any)?.data || response || [];
+        
+        // Map services to project format for display
+        const mappedProjects = servicesData.map((service: any) => ({
+          id: service.id,
+          title: service.title,
+          description: service.description,
+          price: `$${service.priceCents / 100}`,
+          deliveryTime: "7 days", // Default delivery time
+          student: {
+            name: service.owner?.name || 'Student',
+            university: service.owner?.university || 'University', // Use actual university or default
+            major: 'Computer Science', // Default major
+            avatar: '', // No avatar for now
+            verified: service.owner?.isVerified || false
+          },
+          category: 'Service',
+          icon: Code,
+          tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : [],
+          image: service.coverImage || null
+        }));
+
+        setRealProjects(mappedProjects);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        setRealProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
   
   const topProjects = [
     {
@@ -196,132 +239,10 @@ export default function Landing() {
     }
   ];
 
-  const newProjects = [
-    {
-      id: 11,
-      title: "Voice Assistant AI Development",
-      description: "Custom voice assistant with natural language processing, voice recognition, and smart home integration. Built with Python, TensorFlow, and cloud APIs.",
-      price: "$2,200",
-      rating: 4.9,
-      reviews: 14,
-      deliveryTime: "12 days",
-      student: {
-        name: "Rachel Kim",
-        university: "Seoul National University",
-        major: "AI & Robotics",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "AI Development",
-      icon: Bot,
-      tags: ["Python", "TensorFlow", "Voice AI", "NLP"],
-      image: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 12,
-      title: "Augmented Reality Shopping App",
-      description: "AR mobile application for virtual product try-ons and interactive shopping experiences. Includes 3D modeling, real-time tracking, and e-commerce integration.",
-      price: "$1,800",
-      rating: 4.8,
-      reviews: 19,
-      deliveryTime: "14 days",
-      student: {
-        name: "Carlos Rodriguez",
-        university: "Technical University of Madrid",
-        major: "Computer Graphics",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "AR Development",
-      icon: Smartphone,
-      tags: ["AR", "Unity", "3D Modeling", "Mobile"],
-      image: "https://images.unsplash.com/photo-1617802690992-15d93263d3a9?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 13,
-      title: "Cybersecurity Audit & Penetration Testing",
-      description: "Comprehensive security assessment including vulnerability scanning, penetration testing, and detailed security recommendations for web applications.",
-      price: "$1,400",
-      rating: 5.0,
-      reviews: 11,
-      deliveryTime: "10 days",
-      student: {
-        name: "Alex Chen",
-        university: "Carnegie Mellon University",
-        major: "Cybersecurity",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Cybersecurity",
-      icon: Shield,
-      tags: ["Security", "Penetration Testing", "Audit", "Compliance"],
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 14,
-      title: "Machine Learning Predictive Analytics",
-      description: "Advanced ML models for business forecasting, customer behavior prediction, and data-driven insights. Includes model training, validation, and deployment.",
-      price: "$1,600",
-      rating: 4.7,
-      reviews: 16,
-      deliveryTime: "11 days",
-      student: {
-        name: "Priya Sharma",
-        university: "Indian Institute of Technology",
-        major: "Machine Learning",
-        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Machine Learning",
-      icon: BarChart3,
-      tags: ["Machine Learning", "Python", "Analytics", "Prediction"],
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 15,
-      title: "IoT Smart Home Automation System",
-      description: "Complete IoT solution for home automation including sensor integration, mobile app control, and cloud-based monitoring. Works with Alexa and Google Home.",
-      price: "$1,900",
-      rating: 4.9,
-      reviews: 13,
-      deliveryTime: "15 days",
-      student: {
-        name: "Thomas Mueller",
-        university: "Technical University of Munich",
-        major: "IoT Engineering",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "IoT Development",
-      icon: Zap,
-      tags: ["IoT", "Arduino", "Smart Home", "Mobile App"],
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    },
-    {
-      id: 16,
-      title: "Game Development with Unity 3D",
-      description: "Professional 3D game development including character design, physics implementation, UI/UX design, and cross-platform deployment for mobile and PC.",
-      price: "$2,500",
-      rating: 4.8,
-      reviews: 21,
-      deliveryTime: "18 days",
-      student: {
-        name: "Isabella Santos",
-        university: "University of Southern California",
-        major: "Game Development",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&w=150&h=150&fit=crop&crop=face",
-        verified: true
-      },
-      category: "Game Development",
-      icon: Sparkles,
-      tags: ["Unity", "C#", "3D Graphics", "Game Design"],
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&w=400&h=250&fit=crop"
-    }
-  ];
 
   const projectsPerSlide = 3;
   const totalSlides = Math.ceil(topProjects.length / projectsPerSlide);
-  const totalNewProjectSlides = Math.ceil(newProjects.length / projectsPerSlide);
+  const totalNewProjectSlides = Math.ceil(realProjects.length / projectsPerSlide);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -346,7 +267,7 @@ export default function Landing() {
 
   const getCurrentNewProjects = () => {
     const startIndex = currentNewProjectSlide * projectsPerSlide;
-    return newProjects.slice(startIndex, startIndex + projectsPerSlide);
+    return realProjects.slice(startIndex, startIndex + projectsPerSlide);
   };
 
   // Auto-slide functionality removed - user wants manual control only
@@ -769,7 +690,7 @@ export default function Landing() {
                     
                     {/* Tags - Fixed spacing */}
                     <div className="flex flex-wrap gap-1.5 mb-4 min-h-[2rem]">
-                      {project.tags.slice(0, 3).map((tag) => (
+                      {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
                         </Badge>
@@ -787,7 +708,7 @@ export default function Landing() {
                         <Avatar className="h-8 w-8 flex-shrink-0">
                           <AvatarImage src={project.student.avatar} alt={project.student.name} />
                           <AvatarFallback className="text-xs">
-                            {project.student.name.split(' ').map(n => n[0]).join('')}
+                            {project.student.name.split(' ').map((n: string) => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
@@ -802,10 +723,6 @@ export default function Landing() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{project.rating}</span>
-                      </div>
                     </div>
                     
                     {/* Bottom price bar - Always at bottom */}
@@ -818,7 +735,7 @@ export default function Landing() {
                         asChild
                         data-testid={`view-project-${project.id}`}
                       >
-                        <Link href="/marketplace">
+                        <Link href={`/service/${project.id}`}>
                           View Details
                         </Link>
                       </Button>
@@ -917,8 +834,35 @@ export default function Landing() {
             
             {/* Carousel Content */}
             <div className="flex-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
-                {getCurrentNewProjects().map((project, index) => (
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
+                  {[...Array(3)].map((_, index) => (
+                    <div key={index} className="w-full h-full flex">
+                      <Card className="rounded-2xl border h-full w-full bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] overflow-hidden flex flex-col">
+                        <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-2xl" />
+                        <CardContent className="p-6 flex-1 flex flex-col space-y-3">
+                          <div className="h-4 bg-muted/20 animate-pulse rounded" />
+                          <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
+                          <div className="flex-1" />
+                          <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+              ) : realProjects.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">No Projects Available</h3>
+                  <p className="text-muted-foreground">
+                    Check back later for new student projects.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
+                  {getCurrentNewProjects().map((project, index) => (
               <motion.div 
                 key={project.id} 
                 variants={itemVariants}
@@ -957,7 +901,7 @@ export default function Landing() {
                     
                     {/* Tags - Fixed spacing */}
                     <div className="flex flex-wrap gap-1.5 mb-4 min-h-[2rem]">
-                      {project.tags.slice(0, 3).map((tag) => (
+                      {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
                         </Badge>
@@ -975,7 +919,7 @@ export default function Landing() {
                         <Avatar className="h-8 w-8 flex-shrink-0">
                           <AvatarImage src={project.student.avatar} alt={project.student.name} />
                           <AvatarFallback className="text-xs">
-                            {project.student.name.split(' ').map(n => n[0]).join('')}
+                            {project.student.name.split(' ').map((n: string) => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
@@ -990,10 +934,6 @@ export default function Landing() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{project.rating}</span>
-                      </div>
                     </div>
                     
                     {/* Bottom price bar - Always at bottom */}
@@ -1006,7 +946,7 @@ export default function Landing() {
                         asChild
                         data-testid={`view-new-project-${project.id}`}
                       >
-                        <Link href="/marketplace">
+                        <Link href={`/service/${project.id}`}>
                           View Details
                         </Link>
                       </Button>
@@ -1015,7 +955,8 @@ export default function Landing() {
                 </Card>
               </motion.div>
                 ))}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Next Arrow - Outside Right */}

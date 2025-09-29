@@ -20,7 +20,11 @@ model User {
   name         String
   username     String?  @unique  // Added username field
   bio          String?
+  university   String?   // University name
   skills       String?   // JSON string for SQLite compatibility
+  isVerified   Boolean  @default(false)  // Student verification status
+  idCardUrl    String?  // URL to uploaded student ID card
+  verifiedAt   DateTime? // When verification was completed
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -48,6 +52,7 @@ model Service {
   title       String
   description String
   priceCents  Int
+  coverImage  String?  // Add cover image field
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
