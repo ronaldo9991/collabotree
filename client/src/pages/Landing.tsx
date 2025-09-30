@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package } from "lucide-react";
+import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
@@ -132,46 +132,32 @@ export default function Landing() {
 
   const features = [
     {
-      title: "Academic Excellence Network",
-      description: "Connect with the world's brightest minds from Stanford, MIT, Harvard, and 500+ prestigious universities. Every student is rigorously verified through institutional credentials and academic achievements.",
-      gradient: "from-primary to-secondary",
-      highlight: "Elite Universities",
-      stats: "500+ Institutions"
+      title: "Verified Student Sellers",
+      description: "All students are verified through their university credentials and academic records before joining our platform.",
+      gradient: "from-blue-500 to-cyan-500",
+      highlight: "Authentic Talent",
+      icon: UserCheck
     },
     {
-      title: "Intelligent Talent Matching",
-      description: "Our advanced AI algorithms analyze your project requirements and match you with students who have the exact academic background, skills, and expertise needed for exceptional results.",
-      gradient: "from-accent to-primary",
-      highlight: "AI-Powered",
-      stats: "95% Match Rate"
+      title: "Direct Communication",
+      description: "Connect directly with students through our built-in messaging system. No middlemen, just clear communication.",
+      gradient: "from-purple-500 to-pink-500",
+      highlight: "Real Connection",
+      icon: MessageCircle
     },
     {
-      title: "Lightning-Fast Delivery",
-      description: "Experience rapid project completion with dedicated student professionals who understand the importance of deadlines and deliver high-quality work within your timeline requirements.",
-      gradient: "from-secondary to-accent",
-      highlight: "Rapid Results",
-      stats: "3-5 Days Avg"
+      title: "Secure Payments",
+      description: "Your payments are protected with secure escrow system. Money is only released when you're satisfied with the work.",
+      gradient: "from-green-500 to-emerald-500",
+      highlight: "Payment Protection",
+      icon: CreditCard
     },
     {
-      title: "Global Academic Community",
-      description: "Access a diverse talent pool spanning continents, bringing fresh perspectives, innovative approaches, and cultural diversity to your projects from the world's leading academic institutions.",
-      gradient: "from-primary to-accent",
-      highlight: "Worldwide",
-      stats: "50+ Countries"
-    },
-    {
-      title: "Enterprise-Grade Security",
-      description: "Your projects and payments are protected with military-grade encryption, secure escrow systems, and comprehensive dispute resolution ensuring complete peace of mind.",
-      gradient: "from-accent to-secondary",
-      highlight: "Bank-Level",
-      stats: "100% Secure"
-    },
-    {
-      title: "Premium Quality Assurance",
-      description: "Every project comes with unlimited revisions, comprehensive quality checks, and our satisfaction guarantee. We ensure exceptional results or provide a full refund.",
-      gradient: "from-secondary to-primary",
-      highlight: "Guaranteed",
-      stats: "99.7% Success"
+      title: "Quality Control",
+      description: "Review and approve work before final payment. Request revisions until you're completely satisfied.",
+      gradient: "from-orange-500 to-red-500",
+      highlight: "Your Approval",
+      icon: CheckSquare
     },
   ];
 
@@ -197,276 +183,154 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="section-padding-y bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="container-unified">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 xl:gap-12 items-center">
-            {/* Content - 7/12 (60%) */}
-            <motion.div
-              className="lg:col-span-7 space-y-8"
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
-              <motion.div className="space-y-6" variants={itemVariants}>
-                <Badge className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent/20 text-accent-foreground border-accent/30">
-                  <Star className="h-3 w-3" />
-                  <span className="font-medium">Verified Students Only</span>
-                </Badge>
-                
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-                  Hire Talent from
-                  <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block">
-                    Top Universities
-                  </span>
-                  Worldwide
-                </h1>
-                
-                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
-                  Access verified student talent for your projects. From web development to design, research to tutoring—connect with the brightest minds from leading universities.
-                </p>
+      {/* Full Image Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Full Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&h=1080" 
+            alt="Professional team collaboration and remote work" 
+            className="w-full h-full object-cover"
+            data-testid="hero-background-image"
+          />
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
+
+        {/* Content Overlay */}
+        <div className="relative z-10 container-unified w-full py-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[70vh]">
+              {/* Left Content */}
+              <motion.div
+                className="space-y-8"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+
+                {/* Main Heading */}
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white">
+                    Connect with
+                    <span className="block bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+                      Elite Student Talent
+                    </span>
+                    from Top Universities
+                  </h1>
+                  
+                </motion.div>
+
+
+                {/* CTA Buttons */}
+                <motion.div
+                  className="flex flex-col sm:flex-row gap-3"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                >
+                  <Button
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 h-12 px-6 text-base font-semibold rounded-xl"
+                    asChild
+                  >
+                    <Link href="/signin">
+                      <Users className="mr-2 h-4 w-4" />
+                      Start Hiring Talent
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-white/30 bg-white/10 backdrop-blur-lg hover:bg-white/20 hover:border-white/50 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-12 px-6 text-base font-semibold rounded-xl"
+                    asChild
+                  >
+                    <Link href="/signin">
+                      <GraduationCap className="mr-2 h-4 w-4" />
+                      Join as Student
+                    </Link>
+                  </Button>
+                </motion.div>
               </motion.div>
 
-              <motion.div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center" variants={itemVariants}>
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-[var(--button-height)]"
-                  asChild
-                  data-testid="hire-talent-button"
-                >
-                  <Link href="/signin">
-                    <Users className="mr-2 h-5 w-5" />
-                    Hire Talent
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-border bg-card hover:bg-accent/10 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-[var(--button-height)]"
-                  asChild
-                  data-testid="join-student-button"
-                >
-                  <Link href="/signin">
-                    <GraduationCap className="mr-2 h-5 w-5" />
-                    Join as Student
-                  </Link>
-                </Button>
-              </motion.div>
+              {/* Right Content - Search Interface */}
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                {/* Search Card */}
+                <div className="bg-blue-500/10 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-blue-500/20">
+                  {/* Header */}
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-foreground mb-2">Find Your Perfect Match</h3>
+                    <p className="text-sm text-muted-foreground">Connect with verified students from top universities</p>
+                  </div>
 
-            </motion.div>
+                  {/* Search Tabs */}
+                  <div className="flex gap-2 mb-4">
+                    <Button
+                      variant="outline"
+                      className="flex-1 rounded-lg h-10 text-sm font-medium bg-primary text-primary-foreground border-primary"
+                    >
+                      Find Talent
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1 rounded-lg h-10 text-sm font-medium"
+                    >
+                      Browse Jobs
+                    </Button>
+                  </div>
 
-            {/* Visual - 5/12 (40%) */}
-            <motion.div 
-              className="lg:col-span-5"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <div className="relative">
-                {/* Main Image */}
-                <div className="glass-card bg-card/30 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-12">
-                  <img 
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&h=800" 
-                    alt="Students collaborating" 
-                    className="w-full h-auto"
-                    data-testid="hero-image"
-                  />
+                  {/* Search Input */}
+                  <div className="space-y-3 mb-4">
+                    <Input
+                      placeholder="Search by role, skills, or keywords"
+                      className="h-10 rounded-lg border-border focus:ring-2 focus:ring-primary/50 text-sm"
+                    />
+                    <Button
+                      size="lg"
+                      className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-semibold text-sm"
+                    >
+                      <Search className="h-4 w-4 mr-2" />
+                      Find Talent
+                    </Button>
+                  </div>
+
+                  {/* Popular Searches */}
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">Popular searches:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {['Web Development', 'UI/UX Design', 'Data Analysis', 'Content Writing'].map((term) => (
+                        <Button
+                          key={term}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs h-6 px-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+                        >
+                          {term}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                
-              </div>
-            </motion.div>
+
+                {/* Floating Elements */}
+                <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-full blur-xl animate-pulse"></div>
+                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-blue-600/20 to-primary/20 rounded-full blur-xl animate-pulse delay-1000"></div>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* AI-Powered Search Section */}
-      <section className="section-padding-y bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-        <div className="container-unified">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-secondary" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
-              AI-Powered Project Matching
-            </h2>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Describe your project in natural language and let our AI recommend the perfect student talent for your needs.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            {/* Enhanced AI Search Bar */}
-            <div className="relative bg-card/80 backdrop-blur-12 border border-border/50 rounded-2xl p-3 sm:p-4 shadow-2xl max-w-5xl mx-auto">
-              
-              {/* Mobile Layout */}
-              <div className="block sm:hidden">
-                {/* Mobile Header */}
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-white" />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium text-muted-foreground">AI-Powered Search</span>
-                  </div>
-                  <div className="flex items-center gap-1 ml-auto">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-muted-foreground">Online</span>
-                  </div>
-                </div>
-                
-                {/* Mobile Input */}
-                <div className="mb-4">
-                  <Input 
-                    placeholder="Describe your project... e.g., 'mobile app with payments'"
-                    className="border-border/50 bg-background/50 focus-visible:ring-1 focus-visible:ring-primary/50 text-base h-12 placeholder:text-muted-foreground/70"
-                    data-testid="ai-search-input"
-                  />
-                </div>
-                
-                {/* Mobile Button */}
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
-                  data-testid="ai-search-button"
-                >
-                  <Search className="h-5 w-5 mr-2" />
-                  Find Perfect Talent
-                </Button>
-              </div>
-
-              {/* Desktop Layout */}
-              <div className="hidden sm:block">
-                <div className="flex items-center gap-4 px-2 lg:px-6 py-4">
-                  <div className="flex items-center gap-3 text-primary flex-shrink-0">
-                    <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
-                      <Bot className="h-5 w-5 text-white" />
-                    </div>
-                    <Sparkles className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <Input 
-                      placeholder="Describe your project in detail... e.g., 'I need a mobile app for food delivery with payment integration'"
-                      className="border-0 bg-transparent focus-visible:ring-0 text-base placeholder:text-muted-foreground/70 h-12"
-                      data-testid="ai-search-input"
-                    />
-                  </div>
-                  <Button 
-                    size="lg" 
-                    className="bg-primary hover:bg-primary/90 px-6 lg:px-8 h-12 flex-shrink-0"
-                    data-testid="ai-search-button"
-                  >
-                    <Search className="h-5 w-5 mr-2" />
-                    <span className="hidden lg:inline">Find Talent</span>
-                    <span className="lg:hidden">Find</span>
-                  </Button>
-                </div>
-                
-                <div className="px-2 lg:px-6 pb-4">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <p className="text-sm text-muted-foreground flex items-center gap-2">
-                      <Sparkles className="h-4 w-4" />
-                      AI-powered project assistance and talent matching
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span>AI Online</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sample suggestions - responsive */}
-              <div className="px-3 sm:px-6 pb-4 border-t border-border/20 pt-4 mt-4 sm:mt-0 sm:border-t-0 sm:pt-0">
-                <p className="text-xs text-muted-foreground mb-3">Popular project types:</p>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "Web Development",
-                    "App Design", 
-                    "Data Analysis",
-                    "Logo Design",
-                    "Business Plan",
-                    "Research"
-                  ].map((suggestion) => (
-                    <Badge 
-                      key={suggestion}
-                      variant="outline" 
-                      className="text-xs hover:bg-accent/20 hover:border-primary/30 cursor-pointer transition-colors px-2 py-1"
-                      data-testid={`suggestion-${suggestion.toLowerCase().replace(/\s+/g, '-')}`}
-                    >
-                      {suggestion}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* AI Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 grid-gap-unified mt-12 sm:mt-16">
-              <motion.div
-                className="text-center p-6 sm:p-4 rounded-xl bg-background/50 border border-border/30 sm:bg-transparent sm:border-none"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-                viewport={{ once: true }}
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Target className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <h3 className="font-semibold mb-3 text-base sm:text-lg">Smart Matching</h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  AI analyzes your requirements and matches you with the most suitable students
-                </p>
-              </motion.div>
-
-              <motion.div
-                className="text-center p-6 sm:p-4 rounded-xl bg-background/50 border border-border/30 sm:bg-transparent sm:border-none"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-secondary to-accent rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Zap className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <h3 className="font-semibold mb-3 text-base sm:text-lg">Instant Results</h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  Get personalized recommendations in seconds, not hours
-                </p>
-              </motion.div>
-
-              <motion.div
-                className="text-center p-6 sm:p-4 rounded-xl bg-background/50 border border-border/30 sm:bg-transparent sm:border-none"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                viewport={{ once: true }}
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-accent to-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Award className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                </div>
-                <h3 className="font-semibold mb-3 text-base sm:text-lg">Quality Assured</h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  Only verified students from top universities worldwide
-                </p>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
       {/* Top Selection Section */}
       <section className="section-padding-y bg-background">
@@ -870,15 +734,15 @@ export default function Landing() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-              The Future of Academic Talent
+              Why Choose CollaboTree
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Experience the next generation of talent collaboration with our revolutionary platform that connects you with the world's most brilliant academic minds.
+              A simple platform where verified university students offer their skills and services to buyers who need quality work done.
             </p>
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
             initial="hidden"
             whileInView="visible"
             variants={containerVariants}
@@ -889,37 +753,53 @@ export default function Landing() {
                 key={index} 
                 variants={itemVariants}
                 className="group"
+                whileHover={{ 
+                  scale: 1.05,
+                  rotateY: 5,
+                  transition: { duration: 0.3 }
+                }}
               >
-                <Card className="glass-card bg-card/50 border-border/50 h-full hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 backdrop-blur-12 relative overflow-hidden" data-testid={`feature-${index}`}>
-                  {/* Floating gradient background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+                <Card className="glass-card bg-card/50 border-border/50 h-full hover:shadow-2xl transition-all duration-700 backdrop-blur-12 relative overflow-hidden cursor-pointer" data-testid={`feature-${index}`}>
+                  {/* Animated gradient background */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-all duration-700`}></div>
                   
-                  {/* Animated border effect */}
-                  <div className="absolute inset-0 rounded-lg">
-                    <div className={`absolute inset-0 rounded-lg bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500 transform group-hover:scale-110`}></div>
+                  {/* Floating particles effect */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className={`absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-20 rounded-full blur-xl transition-all duration-700 transform group-hover:scale-150 group-hover:rotate-45`}></div>
+                    <div className={`absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-15 rounded-full blur-xl transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-45`}></div>
                   </div>
                   
                   <CardContent className="p-8 relative z-10">
-                    {/* Highlight badge */}
-                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-6">
+                    {/* Icon with animation */}
+                    <motion.div 
+                      className="mb-4"
+                      whileHover={{ 
+                        scale: 1.2,
+                        rotate: 10,
+                        transition: { duration: 0.3 }
+                      }}
+                    >
+                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center mx-auto`}>
+                        <feature.icon className="w-8 h-8 text-white" />
+                      </div>
+                    </motion.div>
+                    
+                    {/* Highlight badge with pulse animation */}
+                    <motion.div 
+                      className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-6"
+                      whileHover={{ scale: 1.05 }}
+                    >
                       <span className="text-xs font-medium text-primary">{feature.highlight}</span>
-                    </div>
+                    </motion.div>
                     
                     {/* Content with enhanced typography */}
                     <div className="space-y-4">
-                      <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-secondary transition-all duration-300">
+                      <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-secondary transition-all duration-500">
                         {feature.title}
                       </h3>
-                      <p className="text-muted-foreground leading-relaxed text-sm group-hover:text-foreground/80 transition-colors duration-300">
+                      <p className="text-muted-foreground leading-relaxed text-sm group-hover:text-foreground/80 transition-colors duration-500">
                         {feature.description}
                       </p>
-                      
-                      {/* Stats badge */}
-                      <div className="pt-4">
-                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10">
-                          <span className="text-xs font-semibold text-primary">{feature.stats}</span>
-                        </div>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>

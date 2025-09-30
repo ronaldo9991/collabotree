@@ -93,32 +93,6 @@ const timelineSteps = [
 ];
 
 
-const platformFeatures = [
-  {
-    title: "Elite Academic Network",
-    description: "Connect with the brightest minds from Stanford, MIT, Harvard, and 500+ top universities worldwide. Every student is rigorously verified through institutional credentials.",
-    stats: "500+ Universities",
-    highlight: "Academic Excellence"
-  },
-  {
-    title: "Intelligent Project Matching",
-    description: "Our advanced AI analyzes your requirements and matches you with students who have the exact skills and academic background for your project needs.",
-    stats: "95% Match Rate",
-    highlight: "AI-Powered"
-  },
-  {
-    title: "Enterprise-Grade Security",
-    description: "Bank-level encryption, secure escrow payments, and comprehensive dispute resolution ensure your projects and payments are always protected.",
-    stats: "100% Secure",
-    highlight: "Bank-Level"
-  },
-  {
-    title: "Premium Quality Guarantee",
-    description: "Every project comes with unlimited revisions, quality assurance, and our satisfaction guarantee. We ensure exceptional results or your money back.",
-    stats: "99.7% Satisfaction",
-    highlight: "Guaranteed"
-  }
-];
 
 
 export default function HowItWorks() {
@@ -251,57 +225,6 @@ export default function HowItWorks() {
       </section>
 
 
-      {/* Platform Features */}
-      <section className="section-padding-y bg-muted/20">
-        <div className="container-unified">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-                Why Choose CollaboTree
-              </h2>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4 sm:px-0">
-                Experience the future of academic talent collaboration with our cutting-edge platform designed for excellence, innovation, and unmatched results.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {platformFeatures.map((feature, index) => (
-                <Card key={index} className="glass-card bg-gradient-to-br from-card/50 to-card/30 text-center hover-lift border-border/30 hover:border-primary/30 group transition-all duration-300" data-testid={`platform-feature-${index}`}>
-                  <CardContent className="p-6 sm:p-8 relative overflow-hidden">
-                    {/* Subtle gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    <div className="relative z-10">
-                      {/* Highlight badge */}
-                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-4">
-                        <span className="text-xs font-medium text-primary">{feature.highlight}</span>
-                      </div>
-                      
-                      <h4 className="text-lg sm:text-xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-                        {feature.title}
-                      </h4>
-                      
-                      <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                        {feature.description}
-                      </p>
-                      
-                      <div className="flex items-center justify-center">
-                        <Badge variant="secondary" className="text-xs font-semibold bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20 text-primary">
-                          {feature.stats}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
       {/* Call to Action */}
       <section className="section-padding-y bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">

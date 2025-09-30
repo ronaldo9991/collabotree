@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { CommandPalette } from "./CommandPalette";
 import { useTheme } from "./ThemeProvider";
 import { useAuth } from "@/contexts/AuthContext";
-import { Network, Search, Moon, Sun, Home, ShoppingCart, FileText, Users, Menu, LogOut, Settings, User } from "lucide-react";
+import { Network, Search, Moon, Sun, Home, ShoppingCart, FileText, Users, Menu, LogOut, Settings, User, MessageSquare } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,6 +26,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "About", href: "/about", icon: Users, show: true },
     { name: "Explore Talent", href: "/marketplace", icon: ShoppingCart, show: true },
     { name: "How it Works", href: "/how-it-works", icon: FileText, show: true },
+    { name: "Contact", href: "/contact", icon: MessageSquare, show: true },
   ];
 
   const dashboardNavigation = [

@@ -61,6 +61,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       case "how-it-works":
         navigate("/how-it-works");
         break;
+      case "contact":
+        navigate("/contact");
+        break;
       default:
         break;
     }
@@ -73,6 +76,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         { id: "home", label: "Home", icon: Home, shortcut: "⌘H" },
         { id: "about", label: "About", icon: Users, shortcut: "⌘A" },
         { id: "how-it-works", label: "How it Works", icon: FileText, shortcut: "⌘W" },
+        { id: "contact", label: "Contact", icon: MessageSquare, shortcut: "⌘C" },
       ]
     },
     {
