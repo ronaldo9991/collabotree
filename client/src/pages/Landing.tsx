@@ -6,16 +6,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Footer } from "@/components/Footer";
 import { api } from "@/lib/api";
 
 export default function Landing() {
+  const [, setLocation] = useLocation();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentNewProjectSlide, setCurrentNewProjectSlide] = useState(0);
   const [topSelectionProjects, setTopSelectionProjects] = useState<any[]>([]);
   const [newProjects, setNewProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch projects from backend
   useEffect(() => {
@@ -128,6 +130,28 @@ export default function Landing() {
     return newProjects.slice(startIndex, startIndex + projectsPerSlide);
   };
 
+  // Handle search and navigate to marketplace
+  const handleSearch = () => {
+    const trimmedQuery = searchQuery.trim();
+    console.log('🚀 Hero search triggered. Query:', trimmedQuery);
+    if (trimmedQuery) {
+      const url = `/marketplace?search=${encodeURIComponent(trimmedQuery)}`;
+      console.log('   Navigating to:', url);
+      setLocation(url);
+    } else {
+      console.log('   Empty search, navigating to marketplace');
+      setLocation('/marketplace');
+    }
+  };
+
+  // Handle popular search terms
+  const handlePopularSearch = (term: string) => {
+    console.log('🏷️ Popular search clicked:', term);
+    const url = `/marketplace?search=${encodeURIComponent(term)}`;
+    console.log('   Navigating to:', url);
+    setLocation(url);
+  };
+
   // Auto-slide functionality removed - user wants manual control only
 
   const features = [
@@ -193,17 +217,17 @@ export default function Landing() {
             className="w-full h-full object-cover"
             data-testid="hero-background-image"
           />
-          {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/50"></div>
+          {/* Dark overlay with blue tint for better text readability and brand consistency */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-primary/20"></div>
         </div>
 
         {/* Content Overlay */}
-        <div className="relative z-10 container-unified w-full py-16">
+        <div className="relative z-10 container-unified w-full py-12 md:py-16 lg:py-20 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[70vh]">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh]">
               {/* Left Content */}
               <motion.div
-                className="space-y-8"
+                className="space-y-6 sm:space-y-8"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
@@ -211,14 +235,14 @@ export default function Landing() {
 
                 {/* Main Heading */}
                 <motion.div
-                  className="space-y-4"
+                  className="space-y-3 sm:space-y-4"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white">
                     Connect with
-                    <span className="block bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+                    <span className="block bg-gradient-to-r from-primary via-blue-400 to-cyan-400 bg-clip-text text-transparent mt-1 sm:mt-2">
                       Elite Student Talent
                     </span>
                     from Top Universities
@@ -229,29 +253,29 @@ export default function Landing() {
 
                 {/* CTA Buttons */}
                 <motion.div
-                  className="flex flex-col sm:flex-row gap-3"
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.5 }}
                 >
                   <Button
                     size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 h-12 px-6 text-base font-semibold rounded-xl"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold rounded-xl w-full sm:w-auto"
                     asChild
                   >
                     <Link href="/signin">
-                      <Users className="mr-2 h-4 w-4" />
+                      <Users className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                       Start Hiring Talent
                     </Link>
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-2 border-white/30 bg-white/10 backdrop-blur-lg hover:bg-white/20 hover:border-white/50 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-12 px-6 text-base font-semibold rounded-xl"
+                    className="border-2 border-white/30 bg-white/10 backdrop-blur-lg hover:bg-white/20 hover:border-white/50 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold rounded-xl w-full sm:w-auto"
                     asChild
                   >
                     <Link href="/signin">
-                      <GraduationCap className="mr-2 h-4 w-4" />
+                      <GraduationCap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                       Join as Student
                     </Link>
                   </Button>
@@ -266,54 +290,47 @@ export default function Landing() {
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
                 {/* Search Card */}
-                <div className="bg-blue-500/10 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl p-6 shadow-2xl border border-blue-500/20">
+                <div className="bg-gradient-to-br from-primary/10 via-blue-500/10 to-cyan-500/10 dark:from-slate-900/95 dark:via-slate-900/95 dark:to-primary/20 backdrop-blur-xl rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl border border-primary/30 dark:border-primary/20">
                   {/* Header */}
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-bold text-foreground mb-2">Find Your Perfect Match</h3>
-                    <p className="text-sm text-muted-foreground">Connect with verified students from top universities</p>
-                  </div>
-
-                  {/* Search Tabs */}
-                  <div className="flex gap-2 mb-4">
-                    <Button
-                      variant="outline"
-                      className="flex-1 rounded-lg h-10 text-sm font-medium bg-primary text-primary-foreground border-primary"
-                    >
-                      Find Talent
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 rounded-lg h-10 text-sm font-medium"
-                    >
-                      Browse Jobs
-                    </Button>
+                  <div className="text-center mb-4 sm:mb-6">
+                    <h3 className="text-lg sm:text-xl font-bold text-white dark:text-foreground mb-2">Find Your Perfect Match</h3>
+                    <p className="text-xs sm:text-sm text-white/80 dark:text-muted-foreground">Connect with verified students from top universities</p>
                   </div>
 
                   {/* Search Input */}
                   <div className="space-y-3 mb-4">
                     <Input
                       placeholder="Search by role, skills, or keywords"
-                      className="h-10 rounded-lg border-border focus:ring-2 focus:ring-primary/50 text-sm"
+                      className="h-11 sm:h-12 rounded-lg border-primary/30 bg-white/90 dark:bg-background/90 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 text-sm sm:text-base font-medium"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
                     />
                     <Button
                       size="lg"
-                      className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-semibold text-sm"
+                      className="w-full h-11 sm:h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all"
+                      onClick={handleSearch}
                     >
-                      <Search className="h-4 w-4 mr-2" />
+                      <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                       Find Talent
                     </Button>
                   </div>
 
                   {/* Popular Searches */}
                   <div>
-                    <p className="text-xs text-muted-foreground mb-2">Popular searches:</p>
-                    <div className="flex flex-wrap gap-1">
+                    <p className="text-xs sm:text-sm text-white/70 dark:text-muted-foreground mb-2 font-medium">Popular searches:</p>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {['Web Development', 'UI/UX Design', 'Data Analysis', 'Content Writing'].map((term) => (
                         <Button
                           key={term}
                           variant="outline"
                           size="sm"
-                          className="text-xs h-6 px-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+                          className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 bg-white/80 dark:bg-primary/10 hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground border-primary/30 transition-all font-medium"
+                          onClick={() => handlePopularSearch(term)}
                         >
                           {term}
                         </Button>

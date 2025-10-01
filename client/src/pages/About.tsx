@@ -66,10 +66,10 @@ export default function About() {
   return (
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section */}
-      <section ref={heroRef} className="section-padding-y bg-gradient-to-br from-background via-background to-muted/20">
+      <section ref={heroRef} className="section-padding-y bg-gradient-to-br from-background via-background to-muted/20 relative">
         <motion.div style={{ y, opacity }} className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
         
-        <div className="container-unified text-center relative z-10">
+        <div className="container-unified text-center relative z-10 max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -87,7 +87,7 @@ export default function About() {
             </motion.div>
             
             <motion.h1 
-              className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 md:mb-8 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight"
               initial={{ opacity: 0, y: 50 }}
               animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
@@ -122,7 +122,7 @@ export default function About() {
             </motion.h1>
             
             <motion.p 
-              className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-12"
+              className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-8 md:mb-12 px-4"
               initial={{ opacity: 0, y: 30 }}
               animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.8, delay: 1.0 }}
@@ -196,7 +196,7 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <Card className="glass-card bg-card/60 backdrop-blur-12 border-border/30 shadow-2xl">
-                <CardContent className="p-12 md:p-16">
+                <CardContent className="p-6 sm:p-8 md:p-12 lg:p-16">
                   <div className="max-w-5xl mx-auto">
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
@@ -208,28 +208,28 @@ export default function About() {
                         <BookOpen className="w-4 h-4 mr-2" />
                         Our Story
                       </Badge>
-                      <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" data-testid="section-story">
+                      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" data-testid="section-story">
                         The CollaboTree Story
                       </h2>
                     </motion.div>
                     
-                    <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center">
                       <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={storyInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="space-y-6 text-muted-foreground leading-relaxed"
+                        className="space-y-4 md:space-y-6 text-muted-foreground leading-relaxed"
                       >
-                        <p className="text-lg">
+                        <p className="text-sm sm:text-base md:text-lg">
                           CollaboTree was born from a simple observation: university students possess incredible 
                           skills and fresh perspectives, but traditional job markets often overlook them due to 
                           lack of experience.
                         </p>
-                        <p className="text-lg">
+                        <p className="text-sm sm:text-base md:text-lg">
                           Meanwhile, buyers struggle to find affordable, high-quality services 
                           from motivated providers who bring fresh thinking and academic rigor.
                         </p>
-                        <p className="text-lg">
+                        <p className="text-sm sm:text-base md:text-lg">
                           We created CollaboTree to bridge this gap, ensuring every service provider 
                           delivers exceptional results while students build their professional careers.
                         </p>
@@ -241,49 +241,49 @@ export default function About() {
                         transition={{ duration: 0.8, delay: 0.8 }}
                         className="relative"
                       >
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.0 }}
-                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-6 rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
                           >
-                            <Users className="w-8 h-8 text-primary mx-auto mb-3" />
-                            <h3 className="font-semibold text-lg mb-2">Verified Students</h3>
-                            <p className="text-sm text-muted-foreground">University-verified talent</p>
+                            <Users className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Verified Students</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">University-verified talent</p>
                           </motion.div>
                           
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.2 }}
-                            className="bg-gradient-to-br from-secondary/10 to-accent/10 p-6 rounded-2xl text-center"
+                            className="bg-gradient-to-br from-secondary/10 to-accent/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
                           >
-                            <Shield className="w-8 h-8 text-secondary mx-auto mb-3" />
-                            <h3 className="font-semibold text-lg mb-2">Quality Assured</h3>
-                            <p className="text-sm text-muted-foreground">Premium service standards</p>
+                            <Shield className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-secondary mx-auto mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Quality Assured</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Premium service standards</p>
                           </motion.div>
                           
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.4 }}
-                            className="bg-gradient-to-br from-accent/10 to-primary/10 p-6 rounded-2xl text-center"
+                            className="bg-gradient-to-br from-accent/10 to-primary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
                           >
-                            <Zap className="w-8 h-8 text-accent mx-auto mb-3" />
-                            <h3 className="font-semibold text-lg mb-2">Real-time Collaboration</h3>
-                            <p className="text-sm text-muted-foreground">Seamless communication</p>
+                            <Zap className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-accent mx-auto mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Real-time Collaboration</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Seamless communication</p>
                           </motion.div>
                           
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.6 }}
-                            className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-accent/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
                           >
-                            <Star className="w-8 h-8 text-primary mx-auto mb-3" />
-                            <h3 className="font-semibold text-lg mb-2">Career Launchpad</h3>
-                            <p className="text-sm text-muted-foreground">Professional growth</p>
+                            <Star className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Career Launchpad</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Professional growth</p>
                           </motion.div>
                         </div>
                       </motion.div>
@@ -341,10 +341,10 @@ export default function About() {
                 <Target className="w-4 h-4 mr-2" />
                 Our Foundation
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Mission, Vision & Values
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
                 The principles that guide everything we do at CollaboTree
               </p>
             </motion.div>
@@ -361,7 +361,7 @@ export default function About() {
             />
             
             {/* Mission Cards with Unique Shapes */}
-            <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 items-center">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 items-stretch">
               {missionData.map((item, index) => (
                 <motion.div
                   key={index}
@@ -579,7 +579,7 @@ export default function About() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <Card className="glass-card bg-card/60 backdrop-blur-12 border-primary/30 shadow-2xl">
-                <CardContent className="py-16 px-8">
+                <CardContent className="py-8 px-4 sm:py-12 sm:px-6 md:py-16 md:px-8">
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={ctaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}

@@ -77,20 +77,20 @@ export function Layout({ children }: LayoutProps) {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-card/95 backdrop-blur-12 border-l border-border/50 mobile-sheet-content">
+                <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-gradient-to-b from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 backdrop-blur-12 border-l border-primary/20 mobile-sheet-content">
                   <div className="flex flex-col h-full">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-border/30">
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-primary/20">
                       <h2 className="text-xl font-bold text-foreground">Menu</h2>
                       {/* Theme Toggle for Mobile */}
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={toggleTheme}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted/30 transition-colors border border-border/20 mobile-theme-toggle"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-all border border-primary/20 mobile-theme-toggle"
                         data-testid="mobile-theme-toggle"
                       >
-                        {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                        {theme === "light" ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-primary" />}
                         <span className="text-sm font-medium">{theme === "light" ? "Dark" : "Light"}</span>
                       </Button>
                     </div>
@@ -102,31 +102,31 @@ export function Layout({ children }: LayoutProps) {
                           <Link
                             key={item.name}
                             href={item.href}
-                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-colors p-4 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/10 mobile-nav-item"
+                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item"
                             onClick={() => setMobileMenuOpen(false)}
                             data-testid={`mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                           >
-                            <item.icon className="h-5 w-5 flex-shrink-0" />
+                            <item.icon className="h-5 w-5 flex-shrink-0 text-primary" />
                             {item.name}
                           </Link>
                         )
                       ))}
                       
                       {/* Separator */}
-                      <div className="border-t border-border/30 my-6" />
+                      <div className="border-t border-primary/20 my-6" />
                       
                       {/* Demo Dashboards Section */}
                       <div className="space-y-2">
-                        <div className="text-sm font-semibold text-muted-foreground px-4 py-2 uppercase tracking-wide">Demo Dashboards</div>
+                        <div className="text-sm font-semibold text-primary/70 px-4 py-2 uppercase tracking-wide">Demo Dashboards</div>
                         {dashboardNavigation.map((item) => (
                           item.show && (
                             <Link
                               key={item.name}
                               href={item.href}
-                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-colors p-4 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/10 mobile-nav-item"
+                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item"
                               onClick={() => setMobileMenuOpen(false)}
                             >
-                              <item.icon className="h-5 w-5 flex-shrink-0" />
+                              <item.icon className="h-5 w-5 flex-shrink-0 text-primary" />
                               {item.name}
                             </Link>
                           )

@@ -668,13 +668,13 @@ export default function AdminDashboard() {
                       <CardDescription>Track all conversations between students and buyers</CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="relative">
+                      <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Search messages..."
                           value={messageSearch}
                           onChange={(e) => setMessageSearch(e.target.value)}
-                          className="pl-10 w-64"
+                          className="pl-10 w-full h-10"
                         />
                       </div>
                     </div>
@@ -748,13 +748,13 @@ export default function AdminDashboard() {
                       <CardDescription>Manage all services on the platform</CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="relative">
+                      <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Search services..."
                           value={serviceSearch}
                           onChange={(e) => setServiceSearch(e.target.value)}
-                          className="pl-10 w-64"
+                          className="pl-10 w-full h-10"
                         />
                       </div>
                     </div>

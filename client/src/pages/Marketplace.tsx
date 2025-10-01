@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Link } from "wouter";
-import { Search, Filter, Star, Clock, FolderSync, Heart, MapPin, Sparkles, TrendingUp, Code, Smartphone, PaintBucket, Loader2 } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { Search, Filter, Star, Clock, FolderSync, Heart, MapPin, Sparkles, TrendingUp, Code, Smartphone, PaintBucket, Loader2, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,6 +37,8 @@ interface ProjectCardData extends ProjectWithDetails {
 export default function ExploreTalent() {
   const { toast } = useToast();
   const { user } = useAuth();
+  const [location] = useLocation();
+  
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceRange, setPriceRange] = useState([0, 2500]);
@@ -49,7 +51,7 @@ export default function ExploreTalent() {
   ]);
 
   // Fetch data function
-  const fetchData = async (isBackground = false) => {
+  const fetchData = useCallback(async (isBackground = false) => {
     try {
       if (!isBackground) {
         setLoading(true);
@@ -62,9 +64,12 @@ export default function ExploreTalent() {
         maxBudget: priceRange[1] < 2500 ? priceRange[1] : undefined,
       };
 
+      console.log('🔎 Fetching data with filters:', filters);
+      console.log('   Search filter value:', filters.search || '(none)');
+
       // Fetch projects (student services)
       const projectsResponse = await api.getProjects(filters);
-      console.log('API Response:', projectsResponse);
+      console.log('📦 API Response received:', projectsResponse ? 'Success' : 'Failed');
       
       // Handle API response format: { success: true, data: { data: [...], pagination: {...} } }
       let projectsData: any[] = [];
@@ -86,6 +91,9 @@ export default function ExploreTalent() {
         created_at: service.createdAt,
         updated_at: service.updatedAt || service.createdAt,
         created_by: service.ownerId,
+        createdAt: service.createdAt,
+        updatedAt: service.updatedAt || service.createdAt,
+        ownerId: service.ownerId,
         tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
         creator: {
           id: service.ownerId || '',
@@ -104,7 +112,19 @@ export default function ExploreTalent() {
       
       // Set projects data (even if empty)
       setProjects(mappedProjects);
-      console.log(`Loaded ${mappedProjects.length} projects from API`);
+      console.log(`✅ Loaded ${mappedProjects.length} projects from API`);
+      console.log('   Current search filter:', search || '(none)');
+      if (search) {
+        const filtered = mappedProjects.filter(p => 
+          p.title?.toLowerCase().includes(search.toLowerCase()) ||
+          p.description?.toLowerCase().includes(search.toLowerCase()) ||
+          p.tags?.some((t: string) => t.toLowerCase().includes(search.toLowerCase()))
+        );
+        console.log(`   ✨ Projects matching "${search}":`, filtered.length);
+        if (filtered.length > 0) {
+          console.log('   📋 Matching project titles:', filtered.map(p => p.title).slice(0, 3));
+        }
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
       console.log('API Error details:', error);
@@ -121,29 +141,46 @@ export default function ExploreTalent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, category, priceRange, toast]);
 
-  // Initial fetch and seamless auto-refresh
+  // Initialize and sync search from URL
   useEffect(() => {
-    fetchData();
+    const searchParams = new URLSearchParams(window.location.search);
+    const searchQuery = searchParams.get('search') || '';
     
-    // Set up seamless auto-refresh every 15 seconds (more frequent but silent)
+    console.log('==== SEARCH SYNC ====');
+    console.log('Window location:', window.location.href);
+    console.log('URL search param:', searchQuery);
+    console.log('Current state:', search);
+    console.log('Are they different?', searchQuery !== search);
+    
+    // Always update if URL has search and it's different from current state
+    if (searchQuery !== search) {
+      console.log('✅ UPDATING search state to:', searchQuery);
+      setSearch(searchQuery);
+    } else {
+      console.log('⏭️ Skipping update - values match');
+    }
+  }, [location, search]);
+
+  // Fetch data when search or filters change
+  useEffect(() => {
+    console.log('📊 Fetching data triggered');
+    console.log('   Search term:', search ? `"${search}"` : '(empty)');
+    console.log('   Category:', category);
+    console.log('   Price range:', priceRange);
+    fetchData();
+  }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
+
+  // Auto-refresh every 30 seconds (background updates)
+  useEffect(() => {
     const interval = setInterval(() => {
-      const previousCount = projects.length;
-      fetchData(true).then(() => {
-        // Only show notification if new projects were added
-        if (projects.length > previousCount) {
-          toast({
-            title: "New Projects Available!",
-            description: `${projects.length - previousCount} new project(s) have been added.`,
-            duration: 3000,
-          });
-        }
-      });
-    }, 15000);
+      console.log('Background refresh...');
+      fetchData(true);
+    }, 30000);
 
     return () => clearInterval(interval);
-  }, [search, category, priceRange, sortBy, toast, projects.length]);
+  }, [fetchData]);
 
 
   // Set up categories from project tags
@@ -172,8 +209,32 @@ export default function ExploreTalent() {
 
   // Client-side filtering and sorting
   const filteredProjects = projects?.filter((project) => {
+    // Price filter
     const price = project.budget || 0;
-    return price >= priceRange[0] && price <= priceRange[1];
+    const priceMatch = price >= priceRange[0] && price <= priceRange[1];
+    
+    // Category filter
+    let categoryMatch = true;
+    if (category && category !== 'all') {
+      const categorySlug = category.toLowerCase();
+      categoryMatch = (project.tags?.some((tag: string) => 
+        tag.toLowerCase().replace(/\s+/g, '-') === categorySlug || 
+        tag.toLowerCase().includes(categorySlug.replace(/-/g, ' '))
+      ) ?? false);
+    }
+    
+    // Search filter - check if search term matches title, description, or tags
+    let searchMatch: boolean = true;
+    if (search && search.trim()) {
+      const searchLower = search.toLowerCase().trim();
+      const titleMatch = (project.title?.toLowerCase().includes(searchLower)) || false;
+      const descMatch = (project.description?.toLowerCase().includes(searchLower)) || false;
+      const tagsMatch = (project.tags?.some((tag: string) => tag.toLowerCase().includes(searchLower))) || false;
+      const creatorMatch = (project.creator?.full_name?.toLowerCase().includes(searchLower)) || false;
+      searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch;
+    }
+    
+    return priceMatch && categoryMatch && searchMatch;
   });
 
   const sortedProjects = filteredProjects?.sort((a, b) => {
@@ -190,7 +251,10 @@ export default function ExploreTalent() {
         const bDelivery = Math.max(1, Math.floor((b.budget || 0) / 200));
         return aDelivery - bDelivery;
       default:
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // newest
+        // newest - handle undefined created_at
+        const aTime = a.created_at && typeof a.created_at === 'string' ? new Date(a.created_at).getTime() : 0;
+        const bTime = b.created_at && typeof b.created_at === 'string' ? new Date(b.created_at).getTime() : 0;
+        return bTime - aTime;
     }
   });
 
@@ -224,6 +288,28 @@ export default function ExploreTalent() {
             Discover verified student talent from top universities ready to bring your projects to life.
           </p>
           
+          {search && (
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Badge variant="secondary" className="px-4 py-2 text-sm">
+                <Search className="h-3 w-3 mr-2" />
+                Searching for: <span className="font-semibold ml-1">"{search}"</span>
+              </Badge>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSearch('')}
+                className="text-xs"
+              >
+                Clear search
+              </Button>
+            </div>
+          )}
+          {!loading && sortedProjects && (
+            <p className="text-sm text-muted-foreground">
+              Showing {sortedProjects.length} {sortedProjects.length === 1 ? 'result' : 'results'}
+              {search && ` for "${search}"`}
+            </p>
+          )}
         </div>
 
         {/* Main Content Layout */}
@@ -239,16 +325,24 @@ export default function ExploreTalent() {
               <div className="space-y-3">
                 {/* Search */}
                 <div>
-                  <label className="block text-xs font-medium mb-1">Search</label>
+                  <label className="block text-xs font-medium mb-1">
+                    Search {search && <span className="text-primary">({search})</span>}
+                  </label>
                   <div className="relative">
                     <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                     <Input
                       placeholder="Search talent..."
                       value={search}
-                      onChange={(e) => setSearch(e.target.value)}
+                      onChange={(e) => {
+                        console.log('Input onChange:', e.target.value);
+                        setSearch(e.target.value);
+                      }}
                       className="pl-7 h-7 text-xs"
                       data-testid="search-input"
                     />
+                  </div>
+                  <div className="mt-1 text-[10px] text-muted-foreground">
+                    Value: "{search}"
                   </div>
                 </div>
 
@@ -480,9 +574,7 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
             <div className="flex items-center gap-1">
               <span className="font-medium text-sm">{project.creator?.full_name || 'Creator'}</span>
               {project.creator?.isVerified && (
-                <Badge variant="secondary" className="text-xs px-1 py-0 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                  ✓
-                </Badge>
+                <CheckCircle className="h-3 w-3 text-primary flex-shrink-0" />
               )}
             </div>
           </div>

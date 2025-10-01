@@ -2,11 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { generalLimiter } from './middleware/rateLimit.js';
 import { errorHandler, notFoundHandler } from './middleware/error.js';
 import routes from './routes/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -36,6 +41,20 @@ app.use(logger);
 
 // API routes
 app.use('/api', routes);
+
+// Serve static files in production
+if (env.NODE_ENV === 'production') {
+  const frontendPath = path.join(__dirname, '../../dist');
+  app.use(express.static(frontendPath));
+  
+  // Handle SPA routing - serve index.html for non-API routes
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+}
 
 // Error handling middleware (must be last)
 app.use(notFoundHandler);
