@@ -20,9 +20,40 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS configuration
+// CORS configuration - more permissive for production
+const allowedOrigins = [
+  'http://localhost:3000', 
+  'http://localhost:3002', 
+  env.CLIENT_ORIGIN
+].filter(Boolean);
+
+// Add dynamic origin for production
+if (env.NODE_ENV === 'production') {
+  allowedOrigins.push('https://*.onrender.com');
+}
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3002', env.CLIENT_ORIGIN],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.some(allowed => {
+      if (allowed.includes('*')) {
+        return origin.includes(allowed.replace('*', ''));
+      }
+      return origin === allowed;
+    })) {
+      return callback(null, true);
+    }
+    
+    // For production, be more permissive
+    if (env.NODE_ENV === 'production') {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -39,20 +70,46 @@ app.use(cookieParser());
 // Logging
 app.use(logger);
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: env.NODE_ENV,
+    version: '1.0.0'
+  });
+});
+
 // API routes
 app.use('/api', routes);
 
 // Serve static files in production
 if (env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '../../dist');
-  app.use(express.static(frontendPath));
+  
+  // Serve static files
+  app.use(express.static(frontendPath, {
+    maxAge: '1d', // Cache static files for 1 day
+    etag: true,
+    lastModified: true
+  }));
   
   // Handle SPA routing - serve index.html for non-API routes
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
+    // Don't handle API routes, health check, or socket.io
+    if (req.path.startsWith('/api') || 
+        req.path.startsWith('/socket.io') || 
+        req.path === '/health') {
       return next();
     }
-    res.sendFile(path.join(frontendPath, 'index.html'));
+    
+    // Serve index.html for all other routes (SPA routing)
+    res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        res.status(500).send('Error loading application');
+      }
+    });
   });
 }
 

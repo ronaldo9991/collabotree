@@ -1,4 +1,21 @@
-const API_BASE_URL = 'http://localhost:4000/api';
+// Dynamic API URL based on environment
+const getApiBaseUrl = () => {
+  // Check if we're in production (deployed on Render)
+  if (window.location.hostname.includes('render.com') || window.location.hostname.includes('onrender.com')) {
+    // Use the same domain for API calls in production
+    return `${window.location.protocol}//${window.location.hostname}/api`;
+  }
+  
+  // Check for environment variable
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Fallback to localhost for development
+  return 'http://localhost:4000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface ApiResponse<T = any> {
   success: boolean;
