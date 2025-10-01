@@ -43,7 +43,24 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_BASE_URL = 'http://localhost:4000/api';
+// Dynamic API URL - same logic as in api.ts
+const getApiBaseUrl = () => {
+  // Check if we're in production (deployed on Render)
+  if (typeof window !== 'undefined' && (window.location.hostname.includes('render.com') || window.location.hostname.includes('onrender.com'))) {
+    // Use the same domain for API calls in production
+    return `${window.location.protocol}//${window.location.hostname}/api`;
+  }
+  
+  // Check for environment variable
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Fallback to localhost for development
+  return 'http://localhost:4000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -51,7 +68,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!user && !!tokens;
-
 
   const refreshToken = async () => {
     try {
@@ -139,6 +155,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string) => {
     try {
+      console.log('Attempting login with API URL:', API_BASE_URL);
+      
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -148,6 +166,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       const data = await response.json();
+      console.log('Login response:', { status: response.status, data });
 
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');
@@ -159,6 +178,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(userData);
       setTokens(authTokens);
       localStorage.setItem('auth_tokens', JSON.stringify(authTokens));
+      
+      console.log('Login successful:', userData);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -167,6 +188,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (data: RegisterData) => {
     try {
+      console.log('Attempting registration with API URL:', API_BASE_URL);
+      
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
@@ -176,6 +199,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       const responseData = await response.json();
+      console.log('Registration response:', { status: response.status, data: responseData });
 
       if (!response.ok) {
         throw new Error(responseData.error || 'Registration failed');
@@ -187,6 +211,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(userData);
       setTokens(authTokens);
       localStorage.setItem('auth_tokens', JSON.stringify(authTokens));
+      
+      console.log('Registration successful:', userData);
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
