@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import { AuthenticatedRequest } from '../types/express.js';
-import { sendSuccess, sendCreated, sendValidationError, sendNotFound, sendForbidden } from '../utils/response.js';
+import { sendSuccess, sendCreated, sendValidationError, sendNotFound, sendForbidden } from '../utils/responses.js';
 import { parsePagination, createPaginationResult } from '../utils/pagination.js';
 import { createNotification, createNotificationForUsers } from '../domain/notifications.js';
 
@@ -194,7 +194,7 @@ export const getHireRequests = async (req: AuthenticatedRequest, res: Response) 
   }
 };
 
-export const getHireRequestById = async (req: AuthenticatedRequest, res: Response) => {
+export const getHireRequest = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user!.id;
@@ -385,6 +385,22 @@ export const updateHireRequest = async (req: AuthenticatedRequest, res: Response
     }
     throw error;
   }
+};
+
+// Convenience functions for specific actions
+export const acceptHireRequest = async (req: AuthenticatedRequest, res: Response) => {
+  req.body = { status: 'ACCEPTED' };
+  return updateHireRequest(req, res);
+};
+
+export const rejectHireRequest = async (req: AuthenticatedRequest, res: Response) => {
+  req.body = { status: 'REJECTED' };
+  return updateHireRequest(req, res);
+};
+
+export const cancelHireRequest = async (req: AuthenticatedRequest, res: Response) => {
+  req.body = { status: 'CANCELLED' };
+  return updateHireRequest(req, res);
 };
 
 export const deleteHireRequest = async (req: AuthenticatedRequest, res: Response) => {

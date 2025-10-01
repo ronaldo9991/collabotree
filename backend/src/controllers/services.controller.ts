@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import { AuthenticatedRequest } from '../types/express.js';
-import { sendSuccess, sendCreated, sendValidationError, sendNotFound, sendForbidden } from '../utils/response.js';
+import { sendSuccess, sendCreated, sendValidationError, sendNotFound, sendForbidden } from '../utils/responses.js';
 import { parsePagination, createPaginationResult } from '../utils/pagination.js';
 
 // Validation schemas
@@ -146,7 +146,7 @@ export const getServices = async (req: Request, res: Response) => {
   }
 };
 
-export const getServiceById = async (req: Request, res: Response) => {
+export const getService = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -313,6 +313,75 @@ export const getUserServices = async (req: AuthenticatedRequest, res: Response) 
               isVerified: true,
               idCardUrl: true,
               verifiedAt: true,
+            },
+          },
+          _count: {
+            select: {
+              hireRequests: true,
+              orders: true,
+            },
+          },
+        },
+        orderBy,
+        take: pagination.limit,
+        skip: skip,
+      }),
+      prisma.service.count({ where }),
+    ]);
+
+    const result = createPaginationResult(services, pagination, total);
+    return sendSuccess(res, result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return sendValidationError(res, error.errors);
+    }
+    throw error;
+  }
+};
+
+// Public function for homepage
+export const getPublicServices = async (req: Request, res: Response) => {
+  try {
+    const query = getServicesSchema.parse(req.query);
+    const pagination = parsePagination(query);
+
+    // Build where clause for public services
+    const where: any = {
+      isActive: true,
+    };
+
+    if (query.search) {
+      where.OR = [
+        { title: { contains: query.search, mode: 'insensitive' } },
+        { description: { contains: query.search, mode: 'insensitive' } },
+        { owner: { name: { contains: query.search, mode: 'insensitive' } } },
+      ];
+    }
+
+    // Build orderBy clause
+    const orderBy: any = {};
+    if (query.sortBy) {
+      orderBy[query.sortBy] = query.sortOrder || 'desc';
+    } else {
+      orderBy.createdAt = 'desc';
+    }
+
+    // Calculate skip for pagination
+    const skip = (pagination.page - 1) * pagination.limit;
+
+    const [services, total] = await Promise.all([
+      prisma.service.findMany({
+        where,
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              bio: true,
+              university: true,
+              skills: true,
+              isVerified: true,
             },
           },
           _count: {
