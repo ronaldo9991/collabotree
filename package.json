@@ -1,5 +1,5 @@
 {
-  "name": "collabotree-frontend",
+  "name": "collabotree-monorepo",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "install:all": "cd backend && npm install && cd ../client && npm install",
     "build:backend": "cd backend && npm run build",
     "build:frontend": "cd client && npm run build",
-    "start:prod": "cd backend && npm run prisma:deploy && npm start",
+    "start:prod": "cd backend && npx prisma db push --accept-data-loss && npm start",
     "preview": "vite preview",
     "check": "tsc",
     "setup": "node setup-supabase-complete.js",
