@@ -1,34 +1,45 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
-import { sendSuccess, sendCreated, sendError, sendValidationError, sendNotFound } from '../utils/responses.js';
-import { createServiceSchema, updateServiceSchema, getServiceSchema, getServicesSchema } from '../validations/service.js';
 import { AuthenticatedRequest } from '../types/express.js';
+import { sendSuccess, sendCreated, sendValidationError, sendNotFound, sendForbidden } from '../utils/response.js';
 import { parsePagination, createPaginationResult } from '../utils/pagination.js';
+
+// Validation schemas
+const createServiceSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+  description: z.string().min(1, 'Description is required').max(1000, 'Description must be less than 1000 characters'),
+  priceCents: z.number().int().min(100, 'Price must be at least $1.00').max(1000000, 'Price must be less than $10,000.00'),
+});
+
+const updateServiceSchema = createServiceSchema.partial();
+
+const getServicesSchema = z.object({
+  page: z.string().optional(),
+  limit: z.string().optional(),
+  search: z.string().optional(),
+  minPrice: z.string().optional(),
+  maxPrice: z.string().optional(),
+  sortBy: z.enum(['createdAt', 'priceCents', 'title']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
+});
 
 export const createService = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    // Debug logging
-    console.log('Creating service for user:', req.user?.id, 'Role:', req.user?.role);
-
     const validatedData = createServiceSchema.parse(req.body);
-
-    // Ensure the user is a student
-    if (req.user!.role !== 'STUDENT') {
-      return sendError(res, 'Only students can create services', 403);
-    }
+    const userId = req.user!.id;
 
     const service = await prisma.service.create({
       data: {
         ...validatedData,
-        ownerId: req.user!.id,
-        isActive: true, // Ensure service is active by default
+        ownerId: userId,
       },
       include: {
         owner: {
           select: {
             id: true,
             name: true,
+            email: true,
             bio: true,
             university: true,
             skills: true,
@@ -37,13 +48,17 @@ export const createService = async (req: AuthenticatedRequest, res: Response) =>
             verifiedAt: true,
           },
         },
+        _count: {
+          select: {
+            hireRequests: true,
+            orders: true,
+          },
+        },
       },
     });
 
-    console.log('Service created successfully:', service.id);
     return sendCreated(res, service, 'Service created successfully');
   } catch (error) {
-    console.error('Error creating service:', error);
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
     }
@@ -51,43 +66,44 @@ export const createService = async (req: AuthenticatedRequest, res: Response) =>
   }
 };
 
-// Public version for homepage (no authentication required)
-export const getPublicServices = async (req: any, res: Response) => {
+export const getServices = async (req: Request, res: Response) => {
   try {
-    const validatedData = getServicesSchema.parse(req.query);
-    const pagination = parsePagination(validatedData);
+    const query = getServicesSchema.parse(req.query);
+    const pagination = parsePagination(query);
 
     // Build where clause
     const where: any = {
       isActive: true,
     };
 
-    if (validatedData.q) {
+    if (query.search) {
       where.OR = [
-        { title: { contains: validatedData.q, mode: 'insensitive' } },
-        { description: { contains: validatedData.q, mode: 'insensitive' } },
+        { title: { contains: query.search, mode: 'insensitive' } },
+        { description: { contains: query.search, mode: 'insensitive' } },
+        { owner: { name: { contains: query.search, mode: 'insensitive' } } },
       ];
     }
 
-    if (validatedData.minPrice) {
-      where.priceCents = { ...where.priceCents, gte: validatedData.minPrice };
-    }
-
-    if (validatedData.maxPrice) {
-      where.priceCents = { ...where.priceCents, lte: validatedData.maxPrice };
-    }
-
-    if (validatedData.ownerId) {
-      where.ownerId = validatedData.ownerId;
+    if (query.minPrice || query.maxPrice) {
+      where.priceCents = {};
+      if (query.minPrice) {
+        where.priceCents.gte = parseInt(query.minPrice) * 100;
+      }
+      if (query.maxPrice) {
+        where.priceCents.lte = parseInt(query.maxPrice) * 100;
+      }
     }
 
     // Build orderBy clause
     const orderBy: any = {};
-    if (validatedData.sortBy) {
-      orderBy[validatedData.sortBy] = validatedData.sortOrder || 'desc';
+    if (query.sortBy) {
+      orderBy[query.sortBy] = query.sortOrder || 'desc';
     } else {
-      orderBy.createdAt = 'desc'; // Default to newest first
+      orderBy.createdAt = 'desc';
     }
+
+    // Calculate skip for pagination
+    const skip = (pagination.page - 1) * pagination.limit;
 
     const [services, total] = await Promise.all([
       prisma.service.findMany({
@@ -97,6 +113,7 @@ export const getPublicServices = async (req: any, res: Response) => {
             select: {
               id: true,
               name: true,
+              email: true,
               bio: true,
               university: true,
               skills: true,
@@ -113,81 +130,13 @@ export const getPublicServices = async (req: any, res: Response) => {
           },
         },
         orderBy,
-        take: pagination.take,
-        skip: pagination.skip,
-      }),
-      prisma.service.count({ where }),
-    ]);
-
-    const result = createPaginationResult(services, total, pagination);
-    return sendSuccess(res, result);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return sendValidationError(res, error.errors);
-    }
-    throw error;
-  }
-};
-
-export const getServices = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const validatedData = getServicesSchema.parse(req.query);
-    const pagination = parsePagination(validatedData);
-
-    // Build where clause
-    const where: any = {
-      isActive: true,
-    };
-
-    if (validatedData.q) {
-      where.OR = [
-        { title: { contains: validatedData.q, mode: 'insensitive' } },
-        { description: { contains: validatedData.q, mode: 'insensitive' } },
-      ];
-    }
-
-    if (validatedData.minPrice) {
-      where.priceCents = { ...where.priceCents, gte: validatedData.minPrice };
-    }
-
-    if (validatedData.maxPrice) {
-      where.priceCents = { ...where.priceCents, lte: validatedData.maxPrice };
-    }
-
-    if (validatedData.ownerId) {
-      where.ownerId = validatedData.ownerId;
-    }
-
-    // Build orderBy clause
-    const orderBy: any = {};
-    orderBy[validatedData.sortBy] = validatedData.sortOrder;
-
-    const [services, total] = await Promise.all([
-      prisma.service.findMany({
-        where,
-        include: {
-          owner: {
-            select: {
-              id: true,
-              name: true,
-              bio: true,
-              university: true,
-              skills: true,
-              isVerified: true,
-              idCardUrl: true,
-              verifiedAt: true,
-            },
-          },
-        },
-        orderBy,
-        skip: (pagination.page - 1) * pagination.limit,
         take: pagination.limit,
+        skip: skip,
       }),
       prisma.service.count({ where }),
     ]);
 
     const result = createPaginationResult(services, pagination, total);
-
     return sendSuccess(res, result);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -197,20 +146,30 @@ export const getServices = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const getService = async (req: AuthenticatedRequest, res: Response) => {
+export const getServiceById = async (req: Request, res: Response) => {
   try {
-    const validatedData = getServiceSchema.parse(req.params);
+    const { id } = req.params;
 
     const service = await prisma.service.findUnique({
-      where: { id: validatedData.id },
+      where: { id },
       include: {
         owner: {
           select: {
             id: true,
             name: true,
+            email: true,
             bio: true,
             university: true,
             skills: true,
+            isVerified: true,
+            idCardUrl: true,
+            verifiedAt: true,
+          },
+        },
+        _count: {
+          select: {
+            hireRequests: true,
+            orders: true,
           },
         },
       },
@@ -222,43 +181,50 @@ export const getService = async (req: AuthenticatedRequest, res: Response) => {
 
     return sendSuccess(res, service);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return sendValidationError(res, error.errors);
-    }
     throw error;
   }
 };
 
 export const updateService = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const { id } = req.params;
     const validatedData = updateServiceSchema.parse(req.body);
-    const serviceId = req.params.id;
+    const userId = req.user!.id;
 
     // Check if service exists and user owns it
     const existingService = await prisma.service.findUnique({
-      where: { id: serviceId },
-      select: { ownerId: true }
+      where: { id },
     });
 
     if (!existingService) {
       return sendNotFound(res, 'Service not found');
     }
 
-    if (existingService.ownerId !== req.user!.id) {
-      return sendError(res, 'Access denied', 403);
+    if (existingService.ownerId !== userId) {
+      return sendForbidden(res, 'You can only update your own services');
     }
 
     const service = await prisma.service.update({
-      where: { id: serviceId },
+      where: { id },
       data: validatedData,
       include: {
         owner: {
           select: {
             id: true,
             name: true,
+            email: true,
             bio: true,
             university: true,
             skills: true,
+            isVerified: true,
+            idCardUrl: true,
+            verifiedAt: true,
+          },
+        },
+        _count: {
+          select: {
+            hireRequests: true,
+            orders: true,
           },
         },
       },
@@ -275,30 +241,100 @@ export const updateService = async (req: AuthenticatedRequest, res: Response) =>
 
 export const deleteService = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const serviceId = req.params.id;
+    const { id } = req.params;
+    const userId = req.user!.id;
 
     // Check if service exists and user owns it
     const existingService = await prisma.service.findUnique({
-      where: { id: serviceId },
-      select: { ownerId: true }
+      where: { id },
     });
 
     if (!existingService) {
       return sendNotFound(res, 'Service not found');
     }
 
-    if (existingService.ownerId !== req.user!.id) {
-      return sendError(res, 'Access denied', 403);
+    if (existingService.ownerId !== userId) {
+      return sendForbidden(res, 'You can only delete your own services');
     }
 
     // Soft delete by setting isActive to false
     await prisma.service.update({
-      where: { id: serviceId },
-      data: { isActive: false }
+      where: { id },
+      data: { isActive: false },
     });
 
     return sendSuccess(res, null, 'Service deleted successfully');
   } catch (error) {
+    throw error;
+  }
+};
+
+export const getUserServices = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const query = getServicesSchema.parse(req.query);
+    const pagination = parsePagination(query);
+
+    // Build where clause
+    const where: any = {
+      ownerId: userId,
+    };
+
+    if (query.search) {
+      where.OR = [
+        { title: { contains: query.search, mode: 'insensitive' } },
+        { description: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
+
+    // Build orderBy clause
+    const orderBy: any = {};
+    if (query.sortBy) {
+      orderBy[query.sortBy] = query.sortOrder || 'desc';
+    } else {
+      orderBy.createdAt = 'desc';
+    }
+
+    // Calculate skip for pagination
+    const skip = (pagination.page - 1) * pagination.limit;
+
+    const [services, total] = await Promise.all([
+      prisma.service.findMany({
+        where,
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              bio: true,
+              university: true,
+              skills: true,
+              isVerified: true,
+              idCardUrl: true,
+              verifiedAt: true,
+            },
+          },
+          _count: {
+            select: {
+              hireRequests: true,
+              orders: true,
+            },
+          },
+        },
+        orderBy,
+        take: pagination.limit,
+        skip: skip,
+      }),
+      prisma.service.count({ where }),
+    ]);
+
+    const result = createPaginationResult(services, pagination, total);
+    return sendSuccess(res, result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return sendValidationError(res, error.errors);
+    }
     throw error;
   }
 };
