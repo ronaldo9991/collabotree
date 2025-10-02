@@ -10,6 +10,8 @@ const createServiceSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
   description: z.string().min(1, 'Description is required').max(1000, 'Description must be less than 1000 characters'),
   priceCents: z.number().int().min(100, 'Price must be at least $1.00').max(1000000, 'Price must be less than $10,000.00'),
+  coverImage: z.string().optional(),
+  isActive: z.boolean().optional().default(true),
 });
 
 const updateServiceSchema = createServiceSchema.partial();
@@ -22,6 +24,7 @@ const getServicesSchema = z.object({
   maxPrice: z.string().optional(),
   sortBy: z.enum(['createdAt', 'priceCents', 'title']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
+  ownerId: z.string().optional(),
 });
 
 export const createService = async (req: AuthenticatedRequest, res: Response) => {
@@ -75,6 +78,11 @@ export const getServices = async (req: Request, res: Response) => {
     const where: any = {
       isActive: true,
     };
+
+    // Filter by owner if specified
+    if (query.ownerId) {
+      where.ownerId = query.ownerId;
+    }
 
     if (query.search) {
       where.OR = [
