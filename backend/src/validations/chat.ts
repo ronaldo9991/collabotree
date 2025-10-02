@@ -13,6 +13,7 @@ export const getMessagesSchema = z.object({
 
 export const markMessagesReadSchema = z.object({
   hireId: z.string().cuid('Invalid hire ID'),
+  messageId: z.string().cuid('Invalid message ID'),
 });
 
 export const joinChatSchema = z.object({

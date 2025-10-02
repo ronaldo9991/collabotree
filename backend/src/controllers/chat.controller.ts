@@ -11,7 +11,7 @@ export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
     const validatedData = getMessagesSchema.parse(req.params);
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit as string) || 20));
 
-    // Verify hire request exists and is accepted
+    // Verify hire request exists and has a fully signed contract
     const hireRequest = await prisma.hireRequest.findUnique({
       where: { id: validatedData.hireId },
       select: {
@@ -19,6 +19,15 @@ export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
         buyerId: true,
         studentId: true,
         status: true,
+        contract: {
+          select: {
+            id: true,
+            status: true,
+            isSignedByBuyer: true,
+            isSignedByStudent: true,
+            signedAt: true
+          }
+        },
         chatRoom: {
           select: { id: true }
         }
@@ -30,7 +39,20 @@ export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     if (hireRequest.status !== 'ACCEPTED') {
-      return sendError(res, 'Chat is only available for accepted hire requests', 403);
+      return sendError(res, 'Hire request must be accepted first', 403);
+    }
+
+    // Check if contract exists and is fully signed
+    if (!hireRequest.contract) {
+      return sendError(res, 'Contract must be created and signed by both parties before chat access', 403);
+    }
+
+    if (!hireRequest.contract.isSignedByBuyer || !hireRequest.contract.isSignedByStudent) {
+      return sendError(res, 'Both parties must sign the contract before chat access is available', 403);
+    }
+
+    if (hireRequest.contract.status !== 'PENDING_SIGNATURES' && hireRequest.contract.status !== 'ACTIVE' && hireRequest.contract.status !== 'COMPLETED') {
+      return sendError(res, 'Contract must be active for chat access', 403);
     }
 
     // Check if user is a participant
@@ -52,34 +74,25 @@ export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
     const messages = await prisma.message.findMany({
       where: {
         roomId: hireRequest.chatRoom.id,
-        ...cursorCondition,
+        ...cursorCondition
       },
       include: {
         sender: {
           select: {
             id: true,
             name: true,
-          },
-        },
-        readBy: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
+          }
+        }
       },
-      orderBy: { createdAt: 'asc' }, // Oldest first
-      take: limit + 1, // Take one extra to check if there are more
+      orderBy: { createdAt: 'desc' },
+      take: limit + 1
     });
 
     const hasMore = messages.length > limit;
-    const result = hasMore ? messages.slice(0, limit) : messages;
+    const result = hasMore ? messages.slice(0, -1) : messages;
+    const nextCursor = hasMore ? result[result.length - 1]?.id : undefined;
 
-    return sendSuccess(res, createCursorPaginationResult(result, limit));
+    return sendSuccess(res, createCursorPaginationResult(result.reverse(), limit, nextCursor));
   } catch (error) {
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
@@ -90,9 +103,12 @@ export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
 
 export const markMessagesAsRead = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const validatedData = markMessagesReadSchema.parse(req.params);
+    const validatedData = markMessagesReadSchema.parse({
+      ...req.params,
+      ...req.body
+    });
 
-    // Verify hire request exists and is accepted
+    // Verify hire request exists and has a fully signed contract
     const hireRequest = await prisma.hireRequest.findUnique({
       where: { id: validatedData.hireId },
       select: {
@@ -100,6 +116,14 @@ export const markMessagesAsRead = async (req: AuthenticatedRequest, res: Respons
         buyerId: true,
         studentId: true,
         status: true,
+        contract: {
+          select: {
+            id: true,
+            status: true,
+            isSignedByBuyer: true,
+            isSignedByStudent: true
+          }
+        },
         chatRoom: {
           select: { id: true }
         }
@@ -111,7 +135,16 @@ export const markMessagesAsRead = async (req: AuthenticatedRequest, res: Respons
     }
 
     if (hireRequest.status !== 'ACCEPTED') {
-      return sendError(res, 'Chat is only available for accepted hire requests', 403);
+      return sendError(res, 'Hire request must be accepted first', 403);
+    }
+
+    // Check if contract exists and is fully signed
+    if (!hireRequest.contract) {
+      return sendError(res, 'Contract must be created and signed by both parties before chat access', 403);
+    }
+
+    if (!hireRequest.contract.isSignedByBuyer || !hireRequest.contract.isSignedByStudent) {
+      return sendError(res, 'Both parties must sign the contract before chat access is available', 403);
     }
 
     // Check if user is a participant
@@ -122,32 +155,28 @@ export const markMessagesAsRead = async (req: AuthenticatedRequest, res: Respons
     }
 
     if (!hireRequest.chatRoom) {
-      return sendSuccess(res, null, 'No messages to mark as read');
+      return sendSuccess(res, { marked: 0 });
     }
 
-    // Mark all messages in the room as read by this user
-    const unreadMessages = await prisma.message.findMany({
+    // Mark messages as read
+    const result = await prisma.messageRead.upsert({
       where: {
-        roomId: hireRequest.chatRoom.id,
-        readBy: {
-          none: {
-            userId: req.user!.id
-          }
+        messageId_userId: {
+          messageId: validatedData.messageId,
+          userId: req.user!.id
         }
       },
-      select: { id: true }
+      update: {
+        readAt: new Date()
+      },
+      create: {
+        messageId: validatedData.messageId,
+        userId: req.user!.id,
+        readAt: new Date()
+      }
     });
 
-    if (unreadMessages.length > 0) {
-      await prisma.messageRead.createMany({
-        data: unreadMessages.map(msg => ({
-          messageId: msg.id,
-          userId: req.user!.id
-        }))
-      });
-    }
-
-    return sendSuccess(res, null, 'Messages marked as read');
+    return sendSuccess(res, { marked: 1 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
@@ -163,7 +192,7 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
       ...req.body
     });
 
-    // Verify hire request exists and is accepted
+    // Verify hire request exists and has a fully signed contract
     const hireRequest = await prisma.hireRequest.findUnique({
       where: { id: validatedData.hireId },
       select: {
@@ -171,6 +200,14 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
         buyerId: true,
         studentId: true,
         status: true,
+        contract: {
+          select: {
+            id: true,
+            status: true,
+            isSignedByBuyer: true,
+            isSignedByStudent: true
+          }
+        },
         chatRoom: {
           select: { id: true }
         }
@@ -182,7 +219,20 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     if (hireRequest.status !== 'ACCEPTED') {
-      return sendError(res, 'Chat is only available for accepted hire requests', 403);
+      return sendError(res, 'Hire request must be accepted first', 403);
+    }
+
+    // Check if contract exists and is fully signed
+    if (!hireRequest.contract) {
+      return sendError(res, 'Contract must be created and signed by both parties before chat access', 403);
+    }
+
+    if (!hireRequest.contract.isSignedByBuyer || !hireRequest.contract.isSignedByStudent) {
+      return sendError(res, 'Both parties must sign the contract before chat access is available', 403);
+    }
+
+    if (hireRequest.contract.status !== 'PENDING_SIGNATURES' && hireRequest.contract.status !== 'ACTIVE' && hireRequest.contract.status !== 'COMPLETED') {
+      return sendError(res, 'Contract must be active for chat access', 403);
     }
 
     // Check if user is a participant

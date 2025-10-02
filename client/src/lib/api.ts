@@ -260,6 +260,58 @@ class ApiClient {
     });
   }
 
+  // Contract endpoints
+  async createContract(data: any) {
+    return this.request('/contracts', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getContract(contractId: string) {
+    return this.request(`/contracts/${contractId}`);
+  }
+
+  async getUserContracts(params?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = searchParams.toString();
+    return this.request(`/contracts/user${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async signContract(contractId: string, data: any) {
+    return this.request(`/contracts/${contractId}/sign`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async processPayment(contractId: string) {
+    return this.request(`/contracts/${contractId}/payment`, {
+      method: 'POST',
+    });
+  }
+
+  async updateProgress(contractId: string, data: any) {
+    return this.request(`/contracts/${contractId}/progress`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async markCompleted(contractId: string, data: any) {
+    return this.request(`/contracts/${contractId}/complete`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Reviews endpoints
   async createReview(data: any) {
     return this.request('/reviews', {

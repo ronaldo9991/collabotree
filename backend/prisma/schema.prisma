@@ -42,6 +42,10 @@ model User {
   refreshTokens     RefreshToken[]
   sentMessages      Message[]
   messageReads      MessageRead[]
+  contractsAsBuyer    Contract[] @relation("BuyerContracts")
+  contractsAsStudent  Contract[] @relation("StudentContracts")
+  contractSignatures  ContractSignature[]
+  contractProgress    ContractProgress[]
 
   @@map("users")
 }
@@ -62,6 +66,7 @@ model Service {
   owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   hireRequests  HireRequest[]
   orders        Order[]
+  contracts     Contract[]
 
   @@map("services")
 }
@@ -83,6 +88,7 @@ model HireRequest {
   service   Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   chatRoom  ChatRoom?
   orders    Order[]
+  contract  Contract?
 
   @@map("hire_requests")
 }
@@ -147,10 +153,94 @@ model Order {
   hireRequest HireRequest? @relation(fields: [hireRequestId], references: [id])
   reviews     Review[]
   disputes    Dispute[]
+  contract    Contract?
 
   // Critical constraint: buyer can only purchase a service once
   @@unique([buyerId, serviceId], name: "unique_buyer_service_order")
   @@map("orders")
+}
+
+model Contract {
+  id              String   @id @default(cuid())
+  hireRequestId   String   @unique
+  orderId         String?  @unique
+  buyerId         String
+  studentId       String
+  serviceId       String
+  
+  // Contract Details
+  title           String
+  description     String
+  deliverables    String   // JSON string of deliverables
+  timeline        Int      // Days to complete
+  priceCents      Int
+  platformFeeCents Int     // 10% commission
+  studentPayoutCents Int   // Amount student will receive
+  
+  // Contract Status
+  status          String   @default("DRAFT") // DRAFT, PENDING_SIGNATURES, ACTIVE, COMPLETED, CANCELLED
+  isSignedByBuyer Boolean  @default(false)
+  isSignedByStudent Boolean @default(false)
+  signedAt        DateTime?
+  
+  // Payment Status
+  paymentStatus   String   @default("PENDING") // PENDING, PAID, RELEASED, REFUNDED
+  paymentIntentId String?  // Stripe payment intent ID
+  paidAt          DateTime?
+  releasedAt      DateTime?
+  
+  // Progress Tracking
+  progressStatus  String   @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED
+  progressNotes   String?  // Student's progress updates
+  completionNotes String?  // Buyer's completion notes
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  hireRequest     HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
+  order           Order?      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  buyer           User        @relation("BuyerContracts", fields: [buyerId], references: [id], onDelete: Cascade)
+  student         User        @relation("StudentContracts", fields: [studentId], references: [id], onDelete: Cascade)
+  service         Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  signatures      ContractSignature[]
+  progressUpdates ContractProgress[]
+  
+  @@map("contracts")
+}
+
+model ContractSignature {
+  id         String   @id @default(cuid())
+  contractId String
+  userId     String
+  signature  String   // Base64 encoded signature image
+  signedAt   DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+  
+  // Relations
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([contractId, userId])
+  @@map("contract_signatures")
+}
+
+model ContractProgress {
+  id          String   @id @default(cuid())
+  contractId  String
+  userId      String   // Who made the update
+  status      String   // IN_PROGRESS, COMPLETED, BLOCKED, etc.
+  notes       String
+  attachments String?  // JSON array of file URLs
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("contract_progress")
 }
 
 model Review {

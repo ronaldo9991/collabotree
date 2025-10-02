@@ -67,27 +67,50 @@ export default function ExploreTalent() {
       console.log('🔎 Fetching data with filters:', filters);
       console.log('   Search filter value:', filters.search || '(none)');
 
-      // Fetch projects (student services)
-      const projectsResponse = await api.getProjects(filters);
-      console.log('📦 API Response received:', projectsResponse ? 'Success' : 'Failed');
+      // Fetch projects (student services) - use public endpoint like landing page
+      console.log('🌐 Making API call to getPublicServices with params:', { 
+        limit: 50, 
+        sortBy: 'createdAt', 
+        sortOrder: 'desc',
+        ...filters 
+      });
       
-      // Handle API response format: { success: true, data: { data: [...], pagination: {...} } }
+      const projectsResponse = await api.getPublicServices({ 
+        limit: 50, 
+        sortBy: 'createdAt', 
+        sortOrder: 'desc',
+        ...filters 
+      });
+      
+      console.log('📦 Raw API Response:', projectsResponse);
+      console.log('📦 API Response type:', typeof projectsResponse);
+      console.log('📦 API Response success:', projectsResponse ? 'Success' : 'Failed');
+      
+      // Handle API response format - same as landing page
       let projectsData: any[] = [];
-      if (projectsResponse && typeof projectsResponse === 'object' && 'success' in projectsResponse && projectsResponse.success && 'data' in projectsResponse && projectsResponse.data && typeof projectsResponse.data === 'object' && 'data' in projectsResponse.data) {
-        projectsData = projectsResponse.data.data as any[];
+      if (projectsResponse && typeof projectsResponse === 'object') {
+        // Handle both possible response formats
+        if ('data' in projectsResponse && projectsResponse.data) {
+          if (typeof projectsResponse.data === 'object' && 'data' in projectsResponse.data) {
+            projectsData = projectsResponse.data.data as any[];
+          } else if (Array.isArray(projectsResponse.data)) {
+            projectsData = projectsResponse.data as any[];
+          }
+        }
       } else if (Array.isArray(projectsResponse)) {
         projectsData = projectsResponse;
       }
       
       console.log('Extracted projects data:', projectsData);
+      console.log('Number of services found:', projectsData.length);
       
-      // Map API data to frontend format
+      // Map API data to frontend format - same as landing page
       const mappedProjects: ProjectCardData[] = projectsData.map((service: any) => ({
         id: service.id,
         title: service.title,
         description: service.description,
         budget: service.priceCents / 100, // Convert cents to dollars
-        cover_url: service.coverImage, // Map coverImage to cover_url
+        cover_url: service.coverImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80', // Same fallback as landing page
         created_at: service.createdAt,
         updated_at: service.updatedAt || service.createdAt,
         created_by: service.ownerId,
@@ -109,6 +132,24 @@ export default function ExploreTalent() {
         totalReviews: Math.floor(Math.random() * 20) + 1, // Mock reviews
         orders: Math.floor(Math.random() * 10) + 1 // Mock orders
       }));
+      
+      console.log('Mapped projects:', mappedProjects.length);
+      console.log('First few project titles:', mappedProjects.slice(0, 3).map(p => p.title));
+      console.log('All project titles:', mappedProjects.map(p => p.title));
+      
+      // Log image URLs for debugging
+      console.log('Image URLs:', mappedProjects.map(p => ({ title: p.title, image: p.cover_url })));
+      
+      // Check if we have any recent projects (created in last 24 hours)
+      const recentProjects = mappedProjects.filter(p => {
+        if (!p.created_at || typeof p.created_at !== 'string') return false;
+        const created = new Date(p.created_at);
+        const now = new Date();
+        const hoursDiff = (now.getTime() - created.getTime()) / (1000 * 60 * 60);
+        return hoursDiff < 24;
+      });
+      console.log('Recent projects (last 24h):', recentProjects.length);
+      console.log('Recent project titles:', recentProjects.map(p => p.title));
       
       // Set projects data (even if empty)
       setProjects(mappedProjects);
@@ -172,12 +213,18 @@ export default function ExploreTalent() {
     fetchData();
   }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
 
-  // Auto-refresh every 30 seconds (background updates)
+  // Manual refresh function
+  const handleRefresh = () => {
+    console.log('🔄 Manual refresh triggered');
+    fetchData();
+  };
+
+  // Auto-refresh every 10 seconds to catch new services
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('Background refresh...');
+      console.log('🔄 Background refresh to check for new services...');
       fetchData(true);
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [fetchData]);
@@ -287,6 +334,20 @@ export default function ExploreTalent() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Discover verified student talent from top universities ready to bring your projects to life.
           </p>
+          
+          {/* Refresh Button */}
+          <div className="mb-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRefresh}
+              disabled={loading}
+              className="gap-2"
+            >
+              <Search className="h-4 w-4" />
+              {loading ? 'Loading...' : 'Refresh Services'}
+            </Button>
+          </div>
           
           {search && (
             <div className="flex items-center justify-center gap-2 mb-4">

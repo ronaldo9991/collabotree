@@ -328,25 +328,29 @@ export const updateHireRequest = async (req: AuthenticatedRequest, res: Response
       },
     });
 
-    // If accepted, create chat room and order
+    // If accepted, create contract automatically
     if (validatedData.status === 'ACCEPTED') {
       await prisma.$transaction(async (tx) => {
-        // Create chat room
-        await tx.chatRoom.create({
+        // Calculate pricing
+        const priceCents = hireRequest.priceCents || hireRequest.service.priceCents;
+        const platformFeeCents = Math.round(priceCents * 0.10); // 10% commission
+        const studentPayoutCents = priceCents - platformFeeCents;
+
+        // Create contract
+        await tx.contract.create({
           data: {
             hireRequestId: id,
-          },
-        });
-
-        // Create order automatically
-        await tx.order.create({
-          data: {
             buyerId: hireRequest.buyerId,
             studentId: hireRequest.studentId,
             serviceId: hireRequest.serviceId,
-            hireRequestId: hireRequest.id,
-            priceCents: hireRequest.priceCents || hireRequest.service.priceCents,
-            status: 'PENDING',
+            title: hireRequest.service.title,
+            description: `Service: ${hireRequest.service.title}`,
+            deliverables: JSON.stringify(['Complete the requested service as described']),
+            timeline: 7, // Default 7 days
+            priceCents,
+            platformFeeCents,
+            studentPayoutCents,
+            status: 'DRAFT',
           },
         });
 
@@ -358,7 +362,7 @@ export const updateHireRequest = async (req: AuthenticatedRequest, res: Response
         [hireRequest.buyerId, hireRequest.studentId],
         'HIRE_ACCEPTED',
         'Hire Request Accepted',
-        `Your hire request for "${hireRequest.service.title}" has been accepted!`
+        `Your hire request for "${hireRequest.service.title}" has been accepted! A contract has been created. Please review and sign the contract to proceed.`
       );
     } else if (validatedData.status === 'REJECTED') {
       // Create notification for buyer

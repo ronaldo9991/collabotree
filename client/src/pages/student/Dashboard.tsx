@@ -42,6 +42,7 @@ import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
+import { ContractManager } from "@/components/ContractManager";
 // import { supabase } from "@/lib/supabase";
 
 interface ApplicationWithDetails {
@@ -208,6 +209,15 @@ export default function StudentDashboard() {
             new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
           ]);
           const servicesData = (studentServices as any)?.data?.data || (studentServices as any)?.data || studentServices || [];
+          
+          // Log service data for debugging
+          console.log('📋 Student services data:', servicesData);
+          console.log('📋 Service images:', servicesData.map((s: any) => ({ 
+            title: s.title, 
+            cover_url: s.cover_url, 
+            coverImage: s.coverImage 
+          })));
+          
           setServices(servicesData);
           
           // Update stats with services
@@ -507,7 +517,7 @@ export default function StudentDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
               <TabsTrigger 
                 value="overview" 
                 className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
@@ -535,6 +545,13 @@ export default function StudentDashboard() {
               >
                 <span className="hidden sm:inline">My Services</span>
                 <span className="sm:hidden">Services</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="contracts" 
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+              >
+                <span className="hidden sm:inline">Contracts</span>
+                <span className="sm:hidden">Contracts</span>
               </TabsTrigger>
             </TabsList>
 
@@ -1044,13 +1061,21 @@ export default function StudentDashboard() {
                         <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 hover:border-primary/30 transition-all duration-200 group">
                           <CardContent className="p-0">
                             {/* Service Cover Image */}
-                            {service.cover_url ? (
+                            {(service.cover_url || service.coverImage) ? (
                               <div className="aspect-video w-full overflow-hidden rounded-t-lg">
                                 <img
-                                  src={service.cover_url}
+                                  src={service.cover_url || service.coverImage}
                                   alt={service.title}
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                  onError={(e) => {
+                                    console.log('Image failed to load:', service.cover_url || service.coverImage);
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                  }}
                                 />
+                                <div className="aspect-video w-full bg-gradient-to-br from-primary/10 to-secondary/10 rounded-t-lg flex items-center justify-center hidden">
+                                  <Briefcase className="h-12 w-12 text-primary/50" />
+                                </div>
                               </div>
                             ) : (
                               <div className="aspect-video w-full bg-gradient-to-br from-primary/10 to-secondary/10 rounded-t-lg flex items-center justify-center">
@@ -1156,9 +1181,96 @@ export default function StudentDashboard() {
                 )}
               </motion.div>
             </TabsContent>
+
+            {/* Contracts Tab */}
+            <TabsContent value="contracts" className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <ContractsSection />
+              </motion.div>
+            </TabsContent>
           </Tabs>
         </motion.div>
       </div>
+    </div>
+  );
+}
+
+// Contracts Section Component
+function ContractsSection() {
+  const [contracts, setContracts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchContracts();
+  }, []);
+
+  const fetchContracts = async () => {
+    try {
+      setLoading(true);
+      const response = await api.getUserContracts();
+      if (response.success) {
+        setContracts(response.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching contracts:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load contracts.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2">Loading contracts...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">My Contracts</h2>
+          <p className="text-muted-foreground">Manage your active contracts and agreements</p>
+        </div>
+      </div>
+
+      {contracts.length > 0 ? (
+        <div className="grid gap-6">
+          {contracts.map((contract) => (
+            <ContractManager 
+              key={contract.id} 
+              contractId={contract.id}
+              onContractUpdate={fetchContracts}
+            />
+          ))}
+        </div>
+      ) : (
+        <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+          <CardContent className="p-12 text-center">
+            <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No contracts yet</h3>
+            <p className="text-muted-foreground mb-6">
+              Contracts will appear here when buyers accept your services and you create agreements.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

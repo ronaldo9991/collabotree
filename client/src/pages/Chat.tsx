@@ -150,6 +150,27 @@ export default function Chat() {
         return;
       }
 
+      // Check if contract exists and is fully signed
+      if (!hireRequestData.contract) {
+        toast({
+          title: "Contract Required",
+          description: "A contract must be created and signed by both parties before chat access.",
+          variant: "destructive",
+        });
+        navigate("/dashboard");
+        return;
+      }
+
+      if (!hireRequestData.contract.isSignedByBuyer || !hireRequestData.contract.isSignedByStudent) {
+        toast({
+          title: "Contract Not Fully Signed",
+          description: "Both parties must sign the contract before chat access is available.",
+          variant: "destructive",
+        });
+        navigate("/dashboard");
+        return;
+      }
+
       // Fetch chat messages
       await fetchMessages();
       
