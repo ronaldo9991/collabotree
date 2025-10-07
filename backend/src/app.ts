@@ -30,6 +30,7 @@ const allowedOrigins = [
 // Add dynamic origin for production
 if (env.NODE_ENV === 'production') {
   allowedOrigins.push('https://*.onrender.com');
+  allowedOrigins.push('https://*.vercel.app');
 }
 
 app.use(cors({

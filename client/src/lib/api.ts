@@ -1,9 +1,8 @@
 // Dynamic API URL based on environment
 const getApiBaseUrl = () => {
-  // Check if we're in production (deployed on Render)
-  if (window.location.hostname.includes('render.com') || window.location.hostname.includes('onrender.com')) {
-    // Use the same domain for API calls in production
-    return `${window.location.protocol}//${window.location.hostname}/api`;
+  // In production (Vercel), use relative paths since frontend and backend are on same domain
+  if (import.meta.env.PROD) {
+    return '/api';
   }
   
   // Check for environment variable
