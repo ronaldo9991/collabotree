@@ -2,7 +2,7 @@
   "name": "collabotree-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "dist/server.js",
+  "main": "dist/api/index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
