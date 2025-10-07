@@ -486,3 +486,5 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
     </Card>
   );
 }
+
+

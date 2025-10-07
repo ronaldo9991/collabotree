@@ -202,7 +202,7 @@ export const signContract = async (req: AuthenticatedRequest, res: Response) => 
     });
 
     if (signatures.length === 2) {
-      updateData.status = 'PENDING_SIGNATURES';
+      updateData.status = 'ACTIVE';
       updateData.signedAt = new Date();
     }
 
@@ -448,3 +448,4 @@ export const getUserContracts = async (req: AuthenticatedRequest, res: Response)
     throw error;
   }
 };
+

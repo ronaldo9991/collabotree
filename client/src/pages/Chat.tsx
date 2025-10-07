@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
@@ -15,7 +18,10 @@ import {
   MessageCircle, 
   User,
   Clock,
-  CheckCircle
+  CheckCircle,
+  FileText,
+  DollarSign,
+  PenTool
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -43,6 +49,9 @@ export default function Chat() {
   const [hireRequest, setHireRequest] = useState<any>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
+  const [contract, setContract] = useState<any>(null);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [creatingContract, setCreatingContract] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -112,6 +121,11 @@ export default function Chat() {
         const response = await api.getHireRequest(hireId!);
         hireRequestData = (response as any)?.data || response;
         setHireRequest(hireRequestData);
+        
+        // Fetch contract data if it exists
+        if (hireRequestData?.contract) {
+          setContract(hireRequestData.contract);
+        }
       } catch (error: any) {
         console.error('Error fetching hire request:', error);
         if (error.message?.includes('Access denied') || error.message?.includes('permission')) {
@@ -150,26 +164,7 @@ export default function Chat() {
         return;
       }
 
-      // Check if contract exists and is fully signed
-      if (!hireRequestData.contract) {
-        toast({
-          title: "Contract Required",
-          description: "A contract must be created and signed by both parties before chat access.",
-          variant: "destructive",
-        });
-        navigate("/dashboard");
-        return;
-      }
-
-      if (!hireRequestData.contract.isSignedByBuyer || !hireRequestData.contract.isSignedByStudent) {
-        toast({
-          title: "Contract Not Fully Signed",
-          description: "Both parties must sign the contract before chat access is available.",
-          variant: "destructive",
-        });
-        navigate("/dashboard");
-        return;
-      }
+      // Chat is available as soon as hire request is accepted - no contract requirement
 
       // Fetch chat messages
       await fetchMessages();
@@ -396,6 +391,107 @@ export default function Chat() {
     }
   };
 
+  const handleCreateContract = async () => {
+    if (!hireRequest || !user || user.id !== hireRequest.studentId) {
+      toast({
+        title: "Access Denied",
+        description: "Only the student can create contracts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCreatingContract(true);
+    try {
+      // Get form data from the modal
+      const timelineInput = document.getElementById('timeline') as HTMLInputElement;
+      const deliverablesInput = document.getElementById('deliverables') as HTMLTextAreaElement;
+      const additionalTermsInput = document.getElementById('additionalTerms') as HTMLTextAreaElement;
+
+      const timeline = parseInt(timelineInput?.value || '7');
+      const deliverablesText = deliverablesInput?.value || 'Complete project as discussed, Provide regular updates, Deliver final work on time';
+      const additionalTerms = additionalTermsInput?.value || 'Additional terms can be discussed in chat.';
+
+      // Split deliverables by comma and clean up
+      const deliverables = deliverablesText.split(',').map(d => d.trim()).filter(d => d.length > 0);
+
+      const contractData = {
+        hireRequestId: hireRequest.id,
+        deliverables,
+        timeline,
+        additionalTerms
+      };
+
+      const response = await api.createContract(contractData);
+      setContract(response.data);
+      
+      toast({
+        title: "Contract Created",
+        description: "Contract has been created and sent to the buyer for review.",
+      });
+      
+      setShowContractModal(false);
+    } catch (error) {
+      console.error('Error creating contract:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create contract. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingContract(false);
+    }
+  };
+
+  const handleSignContract = async () => {
+    if (!contract || !user) return;
+
+    try {
+      const signature = user.name || `User ${user.id}`;
+      await api.signContract(contract.id, { signature });
+      
+      toast({
+        title: "Contract Signed",
+        description: "You have successfully signed the contract.",
+      });
+      
+      // Refresh contract data
+      const updatedContract = await api.getContract(contract.id);
+      setContract(updatedContract.data);
+    } catch (error) {
+      console.error('Error signing contract:', error);
+      toast({
+        title: "Error",
+        description: "Failed to sign contract. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleProcessPayment = async () => {
+    if (!contract || !user || user.id !== contract.buyerId) return;
+
+    try {
+      await api.processPayment(contract.id);
+      
+      toast({
+        title: "Payment Processed",
+        description: "Payment has been processed successfully.",
+      });
+      
+      // Refresh contract data
+      const updatedContract = await api.getContract(contract.id);
+      setContract(updatedContract.data);
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process payment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getOtherUser = () => {
     if (!hireRequest || !user) return null;
     
@@ -495,12 +591,85 @@ export default function Chat() {
                     </span>
                   </div>
                 </div>
-                <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  <CheckCircle className="h-3 w-3" />
-                  Accepted
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
+                    <CheckCircle className="h-3 w-3" />
+                    Accepted
+                  </Badge>
+                  {contract ? (
+                    <Badge variant="outline" className="gap-1">
+                      <FileText className="h-3 w-3" />
+                      {contract.status === 'DRAFT' ? 'Draft' : 
+                       contract.status === 'ACTIVE' ? 'Active' : 
+                       contract.status === 'COMPLETED' ? 'Completed' : contract.status}
+                    </Badge>
+                  ) : (
+                    user?.id === hireRequest?.studentId && (
+                      <Button
+                        size="sm"
+                        onClick={() => setShowContractModal(true)}
+                        className="gap-2"
+                        disabled={creatingContract}
+                      >
+                        {creatingContract ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        ) : (
+                          <PenTool className="h-4 w-4" />
+                        )}
+                        Create Contract
+                      </Button>
+                    )
+                  )}
+                </div>
               </div>
             </CardHeader>
+
+            {/* Contract Actions */}
+            {contract && (
+              <div className="border-b border-primary/20 bg-card/20 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <p className="text-sm font-medium">Contract Status</p>
+                      <p className="text-xs text-muted-foreground">
+                        Price: ${(contract.priceCents / 100).toFixed(2)} | 
+                        Timeline: {contract.timeline} days
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    {contract.status === 'DRAFT' && (
+                      <>
+                        {!contract.isSignedByBuyer && user?.id === contract.buyerId && (
+                          <Button size="sm" onClick={handleSignContract} className="gap-2">
+                            <PenTool className="h-4 w-4" />
+                            Sign Contract
+                          </Button>
+                        )}
+                        {!contract.isSignedByStudent && user?.id === contract.studentId && (
+                          <Button size="sm" onClick={handleSignContract} className="gap-2">
+                            <PenTool className="h-4 w-4" />
+                            Sign Contract
+                          </Button>
+                        )}
+                      </>
+                    )}
+                    {contract.status === 'ACTIVE' && contract.paymentStatus === 'PENDING' && user?.id === contract.buyerId && (
+                      <Button size="sm" onClick={handleProcessPayment} className="gap-2">
+                        <DollarSign className="h-4 w-4" />
+                        Process Payment
+                      </Button>
+                    )}
+                    {contract.status === 'ACTIVE' && contract.paymentStatus === 'PAID' && (
+                      <Badge variant="secondary" className="gap-1">
+                        <DollarSign className="h-3 w-3" />
+                        Paid
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Messages Area */}
             <CardContent className="flex-1 flex flex-col p-0">
@@ -574,6 +743,73 @@ export default function Chat() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Contract Creation Modal */}
+      <Dialog open={showContractModal} onOpenChange={setShowContractModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Create Contract</DialogTitle>
+            <DialogDescription>
+              Create a contract for this project. The buyer will need to review and sign it.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="price">Project Price</Label>
+              <Input
+                id="price"
+                type="number"
+                placeholder="Enter price in cents"
+                defaultValue={hireRequest?.priceCents || hireRequest?.service?.priceCents || 5000}
+                disabled
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Price: ${((hireRequest?.priceCents || hireRequest?.service?.priceCents || 5000) / 100).toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="timeline">Timeline (days)</Label>
+              <Input
+                id="timeline"
+                type="number"
+                placeholder="Enter timeline in days"
+                defaultValue="7"
+                min="1"
+                max="365"
+              />
+            </div>
+            <div>
+              <Label htmlFor="deliverables">Deliverables</Label>
+              <Textarea
+                id="deliverables"
+                placeholder="Describe what will be delivered..."
+                defaultValue="Complete project as discussed, Provide regular updates, Deliver final work on time"
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="additionalTerms">Additional Terms</Label>
+              <Textarea
+                id="additionalTerms"
+                placeholder="Any additional terms or conditions..."
+                defaultValue="Additional terms can be discussed in chat."
+                rows={2}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowContractModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateContract} disabled={creatingContract}>
+              {creatingContract ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+              ) : null}
+              Create Contract
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -27,3 +27,4 @@ router.post('/:contractId/progress', asyncHandler(updateProgress));
 router.post('/:contractId/complete', asyncHandler(markCompleted));
 
 export default router;
+

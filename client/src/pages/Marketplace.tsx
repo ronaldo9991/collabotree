@@ -41,7 +41,7 @@ export default function ExploreTalent() {
   
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const [priceRange, setPriceRange] = useState([0, 2500]);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [deliveryDays, setDeliveryDays] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
@@ -61,7 +61,7 @@ export default function ExploreTalent() {
         search: search || undefined,
         category: category !== 'all' ? category : undefined,
         minBudget: priceRange[0] > 0 ? priceRange[0] : undefined,
-        maxBudget: priceRange[1] < 2500 ? priceRange[1] : undefined,
+        maxBudget: priceRange[1] < 10000 ? priceRange[1] : undefined,
       };
 
       console.log('🔎 Fetching data with filters:', filters);
@@ -465,7 +465,7 @@ export default function ExploreTalent() {
                     <Slider
                       value={priceRange}
                       onValueChange={setPriceRange}
-                      max={2500}
+                      max={10000}
                       step={50}
                       className="w-full"
                     />

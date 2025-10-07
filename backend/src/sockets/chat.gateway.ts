@@ -57,7 +57,7 @@ export const setupChatGateway = (io: SocketIOServer) => {
           return;
         }
 
-        // Verify hire request exists and is accepted
+        // Verify hire request exists and is accepted (no contract requirement for chat)
         const hireRequest = await prisma.hireRequest.findUnique({
           where: { id: hireId },
           select: {
@@ -65,6 +65,14 @@ export const setupChatGateway = (io: SocketIOServer) => {
             buyerId: true,
             studentId: true,
             status: true,
+            contract: {
+              select: {
+                id: true,
+                status: true,
+                isSignedByBuyer: true,
+                isSignedByStudent: true
+              }
+            },
             chatRoom: {
               select: { id: true }
             }
@@ -77,9 +85,11 @@ export const setupChatGateway = (io: SocketIOServer) => {
         }
 
         if (hireRequest.status !== 'ACCEPTED') {
-          socket.emit('error', { message: 'Chat is only available for accepted hire requests' });
+          socket.emit('error', { message: 'Hire request must be accepted first' });
           return;
         }
+
+        // Chat is available as soon as hire request is accepted - no contract requirement
 
         // Check if user is a participant
         if (hireRequest.buyerId !== socket.user!.id && 
@@ -132,7 +142,7 @@ export const setupChatGateway = (io: SocketIOServer) => {
           return;
         }
 
-        // Verify hire request exists and is accepted
+        // Verify hire request exists and is accepted (no contract requirement for chat)
         const hireRequest = await prisma.hireRequest.findUnique({
           where: { id: hireId },
           select: {
@@ -140,6 +150,14 @@ export const setupChatGateway = (io: SocketIOServer) => {
             buyerId: true,
             studentId: true,
             status: true,
+            contract: {
+              select: {
+                id: true,
+                status: true,
+                isSignedByBuyer: true,
+                isSignedByStudent: true
+              }
+            },
             chatRoom: {
               select: { id: true }
             }
@@ -154,9 +172,11 @@ export const setupChatGateway = (io: SocketIOServer) => {
 
         if (hireRequest.status !== 'ACCEPTED') {
           console.error(`❌ Chat not available for hire request ${hireId}, status: ${hireRequest.status}`);
-          socket.emit('error', { message: 'Chat is only available for accepted hire requests' });
+          socket.emit('error', { message: 'Hire request must be accepted first' });
           return;
         }
+
+        // Chat is available as soon as hire request is accepted - no contract requirement
 
         // Check if user is a participant
         if (hireRequest.buyerId !== socket.user!.id &&
@@ -247,7 +267,7 @@ export const setupChatGateway = (io: SocketIOServer) => {
           return;
         }
 
-        // Verify hire request exists and is accepted
+        // Verify hire request exists and has a fully signed contract
         const hireRequest = await prisma.hireRequest.findUnique({
           where: { id: hireId },
           select: {
@@ -255,6 +275,14 @@ export const setupChatGateway = (io: SocketIOServer) => {
             buyerId: true,
             studentId: true,
             status: true,
+            contract: {
+              select: {
+                id: true,
+                status: true,
+                isSignedByBuyer: true,
+                isSignedByStudent: true
+              }
+            },
             chatRoom: {
               select: { id: true }
             }
@@ -267,7 +295,23 @@ export const setupChatGateway = (io: SocketIOServer) => {
         }
 
         if (hireRequest.status !== 'ACCEPTED') {
-          socket.emit('error', { message: 'Chat is only available for accepted hire requests' });
+          socket.emit('error', { message: 'Hire request must be accepted first' });
+          return;
+        }
+
+        // Check if contract exists and is fully signed
+        if (!hireRequest.contract) {
+          socket.emit('error', { message: 'Contract must be created and signed by both parties before chat access' });
+          return;
+        }
+
+        if (!hireRequest.contract.isSignedByBuyer || !hireRequest.contract.isSignedByStudent) {
+          socket.emit('error', { message: 'Both parties must sign the contract before chat access is available' });
+          return;
+        }
+
+        if (hireRequest.contract.status !== 'PENDING_SIGNATURES' && hireRequest.contract.status !== 'ACTIVE') {
+          socket.emit('error', { message: 'Contract must be active for chat access' });
           return;
         }
 
