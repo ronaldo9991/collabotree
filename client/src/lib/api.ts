@@ -1,11 +1,6 @@
 // Dynamic API URL based on environment
 const getApiBaseUrl = () => {
-  // In production (Vercel), use relative paths since frontend and backend are on same domain
-  if (import.meta.env.PROD) {
-    return '/api';
-  }
-  
-  // Check for environment variable
+  // Check for environment variable first (for Vercel deployment)
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
