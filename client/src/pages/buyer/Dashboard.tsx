@@ -26,7 +26,8 @@ import {
   ArrowLeft,
   Heart,
   Filter,
-  MapPin
+  MapPin,
+  FileText
 } from "lucide-react";
 import {
   Card,
@@ -39,6 +40,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { ContractManager } from "@/components/ContractManager";
 
 interface OrderStats {
   totalSpent: number;
@@ -142,35 +144,37 @@ export default function BuyerDashboard() {
           console.log('❌ Direct API test failed:', testError);
         }
         
-        // If no orders found, try to get accepted hire requests as projects
-        if (userProjects.length === 0) {
-          console.log('🔄 No orders found, trying to fetch accepted hire requests...');
-          try {
-            const hireRequestsResponse = await api.getHireRequests();
-            const hireRequestsData = (hireRequestsResponse as any)?.data?.data || (hireRequestsResponse as any)?.data || hireRequestsResponse || [];
-            console.log('🔍 Hire requests data:', hireRequestsData);
-            
-            // Filter for accepted hire requests and convert to project format
-            const acceptedHireRequests = hireRequestsData.filter((hire: any) => hire.status === 'ACCEPTED');
-            console.log('✅ Accepted hire requests:', acceptedHireRequests);
-            
-            // Convert hire requests to project format
-            const projectsFromHires = acceptedHireRequests.map((hire: any) => ({
-              id: hire.id,
-              status: 'PENDING', // Default status for accepted hire requests
-              priceCents: hire.priceCents || hire.service?.priceCents || 0,
-              createdAt: hire.createdAt,
-              hireRequestId: hire.id,
-              service: hire.service,
-              student: hire.student,
-              buyer: hire.buyer
-            }));
-            
-            console.log('🔄 Converted hire requests to projects:', projectsFromHires);
-            userProjects = projectsFromHires;
-          } catch (hireError) {
-            console.log('❌ Error fetching hire requests:', hireError);
-          }
+        // Always fetch hire requests to check for accepted ones (not just when no orders)
+        console.log('🔄 Fetching hire requests to check for accepted ones...');
+        try {
+          const hireRequestsResponse = await api.getHireRequests();
+          const hireRequestsData = (hireRequestsResponse as any)?.data?.data || (hireRequestsResponse as any)?.data || hireRequestsResponse || [];
+          console.log('🔍 Hire requests data:', hireRequestsData);
+          
+          // Filter for accepted hire requests and convert to project format
+          const acceptedHireRequests = hireRequestsData.filter((hire: any) => hire.status === 'ACCEPTED');
+          console.log('✅ Accepted hire requests:', acceptedHireRequests);
+          
+          // Convert hire requests to project format
+          const projectsFromHires = acceptedHireRequests.map((hire: any) => ({
+            id: hire.id,
+            status: 'ACCEPTED', // Use ACCEPTED status for accepted hire requests
+            priceCents: hire.priceCents || hire.service?.priceCents || 0,
+            createdAt: hire.createdAt,
+            hireRequestId: hire.id,
+            service: hire.service,
+            student: hire.student,
+            buyer: hire.buyer
+          }));
+          
+          console.log('🔄 Converted hire requests to projects:', projectsFromHires);
+          
+          // Merge with existing user projects, avoiding duplicates
+          const existingProjectIds = new Set(userProjects.map((p: any) => p.id));
+          const newProjectsFromHires = projectsFromHires.filter((p: any) => !existingProjectIds.has(p.id));
+          userProjects = [...userProjects, ...newProjectsFromHires];
+        } catch (hireError) {
+          console.log('❌ Error fetching hire requests:', hireError);
         }
         
         setUserProjects(userProjects);
@@ -230,7 +234,7 @@ export default function BuyerDashboard() {
           .reduce((sum: number, project: any) => sum + (project.priceCents / 100), 0);
 
         const activeProjects = userProjects.filter((project: any) =>
-          ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED'].includes(project.status)
+          ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)
         ).length;
 
         const completedProjects = userProjects.filter((project: any) =>
@@ -283,6 +287,7 @@ export default function BuyerDashboard() {
       case 'DELIVERED': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
       case 'COMPLETED': return 'bg-green-100 text-green-800 border-green-200';
       case 'CANCELLED': return 'bg-red-100 text-red-800 border-red-200';
+      case 'ACCEPTED': return 'bg-green-100 text-green-800 border-green-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -295,6 +300,7 @@ export default function BuyerDashboard() {
       case 'DELIVERED': return <Package className="h-4 w-4" />;
       case 'COMPLETED': return <CheckCircle className="h-4 w-4" />;
       case 'CANCELLED': return <XCircle className="h-4 w-4" />;
+      case 'ACCEPTED': return <CheckCircle className="h-4 w-4" />;
       default: return <Package className="h-4 w-4" />;
     }
   };
@@ -331,7 +337,7 @@ export default function BuyerDashboard() {
 
         {/* Navigation Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
             <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <LayoutDashboard className="h-4 w-4" />
               Overview
@@ -347,6 +353,10 @@ export default function BuyerDashboard() {
             <TabsTrigger value="browse" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Users className="h-4 w-4" />
               Browse Talent
+              </TabsTrigger>
+            <TabsTrigger value="contracts" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <FileText className="h-4 w-4" />
+              Contracts
               </TabsTrigger>
             </TabsList>
 
@@ -480,7 +490,7 @@ export default function BuyerDashboard() {
                             </div>
                             
                             <div className="flex items-center gap-2 ml-4">
-                            {(project.status === 'PENDING' || project.status === 'PAID' || project.status === 'IN_PROGRESS' || project.status === 'DELIVERED') ? (
+                            {(project.status === 'PENDING' || project.status === 'PAID' || project.status === 'IN_PROGRESS' || project.status === 'DELIVERED' || project.status === 'ACCEPTED') ? (
                                 <Button
                                   variant="default"
                                 size="sm"
@@ -547,10 +557,10 @@ export default function BuyerDashboard() {
                         </Card>
                       ))}
                   </div>
-              ) : userProjects.filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED'].includes(project.status)).length > 0 ? (
+              ) : userProjects.filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)).length > 0 ? (
                   <div className="space-y-4">
                   {userProjects
-                    .filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED'].includes(project.status))
+                    .filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status))
                     .map((project) => (
                       <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                           <CardContent className="p-6">
@@ -659,6 +669,17 @@ export default function BuyerDashboard() {
                 hireRequests={hireRequests}
                 onHireSuccess={refreshHireRequests}
               />
+              </motion.div>
+            </TabsContent>
+
+            {/* Contracts Tab */}
+            <TabsContent value="contracts" className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <BuyerContractsSection />
               </motion.div>
             </TabsContent>
           </Tabs>
@@ -904,7 +925,7 @@ function ProjectCard({ project, onHireNow, hasHiredProject }: {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            navigate(`/project/${project.id}`);
+            navigate(`/service/${project.id}`);
           }}
         >
           {project.title}
@@ -922,7 +943,7 @@ function ProjectCard({ project, onHireNow, hasHiredProject }: {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                navigate(`/project/${project.id}`);
+                navigate(`/service/${project.id}`);
               }}
               variant="outline" 
               size="sm"
@@ -946,5 +967,81 @@ function ProjectCard({ project, onHireNow, hasHiredProject }: {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+// Buyer Contracts Section Component
+function BuyerContractsSection() {
+  const [contracts, setContracts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchContracts();
+  }, []);
+
+  const fetchContracts = async () => {
+    try {
+      setLoading(true);
+      const response = await api.getUserContracts();
+      if (response.success) {
+        setContracts(response.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching contracts:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load contracts.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2">Loading contracts...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">My Contracts</h2>
+          <p className="text-muted-foreground">Review and sign contracts to start working with students</p>
+        </div>
+      </div>
+
+      {contracts.length > 0 ? (
+        <div className="grid gap-6">
+          {contracts.map((contract) => (
+            <ContractManager 
+              key={contract.id} 
+              contractId={contract.id}
+              onContractUpdate={fetchContracts}
+            />
+          ))}
+        </div>
+      ) : (
+        <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+          <CardContent className="p-12 text-center">
+            <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No contracts yet</h3>
+            <p className="text-muted-foreground mb-6">
+              Contracts will appear here when students accept your hire requests and create agreements.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
