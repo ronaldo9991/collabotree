@@ -1,58 +1,81 @@
-// Temporary simplified app for debugging
+import { Switch, Route } from "wouter";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { Layout } from "@/components/Layout";
+import { AuthProvider } from "@/contexts/AuthContext";
+
+// Pages
+import Landing from "@/pages/Landing";
+import Marketplace from "@/pages/Marketplace";
+import Services from "@/pages/Services";
+import ServiceDetail from "@/pages/ServiceDetail";
+import ProjectDetail from "@/pages/ProjectDetail";
+import HowItWorks from "@/pages/HowItWorks";
+import About from "@/pages/About";
+import Contact from "@/pages/Contact";
+import SignIn from "@/pages/SignIn";
+import Dashboard from "@/pages/Dashboard";
+import StudentDashboard from "@/pages/student/Dashboard";
+import ServiceCreate from "@/pages/student/ServiceCreate";
+import ServiceEdit from "@/pages/student/ServiceEdit";
+import StudentSettings from "@/pages/student/Settings";
+import BuyerDashboard from "@/pages/buyer/Dashboard";
+import BuyerOrders from "@/pages/buyer/Orders";
+import Chat from "@/pages/Chat";
+import BuyerSettings from "@/pages/buyer/Settings";
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminSettings from "@/pages/admin/Settings";
+import AdminSignIn from "@/pages/AdminSignIn";
+import TestLogin from "@/pages/TestLogin";
+import NotFound from "@/pages/not-found";
+
+function Router() {
+  return (
+    <Switch>
+      {/* Public routes */}
+      <Route path="/" component={Landing} />
+      <Route path="/marketplace" component={Marketplace} />
+      <Route path="/services" component={Services} />
+      <Route path="/service/:id" component={ProjectDetail} />
+      <Route path="/how-it-works" component={HowItWorks} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
+      <Route path="/signin" component={SignIn} />
+      <Route path="/admin/signin" component={AdminSignIn} />
+      <Route path="/test-login" component={TestLogin} />
+
+      {/* Protected routes */}
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard/student" component={StudentDashboard} />
+      <Route path="/dashboard/student/services/new" component={ServiceCreate} />
+      <Route path="/dashboard/student/services/:id/edit" component={ServiceEdit} />
+      <Route path="/dashboard/student/settings" component={StudentSettings} />
+      <Route path="/dashboard/buyer" component={BuyerDashboard} />
+      <Route path="/dashboard/buyer/orders" component={BuyerOrders} />
+      <Route path="/chat/:hireId" component={Chat} />
+      <Route path="/dashboard/buyer/settings" component={BuyerSettings} />
+      <Route path="/dashboard/admin" component={AdminDashboard} />
+      <Route path="/dashboard/admin/settings" component={AdminSettings} />
+
+      {/* Fallback to 404 */}
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
 function App() {
   return (
-    <div style={{ 
-      padding: '20px', 
-      fontFamily: 'Arial, sans-serif',
-      backgroundColor: '#f0f0f0',
-      minHeight: '100vh'
-    }}>
-      <h1 style={{ color: '#333', textAlign: 'center' }}>
-        🎉 CollaboTree is Working! 🎉
-      </h1>
-      <div style={{ 
-        maxWidth: '600px', 
-        margin: '0 auto', 
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '10px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-      }}>
-        <h2>Frontend Status: ✅ Working</h2>
-        <p><strong>Current URL:</strong> {window.location.href}</p>
-        <p><strong>Environment:</strong> {import.meta.env.MODE}</p>
-        <p><strong>API URL:</strong> {import.meta.env.VITE_API_URL || 'Not set'}</p>
-        
-        <h3>API Test:</h3>
-        <button 
-          onClick={() => {
-            fetch('/api/health')
-              .then(res => res.json())
-              .then(data => alert('✅ API Working!\n\nResponse: ' + JSON.stringify(data, null, 2)))
-              .catch(err => alert('❌ API Error: ' + err.message));
-          }}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
-        >
-          Test Backend API
-        </button>
-        
-        <h3>Next Steps:</h3>
-        <ul>
-          <li>✅ Frontend is working</li>
-          <li>🔧 Need to set up environment variables</li>
-          <li>🔧 Need to configure database</li>
-          <li>🔧 Need to restore full app functionality</li>
-        </ul>
-      </div>
-    </div>
+    <ThemeProvider defaultTheme="light" storageKey="collabotree-theme">
+      <AuthProvider>
+        <TooltipProvider>
+          <Layout>
+            <Toaster />
+            <Router />
+          </Layout>
+        </TooltipProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
