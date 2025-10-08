@@ -29,6 +29,7 @@ import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminSettings from "@/pages/admin/Settings";
 import AdminSignIn from "@/pages/AdminSignIn";
 import TestLogin from "@/pages/TestLogin";
+import TestPage from "@/pages/TestPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -45,6 +46,7 @@ function Router() {
       <Route path="/signin" component={SignIn} />
       <Route path="/admin/signin" component={AdminSignIn} />
       <Route path="/test-login" component={TestLogin} />
+      <Route path="/test" component={TestPage} />
 
       {/* Protected routes */}
       <Route path="/dashboard" component={Dashboard} />

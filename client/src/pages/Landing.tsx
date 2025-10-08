@@ -26,11 +26,15 @@ export default function Landing() {
         setLoading(true);
         
         // Fetch top selection services (admin-curated) - public endpoint
-        const topSelectionResponse = await api.getPublicTopSelectionServices();
         let topSelectionServices = [];
-        
-        if (topSelectionResponse.success && topSelectionResponse.data) {
-          topSelectionServices = topSelectionResponse.data as any[];
+        try {
+          const topSelectionResponse = await api.getPublicTopSelectionServices();
+          if (topSelectionResponse.success && topSelectionResponse.data) {
+            topSelectionServices = topSelectionResponse.data as any[];
+          }
+        } catch (error) {
+          console.error('Failed to fetch top selection services:', error);
+          // Continue with empty array if API fails
         }
         
         // Map top selection services to project format
@@ -56,8 +60,14 @@ export default function Landing() {
         setTopSelectionProjects(mappedTopSelectionProjects);
 
         // Fetch all recent services for "New Projects" section - public endpoint
-        const allServicesResponse = await api.getPublicServices({ limit: 20, sortBy: 'createdAt', sortOrder: 'desc' });
-        const allServicesData = (allServicesResponse as any)?.data?.data || (allServicesResponse as any)?.data || allServicesResponse || [];
+        let allServicesData = [];
+        try {
+          const allServicesResponse = await api.getPublicServices({ limit: 20, sortBy: 'createdAt', sortOrder: 'desc' });
+          allServicesData = (allServicesResponse as any)?.data?.data || (allServicesResponse as any)?.data || allServicesResponse || [];
+        } catch (error) {
+          console.error('Failed to fetch all services:', error);
+          // Continue with empty array if API fails
+        }
         
         // Map all services to project format for new projects
         const mappedNewProjects = allServicesData.map((service: any) => ({
