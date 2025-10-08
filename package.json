@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:all": "npm run install:all && npm run build:backend && npm run build:frontend",
+    "build:all": "echo 'Starting build process...' && npm run install:all && echo 'Installing completed' && npm run build:backend && echo 'Backend build completed' && npm run build:frontend && echo 'Frontend build completed' && npm run copy:frontend && echo 'All builds completed successfully'",
     "install:all": "cd backend && npm install && cd ../client && npm install",
     "build:backend": "cd backend && npm run vercel-build",
     "build:frontend": "cd client && npm run build",
+    "copy:frontend": "echo 'Copying frontend build...' && (rm -rf dist || true) && cp -r client/dist dist && echo 'Frontend copied successfully'",
     "start:prod": "cd backend && npx prisma db push --accept-data-loss && npm start",
     "vercel-build": "npm run build:all",
     "preview": "vite preview",
