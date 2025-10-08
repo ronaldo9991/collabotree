@@ -2,12 +2,11 @@
   "version": 2,
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist",
-  "builds": [
-    {
-      "src": "backend/api/index.js",
-      "use": "@vercel/node"
+  "functions": {
+    "backend/api/index.js": {
+      "maxDuration": 30
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",

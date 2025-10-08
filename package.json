@@ -10,7 +10,7 @@
     "install:all": "cd backend && npm install && cd ../client && npm install",
     "build:backend": "cd backend && npm run vercel-build",
     "build:frontend": "cd client && npm run build",
-    "copy:frontend": "echo 'Copying frontend build...' && (rm -rf dist || true) && cp -r client/dist dist && echo 'Frontend copied successfully'",
+    "copy:frontend": "echo 'Copying frontend build...' && (rm -rf dist || true) && cp -r client/dist dist && cp client/env.production dist/.env.production && echo 'Frontend copied successfully'",
     "start:prod": "cd backend && npx prisma db push --accept-data-loss && npm start",
     "vercel-build": "npm run build:all",
     "preview": "vite preview",
