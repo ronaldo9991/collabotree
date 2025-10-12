@@ -1,15 +1,16 @@
 import { prisma } from '../db/prisma.js';
+import { NotificationType } from '@prisma/client';
 
 export const createNotification = async (
   userId: string,
-  type: string,
+  type: NotificationType | string,
   title: string,
   body?: string
 ) => {
   return prisma.notification.create({
     data: {
       userId,
-      type,
+      type: type as NotificationType,
       title,
       body,
     },
@@ -18,13 +19,13 @@ export const createNotification = async (
 
 export const createNotificationForUsers = async (
   userIds: string[],
-  type: string,
+  type: NotificationType | string,
   title: string,
   body?: string
 ) => {
   const notifications = userIds.map(userId => ({
     userId,
-    type,
+    type: type as NotificationType,
     title,
     body,
   }));

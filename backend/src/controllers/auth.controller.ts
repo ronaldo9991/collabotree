@@ -50,7 +50,7 @@ export const register = async (req: Request, res: Response) => {
         role: validatedData.role,
         university: validatedData.university,
         bio: validatedData.bio,
-        skills: JSON.stringify(validatedData.skills || []),
+        skills: validatedData.skills || [],
       },
       select: {
         id: true,

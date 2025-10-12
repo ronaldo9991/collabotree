@@ -4,6 +4,7 @@ import { prisma } from '../db/prisma.js';
 import { AuthenticatedRequest } from '../types/express.js';
 import { sendSuccess, sendCreated, sendError, sendValidationError, sendNotFound } from '../utils/responses.js';
 import { createNotification } from '../domain/notifications.js';
+import { ProgressStatus } from '@prisma/client';
 
 const createContractSchema = z.object({
   hireRequestId: z.string(),
@@ -17,7 +18,7 @@ const signContractSchema = z.object({
 });
 
 const updateProgressSchema = z.object({
-  status: z.string(),
+  status: z.enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'BLOCKED']),
   notes: z.string(),
   attachments: z.array(z.string()).optional(),
 });
@@ -316,7 +317,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
       data: {
         contractId,
         userId,
-        status: validatedData.status,
+        status: validatedData.status as ProgressStatus,
         notes: validatedData.notes,
         attachments: validatedData.attachments ? JSON.stringify(validatedData.attachments) : null,
       },
@@ -326,7 +327,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
     const updatedContract = await prisma.contract.update({
       where: { id: contractId },
       data: {
-        progressStatus: validatedData.status,
+        progressStatus: validatedData.status as ProgressStatus,
         progressNotes: validatedData.notes,
       },
     });

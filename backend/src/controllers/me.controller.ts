@@ -70,15 +70,9 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
   try {
     const validatedData = updateProfileSchema.parse(req.body);
 
-    // Convert skills array to JSON string for SQLite
-    const updateData = {
-      ...validatedData,
-      skills: validatedData.skills ? JSON.stringify(validatedData.skills) : undefined,
-    };
-
     const user = await prisma.user.update({
       where: { id: req.user!.id },
-      data: updateData,
+      data: validatedData,
       select: {
         id: true,
         email: true,

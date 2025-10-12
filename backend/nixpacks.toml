@@ -1,26 +1,51 @@
+# Nixpacks Configuration for Railway
+# This file forces Railway to use Nixpacks builder
+
 [phases.setup]
+# Use Node.js 18.x LTS
 nixPkgs = ["nodejs-18_x"]
 
 [phases.install]
-cmds = ["npm ci --legacy-peer-deps || npm install"]
+# Install backend dependencies
+cmds = [
+  "echo '=== Installing Backend Dependencies ==='",
+  "npm ci --legacy-peer-deps || npm install --legacy-peer-deps"
+]
 
 [phases.build]
+# Build frontend first, then backend
 cmds = [
-  "echo '=== Building Frontend ==='",
-  "cd ../client",
-  "npm ci --legacy-peer-deps || npm install",
-  "npm run build",
-  "echo '=== Copying Frontend to Backend ==='",
-  "cd ../backend",
+  "echo '=== Step 1: Building Frontend ==='",
+  "cd ../client || exit 1",
+  "npm ci --legacy-peer-deps || npm install --legacy-peer-deps",
+  "npm run build || exit 1",
+  "echo '=== Frontend build complete ==='",
+  "ls -la dist || echo 'Warning: dist directory not found'",
+  "",
+  "echo '=== Step 2: Copying Frontend to Backend ==='",
+  "cd ../backend || exit 1",
   "mkdir -p dist",
-  "cp -r ../client/dist dist/dist",
-  "echo '=== Building Backend ==='",
-  "npx prisma generate",
-  "npx prisma migrate deploy",
-  "npm run build",
-  "echo '=== Build Complete ==='"
+  "cp -r ../client/dist/* dist/ || exit 1",
+  "echo '=== Frontend copied to backend/dist ==='",
+  "ls -la dist || echo 'Warning: backend dist directory not found'",
+  "",
+  "echo '=== Step 3: Generating Prisma Client ==='",
+  "npx prisma generate || exit 1",
+  "",
+  "echo '=== Step 4: Running Database Migrations ==='",
+  "npx prisma migrate deploy || echo 'Warning: Migration failed - ensure DATABASE_URL is set'",
+  "",
+  "echo '=== Step 5: Building Backend TypeScript ==='",
+  "npm run build || exit 1",
+  "",
+  "echo '=== Build Complete ==='",
+  "echo 'Backend compiled files:'",
+  "ls -la dist/*.js || echo 'No JS files found'",
+  "echo 'Frontend files:'",
+  "ls -la dist/index.html || echo 'No index.html found'"
 ]
 
 [start]
+# Start the production server
 cmd = "node dist/server.js"
 
