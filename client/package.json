@@ -1,13 +1,23 @@
 {
-  "name": "collabotree-client",
+  "name": "collabotree-monorepo",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:all": "npm run install:all && npm run build:backend && npm run build:frontend",
+    "install:all": "cd backend && npm install && cd ../client && npm install",
+    "build:backend": "cd backend && npm run vercel-build",
+    "build:frontend": "cd client && npm run build",
+    "start:prod": "cd backend && npx prisma db push --accept-data-loss && npm start",
+    "vercel-build": "npm run build:all",
     "preview": "vite preview",
-    "check": "tsc"
+    "check": "tsc",
+    "setup": "node setup-supabase-complete.js",
+    "seed": "npx tsx scripts/seed.ts",
+    "start": "npm run dev",
+    "setup:full": "./run-locally.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

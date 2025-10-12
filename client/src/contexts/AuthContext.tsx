@@ -45,18 +45,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Dynamic API URL - same logic as in api.ts
 const getApiBaseUrl = () => {
-  // Check if we're in production (deployed on Render)
-  if (typeof window !== 'undefined' && (window.location.hostname.includes('render.com') || window.location.hostname.includes('onrender.com'))) {
-    // Use the same domain for API calls in production
-    return `${window.location.protocol}//${window.location.hostname}/api`;
+  // Production: Use relative URL when deployed together (Railway single deployment)
+  if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
+    return '/api';  // Relative to same domain
   }
   
-  // Check for environment variable
+  // Check for environment variable (for separate frontend/backend deployment)
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
   
-  // Fallback to localhost for development
+  // Development: Fallback to localhost
   return 'http://localhost:4000/api';
 };
 

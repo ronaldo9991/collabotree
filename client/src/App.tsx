@@ -23,6 +23,7 @@ import StudentSettings from "@/pages/student/Settings";
 import BuyerDashboard from "@/pages/buyer/Dashboard";
 import BuyerOrders from "@/pages/buyer/Orders";
 import Chat from "@/pages/Chat";
+// import TestChat from "@/pages/TestChat";
 import BuyerSettings from "@/pages/buyer/Settings";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminSettings from "@/pages/admin/Settings";
@@ -52,8 +53,9 @@ function Router() {
       <Route path="/dashboard/student/services/:id/edit" component={ServiceEdit} />
       <Route path="/dashboard/student/settings" component={StudentSettings} />
       <Route path="/dashboard/buyer" component={BuyerDashboard} />
-      <Route path="/dashboard/buyer/orders" component={BuyerOrders} />
-      <Route path="/chat/:hireId" component={Chat} />
+        <Route path="/dashboard/buyer/orders" component={BuyerOrders} />
+        <Route path="/chat/:hireId" component={Chat} />
+        {/* <Route path="/test-chat" component={TestChat} /> */}
       <Route path="/dashboard/buyer/settings" component={BuyerSettings} />
       <Route path="/dashboard/admin" component={AdminDashboard} />
       <Route path="/dashboard/admin/settings" component={AdminSettings} />

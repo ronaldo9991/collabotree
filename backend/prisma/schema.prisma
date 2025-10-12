@@ -10,21 +10,85 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enums converted to strings for SQLite compatibility
+// PostgreSQL Enums
+enum UserRole {
+  BUYER
+  STUDENT
+  ADMIN
+}
+
+enum HireRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  IN_PROGRESS
+  DELIVERED
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum ContractStatus {
+  DRAFT
+  PENDING_SIGNATURES
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  RELEASED
+  REFUNDED
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum NotificationType {
+  HIRE_ACCEPTED
+  HIRE_REJECTED
+  ORDER_CREATED
+  ORDER_STATUS_CHANGED
+  MESSAGE_RECEIVED
+  REVIEW_RECEIVED
+  DISPUTE_RAISED
+  DISPUTE_RESOLVED
+  VERIFICATION_APPROVED
+  VERIFICATION_REJECTED
+}
 
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   passwordHash String
-  role         String @default("BUYER")
+  role         UserRole @default(BUYER)
   name         String
-  username     String?  @unique  // Added username field
+  username     String?  @unique
   bio          String?
-  university   String?   // University name
-  skills       String?   // JSON string for SQLite compatibility
-  isVerified   Boolean  @default(false)  // Student verification status
-  idCardUrl    String?  // URL to uploaded student ID card
-  verifiedAt   DateTime? // When verification was completed
+  university   String?
+  skills       String[] @default([])
+  isVerified   Boolean  @default(false)
+  idCardUrl    String?
+  verifiedAt   DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -78,7 +142,7 @@ model HireRequest {
   serviceId String
   message   String?
   priceCents Int?
-  status    String @default("PENDING")
+  status    HireRequestStatus @default(PENDING)
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
 
@@ -142,7 +206,7 @@ model Order {
   serviceId  String
   hireRequestId String?
   priceCents Int
-  status     String @default("PENDING")
+  status     OrderStatus @default(PENDING)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
@@ -178,21 +242,21 @@ model Contract {
   studentPayoutCents Int   // Amount student will receive
   
   // Contract Status
-  status          String   @default("DRAFT") // DRAFT, PENDING_SIGNATURES, ACTIVE, COMPLETED, CANCELLED
+  status          ContractStatus @default(DRAFT)
   isSignedByBuyer Boolean  @default(false)
   isSignedByStudent Boolean @default(false)
   signedAt        DateTime?
   
   // Payment Status
-  paymentStatus   String   @default("PENDING") // PENDING, PAID, RELEASED, REFUNDED
-  paymentIntentId String?  // Stripe payment intent ID
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentIntentId String?
   paidAt          DateTime?
   releasedAt      DateTime?
   
   // Progress Tracking
-  progressStatus  String   @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, COMPLETED
-  progressNotes   String?  // Student's progress updates
-  completionNotes String?  // Buyer's completion notes
+  progressStatus  ProgressStatus @default(NOT_STARTED)
+  progressNotes   String?
+  completionNotes String?
   
   // Timestamps
   createdAt       DateTime @default(now())
@@ -230,10 +294,10 @@ model ContractSignature {
 model ContractProgress {
   id          String   @id @default(cuid())
   contractId  String
-  userId      String   // Who made the update
-  status      String   // IN_PROGRESS, COMPLETED, BLOCKED, etc.
+  userId      String
+  status      ProgressStatus
   notes       String
-  attachments String?  // JSON array of file URLs
+  attachments String?
   createdAt   DateTime @default(now())
   
   // Relations
@@ -265,7 +329,7 @@ model Review {
 model Notification {
   id     String           @id @default(cuid())
   userId String
-  type   String
+  type   NotificationType
   title  String
   body   String?
   read   Boolean          @default(false)
@@ -294,7 +358,7 @@ model Dispute {
   id          String        @id @default(cuid())
   orderId     String
   raisedById  String
-  status      String @default("OPEN")
+  status      DisputeStatus @default(OPEN)
   title       String
   description String
   createdAt   DateTime      @default(now())

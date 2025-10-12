@@ -31,6 +31,15 @@ const allowedOrigins = [
 if (env.NODE_ENV === 'production') {
   allowedOrigins.push('https://*.onrender.com');
   allowedOrigins.push('https://*.vercel.app');
+  allowedOrigins.push('https://*.railway.app');
+  allowedOrigins.push('https://*.up.railway.app');
+  
+  // Add Railway's provided domain if available
+  const railwayDomain = process.env.RAILWAY_PUBLIC_DOMAIN || process.env.RAILWAY_STATIC_URL;
+  if (railwayDomain) {
+    allowedOrigins.push(`https://${railwayDomain}`);
+    allowedOrigins.push(`http://${railwayDomain}`);
+  }
 }
 
 app.use(cors({
@@ -86,7 +95,8 @@ app.use('/api', routes);
 
 // Serve static files in production
 if (env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../../dist');
+  // Railway build places frontend at dist/dist (backend/dist/dist)
+  const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, 'dist');
   
   // Serve static files
   app.use(express.static(frontendPath, {

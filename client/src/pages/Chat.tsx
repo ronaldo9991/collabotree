@@ -197,8 +197,24 @@ export default function Chat() {
       return;
     }
 
+    // Determine Socket.io server URL
+    const getSocketUrl = () => {
+      // Production: Use same domain when deployed together (Railway)
+      if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
+        return window.location.origin;  // Same as frontend URL
+      }
+      
+      // Separate deployment: Use API URL without /api suffix
+      if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL.replace('/api', '');
+      }
+      
+      // Development: localhost
+      return 'http://localhost:4000';
+    };
+
     // Connect to WebSocket server with improved options
-    const newSocket = io('http://localhost:4000', {
+    const newSocket = io(getSocketUrl(), {
       auth: {
         token: authToken
       },

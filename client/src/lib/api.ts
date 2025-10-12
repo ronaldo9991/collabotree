@@ -1,16 +1,16 @@
 // Dynamic API URL based on environment
 const getApiBaseUrl = () => {
-  // Check for environment variable first (for Vercel deployment)
+  // Production: Use relative URL when deployed together (Railway single deployment)
+  if (import.meta.env.PROD && !import.meta.env.VITE_API_URL) {
+    return '/api';  // Relative to same domain
+  }
+  
+  // Check for environment variable (for separate frontend/backend deployment)
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
   
-  // Check if we're in production (deployed on Vercel)
-  if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
-    return `${window.location.origin}/api`;
-  }
-  
-  // Fallback to localhost for development
+  // Development: Fallback to localhost
   return 'http://localhost:4000/api';
 };
 
