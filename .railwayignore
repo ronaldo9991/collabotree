@@ -3,4 +3,8 @@ node_modules/
 .env
 .env.local
 .env.*
-!.env.example
+.git/
+.gitignore
+README.md
+*.md
+attached_assets/
