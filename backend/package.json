@@ -12,11 +12,9 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
-    "railway:build": "npm run build:full",
-    "railway:test": "node test-railway-build.js",
-    "build:full": "npm run build:frontend && npm run build:backend",
-    "build:frontend": "cd ../client && npm ci --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist/* dist/",
-    "build:backend": "npx prisma generate && npm run build"
+    "railway:build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd ../client && npm ci --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist dist/dist",
+    "build:backend": "npx prisma generate && npx prisma migrate deploy && npm run build"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

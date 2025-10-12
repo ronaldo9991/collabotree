@@ -1,0 +1,18 @@
+{
+  "name": "collabotree",
+  "version": "1.0.0",
+  "description": "Student Freelancing Platform",
+  "main": "backend/dist/server.js",
+  "scripts": {
+    "build": "cd backend && npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist/* dist/ && npx prisma generate && npm run build",
+    "start": "cd backend && node dist/server.js",
+    "dev": "cd backend && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": ["freelancing", "students", "marketplace"],
+  "author": "Collabotree Team",
+  "license": "MIT"
+}

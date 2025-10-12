@@ -2,5 +2,7 @@ node_modules/
 *.log
 .env
 .env.local
-.env.*
-!.env.example
+src/
+tsconfig.json
+*.ts
+!dist/
