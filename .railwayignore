@@ -1,0 +1,10 @@
+node_modules/
+*.log
+.env
+.env.local
+.env.*
+!.env.example
+backend/node_modules/
+client/node_modules/
+backend/dist/
+client/dist/
