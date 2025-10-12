@@ -15,6 +15,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Trust proxy for Railway (fixes rate limiting error)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
@@ -95,8 +98,12 @@ app.use('/api', routes);
 
 // Serve static files in production
 if (env.NODE_ENV === 'production') {
-  // Railway build places frontend at dist/dist (backend/dist/dist)
+  // Frontend files are in backend/dist (not dist/dist)
   const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, 'dist');
+  
+  console.log(`🌍 Production mode: Serving frontend + backend`);
+  console.log(`📁 Frontend path: ${frontendPath}`);
+  console.log(`📁 Current directory: ${__dirname}`);
   
   // Serve static files
   app.use(express.static(frontendPath, {
