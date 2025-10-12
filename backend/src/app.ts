@@ -106,11 +106,19 @@ if (env.NODE_ENV === 'production') {
   console.log(`📁 Frontend path: ${frontendPath}`);
   console.log(`📁 Current directory: ${__dirname}`);
   
-  // Serve static files
+  // Serve static files with proper headers for CSS/JS assets
   app.use(express.static(frontendPath, {
     maxAge: '1d', // Cache static files for 1 day
     etag: true,
-    lastModified: true
+    lastModified: true,
+    setHeaders: (res, filePath) => {
+      // Set proper MIME types for CSS and JS files
+      if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      } else if (filePath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      }
+    }
   }));
   
   // Handle SPA routing - serve index.html for non-API routes
