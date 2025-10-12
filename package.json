@@ -5,7 +5,7 @@
   "type": "module",
   "main": "backend/dist/server.js",
   "scripts": {
-    "build": "cd backend && npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps && npm run build && cd ../backend && if exist dist rmdir /s /q dist && mkdir dist && xcopy /s /e /y ..\\client\\dist\\* dist\\ && npx prisma generate && npm run build",
+    "build": "node build.js",
     "start": "cd backend && node dist/server.js",
     "dev": "cd backend && npm run dev"
   },
