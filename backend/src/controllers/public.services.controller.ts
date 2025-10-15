@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
-import { sendSuccess, sendValidationError } from '../utils/responses.js';
+import { sendSuccess, sendValidationError, sendError } from '../utils/responses.js';
 import { parsePagination, createPaginationResult } from '../utils/pagination.js';
 
 // Validation schema for public services

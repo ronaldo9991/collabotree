@@ -23,12 +23,12 @@ export const getServiceSchema = z.object({
 export const getServicesSchema = z.object({
   page: z.string().transform(Number).optional(),
   limit: z.string().transform(Number).optional(),
-  q: z.string().optional(),
+  search: z.string().optional(),
   minPrice: z.string().transform(Number).optional(),
   maxPrice: z.string().transform(Number).optional(),
   sortBy: z.enum(['createdAt', 'priceCents', 'title']).optional().default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
-  ownerId: z.string().cuid().optional(),
+  ownerId: z.string().optional(),
 });
 
 export type CreateServiceData = z.infer<typeof createServiceSchema>;

@@ -16,7 +16,8 @@
     "build:frontend": "cd ../client && npm ci --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist dist/dist",
     "build:backend": "npx prisma generate && npx prisma migrate deploy && npm run build",
     "seed:railway": "node seed-railway.js",
-    "fix:all": "node fix-all-issues.js"
+    "fix:all": "node fix-all-issues.js",
+    "fix:complete": "node COMPLETE_BACKEND_FIX.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
