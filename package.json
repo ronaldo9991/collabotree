@@ -9,7 +9,8 @@
     "start": "cd backend && node dist/server.js",
     "dev": "cd backend && npm run dev",
     "railway:build": "cd backend && npm run railway:build",
-    "fix:services": "cd backend && npm run fix:services"
+    "fix:services": "cd backend && npm run fix:services",
+    "fix:explore-talent": "cd backend && npm run fix:explore-talent"
   },
   "engines": {
     "node": ">=18.0.0",
