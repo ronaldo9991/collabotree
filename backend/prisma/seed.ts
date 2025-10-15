@@ -42,6 +42,8 @@ async function main() {
       role: 'STUDENT',
       bio: 'Computer Science student specializing in web development and mobile apps',
       skills: JSON.stringify(['React', 'Node.js', 'TypeScript', 'React Native', 'UI/UX Design']),
+      isVerified: true,
+      university: 'Stanford University',
     },
   });
 
@@ -53,6 +55,8 @@ async function main() {
       role: 'STUDENT',
       bio: 'Data Science student with expertise in machine learning and analytics',
       skills: JSON.stringify(['Python', 'Machine Learning', 'Data Analysis', 'SQL', 'TensorFlow']),
+      isVerified: true,
+      university: 'MIT',
     },
   });
 
@@ -88,6 +92,7 @@ async function main() {
       description: 'I will create a modern, responsive React web application with TypeScript, Tailwind CSS, and best practices. Includes component architecture, state management, and API integration.',
       priceCents: 50000, // $500
       isActive: true,
+      isTopSelection: true, // Mark as top selection for homepage
     },
   });
 
@@ -98,6 +103,7 @@ async function main() {
       description: 'Cross-platform mobile app development using React Native. Includes UI/UX design, state management, and app store deployment.',
       priceCents: 75000, // $750
       isActive: true,
+      isTopSelection: true, // Mark as top selection for homepage
     },
   });
 
@@ -108,6 +114,7 @@ async function main() {
       description: 'Comprehensive data analysis using Python, pandas, and matplotlib. Includes data cleaning, statistical analysis, and interactive visualizations.',
       priceCents: 30000, // $300
       isActive: true,
+      isTopSelection: true, // Mark as top selection for homepage
     },
   });
 

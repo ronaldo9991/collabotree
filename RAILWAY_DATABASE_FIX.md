@@ -119,3 +119,7 @@ Socket.IO initialized with CORS origin: http://localhost:3000
 ---
 
 **The frontend is perfect - just need to fix the database connection!** 🎉
+
+
+
+

@@ -116,3 +116,7 @@ With these environment variables set correctly:
 - ✅ All features work
 
 **Copy the environment variables above and paste them into Railway!** 🎯
+
+
+
+

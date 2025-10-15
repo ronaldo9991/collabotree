@@ -14,7 +14,7 @@ import walletRoutes from './wallet.routes.js';
 import verificationRoutes from './verification.routes.js';
 import adminRoutes from './admin.routes.js';
 import { getPublicTopSelectionServices } from '../controllers/admin.controller.js';
-import { getPublicServices } from '../controllers/services.controller.js';
+import { getPublicServices } from '../controllers/public.services.controller.js';
 
 const router = Router();
 

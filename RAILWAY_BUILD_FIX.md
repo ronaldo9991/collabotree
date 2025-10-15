@@ -63,3 +63,7 @@ After this fix:
 - `package.json` - Updated build command
 
 **The Railway build error is now completely resolved! 🎉**
+
+
+
+

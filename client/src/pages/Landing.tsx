@@ -208,14 +208,19 @@ export default function Landing() {
   return (
     <div className="min-h-screen">
       {/* Full Image Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700">
         {/* Full Background Image */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&h=1080" 
+            src="/jhero.png" 
             alt="Professional team collaboration and remote work" 
             className="w-full h-full object-cover"
             data-testid="hero-background-image"
+            onError={(e) => {
+              // Fallback to a gradient background if image fails to load
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement!.style.background = 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%)';
+            }}
           />
           {/* Dark overlay with blue tint for better text readability and brand consistency */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-primary/20"></div>
