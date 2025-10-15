@@ -91,25 +91,28 @@ export default function Services() {
         setLoading(true);
         
         // Fetch open projects from the database
-        const projects = await api.getProjects({});
+        const projects = await api.getPublicServices({});
         
-        // Convert projects to services format
-        const servicesData: Service[] = projects.map((project: ProjectWithDetails) => ({
-          id: project.id,
-          title: project.title,
-          description: project.description || 'No description available',
-          price: project.budget || 0,
+        // Extract services data from API response
+        const servicesData = (projects as any)?.data?.data || (projects as any)?.data || projects || [];
+        
+        // Convert services to display format
+        const servicesFormatted: Service[] = servicesData.map((service: any) => ({
+          id: service.id,
+          title: service.title,
+          description: service.description || 'No description available',
+          price: service.priceCents ? service.priceCents / 100 : 0,
           rating: 4.5 + Math.random() * 0.5, // Random rating between 4.5-5.0
           reviews: Math.floor(Math.random() * 50) + 5, // Random reviews 5-55
-          deliveryTime: `${Math.max(1, Math.floor((project.budget || 0) / 200))} days`,
+          deliveryTime: `${Math.max(1, Math.floor((service.priceCents || 0) / 20000))} days`,
           seller: {
-            name: project.creator?.full_name || 'Creator',
+            name: service.owner?.name || 'Student',
             rating: 4.5 + Math.random() * 0.5
           },
-          tags: project.tags || []
+          tags: service.owner?.skills ? JSON.parse(service.owner.skills) : ['General']
         }));
         
-        setServices(servicesData);
+        setServices(servicesFormatted);
       } catch (error) {
         console.error('Error fetching services:', error);
         toast({

@@ -192,7 +192,7 @@ export default function BuyerDashboard() {
         // Fetch available services for browsing
         try {
           console.log('🔍 Fetching services for buyer dashboard...');
-          const servicesResponse = await api.getServices();
+          const servicesResponse = await api.getPublicServices();
           console.log('📊 Services API response:', servicesResponse);
           
           const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];

@@ -17,7 +17,8 @@
     "build:backend": "npx prisma generate && npx prisma migrate deploy && npm run build",
     "seed:railway": "node seed-railway.js",
     "fix:all": "node fix-all-issues.js",
-    "fix:complete": "node COMPLETE_BACKEND_FIX.js"
+    "fix:complete": "node COMPLETE_BACKEND_FIX.js",
+    "fix:services": "node FIX_SERVICE_DISPLAY_ISSUES.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
