@@ -7,7 +7,8 @@
   "scripts": {
     "build": "node build.js",
     "start": "cd backend && node dist/server.js",
-    "dev": "cd backend && npm run dev"
+    "dev": "cd backend && npm run dev",
+    "railway:build": "cd backend && npm run railway:build"
   },
   "engines": {
     "node": ">=18.0.0",
