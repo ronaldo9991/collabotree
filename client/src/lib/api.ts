@@ -441,7 +441,15 @@ class ApiClient {
       });
     }
     const queryString = searchParams.toString();
-    return this.request(`/public/services${queryString ? `?${queryString}` : ''}`);
+    
+    try {
+      const response = await this.request(`/public/services${queryString ? `?${queryString}` : ''}`);
+      console.log('🔍 getPublicServices response:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ getPublicServices error:', error);
+      throw error;
+    }
   }
 
   // Admin version (requires authentication)
