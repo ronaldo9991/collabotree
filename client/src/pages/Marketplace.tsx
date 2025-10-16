@@ -225,16 +225,6 @@ export default function ExploreTalent() {
     fetchData();
   }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
 
-  // Manual refresh function
-  const handleRefresh = async () => {
-    console.log('🔄 Manual refresh triggered');
-    setRefreshing(true);
-    try {
-      await fetchData(true);
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
 
   // Set up categories from project tags
