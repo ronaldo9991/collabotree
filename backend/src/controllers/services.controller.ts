@@ -8,8 +8,13 @@ import { createServiceSchema, updateServiceSchema, getServicesSchema } from '../
 
 export const createService = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    console.log('🔍 createService called with body:', req.body);
+    
     const validatedData = createServiceSchema.parse(req.body);
     const userId = req.user!.id;
+
+    console.log('👤 Creating service for user:', userId);
+    console.log('📝 Service data:', validatedData);
 
     const service = await prisma.service.create({
       data: {
@@ -39,17 +44,21 @@ export const createService = async (req: AuthenticatedRequest, res: Response) =>
       },
     });
 
+    console.log('✅ Service created successfully:', service.id, service.title);
     return sendCreated(res, service, 'Service created successfully');
   } catch (error) {
+    console.error('❌ Error in createService:', error);
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
     }
-    throw error;
+    return sendError(res, 'Failed to create service', 500);
   }
 };
 
 export const getServices = async (req: Request, res: Response) => {
   try {
+    console.log('🔍 getServices called with query:', req.query);
+    
     const query = getServicesSchema.parse(req.query);
     const pagination = parsePagination(query);
 
@@ -92,6 +101,9 @@ export const getServices = async (req: Request, res: Response) => {
     // Calculate skip for pagination
     const skip = (pagination.page - 1) * pagination.limit;
 
+    console.log('🔍 Database query where clause:', JSON.stringify(where, null, 2));
+    console.log('🔍 Database query orderBy:', JSON.stringify(orderBy, null, 2));
+
     const [services, total] = await Promise.all([
       prisma.service.findMany({
         where,
@@ -123,13 +135,20 @@ export const getServices = async (req: Request, res: Response) => {
       prisma.service.count({ where }),
     ]);
 
+    console.log(`✅ Found ${services.length} services out of ${total} total`);
+    
+    if (services.length > 0) {
+      console.log('📋 Sample service titles:', services.slice(0, 3).map(s => s.title));
+    }
+
     const result = createPaginationResult(services, pagination, total);
     return sendSuccess(res, result);
   } catch (error) {
+    console.error('❌ Error in getServices:', error);
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
     }
-    throw error;
+    return sendError(res, 'Failed to fetch services', 500);
   }
 };
 
@@ -168,7 +187,8 @@ export const getService = async (req: Request, res: Response) => {
 
     return sendSuccess(res, service);
   } catch (error) {
-    throw error;
+    console.error('❌ Error in getService:', error);
+    return sendError(res, 'Failed to fetch service', 500);
   }
 };
 
@@ -219,10 +239,11 @@ export const updateService = async (req: AuthenticatedRequest, res: Response) =>
 
     return sendSuccess(res, service, 'Service updated successfully');
   } catch (error) {
+    console.error('❌ Error in updateService:', error);
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
     }
-    throw error;
+    return sendError(res, 'Failed to update service', 500);
   }
 };
 
@@ -244,153 +265,13 @@ export const deleteService = async (req: AuthenticatedRequest, res: Response) =>
       return sendForbidden(res, 'You can only delete your own services');
     }
 
-    // Soft delete by setting isActive to false
-    await prisma.service.update({
+    await prisma.service.delete({
       where: { id },
-      data: { isActive: false },
     });
 
     return sendSuccess(res, null, 'Service deleted successfully');
   } catch (error) {
-    throw error;
-  }
-};
-
-export const getUserServices = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const userId = req.user!.id;
-    const query = getServicesSchema.parse(req.query);
-    const pagination = parsePagination(query);
-
-    // Build where clause
-    const where: any = {
-      ownerId: userId,
-    };
-
-    if (query.search) {
-      where.OR = [
-        { title: { contains: query.search, mode: 'insensitive' } },
-        { description: { contains: query.search, mode: 'insensitive' } },
-      ];
-    }
-
-    // Build orderBy clause
-    const orderBy: any = {};
-    if (query.sortBy) {
-      orderBy[query.sortBy] = query.sortOrder || 'desc';
-    } else {
-      orderBy.createdAt = 'desc';
-    }
-
-    // Calculate skip for pagination
-    const skip = (pagination.page - 1) * pagination.limit;
-
-    const [services, total] = await Promise.all([
-      prisma.service.findMany({
-        where,
-        include: {
-          owner: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              bio: true,
-              university: true,
-              skills: true,
-              isVerified: true,
-              idCardUrl: true,
-              verifiedAt: true,
-            },
-          },
-          _count: {
-            select: {
-              hireRequests: true,
-              orders: true,
-            },
-          },
-        },
-        orderBy,
-        take: pagination.limit,
-        skip: skip,
-      }),
-      prisma.service.count({ where }),
-    ]);
-
-    const result = createPaginationResult(services, pagination, total);
-    return sendSuccess(res, result);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return sendValidationError(res, error.errors);
-    }
-    throw error;
-  }
-};
-
-// Public function for homepage
-export const getPublicServices = async (req: Request, res: Response) => {
-  try {
-    const query = getServicesSchema.parse(req.query);
-    const pagination = parsePagination(query);
-
-    // Build where clause for public services
-    const where: any = {
-      isActive: true,
-    };
-
-    if (query.search) {
-      where.OR = [
-        { title: { contains: query.search, mode: 'insensitive' } },
-        { description: { contains: query.search, mode: 'insensitive' } },
-        { owner: { name: { contains: query.search, mode: 'insensitive' } } },
-      ];
-    }
-
-    // Build orderBy clause
-    const orderBy: any = {};
-    if (query.sortBy) {
-      orderBy[query.sortBy] = query.sortOrder || 'desc';
-    } else {
-      orderBy.createdAt = 'desc';
-    }
-
-    // Calculate skip for pagination
-    const skip = (pagination.page - 1) * pagination.limit;
-
-    const [services, total] = await Promise.all([
-      prisma.service.findMany({
-        where,
-        include: {
-          owner: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              bio: true,
-              university: true,
-              skills: true,
-              isVerified: true,
-            },
-          },
-          _count: {
-            select: {
-              hireRequests: true,
-              orders: true,
-            },
-          },
-        },
-        orderBy,
-        take: pagination.limit,
-        skip: skip,
-      }),
-      prisma.service.count({ where }),
-    ]);
-
-    const result = createPaginationResult(services, pagination, total);
-    return sendSuccess(res, result);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return sendValidationError(res, error.errors);
-    }
-    throw error;
+    console.error('❌ Error in deleteService:', error);
+    return sendError(res, 'Failed to delete service', 500);
   }
 };

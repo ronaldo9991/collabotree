@@ -19,6 +19,8 @@ const getPublicServicesSchema = z.object({
 // Public version for homepage (no authentication required)
 export const getPublicServices = async (req: Request, res: Response) => {
   try {
+    console.log('🔍 getPublicServices called with query:', req.query);
+    
     const query = getPublicServicesSchema.parse(req.query);
     const pagination = parsePagination(query);
 
@@ -61,6 +63,10 @@ export const getPublicServices = async (req: Request, res: Response) => {
     // Calculate skip for pagination
     const skip = (pagination.page - 1) * pagination.limit;
 
+    console.log('🔍 Database query where clause:', JSON.stringify(where, null, 2));
+    console.log('🔍 Database query orderBy:', JSON.stringify(orderBy, null, 2));
+    console.log('🔍 Pagination:', { skip, take: pagination.limit });
+
     const [services, total] = await Promise.all([
       prisma.service.findMany({
         where,
@@ -92,12 +98,19 @@ export const getPublicServices = async (req: Request, res: Response) => {
       prisma.service.count({ where }),
     ]);
 
+    console.log(`✅ Found ${services.length} services out of ${total} total`);
+    
+    if (services.length > 0) {
+      console.log('📋 Sample service titles:', services.slice(0, 3).map(s => s.title));
+    }
+
     const result = createPaginationResult(services, pagination, total);
     return sendSuccess(res, result);
   } catch (error) {
+    console.error('❌ Error in getPublicServices:', error);
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
     }
-    throw error;
+    return sendError(res, 'Failed to fetch public services', 500);
   }
 };

@@ -26,7 +26,9 @@
     "build:production": "npx prisma generate && npx prisma db push --accept-data-loss && tsc",
     "railway:start": "npm start",
     "postinstall": "npx prisma generate",
-    "fix:backend": "node fix-backend-production.js"
+    "fix:backend": "node fix-backend-production.js",
+    "test:services": "node test-service-endpoints.js",
+    "seed:test": "node seed-test-services.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
