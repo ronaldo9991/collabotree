@@ -299,6 +299,7 @@ model Contract {
   studentId         String
   title             String
   description       String?
+  deliverables      String?
   status            String   @default("DRAFT")
   terms             String?
   priceCents        Int
@@ -324,6 +325,7 @@ model Contract {
   student       User        @relation("StudentContracts", fields: [studentId], references: [id], onDelete: Cascade)
   signatures    ContractSignature[]
   progress      ContractProgress[]
+  progressUpdates ContractProgress[] @relation("ContractProgressUpdates")
 
   @@map("contracts")
 }
@@ -356,7 +358,7 @@ model ContractProgress {
   createdAt  DateTime @default(now())
 
   // Relations
-  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  contract   Contract @relation("ContractProgressUpdates", fields: [contractId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("contract_progress")
