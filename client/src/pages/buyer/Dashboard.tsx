@@ -264,15 +264,6 @@ export default function BuyerDashboard() {
     };
 
     fetchDashboardData();
-    
-    // Set up auto-refresh every 10 seconds for real-time updates
-    const interval = setInterval(() => {
-      if (user) {
-        fetchDashboardData();
-      }
-    }, 10000);
-
-    return () => clearInterval(interval);
   }, [user, toast, hireRequestsRefresh]);
 
   const formatAmount = (amountCents: number) => {

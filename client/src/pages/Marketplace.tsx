@@ -46,9 +46,20 @@ export default function ExploreTalent() {
   const [sortBy, setSortBy] = useState("newest");
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [categories, setCategories] = useState([
     { value: "all", label: "All Categories" }
   ]);
+
+  // Manual refresh function
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchData(true);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   // Fetch data function
   const fetchData = useCallback(async (isBackground = false) => {
@@ -215,20 +226,15 @@ export default function ExploreTalent() {
   }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
 
   // Manual refresh function
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     console.log('🔄 Manual refresh triggered');
-    fetchData();
+    setRefreshing(true);
+    try {
+      await fetchData(true);
+    } finally {
+      setRefreshing(false);
+    }
   };
-
-  // Auto-refresh every 10 seconds to catch new services
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log('🔄 Background refresh to check for new services...');
-      fetchData(true);
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [fetchData]);
 
 
   // Set up categories from project tags
@@ -342,11 +348,11 @@ export default function ExploreTalent() {
               variant="outline" 
               size="sm" 
               onClick={handleRefresh}
-              disabled={loading}
+              disabled={loading || refreshing}
               className="gap-2"
             >
-              <Search className="h-4 w-4" />
-              {loading ? 'Loading...' : 'Refresh Services'}
+              <Search className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 'Refreshing...' : loading ? 'Loading...' : 'Refresh Services'}
             </Button>
           </div>
           

@@ -81,13 +81,6 @@ export default function StudentDashboard() {
   useEffect(() => {
     if (user?.id) {
       fetchStudentData();
-      
-      // Set up auto-refresh every 10 seconds for real-time updates
-      const interval = setInterval(() => {
-        fetchStudentData();
-      }, 10000);
-
-      return () => clearInterval(interval);
     } else {
       // Always show dashboard even without user data
       setLoading(false);
