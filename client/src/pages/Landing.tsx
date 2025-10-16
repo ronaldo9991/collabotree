@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare } from "lucide-react";
+import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
@@ -18,12 +18,22 @@ export default function Landing() {
   const [newProjects, setNewProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Manual refresh function
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchProjects();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   // Fetch projects from backend
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
         
         // Fetch top selection services (admin-curated) - public endpoint
         const topSelectionResponse = await api.getPublicTopSelectionServices();
@@ -56,8 +66,13 @@ export default function Landing() {
         setTopSelectionProjects(mappedTopSelectionProjects);
 
         // Fetch all recent services for "New Projects" section - public endpoint
+        console.log('🔍 Fetching all services for New Projects section...');
         const allServicesResponse = await api.getPublicServices({ limit: 20, sortBy: 'createdAt', sortOrder: 'desc' });
+        console.log('📦 All services API response:', allServicesResponse);
+        
         const allServicesData = (allServicesResponse as any)?.data?.data || (allServicesResponse as any)?.data || allServicesResponse || [];
+        console.log('📋 Extracted all services data:', allServicesData);
+        console.log('📊 Number of all services found:', allServicesData.length);
         
         // Map all services to project format for new projects
         const mappedNewProjects = allServicesData.map((service: any) => ({
@@ -80,6 +95,8 @@ export default function Landing() {
           createdAt: service.createdAt
         }));
 
+        console.log('🎯 Mapped new projects:', mappedNewProjects);
+        console.log('📊 Number of mapped new projects:', mappedNewProjects.length);
         setNewProjects(mappedNewProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -90,12 +107,15 @@ export default function Landing() {
       }
     };
 
+  // Fetch projects on component mount
+  useEffect(() => {
     fetchProjects();
     
-    // Set up auto-refresh every 10 seconds for real-time updates
+    // Set up auto-refresh every 30 seconds for real-time updates
     const interval = setInterval(() => {
+      console.log('🔄 Auto-refreshing projects...');
       fetchProjects();
-    }, 10000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -569,7 +589,19 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">New Projects</h2>
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <h2 className="text-3xl lg:text-4xl font-bold">New Projects</h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                {refreshing ? 'Refreshing...' : 'Refresh'}
+              </Button>
+            </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Fresh opportunities from our talented student community. Discover the latest projects and innovations from verified students worldwide.
             </p>

@@ -85,6 +85,7 @@ export default function ExploreTalent() {
       console.log('📦 Raw API Response:', projectsResponse);
       console.log('📦 API Response type:', typeof projectsResponse);
       console.log('📦 API Response success:', projectsResponse ? 'Success' : 'Failed');
+      console.log('📦 API Response keys:', projectsResponse ? Object.keys(projectsResponse) : 'No response');
       
       // Handle API response format - same as landing page
       let projectsData: any[] = [];
