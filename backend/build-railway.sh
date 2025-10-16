@@ -1,29 +1,16 @@
 #!/bin/bash
 
-echo "🔨 Building CollaboTree for Railway..."
+echo "🚀 Railway Build Script for CollaboTree"
 
-# Install dependencies
-echo "📦 Installing dependencies..."
-npm install
-cd backend && npm install
+# Set production environment
+export NODE_ENV=production
 
-# Build backend
-echo "🔨 Building backend..."
-cd backend
+# Generate Prisma client
+echo "📦 Generating Prisma client..."
 npx prisma generate
-npx prisma db push --accept-data-loss
-npm run build
 
-# Build frontend
-echo "🔨 Building frontend..."
-cd ../client
-npm ci --legacy-peer-deps
-npm run build
+# Compile TypeScript
+echo "🔨 Compiling TypeScript..."
+npx tsc
 
-# Copy frontend to backend
-echo "📁 Copying frontend to backend..."
-cd ../backend
-mkdir -p dist
-cp -r ../client/dist dist/frontend
-
-echo "✅ Railway build completed!"
+echo "✅ Railway build completed successfully!"
