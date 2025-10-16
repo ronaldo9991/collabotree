@@ -9,3 +9,6 @@ cmds = ["npm run railway:build"]
 
 [start]
 cmd = "cd backend && npm start"
+
+[build]
+builder = "NIXPACKS"
