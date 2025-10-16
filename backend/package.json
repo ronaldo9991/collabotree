@@ -21,7 +21,8 @@
     "fix:services": "node FIX_SERVICE_DISPLAY_ISSUES.js",
     "fix:explore-talent": "node FIX_EXPLORE_TALENT_SERVICES.js",
     "fix:services-visible": "node IMMEDIATE_SERVICES_FIX.js",
-    "fix:deployment": "node fix-deployment.js"
+    "fix:deployment": "node fix-deployment.js",
+    "seed:services": "node seed-services.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
