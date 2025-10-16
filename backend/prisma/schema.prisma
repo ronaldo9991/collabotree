@@ -298,6 +298,7 @@ model Contract {
   buyerId           String
   studentId         String
   title             String
+  description       String?
   status            String   @default("DRAFT")
   terms             String?
   priceCents        Int
@@ -309,8 +310,10 @@ model Contract {
   isSignedByStudent Boolean  @default(false)
   signedAt          DateTime?
   paidAt            DateTime?
+  paymentIntentId   String?
   progressNotes     String?
   completionNotes   String?
+  releasedAt        DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -321,6 +324,7 @@ model Contract {
   student       User        @relation("StudentContracts", fields: [studentId], references: [id], onDelete: Cascade)
   signatures    ContractSignature[]
   progress      ContractProgress[]
+  progressUpdates ContractProgress[]
 
   @@map("contracts")
 }
@@ -331,6 +335,7 @@ model ContractSignature {
   userId     String
   signature  String?
   ipAddress  String?
+  userAgent  String?
   signedAt   DateTime @default(now())
 
   // Relations
@@ -348,6 +353,7 @@ model ContractProgress {
   status     String
   description String?
   notes      String?
+  attachments String?
   createdAt  DateTime @default(now())
 
   // Relations
