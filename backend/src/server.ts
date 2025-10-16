@@ -15,6 +15,17 @@ setupChatGateway(io);
 // Railway provides PORT environment variable
 const PORT = process.env.PORT || env.PORT || 4000;
 
+// Production error handling
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
 // Start server
 httpServer.listen(PORT, async () => {
   console.log(`🚀 CollaboTree Backend Server running on port ${PORT}`);
@@ -28,6 +39,7 @@ httpServer.listen(PORT, async () => {
     console.log(`💾 Database: Connected and initialized`);
   } catch (error) {
     console.error('❌ Failed to initialize database:', error);
+    console.error('❌ Backend will not start without database connection');
     process.exit(1);
   }
   

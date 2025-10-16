@@ -2,16 +2,39 @@
 
 echo "🚀 Starting CollaboTree Backend on Railway..."
 
-# Set environment
+# Set production environment
 export NODE_ENV=production
 
-# Test database connection
-echo "🔍 Testing database connection..."
-npx prisma db push --accept-data-loss
+# Check environment variables
+echo "🔍 Checking environment variables..."
+if [ -z "$DATABASE_URL" ]; then
+  echo "❌ DATABASE_URL is not set"
+  exit 1
+fi
+
+if [ -z "$JWT_ACCESS_SECRET" ]; then
+  echo "❌ JWT_ACCESS_SECRET is not set"
+  exit 1
+fi
+
+if [ -z "$JWT_REFRESH_SECRET" ]; then
+  echo "❌ JWT_REFRESH_SECRET is not set"
+  exit 1
+fi
+
+echo "✅ Environment variables validated"
 
 # Generate Prisma client
 echo "📦 Generating Prisma client..."
 npx prisma generate
+
+# Push database schema
+echo "🗄️ Pushing database schema..."
+npx prisma db push --accept-data-loss
+
+# Build the application
+echo "🔨 Building application..."
+npm run build
 
 # Start the server
 echo "🌟 Starting server..."

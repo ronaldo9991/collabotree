@@ -1,4 +1,1 @@
-web: cd backend && npm start
-
-
-
+web: cd backend && chmod +x start-railway.sh && ./start-railway.sh
