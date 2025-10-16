@@ -13,6 +13,7 @@ import notificationsRoutes from './notifications.routes.js';
 import walletRoutes from './wallet.routes.js';
 import verificationRoutes from './verification.routes.js';
 import adminRoutes from './admin.routes.js';
+import testRoutes from './test.routes.js';
 import { getPublicTopSelectionServices } from '../controllers/admin.controller.js';
 import { getPublicServices } from '../controllers/public.services.controller.js';
 
@@ -46,5 +47,6 @@ router.use('/notifications', notificationsRoutes);
 router.use('/wallet', walletRoutes);
 router.use('/verification', verificationRoutes);
 router.use('/admin', adminRoutes);
+router.use('/test', testRoutes);
 
 export default router;
