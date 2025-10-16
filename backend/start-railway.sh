@@ -28,14 +28,6 @@ echo "✅ Environment variables validated"
 echo "📦 Generating Prisma client..."
 npx prisma generate
 
-# Push database schema
-echo "🗄️ Pushing database schema..."
-npx prisma db push --accept-data-loss
-
-# Build the application
-echo "🔨 Building application..."
-npm run build
-
-# Start the server
+# Start the server (database initialization will happen at runtime)
 echo "🌟 Starting server..."
 npm start

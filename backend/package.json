@@ -5,14 +5,14 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "npx prisma generate && npx prisma db push --accept-data-loss && tsc",
+    "build": "npx prisma generate && tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
-    "railway:build": "npm run build:production",
+    "railway:build": "npm run build:railway",
     "build:frontend": "cd ../client && npm ci --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist dist/frontend",
     "build:backend": "npx prisma generate && npx prisma db push --accept-data-loss && npm run build",
     "seed:railway": "node seed-railway.js",
@@ -23,12 +23,14 @@
     "fix:services-visible": "node IMMEDIATE_SERVICES_FIX.js",
     "fix:deployment": "node fix-deployment.js",
     "seed:services": "node seed-services.js",
-    "build:production": "npx prisma generate && npx prisma db push --accept-data-loss && tsc",
+    "build:production": "npx prisma generate && tsc",
     "railway:start": "npm start",
     "postinstall": "npx prisma generate",
     "fix:backend": "node fix-backend-production.js",
     "test:services": "node test-service-endpoints.js",
-    "seed:test": "node seed-test-services.js"
+    "seed:test": "node seed-test-services.js",
+    "build:railway": "npx prisma generate && tsc",
+    "start:production": "node dist/server.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
