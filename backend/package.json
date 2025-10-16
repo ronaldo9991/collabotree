@@ -30,7 +30,10 @@
     "test:services": "node test-service-endpoints.js",
     "seed:test": "node seed-test-services.js",
     "build:railway": "npx prisma generate && tsc",
-    "start:production": "node dist/server.js"
+    "start:production": "node dist/server.js",
+    "dev:local": "node start-local-dev.js",
+    "db:local": "npx prisma db push --schema=./prisma/schema.local.prisma",
+    "studio:local": "npx prisma studio --schema=./prisma/schema.local.prisma"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
