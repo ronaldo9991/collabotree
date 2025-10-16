@@ -1,393 +1,125 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// PostgreSQL Enums
-enum UserRole {
-  BUYER
-  STUDENT
-  ADMIN
-}
-
-enum HireRequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  CANCELLED
-}
-
-enum OrderStatus {
-  PENDING
-  PAID
-  IN_PROGRESS
-  DELIVERED
-  COMPLETED
-  CANCELLED
-  DISPUTED
-}
-
-enum ContractStatus {
-  DRAFT
-  PENDING_SIGNATURES
-  ACTIVE
-  COMPLETED
-  CANCELLED
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  RELEASED
-  REFUNDED
-}
-
-enum ProgressStatus {
-  NOT_STARTED
-  IN_PROGRESS
-  COMPLETED
-  BLOCKED
-}
-
-enum DisputeStatus {
-  OPEN
-  UNDER_REVIEW
-  RESOLVED
-  REJECTED
-}
-
-enum NotificationType {
-  HIRE_ACCEPTED
-  HIRE_REJECTED
-  HIRE_REQUESTED
-  ORDER_CREATED
-  ORDER_STATUS_CHANGED
-  MESSAGE_RECEIVED
-  REVIEW_RECEIVED
-  DISPUTE_RAISED
-  DISPUTE_RESOLVED
-  VERIFICATION_APPROVED
-  VERIFICATION_REJECTED
-  CONTRACT_CREATED
-  CONTRACT_SIGNED
-  PAYMENT_RECEIVED
-  PROGRESS_UPDATED
-  CONTRACT_COMPLETED
-}
-
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(BUYER)
-  name         String
-  username     String?  @unique
-  bio          String?
-  university   String?
-  skills       String[] @default([])
-  isVerified   Boolean  @default(false)
-  idCardUrl    String?
-  verifiedAt   DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("STUDENT")
+  bio       String?
+  university String?
+  skills    String?
+  isVerified Boolean @default(false)
+  idCardUrl String?
+  verifiedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations
-  ownedServices     Service[]
-  sentHireRequests  HireRequest[] @relation("BuyerHireRequests")
-  receivedHireRequests HireRequest[] @relation("StudentHireRequests")
-  sentOrders        Order[] @relation("BuyerOrders")
-  receivedOrders    Order[] @relation("StudentOrders")
-  sentReviews       Review[] @relation("ReviewerReviews")
-  receivedReviews   Review[] @relation("RevieweeReviews")
-  notifications     Notification[]
-  walletEntries     WalletEntry[]
-  raisedDisputes    Dispute[]
-  refreshTokens     RefreshToken[]
-  sentMessages      Message[]
-  messageReads      MessageRead[]
-  contractsAsBuyer    Contract[] @relation("BuyerContracts")
-  contractsAsStudent  Contract[] @relation("StudentContracts")
-  contractSignatures  ContractSignature[]
-  contractProgress    ContractProgress[]
+  services      Service[]
+  hireRequests  HireRequest[]
+  orders        Order[]
+  reviews       Review[]
+  notifications Notification[]
 
   @@map("users")
 }
 
 model Service {
-  id            String   @id @default(cuid())
-  ownerId       String
-  title         String
-  description   String
-  priceCents    Int
-  coverImage    String?  // Add cover image field
-  isActive      Boolean  @default(true)
-  isTopSelection Boolean @default(false) // Admin can mark services as top selections
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  priceCents  Int
+  coverImage  String?
+  isActive    Boolean  @default(true)
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  // Relations
-  owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  hireRequests  HireRequest[]
-  orders        Order[]
-  contracts     Contract[]
+  owner       User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  hireRequests HireRequest[]
+  orders      Order[]
+  reviews     Review[]
 
   @@map("services")
 }
 
 model HireRequest {
-  id        String            @id @default(cuid())
+  id        String   @id @default(cuid())
+  serviceId String
   buyerId   String
   studentId String
-  serviceId String
-  message   String?
-  priceCents Int?
-  status    HireRequestStatus @default(PENDING)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  message   String
+  priceCents Int
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations
-  buyer     User      @relation("BuyerHireRequests", fields: [buyerId], references: [id], onDelete: Cascade)
-  student   User      @relation("StudentHireRequests", fields: [studentId], references: [id], onDelete: Cascade)
-  service   Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  chatRoom  ChatRoom?
-  orders    Order[]
-  contract  Contract?
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  buyer   User    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  student User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  orders  Order[]
+  reviews Review[]
 
   @@map("hire_requests")
 }
 
-model ChatRoom {
-  id            String    @id @default(cuid())
-  hireRequestId String    @unique
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
-  hireRequest HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
-  messages    Message[]
-
-  @@map("chat_rooms")
-}
-
-model Message {
-  id        String   @id @default(cuid())
-  roomId    String
-  senderId  String
-  body      String
-  createdAt DateTime @default(now())
-
-  // Relations
-  room   ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  sender User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  readBy MessageRead[]
-
-  @@map("messages")
-}
-
-model MessageRead {
-  id        String   @id @default(cuid())
-  messageId String
-  userId    String
-  readAt    DateTime @default(now())
-
-  // Relations
-  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([messageId, userId])
-  @@map("message_reads")
-}
-
 model Order {
-  id         String      @id @default(cuid())
-  buyerId    String
-  studentId  String
-  serviceId  String
-  hireRequestId String?
-  priceCents Int
-  status     OrderStatus @default(PENDING)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id           String   @id @default(cuid())
+  hireRequestId String
+  serviceId    String
+  buyerId      String
+  studentId    String
+  priceCents   Int
+  status       String   @default("PENDING")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  // Relations
-  buyer       User      @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
-  student     User      @relation("StudentOrders", fields: [studentId], references: [id], onDelete: Cascade)
-  service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  hireRequest HireRequest? @relation(fields: [hireRequestId], references: [id])
+  hireRequest HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
+  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  buyer       User        @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  student     User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
   reviews     Review[]
-  disputes    Dispute[]
-  contract    Contract?
 
-  // Critical constraint: buyer can only purchase a service once
-  @@unique([buyerId, serviceId], name: "unique_buyer_service_order")
   @@map("orders")
 }
 
-model Contract {
-  id              String   @id @default(cuid())
-  hireRequestId   String   @unique
-  orderId         String?  @unique
-  buyerId         String
-  studentId       String
-  serviceId       String
-  
-  // Contract Details
-  title           String
-  description     String
-  deliverables    String   // JSON string of deliverables
-  timeline        Int      // Days to complete
-  priceCents      Int
-  platformFeeCents Int     // 10% commission
-  studentPayoutCents Int   // Amount student will receive
-  
-  // Contract Status
-  status          ContractStatus @default(DRAFT)
-  isSignedByBuyer Boolean  @default(false)
-  isSignedByStudent Boolean @default(false)
-  signedAt        DateTime?
-  
-  // Payment Status
-  paymentStatus   PaymentStatus @default(PENDING)
-  paymentIntentId String?
-  paidAt          DateTime?
-  releasedAt      DateTime?
-  
-  // Progress Tracking
-  progressStatus  ProgressStatus @default(NOT_STARTED)
-  progressNotes   String?
-  completionNotes String?
-  
-  // Timestamps
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Relations
-  hireRequest     HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
-  order           Order?      @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  buyer           User        @relation("BuyerContracts", fields: [buyerId], references: [id], onDelete: Cascade)
-  student         User        @relation("StudentContracts", fields: [studentId], references: [id], onDelete: Cascade)
-  service         Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  signatures      ContractSignature[]
-  progressUpdates ContractProgress[]
-  
-  @@map("contracts")
-}
-
-model ContractSignature {
-  id         String   @id @default(cuid())
-  contractId String
-  userId     String
-  signature  String   // Base64 encoded signature image
-  signedAt   DateTime @default(now())
-  ipAddress  String?
-  userAgent  String?
-  
-  // Relations
-  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@unique([contractId, userId])
-  @@map("contract_signatures")
-}
-
-model ContractProgress {
-  id          String   @id @default(cuid())
-  contractId  String
-  userId      String
-  status      ProgressStatus
-  notes       String
-  attachments String?
-  createdAt   DateTime @default(now())
-  
-  // Relations
-  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@map("contract_progress")
-}
-
 model Review {
-  id         String   @id @default(cuid())
-  orderId    String
-  reviewerId String
-  revieweeId String
-  rating     Int      // 1-5
-  comment    String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  orderId   String
+  serviceId String
+  buyerId   String
+  studentId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations
-  order    Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  reviewer User  @relation("ReviewerReviews", fields: [reviewerId], references: [id], onDelete: Cascade)
-  reviewee User  @relation("RevieweeReviews", fields: [revieweeId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  buyer   User    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  student User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  // One review per reviewer per order
-  @@unique([orderId, reviewerId])
   @@map("reviews")
 }
 
 model Notification {
-  id     String           @id @default(cuid())
-  userId String
-  type   NotificationType
-  title  String
-  body   String?
-  read   Boolean          @default(false)
-  createdAt DateTime      @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
-}
-
-model WalletEntry {
-  id          String   @id @default(cuid())
-  userId      String
-  amountCents Int      // Positive for credits, negative for debits
-  reason      String
-  createdAt   DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("wallet_entries")
-}
-
-model Dispute {
-  id          String        @id @default(cuid())
-  orderId     String
-  raisedById  String
-  status      DisputeStatus @default(OPEN)
-  title       String
-  description String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  // Relations
-  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  raisedBy User @relation(fields: [raisedById], references: [id], onDelete: Cascade)
-
-  @@map("disputes")
-}
-
-model RefreshToken {
-  id         String   @id @default(cuid())
-  userId     String
-  hashedToken String
-  jti        String   @unique // JWT ID for token tracking
-  revoked    Boolean  @default(false)
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("refresh_tokens")
 }
