@@ -121,3 +121,4 @@ If you're still having issues:
 4. Test the health endpoints
 
 The deployment should work correctly once the environment variables are set and PostgreSQL is added to your Railway project.
+

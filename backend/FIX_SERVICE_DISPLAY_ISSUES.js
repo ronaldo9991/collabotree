@@ -142,3 +142,4 @@ console.log('- All Services: https://your-app.railway.app/api/services');
 
 console.log('\n✨ Your CollaboTree services are now displaying everywhere!');
 console.log('🚀 Homepage, Explore Talent, and Buyer Dashboard will all show services!');
+

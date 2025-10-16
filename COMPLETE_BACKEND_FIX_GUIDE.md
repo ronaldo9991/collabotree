@@ -163,3 +163,4 @@ If you're still having issues after running the fix:
 4. Try running the fix command again
 
 The `npm run fix:all` command is designed to fix ALL backend issues in one go. Your CollaboTree application should be fully functional after running it! 🚀
+

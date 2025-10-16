@@ -98,9 +98,8 @@ app.use('/api', routes);
 
 // Serve static files in production
 if (env.NODE_ENV === 'production') {
-  // Frontend files are in the same directory as the compiled backend (__dirname)
-  // Since backend compiles to dist/, and frontend is copied to dist/, use __dirname directly
-  const frontendPath = process.env.FRONTEND_PATH || __dirname;
+  // Frontend files are copied to dist/frontend during build
+  const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, 'frontend');
   
   console.log(`🌍 Production mode: Serving frontend + backend`);
   console.log(`📁 Frontend path: ${frontendPath}`);

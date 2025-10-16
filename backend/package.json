@@ -12,15 +12,16 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
-    "railway:build": "npm run build:backend",
-    "build:frontend": "cd ../client && npm ci --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist dist/dist",
+    "railway:build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "cd ../client && npm ci --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist dist/frontend",
     "build:backend": "npx prisma generate && npx prisma migrate deploy && npm run build",
     "seed:railway": "node seed-railway.js",
     "fix:all": "node fix-all-issues.js",
     "fix:complete": "node COMPLETE_BACKEND_FIX.js",
     "fix:services": "node FIX_SERVICE_DISPLAY_ISSUES.js",
     "fix:explore-talent": "node FIX_EXPLORE_TALENT_SERVICES.js",
-    "fix:services-visible": "node IMMEDIATE_SERVICES_FIX.js"
+    "fix:services-visible": "node IMMEDIATE_SERVICES_FIX.js",
+    "fix:deployment": "node fix-deployment.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -122,3 +122,4 @@ console.log('- Public Services: https://your-app.railway.app/api/public/services
 console.log('- Top Selections: https://your-app.railway.app/api/public/top-selections');
 
 console.log('\n✨ Your CollaboTree backend is now fully functional!');
+

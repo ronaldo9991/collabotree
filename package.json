@@ -12,7 +12,8 @@
     "fix:services": "cd backend && npm run fix:services",
     "fix:explore-talent": "cd backend && npm run fix:explore-talent",
     "make-everything-work": "node MAKE_EVERYTHING_WORK.js",
-    "fix:services-visible": "cd backend && npm run fix:services-visible"
+    "fix:services-visible": "cd backend && npm run fix:services-visible",
+    "postinstall": "cd backend && npm install"
   },
   "engines": {
     "node": ">=18.0.0",

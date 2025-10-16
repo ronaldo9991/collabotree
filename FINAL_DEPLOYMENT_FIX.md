@@ -142,3 +142,4 @@ If you're still having issues:
 4. Test the API endpoints directly
 
 The deployment should now work perfectly with all services loading on both the homepage and marketplace! 🚀
+

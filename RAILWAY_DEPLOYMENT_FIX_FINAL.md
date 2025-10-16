@@ -107,3 +107,4 @@ Your Railway deployment will now:
 3. Run `npm run fix:complete` to set up the database and sample data
 
 Your CollaboTree backend will be fully functional! 🚀
+

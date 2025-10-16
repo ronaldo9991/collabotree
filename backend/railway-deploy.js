@@ -110,3 +110,4 @@ console.log('- API Health: https://your-app.railway.app/api/health');
 console.log('- Marketplace: https://your-app.railway.app/marketplace');
 
 console.log('\n✨ Deployment helper complete!');
+

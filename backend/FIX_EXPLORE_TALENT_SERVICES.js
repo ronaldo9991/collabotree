@@ -135,3 +135,4 @@ console.log('- Health Check: https://your-app.railway.app/health');
 
 console.log('\n✨ Your Explore Talent page will now show all created services!');
 console.log('🚀 Services will appear with proper search, filter, and pagination!');
+

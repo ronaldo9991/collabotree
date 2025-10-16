@@ -77,3 +77,4 @@ console.log('Student 2: bob@student.com / student123');
 console.log('Buyer 1: charlie@buyer.com / buyer123');
 console.log('Buyer 2: diana@buyer.com / buyer123');
 console.log('\n✨ Your homepage and marketplace should now show sample projects!');
+
