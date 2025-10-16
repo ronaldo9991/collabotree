@@ -16,16 +16,15 @@ const envSchema = z.object({
 });
 
 // Validate environment variables
+let env: any;
 try {
-  const env = envSchema.parse(process.env);
+  env = envSchema.parse(process.env);
   console.log('✅ Environment variables validated successfully');
   console.log(`📡 NODE_ENV: ${env.NODE_ENV}`);
   console.log(`🔗 CLIENT_ORIGIN: ${env.CLIENT_ORIGIN || 'Same domain'}`);
   console.log(`💾 DATABASE_URL: ${env.DATABASE_URL ? 'Set' : 'Missing'}`);
   console.log(`🔐 JWT_ACCESS_SECRET: ${env.JWT_ACCESS_SECRET ? 'Set' : 'Missing'}`);
   console.log(`🔐 JWT_REFRESH_SECRET: ${env.JWT_REFRESH_SECRET ? 'Set' : 'Missing'}`);
-  
-  export { env };
 } catch (error) {
   console.error('❌ Environment validation failed:');
   if (error instanceof z.ZodError) {
@@ -36,3 +35,5 @@ try {
   console.error('❌ Backend cannot start without proper environment variables');
   process.exit(1);
 }
+
+export { env };

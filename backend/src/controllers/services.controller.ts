@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import { AuthenticatedRequest } from '../types/express.js';
-import { sendSuccess, sendCreated, sendValidationError, sendNotFound, sendForbidden } from '../utils/responses.js';
+import { sendSuccess, sendCreated, sendValidationError, sendNotFound, sendForbidden, sendError } from '../utils/responses.js';
 import { parsePagination, createPaginationResult } from '../utils/pagination.js';
 import { createServiceSchema, updateServiceSchema, getServicesSchema } from '../validations/service.js';
 

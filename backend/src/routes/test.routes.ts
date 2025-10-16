@@ -20,7 +20,7 @@ router.get('/test', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Backend test failed',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }
