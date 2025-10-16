@@ -41,6 +41,14 @@ enum DisputeStatus {
   REJECTED
 }
 
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
 enum NotificationType {
   HIRE_ACCEPTED
   HIRE_REJECTED
@@ -89,6 +97,9 @@ model User {
   sentMessages      Message[]
   messageReads      MessageRead[]
   contractSignatures ContractSignature[]
+  buyerContracts    Contract[] @relation("BuyerContracts")
+  studentContracts  Contract[] @relation("StudentContracts")
+  contractProgress  ContractProgress[]
 
   @@map("users")
 }
@@ -280,16 +291,27 @@ model RefreshToken {
 }
 
 model Contract {
-  id            String   @id @default(cuid())
-  hireRequestId String   @unique
-  status        String   @default("DRAFT")
-  terms         String?
-  priceCents    Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String   @id @default(cuid())
+  hireRequestId     String   @unique
+  buyerId           String
+  studentId         String
+  title             String
+  status            String   @default("DRAFT")
+  terms             String?
+  priceCents        Int
+  paymentStatus     String   @default("PENDING")
+  progressStatus    String   @default("NOT_STARTED")
+  studentPayoutCents Int?
+  platformFeeCents  Int?
+  isSignedByBuyer   Boolean  @default(false)
+  isSignedByStudent Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   // Relations
   hireRequest   HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
+  buyer         User        @relation("BuyerContracts", fields: [buyerId], references: [id], onDelete: Cascade)
+  student       User        @relation("StudentContracts", fields: [studentId], references: [id], onDelete: Cascade)
   signatures    ContractSignature[]
   progress      ContractProgress[]
 
@@ -300,6 +322,7 @@ model ContractSignature {
   id         String   @id @default(cuid())
   contractId String
   userId     String
+  signature  String?
   signedAt   DateTime @default(now())
 
   // Relations
@@ -313,12 +336,14 @@ model ContractSignature {
 model ContractProgress {
   id         String   @id @default(cuid())
   contractId String
+  userId     String
   status     String
   description String?
   createdAt  DateTime @default(now())
 
   // Relations
   contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("contract_progress")
 }
