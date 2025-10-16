@@ -317,7 +317,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
       data: {
         contractId,
         userId,
-        status: validatedData.status as ProgressStatus,
+        status: validatedData.status,
         notes: validatedData.notes,
         attachments: validatedData.attachments ? JSON.stringify(validatedData.attachments) : null,
       },
@@ -327,7 +327,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
     const updatedContract = await prisma.contract.update({
       where: { id: contractId },
       data: {
-        progressStatus: validatedData.status as ProgressStatus,
+        progressStatus: validatedData.status,
         progressNotes: validatedData.notes,
       },
     });
