@@ -324,7 +324,6 @@ model Contract {
   student       User        @relation("StudentContracts", fields: [studentId], references: [id], onDelete: Cascade)
   signatures    ContractSignature[]
   progress      ContractProgress[]
-  progressUpdates ContractProgress[]
 
   @@map("contracts")
 }
