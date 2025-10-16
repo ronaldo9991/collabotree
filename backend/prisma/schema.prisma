@@ -300,7 +300,7 @@ model Contract {
   title             String
   description       String?
   deliverables      String?
-  timeline          String?
+  timeline          Int?
   status            String   @default("DRAFT")
   terms             String?
   priceCents        Int

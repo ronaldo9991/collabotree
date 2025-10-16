@@ -4,7 +4,7 @@ import { prisma } from '../db/prisma.js';
 import { AuthenticatedRequest } from '../types/express.js';
 import { sendSuccess, sendCreated, sendError, sendValidationError, sendNotFound } from '../utils/responses.js';
 import { createNotification } from '../domain/notifications.js';
-import { ProgressStatus } from '@prisma/client';
+// import { ProgressStatus } from '@prisma/client'; // Not needed for now
 
 const createContractSchema = z.object({
   hireRequestId: z.string(),
