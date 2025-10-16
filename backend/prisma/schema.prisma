@@ -119,6 +119,7 @@ model Service {
   owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   hireRequests  HireRequest[]
   orders        Order[]
+  contracts     Contract[]
 
   @@map("services")
 }
@@ -293,6 +294,7 @@ model RefreshToken {
 model Contract {
   id                String   @id @default(cuid())
   hireRequestId     String   @unique
+  serviceId         String
   buyerId           String
   studentId         String
   title             String
@@ -301,15 +303,20 @@ model Contract {
   priceCents        Int
   paymentStatus     String   @default("PENDING")
   progressStatus    String   @default("NOT_STARTED")
-  studentPayoutCents Int?
-  platformFeeCents  Int?
+  studentPayoutCents Int      @default(0)
+  platformFeeCents  Int      @default(0)
   isSignedByBuyer   Boolean  @default(false)
   isSignedByStudent Boolean  @default(false)
+  signedAt          DateTime?
+  paidAt            DateTime?
+  progressNotes     String?
+  completionNotes   String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   // Relations
   hireRequest   HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
+  service       Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   buyer         User        @relation("BuyerContracts", fields: [buyerId], references: [id], onDelete: Cascade)
   student       User        @relation("StudentContracts", fields: [studentId], references: [id], onDelete: Cascade)
   signatures    ContractSignature[]
@@ -323,6 +330,7 @@ model ContractSignature {
   contractId String
   userId     String
   signature  String?
+  ipAddress  String?
   signedAt   DateTime @default(now())
 
   // Relations
@@ -339,6 +347,7 @@ model ContractProgress {
   userId     String
   status     String
   description String?
+  notes      String?
   createdAt  DateTime @default(now())
 
   // Relations
