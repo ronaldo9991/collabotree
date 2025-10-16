@@ -22,7 +22,7 @@ export async function initializeDatabase() {
       await prisma.service.count();
       console.log('✅ Database tables exist');
     } catch (error) {
-      if (error.code === 'P2021') {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2021') {
         console.log('🔧 Database tables missing, pushing schema...');
         try {
           execSync('npx prisma db push --accept-data-loss', { 
