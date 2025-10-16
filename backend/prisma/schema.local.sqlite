@@ -1,0 +1,154 @@
+// This is a local development schema using SQLite
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(STUDENT)
+  bio       String?
+  university String?
+  skills    String?  // JSON string of skills array
+  isVerified Boolean @default(false)
+  idCardUrl String?
+  verifiedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  services      Service[]
+  hireRequests  HireRequest[] @relation("HireRequestBuyer")
+  hireRequestsReceived HireRequest[] @relation("HireRequestStudent")
+  orders        Order[]
+  reviews       Review[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  priceCents  Int
+  coverImage  String?
+  isActive    Boolean  @default(true)
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner       User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  hireRequests HireRequest[]
+  orders      Order[]
+  reviews     Review[]
+
+  @@map("services")
+}
+
+model HireRequest {
+  id        String   @id @default(cuid())
+  serviceId String
+  buyerId   String
+  studentId String
+  message   String
+  priceCents Int
+  status    HireRequestStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  buyer   User    @relation("HireRequestBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  student User    @relation("HireRequestStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  orders  Order[]
+  reviews Review[]
+
+  @@map("hire_requests")
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  hireRequestId String
+  serviceId    String
+  buyerId      String
+  studentId    String
+  priceCents   Int
+  status       OrderStatus @default(PENDING)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  hireRequest HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
+  service     Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  buyer       User        @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  student     User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  reviews     Review[]
+
+  @@map("orders")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  orderId   String
+  serviceId String
+  buyerId   String
+  studentId String
+  rating    Int      // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  buyer   User    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  student User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+enum Role {
+  STUDENT
+  BUYER
+  ADMIN
+}
+
+enum HireRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NotificationType {
+  HIRE_REQUEST
+  ORDER_UPDATE
+  REVIEW
+  SYSTEM
+}

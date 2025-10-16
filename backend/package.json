@@ -32,8 +32,9 @@
     "build:railway": "npx prisma generate && tsc",
     "start:production": "node dist/server.js",
     "dev:local": "node start-local-dev.js",
-    "db:local": "npx prisma db push --schema=./prisma/schema.local.prisma",
-    "studio:local": "npx prisma studio --schema=./prisma/schema.local.prisma"
+    "db:local": "npx prisma db push --schema=./prisma/schema.local.sqlite",
+    "studio:local": "npx prisma studio --schema=./prisma/schema.local.sqlite",
+    "seed:local": "node seed-local.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
