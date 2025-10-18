@@ -9,6 +9,12 @@ export const prisma = new PrismaClient({
 
 export async function initializeDatabase() {
   try {
+    // Check if DATABASE_URL is available
+    if (!env.DATABASE_URL) {
+      console.log('⚠️ DATABASE_URL not set, skipping database initialization');
+      return false;
+    }
+    
     console.log('🔍 Testing database connection...');
     await prisma.$connect();
     console.log('✅ Database connection established');

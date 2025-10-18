@@ -6,16 +6,27 @@ const router = Router();
 // Health check endpoint
 router.get('/health', async (req, res) => {
   try {
-    // Test database connection
-    await prisma.$queryRaw`SELECT 1 as test`;
+    let databaseStatus = 'Not connected';
+    
+    // Test database connection if DATABASE_URL is available
+    if (process.env.DATABASE_URL) {
+      try {
+        await prisma.$queryRaw`SELECT 1 as test`;
+        databaseStatus = 'Connected';
+      } catch (dbError) {
+        databaseStatus = 'Connection failed';
+        console.error('Database health check failed:', dbError);
+      }
+    }
     
     res.json({
       success: true,
       message: 'CollaboTree Backend is running',
       timestamp: new Date().toISOString(),
-      database: 'Connected',
+      database: databaseStatus,
       environment: process.env.NODE_ENV || 'development',
-      uptime: process.uptime()
+      uptime: process.uptime(),
+      port: process.env.PORT || 4000
     });
   } catch (error) {
     res.status(500).json({
