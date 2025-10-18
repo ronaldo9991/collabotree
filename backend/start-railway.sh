@@ -28,6 +28,10 @@ echo "✅ Environment variables validated"
 echo "📦 Generating Prisma client..."
 npx prisma generate
 
-# Start the server (database initialization will happen at runtime)
+# Run database migrations
+echo "🗄️ Running database migrations..."
+npx prisma migrate deploy
+
+# Start the server
 echo "🌟 Starting server..."
 npm start
