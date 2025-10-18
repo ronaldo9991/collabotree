@@ -12,8 +12,8 @@ const httpServer = createServer(app);
 const io = initializeSocketIO(httpServer);
 setupChatGateway(io);
 
-// Railway provides PORT environment variable
-const PORT = process.env.PORT || env.PORT || 4000;
+// Railway provides PORT environment variable - always prioritize process.env.PORT
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : (env.PORT || 4000);
 
 // Production error handling
 process.on('uncaughtException', (error) => {
@@ -27,11 +27,15 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Start server
-httpServer.listen(PORT, async () => {
+console.log(`🌐 Starting server on port ${PORT} (from process.env.PORT: ${process.env.PORT})`);
+console.log(`🌐 Binding to 0.0.0.0 to accept external connections`);
+
+httpServer.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 CollaboTree Backend Server running on port ${PORT}`);
   console.log(`📡 Environment: ${env.NODE_ENV}`);
   console.log(`🔗 Client Origin: ${env.CLIENT_ORIGIN || 'Same domain'}`);
   console.log(`🔌 Socket.IO: Enabled`);
+  console.log(`✅ Server is now listening and ready to accept requests`);
   
   // Initialize database connection
   try {
@@ -50,6 +54,17 @@ httpServer.listen(PORT, async () => {
   if (env.NODE_ENV === 'production') {
     console.log(`🌍 Production mode: Serving frontend + backend`);
   }
+});
+
+// Add error handling for server binding
+httpServer.on('error', (error: any) => {
+  console.error('❌ Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use`);
+  } else if (error.code === 'EACCES') {
+    console.error(`❌ Permission denied to bind to port ${PORT}`);
+  }
+  process.exit(1);
 });
 
 // Graceful shutdown
