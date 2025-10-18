@@ -29,7 +29,7 @@
     "fix:backend": "node fix-backend-production.js",
     "test:services": "node test-service-endpoints.js",
     "seed:test": "node seed-test-services.js",
-    "build:railway": "npx prisma generate && tsc",
+    "build:railway": "node railway-build.js",
     "start:production": "node dist/server.js",
     "dev:local": "node start-local-dev.js",
     "db:local": "npx prisma db push --schema=./prisma/schema.local.sqlite",
