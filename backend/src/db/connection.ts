@@ -5,17 +5,26 @@ import { execSync } from 'child_process';
 export const prisma = new PrismaClient({
   log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   errorFormat: 'pretty',
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL || env.DATABASE_URL,
+    },
+  },
 });
 
 export async function initializeDatabase() {
   try {
-    // Check if DATABASE_URL is available
-    if (!env.DATABASE_URL) {
+    // Check if DATABASE_URL is available (check both process.env and env config)
+    const databaseUrl = process.env.DATABASE_URL || env.DATABASE_URL;
+    if (!databaseUrl) {
       console.log('⚠️ DATABASE_URL not set, skipping database initialization');
       return false;
     }
     
     console.log('🔍 Testing database connection...');
+    console.log(`📡 Database URL: ${databaseUrl.includes('@') ? 'Set' : 'Not properly configured'}`);
+    
+    // Connect with timeout
     await prisma.$connect();
     console.log('✅ Database connection established');
     

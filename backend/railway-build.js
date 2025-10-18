@@ -5,7 +5,7 @@
  */
 
 import { execSync } from 'child_process';
-import { copyFileSync, existsSync } from 'fs';
+import { copyFileSync, existsSync, mkdirSync, cpSync } from 'fs';
 import { join } from 'path';
 
 const colors = {
@@ -43,15 +43,55 @@ function railwayBuild() {
   log('='.repeat(60) + '\n', colors.cyan);
 
   try {
-    // Step 1: Generate Prisma client
-    log('Step 1: Generating Prisma client...', colors.blue);
+    // Step 1: Build frontend first
+    log('Step 1: Building frontend...', colors.blue);
+    const clientPath = join(process.cwd(), '..', 'client');
+    if (existsSync(clientPath)) {
+      try {
+        // Install client dependencies
+        log('Installing client dependencies...', colors.yellow);
+        runCommand('npm ci --legacy-peer-deps', clientPath);
+        
+        // Build client
+        log('Building React application...', colors.yellow);
+        runCommand('npm run build', clientPath);
+        
+        // Create frontend directory in backend dist
+        const frontendDistPath = join(process.cwd(), 'dist', 'frontend');
+        const clientDistPath = join(clientPath, 'dist');
+        
+        if (existsSync(clientDistPath)) {
+          log('Copying frontend build to backend dist...', colors.yellow);
+          
+          // Ensure dist directory exists
+          const distDir = join(process.cwd(), 'dist');
+          if (!existsSync(distDir)) {
+            mkdirSync(distDir, { recursive: true });
+          }
+          
+          // Copy frontend files
+          cpSync(clientDistPath, frontendDistPath, { recursive: true });
+          log('✅ Frontend built and copied successfully', colors.green);
+        } else {
+          log('⚠️ Frontend dist directory not found, continuing without frontend', colors.yellow);
+        }
+      } catch (error) {
+        log('⚠️ Frontend build failed, continuing with backend only:', colors.yellow);
+        log(`   ${error.message}`, colors.red);
+      }
+    } else {
+      log('⚠️ Client directory not found, skipping frontend build', colors.yellow);
+    }
+
+    // Step 2: Generate Prisma client
+    log('\nStep 2: Generating Prisma client...', colors.blue);
     if (!runCommand('npx prisma generate')) {
       throw new Error('Prisma client generation failed');
     }
     log('✅ Prisma client generated successfully', colors.green);
 
-    // Step 2: Try to compile TypeScript, but don't fail if there are errors
-    log('\nStep 2: Compiling TypeScript...', colors.blue);
+    // Step 3: Try to compile TypeScript, but don't fail if there are errors
+    log('\nStep 3: Compiling TypeScript...', colors.blue);
     const compileResult = runCommand('npx tsc --noEmitOnError false');
     if (compileResult) {
       log('✅ TypeScript compilation completed', colors.green);
@@ -59,8 +99,8 @@ function railwayBuild() {
       log('⚠️ TypeScript compilation had errors, but continuing...', colors.yellow);
     }
 
-    // Step 3: Check if dist directory exists and has server.js
-    log('\nStep 3: Verifying build output...', colors.blue);
+    // Step 4: Check if dist directory exists and has server.js
+    log('\nStep 4: Verifying build output...', colors.blue);
     const distPath = join(process.cwd(), 'dist');
     const serverPath = join(distPath, 'server.js');
     

@@ -3,7 +3,7 @@ import { env } from './config/env.js';
 import app from './app.js';
 import { initializeSocketIO } from './sockets/index.js';
 import { setupChatGateway } from './sockets/chat.gateway.js';
-import { initializeDatabase, closeDatabaseConnection } from './db/connection.js';
+import { initializeDatabase, closeDatabaseConnection, prisma } from './db/connection.js';
 
 // Create HTTP server
 const httpServer = createServer(app);
@@ -39,16 +39,33 @@ httpServer.listen(PORT, '0.0.0.0', async () => {
   
   // Initialize database connection
   try {
+    console.log('🔄 Initializing database connection...');
     const dbConnected = await initializeDatabase();
     if (dbConnected) {
-      console.log(`💾 Database: Connected and initialized`);
+      console.log(`💾 Database: Connected and initialized successfully`);
+      
+      // Test a simple database operation to ensure everything works
+      try {
+        const testResult = await prisma.$queryRaw`SELECT NOW() as current_time`;
+        console.log(`✅ Database ready for queries: ${JSON.stringify(testResult)}`);
+      } catch (testError) {
+        console.error('⚠️ Database test query failed:', testError);
+      }
     } else {
-      console.log(`⚠️ Database: Not connected (normal for local development)`);
+      if (env.NODE_ENV === 'production') {
+        console.error('❌ Database connection failed in production - this may cause issues');
+      } else {
+        console.log(`⚠️ Database: Not connected (normal for local development)`);
+      }
     }
   } catch (error) {
     console.error('❌ Failed to initialize database:', error);
-    console.log('⚠️ Backend will start without database connection');
-    console.log('💡 This is normal for local development - Railway deployment will work');
+    if (env.NODE_ENV === 'production') {
+      console.error('🚨 Production database connection failed - app may not function properly');
+    } else {
+      console.log('⚠️ Backend will start without database connection');
+      console.log('💡 This is normal for local development - Railway deployment will work');
+    }
   }
   
   if (env.NODE_ENV === 'production') {
