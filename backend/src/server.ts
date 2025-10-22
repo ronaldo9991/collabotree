@@ -14,8 +14,8 @@ setupChatGateway(io);
 // Railway provides PORT environment variable
 const PORT = process.env.PORT || env.PORT || 4000;
 
-// Start server
-httpServer.listen(PORT, () => {
+// Start server - bind to 0.0.0.0 for Railway
+httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 CollaboTree Backend Server running on port ${PORT}`);
   console.log(`📡 Environment: ${env.NODE_ENV}`);
   console.log(`🔗 Client Origin: ${env.CLIENT_ORIGIN || 'Same domain'}`);
@@ -25,6 +25,17 @@ httpServer.listen(PORT, () => {
   if (env.NODE_ENV === 'production') {
     console.log(`🌍 Production mode: Serving frontend + backend`);
   }
+});
+
+// Handle server errors
+httpServer.on('error', (error: any) => {
+  console.error('❌ Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use`);
+  } else if (error.code === 'EACCES') {
+    console.error(`❌ Permission denied to bind to port ${PORT}`);
+  }
+  process.exit(1);
 });
 
 // Graceful shutdown
