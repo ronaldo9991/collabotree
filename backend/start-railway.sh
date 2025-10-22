@@ -24,6 +24,12 @@ fi
 
 echo "✅ Environment variables validated"
 
+# Use public database URL for Prisma operations if available
+if [ ! -z "$DATABASE_PUBLIC_URL" ]; then
+  echo "🔄 Using DATABASE_PUBLIC_URL for Prisma operations..."
+  export DATABASE_URL="$DATABASE_PUBLIC_URL"
+fi
+
 # Generate Prisma client
 echo "📦 Generating Prisma client..."
 npx prisma generate
