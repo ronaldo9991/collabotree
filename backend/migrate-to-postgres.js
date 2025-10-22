@@ -29,7 +29,7 @@ async function migrateToPostgres() {
   log('DATABASE MIGRATION: SQLite → PostgreSQL', colors.cyan);
   log('='.repeat(60) + '\n', colors.cyan);
 
-  const postgresUrl = 'postgres://ba37c307321c13f773eafd1feb5782ba34d41a8e67fcf27ba131ae676522a20f:sk_p89KrK6RyDUUNZ0xwCC0f@db.prisma.io:5432/postgres?sslmode=require';
+  const postgresUrl = 'postgresql://postgres:lFUYCEkjTWZoeqofUFKaYnCWKlmIccCz@trolley.proxy.rlwy.net:50892/railway';
   
   log('Step 1: Setting up PostgreSQL database...', colors.blue);
   
@@ -96,6 +96,9 @@ migrateToPostgres().catch(error => {
   log(`\nUnexpected error: ${error.message}`, colors.red);
   process.exit(1);
 });
+
+
+
 
 
 

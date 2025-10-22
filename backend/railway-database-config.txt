@@ -1,0 +1,48 @@
+# Railway Database Configuration
+# Copy these environment variables to your Railway dashboard
+# Go to your Railway project → Main service → Variables tab
+
+# ============================================
+# RAILWAY ENVIRONMENT VARIABLES
+# ============================================
+
+NODE_ENV=production
+PORT=4000
+CLIENT_ORIGIN=
+
+# Database URLs (Railway PostgreSQL)
+# Internal URL for Railway services
+DATABASE_URL=postgresql://postgres:lFUYCEkjTWZoeqofUFKaYnCWKlmIccCz@postgres-tz1x.railway.internal:5432/railway
+
+# Public URL for external connections
+DATABASE_PUBLIC_URL=postgresql://postgres:lFUYCEkjTWZoeqofUFKaYnCWKlmIccCz@trolley.proxy.rlwy.net:50892/railway
+
+# JWT Secrets (Generated for production)
+JWT_ACCESS_SECRET=2cd6a98804511d307944b09a9b7d167f816f85d6c65d08aab123d03a34317b4d
+JWT_REFRESH_SECRET=4f550173cb97ce4e7f25fdbe2be0114c1066b8a115848d7659d82641ef9cee16
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Password Hashing
+BCRYPT_ROUNDS=12
+
+# ============================================
+# DEPLOYMENT INSTRUCTIONS
+# ============================================
+
+# 1. Go to your Railway project dashboard
+# 2. Navigate to your main service (zippy-nurturing-production.up.railway.app)
+# 3. Click on "Variables" tab
+# 4. Add each environment variable above
+# 5. Railway will automatically redeploy your application
+# 6. Your app will now use the PostgreSQL database
+
+# ============================================
+# DATABASE CONNECTION NOTES
+# ============================================
+
+# - DATABASE_URL: Used for internal Railway service connections
+# - DATABASE_PUBLIC_URL: Used for external connections and migrations
+# - Both URLs point to the same PostgreSQL database
+# - The application will automatically choose the appropriate URL
+# - Make sure both URLs are set in Railway for maximum compatibility
