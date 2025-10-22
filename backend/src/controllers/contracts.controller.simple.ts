@@ -4,7 +4,7 @@ import { prisma } from '../db/prisma.js';
 import { AuthenticatedRequest } from '../types/express.js';
 import { sendSuccess, sendCreated, sendError, sendValidationError, sendNotFound } from '../utils/responses.js';
 
-// Simplified contract controller for basic functionality
+// Simplified contract controller for basic functionality - Railway deployment fix
 export const createContract = async (req: AuthenticatedRequest, res: Response) => {
   try {
     return sendError(res, 'Contract functionality temporarily disabled', 501);
