@@ -15,8 +15,8 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   BCRYPT_ROUNDS: z.string().transform(Number).default('12'),
 }).transform((env) => {
-  // For Railway deployments, prefer DATABASE_PUBLIC_URL if available and DATABASE_URL is not a Railway URL
-  if (env.DATABASE_PUBLIC_URL && !env.DATABASE_URL.includes('rlwy.net') && !env.DATABASE_URL.includes('railway.app')) {
+  // For Railway deployments, prefer DATABASE_PUBLIC_URL if available and DATABASE_URL is internal
+  if (env.DATABASE_PUBLIC_URL && (env.DATABASE_URL.includes('railway.internal') || !env.DATABASE_URL.includes('rlwy.net'))) {
     console.log('🔄 Using DATABASE_PUBLIC_URL for Railway PostgreSQL connection');
     return {
       ...env,

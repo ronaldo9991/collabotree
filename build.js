@@ -77,9 +77,10 @@ function buildProject() {
     log('Creating backend dist directory...', colors.yellow);
     mkdirSync(backendDistPath, { recursive: true });
     
-    // Copy client build to backend dist
-    log('Copying client build to backend dist...', colors.yellow);
-    cpSync(clientDistPath, backendDistPath, { recursive: true });
+    // Copy client build to backend dist/frontend
+    const frontendPath = join(backendDistPath, 'frontend');
+    log('Copying client build to backend dist/frontend...', colors.yellow);
+    cpSync(clientDistPath, frontendPath, { recursive: true });
 
     // Step 5: Generate Prisma client
     log('\nStep 5: Generating Prisma client...', colors.blue);
