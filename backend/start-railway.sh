@@ -27,31 +27,36 @@ echo "✅ Environment variables validated"
 # Debug: Show current DATABASE_URL (without password)
 echo "🔍 Current DATABASE_URL: $(echo $DATABASE_URL | sed 's/:[^:]*@/:***@/')"
 
-# Use public database URL for Prisma operations if available
+# Determine the correct database URL to use
+FINAL_DATABASE_URL=""
+
 if [ ! -z "$DATABASE_PUBLIC_URL" ]; then
   echo "🔄 Using DATABASE_PUBLIC_URL for Prisma operations..."
   echo "🔍 DATABASE_PUBLIC_URL: $(echo $DATABASE_PUBLIC_URL | sed 's/:[^:]*@/:***@/')"
-  export DATABASE_URL="$DATABASE_PUBLIC_URL"
+  FINAL_DATABASE_URL="$DATABASE_PUBLIC_URL"
 else
   echo "⚠️ DATABASE_PUBLIC_URL not set, using original DATABASE_URL"
+  FINAL_DATABASE_URL="$DATABASE_URL"
 fi
 
-# Validate DATABASE_URL format
-if [[ ! "$DATABASE_URL" =~ ^postgresql:// ]]; then
+# Validate the final database URL format
+if [[ ! "$FINAL_DATABASE_URL" =~ ^postgresql:// ]]; then
   echo "❌ DATABASE_URL must start with 'postgresql://'"
-  echo "🔍 Current DATABASE_URL: $(echo $DATABASE_URL | sed 's/:[^:]*@/:***@/')"
+  echo "🔍 Current DATABASE_URL: $(echo $FINAL_DATABASE_URL | sed 's/:[^:]*@/:***@/')"
+  echo "🔧 Please fix the DATABASE_URL in Railway dashboard"
+  echo "📋 Expected format: postgresql://postgres:PASSWORD@trolley.proxy.rlwy.net:50892/railway"
   exit 1
 fi
 
 echo "✅ DATABASE_URL format validated"
 
-# Generate Prisma client
+# Generate Prisma client with explicit DATABASE_URL
 echo "📦 Generating Prisma client..."
-npx prisma generate
+DATABASE_URL="$FINAL_DATABASE_URL" npx prisma generate
 
-# Push database schema
+# Push database schema with explicit DATABASE_URL
 echo "🗄️ Pushing database schema..."
-npx prisma db push --accept-data-loss
+DATABASE_URL="$FINAL_DATABASE_URL" npx prisma db push --accept-data-loss
 
 # Build the application
 echo "🔨 Building application..."
