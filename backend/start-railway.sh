@@ -24,11 +24,26 @@ fi
 
 echo "✅ Environment variables validated"
 
+# Debug: Show current DATABASE_URL (without password)
+echo "🔍 Current DATABASE_URL: $(echo $DATABASE_URL | sed 's/:[^:]*@/:***@/')"
+
 # Use public database URL for Prisma operations if available
 if [ ! -z "$DATABASE_PUBLIC_URL" ]; then
   echo "🔄 Using DATABASE_PUBLIC_URL for Prisma operations..."
+  echo "🔍 DATABASE_PUBLIC_URL: $(echo $DATABASE_PUBLIC_URL | sed 's/:[^:]*@/:***@/')"
   export DATABASE_URL="$DATABASE_PUBLIC_URL"
+else
+  echo "⚠️ DATABASE_PUBLIC_URL not set, using original DATABASE_URL"
 fi
+
+# Validate DATABASE_URL format
+if [[ ! "$DATABASE_URL" =~ ^postgresql:// ]]; then
+  echo "❌ DATABASE_URL must start with 'postgresql://'"
+  echo "🔍 Current DATABASE_URL: $(echo $DATABASE_URL | sed 's/:[^:]*@/:***@/')"
+  exit 1
+fi
+
+echo "✅ DATABASE_URL format validated"
 
 # Generate Prisma client
 echo "📦 Generating Prisma client..."
