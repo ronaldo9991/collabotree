@@ -27,6 +27,12 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
       return sendError(res, 'User not found', 404);
     }
 
+    // Convert skills JSON string back to array
+    const userWithSkills = {
+      ...user,
+      skills: user.skills ? JSON.parse(user.skills) : []
+    };
+
     // Get additional stats
     const [serviceCount, orderCount, reviewCount, walletBalance] = await Promise.all([
       // Services owned (for students)
@@ -60,7 +66,7 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
       walletBalance: walletBalance._sum.amountCents || 0,
     };
 
-    return sendSuccess(res, { user, stats });
+    return sendSuccess(res, { user: userWithSkills, stats });
   } catch (error) {
     throw error;
   }
@@ -70,9 +76,15 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
   try {
     const validatedData = updateProfileSchema.parse(req.body);
 
+    // Convert skills array to JSON string for database storage
+    const updateData = {
+      ...validatedData,
+      skills: validatedData.skills ? JSON.stringify(validatedData.skills) : undefined
+    };
+
     const user = await prisma.user.update({
       where: { id: req.user!.id },
-      data: validatedData,
+      data: updateData,
       select: {
         id: true,
         email: true,
@@ -86,7 +98,13 @@ export const updateProfile = async (req: AuthenticatedRequest, res: Response) =>
       },
     });
 
-    return sendSuccess(res, user, 'Profile updated successfully');
+    // Convert skills JSON string back to array
+    const userWithSkills = {
+      ...user,
+      skills: user.skills ? JSON.parse(user.skills) : []
+    };
+
+    return sendSuccess(res, userWithSkills, 'Profile updated successfully');
   } catch (error) {
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);

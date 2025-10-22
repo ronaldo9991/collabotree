@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma } from '../db/connection.js';
+import { prisma } from '../db/prisma.js';
 
 const router = Router();
 
@@ -21,7 +21,7 @@ router.get('/health', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Backend health check failed',
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     });
   }

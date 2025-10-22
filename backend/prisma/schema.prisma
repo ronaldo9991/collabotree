@@ -89,6 +89,8 @@ model User {
   sentMessages      Message[]
   messageReads      MessageRead[]
   contractSignatures ContractSignature[]
+  contractsAsBuyer  Contract[] @relation("ContractBuyer")
+  contractsAsStudent Contract[] @relation("ContractStudent")
 
   @@map("users")
 }
@@ -284,6 +286,19 @@ model Contract {
   hireRequestId String   @unique
   terms         String
   status        String   @default("DRAFT")
+  title         String?
+  buyerId       String?
+  studentId     String?
+  serviceId     String?
+  isSignedByBuyer Boolean @default(false)
+  isSignedByStudent Boolean @default(false)
+  paymentStatus String   @default("PENDING")
+  progressStatus String  @default("NOT_STARTED")
+  studentPayoutCents Int?
+  platformFeeCents Int?
+  paidAt        DateTime?
+  completionNotes String?
+  progressNotes String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -291,6 +306,8 @@ model Contract {
   hireRequest HireRequest @relation(fields: [hireRequestId], references: [id], onDelete: Cascade)
   signatures  ContractSignature[]
   progress    ContractProgress[]
+  buyer       User? @relation("ContractBuyer", fields: [buyerId], references: [id])
+  student     User? @relation("ContractStudent", fields: [studentId], references: [id])
 
   @@map("contracts")
 }
@@ -299,6 +316,8 @@ model ContractSignature {
   id         String   @id @default(cuid())
   contractId String
   userId     String
+  signature  String?
+  ipAddress  String?
   signedAt   DateTime @default(now())
 
   // Relations
@@ -312,9 +331,11 @@ model ContractSignature {
 model ContractProgress {
   id         String   @id @default(cuid())
   contractId String
+  userId     String?
   title      String
   description String
   percentage Int      @default(0)
+  status     String   @default("NOT_STARTED")
   createdAt  DateTime @default(now())
 
   // Relations
