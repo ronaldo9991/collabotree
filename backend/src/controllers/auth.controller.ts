@@ -78,13 +78,13 @@ export const register = async (req: Request, res: Response) => {
       },
     });
 
-    // Create welcome notification
-    await createNotification(
-      user.id,
-      'ORDER_CREATED', // Using existing type for welcome
-      'Welcome to CollaboTree!',
-      'Your account has been created successfully. Start exploring services or create your own!'
-    );
+    // Create welcome notification (disabled for minimal schema)
+    // await createNotification(
+    //   user.id,
+    //   'ORDER_CREATED', // Using existing type for welcome
+    //   'Welcome to CollaboTree!',
+    //   'Your account has been created successfully. Start exploring services or create your own!'
+    // );
 
     return sendCreated(res, {
       user,

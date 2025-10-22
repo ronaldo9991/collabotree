@@ -1,0 +1,44 @@
+// Minimal schema for testing registration
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  username     String?  @unique
+  role         String   @default("BUYER") // BUYER, STUDENT, ADMIN
+  university   String?
+  bio          String?
+  skills       String?  // JSON string
+  isVerified   Boolean  @default(false)
+  idCardUrl    String?
+  verifiedAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id          String   @id @default(cuid())
+  userId      String
+  hashedToken String
+  jti         String   @unique
+  revoked     Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
