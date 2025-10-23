@@ -37,6 +37,7 @@ interface RegisterData {
   name: string;
   username?: string;
   role?: 'BUYER' | 'STUDENT' | 'ADMIN';
+  university?: string;
   bio?: string;
   skills?: string[];
 }
