@@ -15,7 +15,13 @@ router.get('/health', async (req, res) => {
       timestamp: new Date().toISOString(),
       database: 'Connected',
       environment: process.env.NODE_ENV || 'development',
-      uptime: process.uptime()
+      uptime: process.uptime(),
+      version: '1.1.0-hire-chat-fixed',
+      features: {
+        hireRequests: 'enabled',
+        chat: 'enabled-realtime',
+        serviceCreation: 'enabled'
+      }
     });
   } catch (error) {
     res.status(500).json({
