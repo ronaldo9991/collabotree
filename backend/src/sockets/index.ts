@@ -16,10 +16,30 @@ export const initializeSocketIO = (httpServer: HttpServer) => {
       methods: ['GET', 'POST'],
       credentials: true,
     },
-    transports: ['websocket', 'polling'],
+    transports: ['polling', 'websocket'], // Prioritize polling for Railway compatibility
+    allowEIO3: true, // Support older clients
+    path: '/socket.io/', // Explicit path
+    pingTimeout: 60000, // 60 seconds
+    pingInterval: 25000, // 25 seconds
   });
 
-  console.log(`Socket.IO initialized with CORS origin: ${corsOrigin}`);
+  console.log(`✅ Socket.IO initialized successfully`);
+  console.log(`🔗 CORS origin: ${corsOrigin}`);
+  console.log(`🚀 Transports: polling, websocket`);
+  console.log(`📍 Path: /socket.io/`);
+  
+  // Log connection events for debugging
+  io.on('connection', (socket) => {
+    console.log(`✅ Client connected: ${socket.id}`);
+    
+    socket.on('disconnect', (reason) => {
+      console.log(`❌ Client disconnected: ${socket.id}, reason: ${reason}`);
+    });
+    
+    socket.on('error', (error) => {
+      console.error(`❌ Socket error for ${socket.id}:`, error);
+    });
+  });
   
   return io;
 };

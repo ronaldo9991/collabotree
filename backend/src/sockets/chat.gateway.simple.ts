@@ -24,10 +24,48 @@ export class ChatGateway {
   }
 
   private setupEventHandlers() {
-    this.io.on('connection', (socket: CustomSocket) => {
+    this.io.on('connection', async (socket: CustomSocket) => {
       console.log('🔌 Socket connected:', socket.id);
 
-      // Handle authentication
+      // Authenticate using the auth handshake data
+      try {
+        const token = (socket.handshake.auth as any)?.token;
+        
+        if (!token) {
+          console.error('❌ No token provided in handshake');
+          socket.emit('error', { message: 'Authentication token required' });
+          socket.disconnect();
+          return;
+        }
+
+        const payload = verifyAccessToken(token);
+        const user = await prisma.user.findUnique({
+          where: { id: payload.userId },
+          select: { id: true, name: true, email: true, role: true }
+        });
+
+        if (!user) {
+          console.error('❌ User not found for token');
+          socket.emit('error', { message: 'User not found' });
+          socket.disconnect();
+          return;
+        }
+
+        // Store user connection
+        this.connectedUsers.set(user.id, socket.id);
+        socket.userId = user.id;
+        socket.user = user;
+
+        console.log('✅ User authenticated:', user.name, user.id);
+        socket.emit('authenticated', { user });
+      } catch (error) {
+        console.error('❌ Authentication error:', error);
+        socket.emit('error', { message: 'Invalid token' });
+        socket.disconnect();
+        return;
+      }
+
+      // Legacy authenticate event for backwards compatibility
       socket.on('authenticate', async (data) => {
         try {
           const { token } = data;
@@ -52,7 +90,7 @@ export class ChatGateway {
           socket.userId = user.id;
           socket.user = user;
 
-          console.log('✅ User authenticated:', user.name, user.id);
+          console.log('✅ User authenticated via event:', user.name, user.id);
           socket.emit('authenticated', { user });
         } catch (error) {
           console.error('❌ Authentication error:', error);
