@@ -14,8 +14,8 @@ router.use(requireAuth);
 // Apply rate limiting to chat routes
 router.use(chatLimiter);
 
-router.get('/rooms/:hireId/messages', requireAcceptedHire, asyncHandler(getMessages));
-router.post('/rooms/:hireId/messages', requireAcceptedHire, asyncHandler(sendMessage));
-router.post('/rooms/:hireId/read', requireAcceptedHire, asyncHandler(markMessagesAsRead));
+router.get('/rooms/:hireId/messages', asyncHandler(getMessages));
+router.post('/rooms/:hireId/messages', asyncHandler(sendMessage));
+router.post('/rooms/:hireId/read', asyncHandler(markMessagesAsRead));
 
 export default router;
