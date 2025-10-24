@@ -29,7 +29,7 @@ async function migrateToPostgres() {
   log('DATABASE MIGRATION: SQLite → PostgreSQL', colors.cyan);
   log('='.repeat(60) + '\n', colors.cyan);
 
-  const postgresUrl = 'postgresql://postgres:lFUYCEkjTWZoeqofUFKaYnCWKlmIccCz@trolley.proxy.rlwy.net:50892/railway';
+  const postgresUrl = 'postgresql://postgres:NDeInvLYtxKMStijkmcHMWDabEBNFnPm@turntable.proxy.rlwy.net:26926/railway';
   
   log('Step 1: Setting up PostgreSQL database...', colors.blue);
   
@@ -68,7 +68,8 @@ async function migrateToPostgres() {
     
     log('\n🎯 Next Steps:', colors.blue);
     log('1. Set these environment variables in Railway:', colors.yellow);
-    log('   DATABASE_URL=' + postgresUrl, colors.blue);
+    log('   DATABASE_URL=postgresql://postgres:NDeInvLYtxKMStijkmcHMWDabEBNFnPm@postgres.railway.internal:5432/railway', colors.blue);
+    log('   DATABASE_PUBLIC_URL=postgresql://postgres:NDeInvLYtxKMStijkmcHMWDabEBNFnPm@turntable.proxy.rlwy.net:26926/railway', colors.blue);
     log('   NODE_ENV=production', colors.blue);
     log('   JWT_ACCESS_SECRET=a8042fea480e90f0c1aa4d3e00aef402b0c5d2e16d02d0123a60b29e38c19782', colors.blue);
     log('   JWT_REFRESH_SECRET=69334a6a73898bd0be40c67e6d39a46915864a883b318e0b56eac00e96ddfd9e', colors.blue);

@@ -69,3 +69,8 @@ console.log('2. Set DATABASE_URL to: postgresql://postgres:PASSWORD@trolley.prox
 console.log('3. Set DATABASE_PUBLIC_URL to the same value');
 console.log('4. Replace PASSWORD with your actual database password');
 console.log('5. Redeploy your service');
+
+
+
+
+

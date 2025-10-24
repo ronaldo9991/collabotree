@@ -101,6 +101,7 @@ model Service {
   title         String
   description   String
   priceCents    Int
+  coverImage    String?
   isActive      Boolean  @default(true)
   isTopSelection Boolean @default(false)
   createdAt     DateTime @default(now())

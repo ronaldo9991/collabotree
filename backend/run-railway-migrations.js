@@ -80,3 +80,8 @@ runRailwayMigrations().catch(error => {
   log(`\nUnexpected error: ${error.message}`, colors.red);
   process.exit(1);
 });
+
+
+
+
+
