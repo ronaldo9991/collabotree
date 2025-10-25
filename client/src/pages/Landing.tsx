@@ -219,150 +219,318 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Full Image Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700">
-        {/* Full Background Image */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/jhero.png" 
-            alt="Professional team collaboration and remote work" 
-            className="w-full h-full object-cover"
-            data-testid="hero-background-image"
-            onError={(e) => {
-              // Fallback to a gradient background if image fails to load
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.parentElement!.style.background = 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%)';
-            }}
-          />
-          {/* Dark overlay with blue tint for better text readability and brand consistency */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-primary/20"></div>
+      {/* Modern Optimized Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
+          {/* Animated gradient orbs */}
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+          
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:50px_50px]"></div>
+          
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/40"></div>
         </div>
 
-        {/* Content Overlay */}
-        <div className="relative z-10 container-unified w-full py-12 md:py-16 lg:py-20 px-4 sm:px-6">
+        {/* Floating particles animation */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-white/30 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Main Content */}
+        <div className="relative z-10 container-unified w-full py-16 md:py-20 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center min-h-[70vh] sm:min-h-[75vh]">
-              {/* Left Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              
+              {/* Left Content - Hero Text */}
               <motion.div
-                className="space-y-6 sm:space-y-8"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
+                className="space-y-8 text-center lg:text-left"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
               >
+                {/* Trust Badge */}
+                <motion.div
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <Shield className="w-4 h-4 text-white" />
+                  <span className="text-sm font-medium text-white">Trusted by 1000+ Students & Clients</span>
+                </motion.div>
 
                 {/* Main Heading */}
                 <motion.div
-                  className="space-y-3 sm:space-y-4"
-                  initial={{ opacity: 0, y: 30 }}
+                  className="space-y-4"
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white">
-                    Connect with
-                    <span className="block bg-gradient-to-r from-primary via-blue-400 to-cyan-400 bg-clip-text text-transparent mt-1 sm:mt-2">
-                      Elite Student Talent
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] text-white">
+                    Hire{" "}
+                    <span className="relative inline-block">
+                      <span className="relative z-10 bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+                        Elite Talent
+                      </span>
+                      <motion.span
+                        className="absolute inset-0 bg-white/20 blur-2xl"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                        }}
+                      />
                     </span>
-                    from Top Universities
+                    <br />
+                    From Top Universities
                   </h1>
                   
+                  <p className="text-lg sm:text-xl text-white/90 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                    Connect directly with verified students offering professional services. 
+                    Quality work, competitive rates, secure payments.
+                  </p>
                 </motion.div>
 
+                {/* Stats Row */}
+                <motion.div
+                  className="flex flex-wrap justify-center lg:justify-start gap-6 sm:gap-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  {[
+                    { value: "500+", label: "Students" },
+                    { value: "1000+", label: "Projects" },
+                    { value: "98%", label: "Satisfaction" },
+                  ].map((stat, index) => (
+                    <div key={index} className="text-center">
+                      <div className="text-2xl sm:text-3xl font-bold text-white">{stat.value}</div>
+                      <div className="text-sm text-white/70">{stat.label}</div>
+                    </div>
+                  ))}
+                </motion.div>
 
                 {/* CTA Buttons */}
                 <motion.div
-                  className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.5 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
                 >
                   <Button
                     size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold rounded-xl w-full sm:w-auto"
+                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
                     asChild
                   >
                     <Link href="/signin">
-                      <Users className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                      Start Hiring Talent
+                      <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Start Hiring Now
                     </Link>
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-2 border-white/30 bg-white/10 backdrop-blur-lg hover:bg-white/20 hover:border-white/50 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold rounded-xl w-full sm:w-auto"
+                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
                     asChild
                   >
                     <Link href="/signin">
-                      <GraduationCap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                      Join as Student
+                      <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Become a Seller
                     </Link>
                   </Button>
                 </motion.div>
+
+                {/* Trust Indicators */}
+                <motion.div
+                  className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
+                  <div className="flex items-center gap-2 text-white/80 text-sm">
+                    <CheckCircle className="w-4 h-4 text-white" />
+                    <span>Verified Students</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm">
+                    <Lock className="w-4 h-4 text-white" />
+                    <span>Secure Payments</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm">
+                    <Star className="w-4 h-4 text-white" />
+                    <span>Quality Guaranteed</span>
+                  </div>
+                </motion.div>
               </motion.div>
 
-              {/* Right Content - Search Interface */}
+              {/* Right Content - Enhanced Search Card */}
               <motion.div
                 className="relative"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
               >
-                {/* Search Card */}
-                <div className="bg-gradient-to-br from-primary/10 via-blue-500/10 to-cyan-500/10 dark:from-slate-900/95 dark:via-slate-900/95 dark:to-primary/20 backdrop-blur-xl rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl border border-primary/30 dark:border-primary/20">
+                {/* Glowing background effect */}
+                <div className="absolute inset-0 bg-white/10 rounded-3xl blur-3xl"></div>
+                
+                {/* Main Search Card */}
+                <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20">
                   {/* Header */}
-                  <div className="text-center mb-4 sm:mb-6">
-                    <h3 className="text-lg sm:text-xl font-bold text-white dark:text-foreground mb-2">Find Your Perfect Match</h3>
-                    <p className="text-xs sm:text-sm text-white/80 dark:text-muted-foreground">Connect with verified students from top universities</p>
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] mb-4">
+                      <Search className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground mb-2">Find Your Perfect Match</h3>
+                    <p className="text-sm text-muted-foreground">Search from hundreds of verified student services</p>
                   </div>
 
                   {/* Search Input */}
-                  <div className="space-y-3 mb-4">
-                    <Input
-                      placeholder="Search by role, skills, or keywords"
-                      className="h-11 sm:h-12 rounded-lg border-primary/30 bg-white/90 dark:bg-background/90 backdrop-blur-sm focus:ring-2 focus:ring-primary/50 text-sm sm:text-base font-medium"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSearch();
-                        }
-                      }}
-                    />
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                      <Input
+                        placeholder="Try: Web Design, Logo, Data Analysis..."
+                        className="h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background/50 text-base font-medium transition-all"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSearch();
+                          }
+                        }}
+                      />
+                    </div>
+                    
                     <Button
                       size="lg"
-                      className="w-full h-11 sm:h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all"
+                      className="w-full h-14 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all transform hover:scale-[1.02]"
                       onClick={handleSearch}
                     >
-                      <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                      Find Talent
+                      <Search className="h-5 w-5 mr-2" />
+                      Search Services
                     </Button>
                   </div>
 
-                  {/* Popular Searches */}
-                  <div>
-                    <p className="text-xs sm:text-sm text-white/70 dark:text-muted-foreground mb-2 font-medium">Popular searches:</p>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                      {['Web Development', 'UI/UX Design', 'Data Analysis', 'Content Writing'].map((term) => (
-                        <Button
-                          key={term}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 bg-white/80 dark:bg-primary/10 hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground border-primary/30 transition-all font-medium"
-                          onClick={() => handlePopularSearch(term)}
-                        >
-                          {term}
-                        </Button>
-                      ))}
+                  {/* Divider */}
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-border"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white dark:bg-slate-900 px-3 text-muted-foreground font-medium">
+                        Popular Categories
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Popular Searches - Enhanced */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { term: 'Web Development', icon: Code },
+                      { term: 'UI/UX Design', icon: Palette },
+                      { term: 'Data Analysis', icon: BarChart3 },
+                      { term: 'Content Writing', icon: FileText }
+                    ].map(({ term, icon: Icon }) => (
+                      <Button
+                        key={term}
+                        variant="outline"
+                        className="h-12 justify-start gap-2 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group"
+                        onClick={() => handlePopularSearch(term)}
+                      >
+                        <Icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <span className="text-sm font-medium">{term}</span>
+                      </Button>
+                    ))}
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-2xl font-bold text-[#00B2FF]">500+</div>
+                        <div className="text-xs text-muted-foreground">Services</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-[#00B2FF]">50+</div>
+                        <div className="text-xs text-muted-foreground">Categories</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-[#00B2FF]">24/7</div>
+                        <div className="text-xs text-muted-foreground">Support</div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Floating Elements */}
-                <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-full blur-xl animate-pulse"></div>
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-blue-600/20 to-primary/20 rounded-full blur-xl animate-pulse delay-1000"></div>
+                {/* Floating decorative elements */}
+                <motion.div
+                  className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-[#00B2FF]/30 to-[#4AC8FF]/30 rounded-full blur-2xl"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 0.8, 0.5],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                  }}
+                />
+                <motion.div
+                  className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#4AC8FF]/30 to-[#00B2FF]/30 rounded-full blur-2xl"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.5, 0.7, 0.5],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    delay: 1,
+                  }}
+                />
               </motion.div>
             </div>
           </div>
         </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1 }}
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="flex flex-col items-center gap-2 text-white/60"
+          >
+            <span className="text-xs font-medium">Scroll to explore</span>
+            <ChevronRight className="w-5 h-5 rotate-90" />
+          </motion.div>
+        </motion.div>
       </section>
 
 
