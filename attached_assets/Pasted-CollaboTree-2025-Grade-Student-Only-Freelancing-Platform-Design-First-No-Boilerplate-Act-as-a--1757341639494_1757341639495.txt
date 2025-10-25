@@ -1,0 +1,233 @@
+CollaboTree — 2025-Grade Student-Only Freelancing Platform (Design-First, No Boilerplate)
+
+Act as a Principal Product Engineer + Creative Director (2025).
+Design and implement CollaboTree, a student-only freelancing & projects marketplace with roles Student, Buyer, Admin. The result must look and feel like a top 1% modern SaaS: fresh, premium, minimal, high-polish—not a typical CRUD app and nothing that looks like “regular JS.” Ship a fully working product with the specifications below. Do not output any explanations or code snippets here; only deliver the actual app in the repo.
+
+0) Visual Language (Brand System)
+
+Palette (from user image, use as tokens across light/dark):
+
+Primary / Student Blue: #00A9FF
+
+Secondary / Mist Blue: #89CFF3
+
+Accent / Ice Blue: #A0E9FF
+
+Background / Sky: #CDF5FD
+
+Text / Ink: #0F172A
+
+Muted Text: #64748B
+
+Success: #10B981
+
+Error: #EF4444
+
+Warning: #F59E0B
+
+Style Rules (2025):
+
+Golden-ratio spacing (φ≈1.618) for vertical rhythm, card padding, and hero splits.
+
+Type scale (clamped): elegant, legible, AA+ contrast, optical alignment on headings.
+
+Micro-glass cards (very subtle translucency), soft shadows, 2xl radii, fine 1px borders with 12–16% tint.
+
+Gradients: tasteful blue gradient accents (from #00A9FF → #89CFF3) for CTAs and headers—never gaudy.
+
+Dark mode first-class (auto theme + toggle), tokens mirrored with careful contrast.
+
+Iconography: lucid line icons; keep density low, never clutter.
+
+Illustrations/empty states: soft geometric shapes using the palette; no cheesy stock art.
+
+Motion Language:
+
+Framer-level choreography: page cross-fade + 16–24px slide, 0.35–0.45s easeOut; content enters in 60ms stagger.
+
+Hover physics: scale 1.015, shadow lift; focus rings with primary glow.
+
+Modals/Drawers: spring 220/26, snappy yet calm.
+
+Skeletons with shimmer; optimistic UI and tactile toasts.
+
+Respect prefers-reduced-motion.
+
+Accessibility & Quality Bars:
+
+WCAG 2.2 AA+, visible focus, complete keyboard navigation, aria labels, reduced-motion path.
+
+Performance budgets: LCP < 2.5s on 4G, CLS < 0.05, interactivity under 200ms on standard laptop.
+
+Zero layout jank. Pixel-perfect.
+
+1) Core Concept & Roles
+
+Student (verified seller) – create/manage Services/Projects, fulfill orders, earn payouts.
+
+Buyer – discover, order, chat, review, favorite.
+
+Admin – verification queue, disputes, platform health.
+
+Hard requirement: After login, auto-redirect by role:
+
+Student → /dashboard/student (if not verified, land on /verify first)
+
+Buyer → /dashboard/buyer
+
+Admin → /admin
+
+2) End-to-End Flows (Premium UX)
+2.1 Student Journey
+
+Onboarding: crisp 2-step verification
+
+Email domain allowlist (.edu, .ac.uk, .ac.in, .edu.ae, .edu.sa, .org)
+
+ID upload + OCR (extract name/university/id/expiry); show confidence meter; manual review if low.
+
+Dashboard (cards with metrics + quick actions):
+
+Verification status card with stateful CTA.
+
+My Services: create, edit, duplicate, preview as buyer, toggle active.
+
+Orders: tabs (In Progress, Delivered, Completed, Disputed) with stepper.
+
+Earnings: available vs pending, next release date, mini chart, Request Payout.
+
+Create/Edit Service (project): title, description, tags, price, delivery days, gallery/attachments; preview mode; revision notes on save.
+
+Order Room: timeline, chat with attachments, deliverables versions, “Mark Delivered,” change requests loop.
+
+Reputation: ratings, reviews, badges (e.g., “On-time 95%”).
+
+2.2 Buyer Journey
+
+Marketplace: rich filters (tag, price range slider, delivery days, rating, verification badge).
+
+Service Detail: seller credibility, samples carousel, FAQ, policies, CTA “Order Now.”
+
+Checkout/Brief: requirements form + files; clear ETA and scope.
+
+Order Room: chat, milestones, approve/return changes; post-completion rating + review.
+
+Favorites & Recommendations based on tags/past orders.
+
+2.3 Admin Journey
+
+Verification Queue: approve/reject/manual-review with inline OCR text, ID preview, audit note.
+
+Dispute Center: evidence threads, actions, outcomes.
+
+Metrics: users, verifications, GMV, completion rate, dispute rate, payouts status.
+
+3) Information Architecture & Pages
+
+/ — Hero (5/12–7/12 split), value props, category spotlight, live search, trust banners.
+
+/auth/login → /auth/callback → role redirect.
+
+/verify — ID upload, OCR preview, status tracker; if approved, toast + route Student to dashboard.
+
+/marketplace — server-filtered grid, smart empty states, saved filters.
+
+/service/[id] — detail, seller card, ratings, “Order Now.”
+
+/order/[id] — chat, files, deliverables, status timeline, review handoff.
+
+/dashboard/student — verification card, Services, Orders, Earnings.
+
+/dashboard/student/services/new — create flow (draft/publish); golden-ratio form layout.
+
+/dashboard/student/services/[id]/edit — edit with revision notes and “preview as buyer.”
+
+/dashboard/buyer — Orders, Favorites, Recommendations.
+
+/admin — verifications, disputes, metrics.
+
+Navigation: compact top bar + context-aware sidebar; breadcrumbs on deep pages; global search (⌘K).
+
+4) Data Model (functional spec; enforce via secure policies)
+
+profiles: id, auth_user_id, role (student|buyer|admin), full_name, email, university, avatar_url, is_verified, verification_status (pending|approved|rejected|manual_review), timestamps.
+
+allowed_domains: domain, label.
+
+student_verifications: profile_id, email_domain, id_card_url, OCR fields (name, university, id_number, expiry), confidence, status, reviewer_id, notes, timestamps.
+
+services: id, owner_id, title, description, tags[], pricing_cents, currency, delivery_days, attachments[], avg_rating, rating_count, is_active, timestamps, soft delete.
+
+service_revisions: service_id, edited_by, snapshot(json), note, created_at.
+
+orders: id, buyer_id, service_id, student_id, status (placed|in_progress|delivered|completed|cancelled|disputed|refunded), price_cents, currency, requirements, timestamps.
+
+messages: order_id, sender_id, body, attachments[], created_at.
+
+deliverables: order_id, file_url, version, note, created_by, created_at.
+
+reviews: order_id (unique), rater_id, ratee_id, rating(1–5), comment, created_at.
+
+favorites: buyer_id + service_id (unique), created_at.
+
+earnings: student_id, order_id (unique), amount_cents, status (pending|available|paid|on_hold), available_at, created_at.
+
+payouts: student_id, amount_cents, provider (stripe|razorpay|tap|bank_transfer), provider_ref, status (initiated|processing|paid|failed), created_at.
+
+audit_logs: actor_id, action, entity, entity_id, meta, created_at.
+
+Rules/Behaviors:
+
+Only verified students can publish services (draft allowed anytime).
+
+Editing a service creates a service_revisions snapshot with a note.
+
+Completing an order creates a review and releases earnings to pending, then available after a hold window.
+
+Buyers can favorite services; recommendations use tags + history.
+
+Full audit on admin actions.
+
+5) UX Details That Make It “2025”
+
+No lorem ipsum—realistic copy with helpful micro-copy, hints, and empty-state coaching.
+
+Command Palette (⌘K) for global nav and quick actions (create service, search, go to orders).
+
+Inline validation with friendly tone; progressive disclosure on complex forms.
+
+Smart tables: density toggle, column pinning, CSV export for admins.
+
+Badge system: “Verified Student,” “Top Rated,” “On-time 95%,” “Fast Responder.”
+
+Responsive excellence: mobile gestures (swipeable drawers), tablet master-detail, desktop split panes.
+
+State awareness: banners for verification, payout holds, dispute alerts.
+
+Internationalization-ready copy structure (even if EN-only at launch).
+
+Privacy by design: clear file retention and masking of sensitive OCR data in non-admin contexts.
+
+6) Acceptance Criteria (must meet)
+
+Role-based post-login redirect works 100% (Student/Buyer/Admin), with guardrails in middleware.
+
+Student can create, edit, publish/unpublish services; edits produce service_revisions with note.
+
+Buyer can order, chat, receive deliverables, review; favorites and recommendations functional.
+
+Admin can verify students and resolve disputes; every action audited.
+
+Design matches palette & motion language; golden-ratio rhythm is consistent; dark mode is polished.
+
+A11y & performance budgets pass (LCP/CLS, keyboard nav, reduced motion).
+
+No generic or “regular JS” look—it must feel bespoke, premium, and 2025-ready.
+
+7) Configuration Notes (non-code)
+
+Use environment variables for auth, storage, OCR provider.
+
+Buckets: id-cards, deliverables, avatars.
+
+Keep readme with setup, env, and screenshots illustrating the visual system and flows.

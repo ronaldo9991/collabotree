@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Error Debugger</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #1a1a1a; 
+            color: white; 
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; color: #60a5fa; }
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            background: #2a2a2a; 
+            color: white; 
+            border: 1px solid #444; 
+            border-radius: 5px; 
+        }
+        button { 
+            padding: 12px 24px; 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            margin: 5px;
+        }
+        button:hover { background: #2563eb; }
+        .result { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border-radius: 5px; 
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success { background: #065f46; color: #d1fae5; border: 1px solid #10b981; }
+        .error { background: #7f1d1d; color: #fecaca; border: 1px solid #ef4444; }
+        .info { background: #1e3a8a; color: #dbeafe; border: 1px solid #3b82f6; }
+        .debug-section { 
+            background: #2a2a2a; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 5px; 
+            border: 1px solid #444; 
+        }
+        .step { 
+            background: #374151; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            border-left: 4px solid #3b82f6; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 CollaboTree Registration Error Debugger</h1>
+        
+        <div class="debug-section">
+            <h2>📋 Debug Steps</h2>
+            <div class="step">
+                <strong>Step 1:</strong> Test API connectivity
+            </div>
+            <div class="step">
+                <strong>Step 2:</strong> Test registration with minimal data
+            </div>
+            <div class="step">
+                <strong>Step 3:</strong> Test registration with full data
+            </div>
+            <div class="step">
+                <strong>Step 4:</strong> Check browser console for errors
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2>🧪 API Connectivity Test</h2>
+            <button onclick="testConnectivity()">Test API Connection</button>
+            <div id="connectivity-result"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>📝 Registration Test Form</h2>
+            <form id="debugForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" value="debug@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" value="Debug User" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" value="debuguser123">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" value="DebugPassword123" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">Role:</label>
+                    <select id="role">
+                        <option value="BUYER">Buyer</option>
+                        <option value="STUDENT">Student</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="university">University (for students):</label>
+                    <input type="text" id="university" value="Debug University">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bio">Bio:</label>
+                    <input type="text" id="bio" value="Debug user for testing">
+                </div>
+                
+                <button type="button" onclick="testMinimalRegistration()">Test Minimal Registration</button>
+                <button type="button" onclick="testFullRegistration()">Test Full Registration</button>
+                <button type="button" onclick="testWithDifferentData()">Test with Different Data</button>
+            </form>
+            
+            <div id="registration-result"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>🔍 Browser Console Check</h2>
+            <p>Open your browser's Developer Tools (F12) and check the Console tab for any error messages.</p>
+            <button onclick="showConsoleInstructions()">Show Console Instructions</button>
+            <div id="console-instructions"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>📊 Network Request Debug</h2>
+            <p>Check the Network tab in Developer Tools to see the actual HTTP requests being made.</p>
+            <button onclick="showNetworkInstructions()">Show Network Debug Instructions</button>
+            <div id="network-instructions"></div>
+        </div>
+    </div>
+
+    <script>
+        // Test API connectivity
+        async function testConnectivity() {
+            const resultDiv = document.getElementById('connectivity-result');
+            resultDiv.innerHTML = '<div class="info">Testing API connectivity...</div>';
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ API Connection Successful!
+                            Status: ${response.status}
+                            Response: ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ API Connection Failed
+                            Status: ${response.status}
+                            Response: ${JSON.stringify(data, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Network Error: ${error.message}
+                        Make sure your backend is running and accessible.
+                    </div>
+                `;
+            }
+        }
+
+        // Test minimal registration
+        async function testMinimalRegistration() {
+            const minimalData = {
+                email: 'minimal@example.com',
+                password: 'Minimal123',
+                name: 'Minimal User',
+                role: 'BUYER'
+            };
+            
+            await testRegistration(minimalData, 'Minimal Registration');
+        }
+
+        // Test full registration
+        async function testFullRegistration() {
+            const formData = getFormData();
+            await testRegistration(formData, 'Full Registration');
+        }
+
+        // Test with different data
+        async function testWithDifferentData() {
+            const differentData = {
+                email: `test${Date.now()}@example.com`,
+                password: 'TestPassword123',
+                name: 'Test User',
+                username: `testuser${Date.now()}`,
+                role: 'STUDENT',
+                university: 'Test University',
+                bio: 'Test bio',
+                skills: ['JavaScript', 'React']
+            };
+            
+            await testRegistration(differentData, 'Different Data Registration');
+        }
+
+        // Generic registration test
+        async function testRegistration(data, testName) {
+            const resultDiv = document.getElementById('registration-result');
+            resultDiv.innerHTML = `<div class="info">Testing ${testName}...</div>`;
+            
+            console.log(`🧪 Testing ${testName}:`, data);
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                
+                const responseData = await response.json();
+                
+                console.log(`${testName} Response:`, { status: response.status, data: responseData });
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ ${testName} - SUCCESS!
+                            Status: ${response.status}
+                            User created: ${responseData.data?.user?.name}
+                            Email: ${responseData.data?.user?.email}
+                            Role: ${responseData.data?.user?.role}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ ${testName} - FAILED
+                            Status: ${response.status}
+                            Error: ${responseData.error || 'Unknown error'}
+                            Details: ${JSON.stringify(responseData.details || {}, null, 2)}
+                            Full Response: ${JSON.stringify(responseData, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error(`${testName} Error:`, error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ ${testName} - NETWORK ERROR
+                        Error: ${error.message}
+                        Check your network connection and backend status.
+                    </div>
+                `;
+            }
+        }
+
+        // Get form data
+        function getFormData() {
+            return {
+                email: document.getElementById('email').value,
+                name: document.getElementById('name').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                university: document.getElementById('university').value,
+                bio: document.getElementById('bio').value,
+                skills: ['JavaScript', 'React']
+            };
+        }
+
+        // Show console instructions
+        function showConsoleInstructions() {
+            const div = document.getElementById('console-instructions');
+            div.innerHTML = `
+                <div class="info">
+                    <strong>How to check Browser Console:</strong>
+                    <br>1. Press F12 or right-click → "Inspect"
+                    <br>2. Click on the "Console" tab
+                    <br>3. Look for any red error messages
+                    <br>4. Try to register again and watch for new errors
+                    <br>5. Copy any error messages you see
+                </div>
+            `;
+        }
+
+        // Show network instructions
+        function showNetworkInstructions() {
+            const div = document.getElementById('network-instructions');
+            div.innerHTML = `
+                <div class="info">
+                    <strong>How to debug Network Requests:</strong>
+                    <br>1. Press F12 or right-click → "Inspect"
+                    <br>2. Click on the "Network" tab
+                    <br>3. Clear the network log (trash icon)
+                    <br>4. Try to register again
+                    <br>5. Look for the "/api/auth/register" request
+                    <br>6. Click on it to see:
+                    <br>   - Request payload (what was sent)
+                    <br>   - Response (what the server returned)
+                    <br>   - Status code (200, 400, 500, etc.)
+                </div>
+            `;
+        }
+
+        // Auto-test connectivity on page load
+        window.onload = function() {
+            testConnectivity();
+        };
+    </script>
+</body>
+</html>

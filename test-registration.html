@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 300px; padding: 8px; margin-bottom: 10px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <h1>CollaboTree Registration Test</h1>
+    <p>This form will help you test the registration endpoint directly.</p>
+    
+    <form id="registrationForm">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="test@example.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" value="Test User" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="testuser123">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="TestPassword123" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <select id="role" name="role">
+                <option value="BUYER">Buyer</option>
+                <option value="STUDENT">Student</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="university">University (for students):</label>
+            <input type="text" id="university" name="university" value="Test University">
+        </div>
+        
+        <div class="form-group">
+            <label for="bio">Bio:</label>
+            <input type="text" id="bio" name="bio" value="Test bio">
+        </div>
+        
+        <button type="submit">Test Registration</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                email: formData.get('email'),
+                name: formData.get('name'),
+                username: formData.get('username'),
+                password: formData.get('password'),
+                role: formData.get('role'),
+                university: formData.get('university'),
+                bio: formData.get('bio'),
+                skills: []
+            };
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="info">Testing registration...</div>';
+            
+            try {
+                console.log('Sending registration request:', data);
+                
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                
+                const responseData = await response.json();
+                
+                console.log('Registration response:', responseData);
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Registration Successful!</h3>
+                            <p>User created: ${responseData.data.user.name}</p>
+                            <p>Email: ${responseData.data.user.email}</p>
+                            <p>Role: ${responseData.data.user.role}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Registration Failed</h3>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Error:</strong> ${responseData.error || responseData.message || 'Unknown error'}</p>
+                            <p><strong>Details:</strong> ${JSON.stringify(responseData, null, 2)}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>💥 Network Error</h3>
+                        <p>${error.message}</p>
+                        <p>Make sure your backend is running and accessible.</p>
+                    </div>
+                `;
+            }
+        });
+        
+        // Test API connectivity
+        async function testConnectivity() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                console.log('Health check response:', data);
+            } catch (error) {
+                console.error('Health check failed:', error);
+            }
+        }
+        
+        // Run health check on page load
+        testConnectivity();
+    </script>
+</body>
+</html>

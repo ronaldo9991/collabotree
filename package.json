@@ -1,0 +1,25 @@
+{
+  "name": "collabotree",
+  "version": "1.0.0",
+  "description": "Student Freelancing Platform",
+  "type": "module",
+  "main": "backend/dist/server.js",
+  "scripts": {
+    "build": "node build.js",
+    "start": "cd backend && node dist/server.js",
+    "dev": "cd backend && npm run dev",
+    "railway:build": "cd backend && npm run railway:build",
+    "fix:services": "cd backend && npm run fix:services",
+    "fix:explore-talent": "cd backend && npm run fix:explore-talent",
+    "make-everything-work": "node MAKE_EVERYTHING_WORK.js",
+    "fix:services-visible": "cd backend && npm run fix:services-visible",
+    "postinstall": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": ["freelancing", "students", "marketplace"],
+  "author": "Collabotree Team",
+  "license": "MIT"
+}
