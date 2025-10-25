@@ -146,4 +146,3 @@ comprehensiveMigration().catch(error => {
   log(`\n💥 Unexpected error: ${error.message}`, colors.red);
   process.exit(1);
 });
-

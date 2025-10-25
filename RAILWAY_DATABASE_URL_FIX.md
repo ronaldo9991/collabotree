@@ -78,4 +78,3 @@ After fixing the `DATABASE_URL`, you should see:
 If the password has changed, get the new one from:
 1. Railway Dashboard → PostgreSQL service → Database → Credentials
 2. Update the password in both `DATABASE_URL` and `DATABASE_PUBLIC_URL`
-
