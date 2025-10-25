@@ -1,0 +1,97 @@
+Dashboards
+Student Dashboard (/dashboard/student)
+
+Verification Card: pending/approved badge.
+
+My Services: create, edit, toggle, preview (revision log).
+
+Orders: tabbed cards (In Progress, Delivered, Completed, Disputed).
+
+Earnings: available, pending, lifetime + chart.
+
+Buyer Dashboard (/dashboard/buyer)
+
+Marketplace Search: with filters (tags, price, rating, delivery).
+
+Orders: tabbed order tracker.
+
+Favorites: saved services.
+
+Recommendations: AI-driven suggestions.
+
+Admin Dashboard (/admin)
+
+Verification Queue: ID + OCR data + approve/reject.
+
+Disputes Center: flagged orders with evidence.
+
+Metrics: charts on students, orders, GMV, disputes.
+
+🔄 3) User Flows
+
+Student: Sign up → Verify → Dashboard → Create/Edit Services → Get Orders → Deliver → Chat → Earnings → Payout.
+
+Buyer: Sign up → Browse → Place Order → Chat with Student → Receive Deliverables → Approve → Review.
+
+Admin: Sign up → Approve Students → Resolve Disputes → Track KPIs.
+
+🗄️ 4) Database (Supabase/Postgres Spec)
+
+profiles: id, role, email, name, university, avatar, verification_status.
+
+student_verifications: profile_id, email_domain, id_card_url, OCR fields, confidence, status.
+
+services: id, owner_id, title, description, tags[], price, delivery_days, is_active.
+
+service_revisions: service_id, snapshot, note.
+
+orders: id, buyer_id, service_id, student_id, status, price, requirements.
+
+messages: order_id, sender_id, body, attachments[], timestamps.
+
+deliverables: order_id, file_url, version, note.
+
+reviews: order_id, rater_id, rating, comment.
+
+favorites: buyer_id + service_id.
+
+earnings: student_id, order_id, amount, status (pending/available/paid).
+
+payouts: student_id, amount, provider, status.
+
+audit_logs: actor_id, action, entity, meta.
+
+⚡ 5) Premium UX Features
+
+Chat: secure, real-time, threaded per order.
+
+Command Palette (⌘K): global nav & quick actions.
+
+Empty States: geometric blue illustrations + CTAs.
+
+Badges: Verified Student, Top Rated, Fast Responder.
+
+Notifications: order & payout updates.
+
+Responsive: chat drawer on mobile, split screen on desktop.
+
+Optimistic UI: messages & actions update instantly.
+
+✅ 6) Acceptance Criteria
+
+Public pages (Home, About, How It Works) are polished and modern.
+
+How It Works page includes chat element with mock preview & feature list.
+
+Student, Buyer, Admin dashboards are functional and modular.
+
+Login redirect works by role.
+
+Verified-student gating enforced.
+
+Blue palette consistent everywhere.
+
+Golden-ratio spacing, accessibility AA+, performance optimized.
+
+⚡ In short:
+CollaboTree is a student-only verified freelancing marketplace with public pages (Home, About, How It Works including Chat) and dashboards (Student, Buyer, Admin) — all styled in a blue-gradient 2025 SaaS aesthetic.
