@@ -13,6 +13,7 @@
     "prisma:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
     "ensure-admin": "node ensure-admin.js",
+    "create-admin": "node quick-create-admin.js",
     "railway:build": "npm run build:frontend && npm run build:backend",
     "build:frontend": "cd ../client && npm ci --legacy-peer-deps && npm run build && cd ../backend && mkdir -p dist && cp -r ../client/dist dist/dist",
     "build:backend": "npx prisma generate && npx prisma migrate deploy && npm run build && npm run ensure-admin"
