@@ -31,42 +31,21 @@ export default function AdminSignIn() {
     setLoading(true);
 
     try {
-      // Check admin credentials
-      if (formData.email === ADMIN_CREDENTIALS.email && 
-          formData.password === ADMIN_CREDENTIALS.password) {
-        
-        // Create admin user in the system
-        try {
-          await login(formData.email, formData.password);
-          
-          toast({
-            title: "Admin Access Granted",
-            description: "Welcome to the admin dashboard!",
-          });
-          
-          navigate("/dashboard/admin");
-        } catch (error) {
-          // If admin doesn't exist, we need to create them
-          toast({
-            title: "Admin Login Successful", 
-            description: "Access granted to admin dashboard.",
-          });
-          
-          // For now, just navigate (in production, create admin user properly)
-          navigate("/dashboard/admin");
-        }
-      } else {
-        toast({
-          title: "Access Denied",
-          description: "Invalid admin credentials.",
-          variant: "destructive",
-        });
-      }
+      // Authenticate with backend
+      await login(formData.email, formData.password);
+      
+      toast({
+        title: "Admin Access Granted",
+        description: "Welcome to the admin dashboard!",
+      });
+      
+      // Navigate to admin dashboard
+      navigate("/dashboard/admin");
     } catch (error) {
       console.error("Admin login error:", error);
       toast({
         title: "Login Failed",
-        description: "Unable to process admin login.",
+        description: error instanceof Error ? error.message : "Invalid admin credentials. Please try again.",
         variant: "destructive",
       });
     } finally {

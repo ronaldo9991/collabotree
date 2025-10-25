@@ -208,7 +208,7 @@ export default function AdminDashboard() {
         description: "Please log in to access the admin dashboard.",
         variant: "destructive",
       });
-      navigate('/login');
+      navigate('/admin/signin');
       return;
     }
     
@@ -423,8 +423,8 @@ export default function AdminDashboard() {
             <CardDescription>Please log in to access the admin dashboard</CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button onClick={() => navigate('/login')} className="w-full">
-              Go to Login
+            <Button onClick={() => navigate('/admin/signin')} className="w-full">
+              Go to Admin Login
             </Button>
           </CardContent>
         </Card>
@@ -483,7 +483,7 @@ export default function AdminDashboard() {
             Welcome back, {user?.name || 'Admin'}!
           </h1>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-            Manage the platform, monitor messages, and control top selections
+            Manage the platform, monitor messages, and control top selections 
           </p>
         </motion.div>
 
