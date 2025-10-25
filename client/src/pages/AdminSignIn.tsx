@@ -13,7 +13,7 @@ import { Shield, Lock, User, Loader2, ArrowLeft } from "lucide-react";
 // Admin credentials (in production, this would be properly secured)
 const ADMIN_CREDENTIALS = {
   email: "admin@collabotree.com",
-  password: "Admin123!@#"
+  password: "admin123"
 };
 
 export default function AdminSignIn() {
@@ -138,7 +138,7 @@ export default function AdminSignIn() {
               </div>
               <div className="p-3 bg-muted/30 rounded-lg">
                 <p className="text-sm font-medium">Password:</p>
-                <p className="text-sm text-muted-foreground font-mono">Admin123!@#</p>
+                <p className="text-sm text-muted-foreground font-mono">admin123</p>
               </div>
               <Badge variant="outline" className="w-full justify-center">
                 Copy and paste these credentials
