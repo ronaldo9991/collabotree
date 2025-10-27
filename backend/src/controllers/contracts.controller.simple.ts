@@ -347,14 +347,16 @@ export const signContract = async (req: AuthenticatedRequest, res: Response) => 
 
     // Create notification for the other party
     const otherPartyId = isBuyer ? contract.studentId : contract.buyerId;
-    const signerName = isBuyer ? contract.buyer.name : contract.student.name;
+    const signerName = isBuyer ? contract.buyer?.name : contract.student?.name;
     
-    await createNotification(
-      otherPartyId,
-      'CONTRACT_SIGNED',
-      'Contract Signed',
-      `${signerName} has signed the contract for "${contract.hireRequest.service.title}"`
-    );
+    if (otherPartyId && signerName && contract.hireRequest?.service?.title) {
+      await createNotification(
+        otherPartyId,
+        'CONTRACT_SIGNED',
+        'Contract Signed',
+        `${signerName} has signed the contract for "${contract.hireRequest.service.title}"`
+      );
+    }
 
     // Parse terms for response
     const terms = JSON.parse(updatedContract.terms);
@@ -453,12 +455,14 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
     });
 
     // Notify student
-    await createNotification(
-      contract.studentId,
-      'PAYMENT_RECEIVED',
-      'Payment Received',
-      `Payment for "${contract.hireRequest.service.title}" has been placed in escrow`
-    );
+    if (contract.studentId && contract.hireRequest?.service?.title) {
+      await createNotification(
+        contract.studentId,
+        'PAYMENT_RECEIVED',
+        'Payment Received',
+        `Payment for "${contract.hireRequest.service.title}" has been placed in escrow`
+      );
+    }
 
     // Parse terms for response
     const terms = JSON.parse(updatedContract.terms);
@@ -544,12 +548,14 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
     });
 
     // Notify buyer
-    await createNotification(
-      contract.buyerId,
-      'PROGRESS_UPDATE',
-      'Progress Update',
-      `${contract.student.name} has updated progress on "${contract.hireRequest.service.title}"`
-    );
+    if (contract.buyerId && contract.student?.name && contract.hireRequest?.service?.title) {
+      await createNotification(
+        contract.buyerId,
+        'PROGRESS_UPDATED',
+        'Progress Update',
+        `${contract.student.name} has updated progress on "${contract.hireRequest.service.title}"`
+      );
+    }
 
     // Parse terms for response
     const terms = JSON.parse(updatedContract.terms);
@@ -613,7 +619,6 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
         paymentStatus: 'RELEASED',
         progressStatus: 'COMPLETED',
         completionNotes: validatedData.completionNotes,
-        releasedAt: new Date(),
       },
       include: {
         buyer: {
@@ -646,12 +651,14 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
     });
 
     // Notify student of payment release
-    await createNotification(
-      contract.studentId,
-      'PAYMENT_RELEASED',
-      'Payment Released',
-      `Payment for "${contract.hireRequest.service.title}" has been released`
-    );
+    if (contract.studentId && contract.hireRequest?.service?.title) {
+      await createNotification(
+        contract.studentId,
+        'CONTRACT_COMPLETED',
+        'Payment Released',
+        `Payment for "${contract.hireRequest.service.title}" has been released`
+      );
+    }
 
     // Parse terms for response
     const terms = JSON.parse(updatedContract.terms);
@@ -660,8 +667,8 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
       deliverables: JSON.stringify(terms.deliverables),
       timeline: terms.timeline,
       description: terms.additionalTerms || 'Standard terms apply',
-      priceCents: updatedContract.hireRequest.service.priceCents,
-      service: updatedContract.hireRequest.service,
+      priceCents: updatedContract.hireRequestId ? updatedContract.hireRequest?.service?.priceCents : 0,
+      service: updatedContract.hireRequestId ? updatedContract.hireRequest?.service : null,
     };
 
     return sendSuccess(res, response, 'Contract completed successfully');
