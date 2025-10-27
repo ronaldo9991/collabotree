@@ -1,1 +1,11 @@
+[phases.setup]
+nixPkgs = ['nodejs_22', 'npm-9_x']
 
+[phases.install]
+cmds = ['npm ci']
+
+[phases.build]
+cmds = ['rm -rf backend/dist', 'rm -rf backend/node_modules/.cache', 'npm run build']
+
+[start]
+cmd = 'cd backend && chmod +x start-railway.sh && ./start-railway.sh'
