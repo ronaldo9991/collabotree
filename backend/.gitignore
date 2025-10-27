@@ -1,0 +1,20 @@
+node_modules/
+dist/
+*.log
+.env
+.env.local
+.DS_Store
+dev.db
+test.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+.vercel
+.railway
+build/
+coverage/
+
+# Exclude problematic files
+src/controllers/contracts.controller.full.ts
+src/controllers/contracts.controller.full.js
+
