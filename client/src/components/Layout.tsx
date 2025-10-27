@@ -65,25 +65,25 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className={`fixed top-4 left-4 right-4 z-50 transition-all duration-300 rounded-2xl ${
+      <nav className={`fixed top-2 left-2 right-2 z-50 transition-all duration-300 rounded-xl ${
         scrolled 
-          ? 'bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-2xl border border-white/20 dark:border-white/10' 
-          : 'bg-white/60 dark:bg-neutral-900/60 backdrop-blur-lg shadow-lg border border-white/30 dark:border-white/20'
+          ? 'bg-background/90 dark:bg-background/90 backdrop-blur-xl shadow-lg border border-border/30' 
+          : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
       }`}>
         <div className="container-unified">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-12">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity" data-testid="logo">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
               <img 
                 src="/logoa.png" 
                 alt="CollaboTree Logo" 
-                className="w-10 h-10 object-contain"
+                className="w-8 h-8 object-contain"
               />
-              <span className="text-xl font-semibold">CollaboTree</span>
+              <span className="text-lg font-semibold">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center gap-6">
+            <div className="hidden lg:flex items-center gap-4">
               {navigation.map((item) => (
                 item.show && (
                   <button
@@ -168,13 +168,13 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-muted/20 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-muted/20 transition-colors"
                 data-testid="theme-toggle"
               >
                 {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
@@ -184,19 +184,19 @@ export function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 onClick={() => setCommandOpen(true)}
-                className="hidden xl:flex items-center gap-2 px-3 py-2 bg-muted/20 rounded-lg text-sm text-muted-foreground hover:bg-muted/30 transition-colors"
+                className="hidden xl:flex items-center gap-1.5 px-2 py-1.5 bg-muted/20 rounded-lg text-sm text-muted-foreground hover:bg-muted/30 transition-colors"
                 data-testid="command-palette-trigger"
               >
                 <Search className="h-4 w-4" />
                 <span className="hidden 2xl:inline">Search</span>
-                <Badge variant="outline" className="px-1.5 py-0.5 text-xs hidden 2xl:inline-block">
+                <Badge variant="outline" className="px-1 py-0.5 text-xs hidden 2xl:inline-block">
                   ⌘K
                 </Badge>
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => setCommandOpen(true)}
-                className="xl:hidden p-2"
+                className="xl:hidden p-1.5"
                 data-testid="command-palette-trigger-mobile"
               >
                 <Search className="h-4 w-4" />
@@ -262,7 +262,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-20">
+      <main className="pt-16">
         {children}
       </main>
 
