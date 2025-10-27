@@ -328,24 +328,24 @@ export default function BuyerDashboard() {
 
         {/* Navigation Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
-            <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-gradient-to-r from-[#00B2FF]/10 via-[#4AC8FF]/15 to-[#8FE5FF]/10 dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 border-2 border-[#00B2FF]/30 dark:border-[#00B2FF]/20 rounded-xl shadow-lg p-1">
+            <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
               <LayoutDashboard className="h-4 w-4" />
               Overview
               </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="orders" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
               <Briefcase className="h-4 w-4" />
               My Projects
               </TabsTrigger>
-            <TabsTrigger value="messages" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="messages" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
               <MessageCircle className="h-4 w-4" />
               Messages
               </TabsTrigger>
-            <TabsTrigger value="browse" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="browse" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
               <Users className="h-4 w-4" />
               Browse Talent
               </TabsTrigger>
-            <TabsTrigger value="contracts" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="contracts" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
               <FileText className="h-4 w-4" />
               Contracts
               </TabsTrigger>

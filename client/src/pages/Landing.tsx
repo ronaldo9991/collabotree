@@ -467,59 +467,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Popular Categories Section */}
-      <section className="section-padding-y bg-gradient-to-br from-accent/5 via-background to-primary/5">
-        <div className="container-unified">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Popular Categories</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Explore our most sought-after project types
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
-            initial="hidden"
-            whileInView="visible"
-            variants={containerVariants}
-            viewport={{ once: true }}
-          >
-            {[
-              { name: "Web Development", icon: Code, color: "from-blue-500 to-cyan-500" },
-              { name: "UI/UX Design", icon: Palette, color: "from-purple-500 to-pink-500" },
-              { name: "Data Analysis", icon: BarChart3, color: "from-green-500 to-emerald-500" },
-              { name: "Content Writing", icon: FileText, color: "from-orange-500 to-red-500" },
-              { name: "Mobile Apps", icon: Smartphone, color: "from-indigo-500 to-purple-500" },
-              { name: "Graphic Design", icon: PaintBucket, color: "from-pink-500 to-rose-500" }
-            ].slice(0, 6).map((category, index) => (
-              <motion.div key={index} variants={itemVariants}>
-                <button
-                  onClick={() => handlePopularSearch(category.name)}
-                  className="w-full group"
-                >
-                  <Card className="glass-card bg-card/50 border-border/50 hover:shadow-xl transition-all duration-300 backdrop-blur-12 overflow-hidden h-full">
-                    <CardContent className="p-6 text-center">
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                        <category.icon className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="text-sm font-semibold group-hover:text-primary transition-colors">
-                        {category.name}
-                      </h3>
-                    </CardContent>
-                  </Card>
-                </button>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* Top Selection Section */}
       <section className="section-padding-y bg-background">
         <div className="container-unified">

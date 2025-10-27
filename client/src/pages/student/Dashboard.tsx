@@ -510,38 +510,38 @@ export default function StudentDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-gradient-to-r from-[#00B2FF]/10 via-[#4AC8FF]/15 to-[#8FE5FF]/10 dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 border-2 border-[#00B2FF]/30 dark:border-[#00B2FF]/20 rounded-xl shadow-lg p-1">
               <TabsTrigger 
                 value="overview" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
                 <span className="hidden sm:inline">Overview</span>
                 <span className="sm:hidden">Stats</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="orders" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
                 <span className="hidden sm:inline">Buyer Requests</span>
                 <span className="sm:hidden">Orders</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="messages" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
                 <span className="hidden sm:inline">Messages</span>
                 <span className="sm:hidden">Chat</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="services" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
                 <span className="hidden sm:inline">My Services</span>
                 <span className="sm:hidden">Services</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="contracts" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
               >
                 <span className="hidden sm:inline">Contracts</span>
                 <span className="sm:hidden">Contracts</span>
