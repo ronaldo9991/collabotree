@@ -464,8 +464,11 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Loading admin dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -479,18 +482,18 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8 sm:mb-12"
+          className="text-center mb-6"
         >
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Badge variant="outline" className="gap-2 bg-primary/10 text-primary border-primary/20">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Badge variant="outline" className="gap-2 bg-primary/10 text-primary border-primary/20 px-3 py-1">
               <Shield className="h-4 w-4" />
-            Admin Dashboard
-          </Badge>
+              Admin Dashboard
+            </Badge>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-primary dashboard-title">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-primary">
             Welcome back, {user?.name || 'Admin'}!
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
             Manage the platform, monitor messages, and control top selections 
           </p>
         </motion.div>
@@ -502,7 +505,7 @@ export default function AdminDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-4 h-10 bg-background/80 backdrop-blur-12 border border-border/30 rounded-lg shadow-sm p-1">
               <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <BarChart3 className="h-4 w-4" />
                 Overview
@@ -536,7 +539,7 @@ export default function AdminDashboard() {
                     transition={{ duration: 0.6 }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
                   >
-          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
+          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 text-center hover:shadow-lg transition-all duration-200">
             <CardHeader className="pb-4">
               <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
                 <Users className="h-8 w-8" />
@@ -551,37 +554,37 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
+          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 text-center hover:shadow-lg transition-all duration-200">
             <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
+              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
                 <UserCheck className="h-8 w-8" />
               </div>
               <CardTitle className="text-xl">Verified Students</CardTitle>
             </CardHeader>
             <CardContent>
-                        <div className="text-3xl font-bold text-secondary mb-2">{stats.users.verifiedStudents}</div>
+                        <div className="text-3xl font-bold text-primary mb-2">{stats.users.verifiedStudents}</div>
               <p className="text-sm text-muted-foreground">
                           {stats.users.pendingVerifications} pending verification
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
+          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
             <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
+              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
                 <Package className="h-8 w-8" />
               </div>
                         <CardTitle className="text-xl">Services</CardTitle>
             </CardHeader>
             <CardContent>
-                        <div className="text-3xl font-bold text-accent mb-2">{stats.services.total}</div>
+                        <div className="text-3xl font-bold text-primary mb-2">{stats.services.total}</div>
               <p className="text-sm text-muted-foreground">
                           {stats.services.active} active • {stats.services.topSelections} top selections
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
+          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
             <CardHeader className="pb-4">
               <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
                 <DollarSign className="h-8 w-8" />
@@ -604,7 +607,7 @@ export default function AdminDashboard() {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="grid grid-cols-1 md:grid-cols-3 gap-6"
                   >
-                    <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
+                    <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
                       <CardHeader className="pb-4">
                         <div className="mx-auto p-4 rounded-full bg-blue-500/10 text-blue-500 w-fit mb-4">
                           <MessageCircle className="h-8 w-8" />
@@ -619,7 +622,7 @@ export default function AdminDashboard() {
                       </CardContent>
                     </Card>
 
-                    <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
+                    <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
                       <CardHeader className="pb-4">
                         <div className="mx-auto p-4 rounded-full bg-green-500/10 text-green-500 w-fit mb-4">
                           <CheckCircle className="h-8 w-8" />
@@ -634,7 +637,7 @@ export default function AdminDashboard() {
                       </CardContent>
                     </Card>
 
-                    <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
+                    <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
                       <CardHeader className="pb-4">
                         <div className="mx-auto p-4 rounded-full bg-purple-500/10 text-purple-500 w-fit mb-4">
                           <Star className="h-8 w-8" />
@@ -665,7 +668,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
             <CardHeader>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
@@ -817,7 +820,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
             <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -923,7 +926,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Current Top Selections */}
-                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+                <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                       <Star className="h-5 w-5 text-primary" />
@@ -984,7 +987,7 @@ export default function AdminDashboard() {
                 </Card>
 
                 {/* All Services - Available to Feature */}
-                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+                <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Package className="h-5 w-5 text-primary" />
@@ -1276,7 +1279,7 @@ function StudentVerificationQueue() {
 
   if (loading) {
     return (
-      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+      <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -1292,7 +1295,7 @@ function StudentVerificationQueue() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+      <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserCheck className="h-5 w-5 text-primary" />

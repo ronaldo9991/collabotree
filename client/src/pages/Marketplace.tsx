@@ -317,15 +317,29 @@ export default function ExploreTalent() {
       <section className="section-padding-y bg-gradient-to-br from-background via-background to-muted/20">
         <div className="container-unified">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl lg:text-4xl font-bold mb-4">Explore Talent</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl lg:text-3xl font-bold mb-3">Explore Talent</h1>
+          <p className="text-base text-muted-foreground max-w-xl mx-auto mb-6">
             Discover verified student talent from top universities ready to bring your projects to life.
           </p>
           
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                placeholder="Search for skills, services, or student names..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-12 pl-12 pr-4 text-base bg-background/80 backdrop-blur-12 border-2 border-border/30 focus:border-primary/50 rounded-xl shadow-lg"
+                style={{ color: 'inherit' }}
+              />
+            </div>
+          </div>
+          
           {search && (
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Badge variant="secondary" className="px-4 py-2 text-sm">
+              <Badge variant="secondary" className="px-3 py-1 text-sm">
                 <Search className="h-3 w-3 mr-2" />
                 Searching for: <span className="font-semibold ml-1">"{search}"</span>
               </Badge>
@@ -335,7 +349,7 @@ export default function ExploreTalent() {
                 onClick={() => setSearch('')}
                 className="text-xs"
               >
-                Clear search
+                Clear
               </Button>
             </div>
           )}
