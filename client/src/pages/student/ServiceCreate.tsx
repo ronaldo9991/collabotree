@@ -43,6 +43,7 @@ export default function ServiceCreate() {
   const [tagInput, setTagInput] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<ServiceFormData>({
@@ -133,6 +134,79 @@ export default function ServiceCreate() {
   const removeImage = () => {
     setUploadedImage(null);
     form.setValue("coverImage", "");
+  };
+
+  const handlePortfolioImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    // Limit to 5 portfolio images
+    if (portfolioImages.length + files.length > 5) {
+      toast({
+        title: "Too Many Images",
+        description: "You can upload a maximum of 5 portfolio images",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const newImages: string[] = [];
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          toast({
+            title: "Invalid File Type",
+            description: `File ${file.name} is not an image. Please upload image files only.`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          toast({
+            title: "File Too Large",
+            description: `File ${file.name} is too large. Please upload images smaller than 5MB.`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          newImages.push(result);
+          
+          if (newImages.length === files.length) {
+            setPortfolioImages(prev => [...prev, ...newImages]);
+            toast({
+              title: "Portfolio Images Uploaded",
+              description: `${newImages.length} portfolio image(s) uploaded successfully.`,
+            });
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error('Error uploading portfolio images:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload portfolio images. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removePortfolioImage = (index: number) => {
+    setPortfolioImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (data: ServiceFormData) => {
@@ -358,6 +432,96 @@ export default function ServiceCreate() {
                   </Card>
                 </motion.div>
 
+                {/* Portfolio Images */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                >
+                  <Card className="glass-card bg-card/50 backdrop-blur-12">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Image className="h-5 w-5 text-primary" />
+                        Portfolio Images
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Showcase your previous work to build credibility. Upload up to 5 portfolio images.
+                        </p>
+                        
+                        {/* Portfolio Images Grid */}
+                        {portfolioImages.length > 0 && (
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                            {portfolioImages.map((image, index) => (
+                              <div key={index} className="relative group">
+                                <img
+                                  src={image}
+                                  alt={`Portfolio ${index + 1}`}
+                                  className="w-full h-32 object-cover rounded-lg border border-border/30"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => removePortfolioImage(index)}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Upload Button */}
+                        <div className="border-2 border-dashed border-border/30 rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="p-2 rounded-full bg-primary/10">
+                              <Image className="h-6 w-6 text-primary" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">Add Portfolio Images</p>
+                              <p className="text-xs text-muted-foreground">
+                                {portfolioImages.length}/5 images uploaded
+                              </p>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={handlePortfolioImageUpload}
+                              className="hidden"
+                              id="portfolio-upload"
+                              disabled={isUploading || portfolioImages.length >= 5}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => document.getElementById('portfolio-upload')?.click()}
+                              disabled={isUploading || portfolioImages.length >= 5}
+                            >
+                              {isUploading ? (
+                                <>
+                                  <Upload className="mr-2 h-4 w-4 animate-spin" />
+                                  Uploading...
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="mr-2 h-4 w-4" />
+                                  {portfolioImages.length === 0 ? 'Add Images' : 'Add More'}
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
                 {/* Tags */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -493,10 +657,11 @@ export default function ServiceCreate() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="1">1 day</SelectItem>
+                                <SelectItem value="1">24 hours</SelectItem>
                                 <SelectItem value="3">3 days</SelectItem>
                                 <SelectItem value="7">1 week</SelectItem>
                                 <SelectItem value="14">2 weeks</SelectItem>
+                                <SelectItem value="21">2-3 weeks</SelectItem>
                                 <SelectItem value="30">1 month</SelectItem>
                               </SelectContent>
                             </Select>

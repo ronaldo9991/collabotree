@@ -65,10 +65,10 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      <nav className={`fixed top-4 left-4 right-4 z-50 transition-all duration-300 rounded-2xl ${
         scrolled 
-          ? 'bg-white/70 dark:bg-neutral-900/60 backdrop-blur-md shadow-md border-b border-border' 
-          : 'bg-transparent border-b border-transparent'
+          ? 'bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-2xl border border-white/20 dark:border-white/10' 
+          : 'bg-white/60 dark:bg-neutral-900/60 backdrop-blur-lg shadow-lg border border-white/30 dark:border-white/20'
       }`}>
         <div className="container-unified">
           <div className="flex items-center justify-between h-16">
@@ -262,7 +262,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-16">
+      <main className="pt-20">
         {children}
       </main>
 

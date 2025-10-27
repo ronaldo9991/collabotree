@@ -468,6 +468,20 @@ class ApiClient {
   async getServiceConversation(serviceId: string) {
     return this.request(`/admin/services/${serviceId}/conversation`);
   }
+
+  // Contact form endpoint
+  async submitContactForm(data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    type: string;
+  }) {
+    return this.request('/contact', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const api = new ApiClient();

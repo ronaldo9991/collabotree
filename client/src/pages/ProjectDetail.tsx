@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Clock, CheckCircle, MessageCircle, DollarSign, Calendar, Loader2, X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { Clock, CheckCircle, MessageCircle, DollarSign, Calendar, Loader2, X, ChevronLeft, ChevronRight, Maximize2, Star, User, MapPin, Award, TrendingUp, Eye } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,6 +43,17 @@ export default function ProjectDetail() {
   ] : [];
 
   const projectId = params?.id;
+
+  // Helper function to convert delivery days to readable text
+  const getDeliveryTimeText = (days: number) => {
+    if (days === 1) return '24 hours';
+    if (days === 3) return '3 days';
+    if (days === 7) return '1 week';
+    if (days === 14) return '2 weeks';
+    if (days === 21) return '2-3 weeks';
+    if (days === 30) return '1 month';
+    return `${days} days`;
+  };
 
   useEffect(() => {
     if (projectId) {
@@ -164,7 +175,7 @@ export default function ProjectDetail() {
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
-                        <span>7 days delivery</span>
+                        <span>{getDeliveryTimeText(project.deliveryDays || 7)}</span>
                       </div>
                     </div>
                   </div>
@@ -329,6 +340,37 @@ export default function ProjectDetail() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Related Projects */}
+            <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Related Projects
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-border/30 hover:bg-muted/20 transition-colors cursor-pointer">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                        <Package className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-sm truncate">Related Project {i}</h4>
+                        <p className="text-xs text-muted-foreground">${50 + i * 25}</p>
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {getDeliveryTimeText(7)}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline" className="w-full mt-4">
+                  View All Projects
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Sidebar */}
@@ -417,6 +459,84 @@ export default function ProjectDetail() {
               </CardContent>
             </Card>
 
+            {/* Student Profile */}
+            <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Student Profile
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
+                    {(project.creator?.full_name || 'S').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{project.creator?.full_name || 'Student'}</h3>
+                      {project.creator?.isVerified && (
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">Verified Student</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border/30">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-semibold">4.8</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Rating (127 reviews)</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold mb-1">24</div>
+                    <p className="text-xs text-muted-foreground">Projects Completed</p>
+                  </div>
+                </div>
+                
+                {/* Rating Breakdown */}
+                <div className="space-y-2 pt-3 border-t border-border/30">
+                  <h4 className="text-sm font-medium">Rating Breakdown</h4>
+                  <div className="space-y-1">
+                    {[5, 4, 3, 2, 1].map((rating) => (
+                      <div key={rating} className="flex items-center gap-2 text-xs">
+                        <span className="w-3">{rating}</span>
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        <div className="flex-1 bg-muted/30 rounded-full h-2">
+                          <div 
+                            className="bg-yellow-400 h-2 rounded-full" 
+                            style={{ width: `${rating === 5 ? 85 : rating === 4 ? 10 : rating === 3 ? 3 : rating === 2 ? 1 : 1}%` }}
+                          />
+                        </div>
+                        <span className="text-muted-foreground w-8">
+                          {rating === 5 ? '108' : rating === 4 ? '13' : rating === 3 ? '4' : rating === 2 ? '1' : '1'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <span>University of Technology</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Award className="h-4 w-4 text-muted-foreground" />
+                    <span>Computer Science Student</span>
+                  </div>
+                </div>
+                
+                <Button variant="outline" className="w-full">
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Full Profile
+                </Button>
+              </CardContent>
+            </Card>
+
             {/* Project Stats */}
             <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
               <CardHeader>
@@ -429,7 +549,7 @@ export default function ProjectDetail() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Delivery Time</span>
-                  <span className="font-medium">7 days</span>
+                  <span className="font-medium">{getDeliveryTimeText(project.deliveryDays || 7)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Applications</span>

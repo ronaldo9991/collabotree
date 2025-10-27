@@ -521,6 +521,18 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
           </h3>
         </Link>
 
+        {/* Rating and Reviews */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className={`h-3 w-3 ${i < Math.floor(project.rating || 4.5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+            ))}
+          </div>
+          <span className="text-xs text-muted-foreground">
+            {project.rating?.toFixed(1)} ({project.totalReviews || 0} reviews)
+          </span>
+        </div>
+
         {/* Simple Description */}
         <div className="flex-1 mb-4">
           <p className="text-sm text-muted-foreground line-clamp-2">

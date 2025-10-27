@@ -267,14 +267,14 @@ export default function Landing() {
                 className="space-y-8 text-center lg:text-left"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
               >
                 {/* Main Heading */}
                 <motion.div
                   className="space-y-4"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
                 >
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] text-white">
                     Hire{" "}
@@ -285,12 +285,13 @@ export default function Landing() {
                       <motion.span
                         className="absolute inset-0 bg-white/20 blur-2xl"
                         animate={{
-                          scale: [1, 1.2, 1],
-                          opacity: [0.3, 0.5, 0.3],
+                          scale: [1, 1.1, 1],
+                          opacity: [0.2, 0.4, 0.2],
                         }}
                         transition={{
-                          duration: 2,
+                          duration: 3,
                           repeat: Infinity,
+                          ease: "easeInOut"
                         }}
                       />
                     </span>
@@ -309,7 +310,7 @@ export default function Landing() {
                   className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15, delay: 0.1, ease: "easeOut" }}
+                  transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
                 >
                   <Button
                     size="lg"
@@ -339,7 +340,7 @@ export default function Landing() {
                   className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.15, delay: 0.2, ease: "easeOut" }}
+                  transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
                 >
                   <div className="flex items-center gap-2 text-white/80 text-sm">
                     <CheckCircle className="w-4 h-4 text-white" />
@@ -361,7 +362,7 @@ export default function Landing() {
                 className="relative"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.18, delay: 0.1, ease: "easeOut" }}
+                transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
               >
                 {/* Glowing background effect */}
                 <div className="absolute inset-0 bg-white/10 rounded-3xl blur-3xl"></div>
@@ -391,6 +392,7 @@ export default function Landing() {
                             handleSearch();
                           }
                         }}
+                        style={{ color: 'inherit' }}
                       />
                     </div>
                     
@@ -419,10 +421,12 @@ export default function Landing() {
                   {/* Popular Searches - Enhanced */}
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { term: 'Web Development', icon: Code },
+                      { term: 'Web Developer', icon: Code },
                       { term: 'UI/UX Design', icon: Palette },
+                      { term: 'Social Media', icon: Users },
                       { term: 'Data Analysis', icon: BarChart3 },
-                      { term: 'Content Writing', icon: FileText }
+                      { term: 'Content Writing', icon: FileText },
+                      { term: 'Mobile App', icon: Smartphone }
                     ].map(({ term, icon: Icon }) => (
                       <Button
                         key={term}
@@ -542,7 +546,7 @@ export default function Landing() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
-                  <CardContent className="p-4 md:p-5 flex-1 flex flex-col">
+                  <CardContent className="p-4 flex-1 flex flex-col">
                     {/* Title */}
                     <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
                     
@@ -552,7 +556,7 @@ export default function Landing() {
                     </p>
                     
                     {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1 mb-3">
+                    <div className="flex flex-wrap gap-1 mb-2">
                       {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
@@ -570,11 +574,11 @@ export default function Landing() {
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                       ))}
-                      <span className="text-xs text-muted-foreground ml-1">(4.8)</span>
+                      <span className="text-xs text-muted-foreground ml-1">(4.8) • 127 reviews</span>
                     </div>
                     
                     {/* Author row - Consistent spacing */}
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <Avatar className="h-8 w-8 flex-shrink-0">
                           <AvatarImage src={project.student.avatar} alt={project.student.name} />
@@ -597,7 +601,7 @@ export default function Landing() {
                     </div>
                     
                     {/* Bottom price bar - Always at bottom */}
-                    <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
                       <span className="text-lg font-semibold">{project.price}</span>
                       <Button 
                         variant="outline" 
@@ -632,25 +636,6 @@ export default function Landing() {
             </Button>
           </div>
 
-          {/* Carousel Indicators */}
-          <div className="flex justify-center items-center gap-3 mt-12">
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`relative h-3 rounded-full transition-all duration-500 hover:scale-125 ${
-                  index === currentSlide 
-                    ? 'w-10 bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/30' 
-                    : 'w-3 bg-muted-foreground/30 hover:bg-primary/40 hover:shadow-md'
-                }`}
-                data-testid={`carousel-indicator-${index}`}
-              >
-                {index === currentSlide && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" />
-                )}
-              </button>
-            ))}
-          </div>
 
           {/* View All Projects Button */}
           <motion.div 
@@ -757,7 +742,7 @@ export default function Landing() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
-                  <CardContent className="p-4 md:p-5 flex-1 flex flex-col">
+                  <CardContent className="p-4 flex-1 flex flex-col">
                     {/* Title */}
                     <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
                     
@@ -767,7 +752,7 @@ export default function Landing() {
                     </p>
                     
                     {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1 mb-3">
+                    <div className="flex flex-wrap gap-1 mb-2">
                       {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
@@ -785,11 +770,11 @@ export default function Landing() {
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                       ))}
-                      <span className="text-xs text-muted-foreground ml-1">(4.8)</span>
+                      <span className="text-xs text-muted-foreground ml-1">(4.8) • 127 reviews</span>
                     </div>
                     
                     {/* Author row - Consistent spacing */}
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <Avatar className="h-8 w-8 flex-shrink-0">
                           <AvatarImage src={project.student.avatar} alt={project.student.name} />
@@ -812,7 +797,7 @@ export default function Landing() {
                     </div>
                     
                     {/* Bottom price bar - Always at bottom */}
-                    <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
                       <span className="text-lg font-semibold">{project.price}</span>
                       <Button 
                         variant="outline" 
@@ -1014,113 +999,167 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
-            initial="hidden"
-            whileInView="visible"
-            variants={containerVariants}
-            viewport={{ once: true }}
-          >
-            {features.map((feature, index) => (
-              <motion.div 
-                key={index} 
-                variants={itemVariants}
-                className="group relative"
-              >
-                {/* Unique Shape Background */}
+          <div className="relative">
+            {/* Central Connecting Lines */}
+            <motion.div
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              transition={{ duration: 1.5, delay: 0.5 }}
+              viewport={{ once: true }}
+            />
+            
+            {/* Mission Cards with Unique Shapes */}
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12 items-stretch">
+              {features.map((feature, index) => (
                 <motion.div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient.replace('from-', 'from-').replace('to-', 'to-')}/20 opacity-20 blur-xl`}
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.1, 0.3, 0.1],
+                  key={index}
+                  initial={{ 
+                    opacity: 0, 
+                    y: 100, 
+                    scale: 0.5,
+                    rotateX: 90
                   }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
+                  whileInView={{ 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: 1,
+                    rotateX: 0
                   }}
-                />
-                
-                {/* Card Container matching About page style */}
-                <motion.div
-                  className="relative p-8 rounded-3xl bg-card/80 backdrop-blur-12 border border-border/30 overflow-hidden h-full"
-                  whileHover={{ 
-                    scale: 1.05,
-                    rotateY: 5,
-                    rotateX: 5
+                  transition={{ 
+                    duration: 1, 
+                    delay: 0.3 + index * 0.3,
+                    ease: "easeOut"
                   }}
-                  transition={{ duration: 0.3 }}
-                  style={{
-                    perspective: "1000px"
-                  }}
-                  data-testid={`feature-${index}`}
+                  viewport={{ once: true }}
+                  className="group relative"
                 >
-                  {/* Animated Shape Overlay */}
+                  {/* Unique Shape Background */}
                   <motion.div
-                    className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.gradient} opacity-10`}
+                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient.replace('from-', 'from-').replace('to-', 'to-')}/20 opacity-20 blur-xl`}
                     animate={{
-                      rotate: [0, 360],
                       scale: [1, 1.2, 1],
+                      opacity: [0.1, 0.3, 0.1],
                     }}
                     transition={{
-                      duration: 8,
+                      duration: 4,
                       repeat: Infinity,
-                      ease: "linear"
-                    }}
-                    style={{
-                      clipPath: "circle(50%)"
+                      ease: "easeInOut"
                     }}
                   />
                   
-                  {/* Icon with 3D Effect matching About page */}
+                  {/* Morphing Shape Container */}
                   <motion.div
-                    className={`relative z-10 w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-2xl`}
+                    className={`relative p-8 rounded-3xl bg-card/80 backdrop-blur-12 border border-border/30 overflow-hidden`}
                     whileHover={{ 
-                      rotateY: 180,
-                      scale: 1.1
+                      scale: 1.05,
+                      rotateY: 5,
+                      rotateX: 5
                     }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.3 }}
                     style={{
-                      transformStyle: "preserve-3d"
+                      perspective: "1000px"
                     }}
+                    data-testid={`feature-${index}`}
                   >
+                    {/* Animated Shape Overlay */}
                     <motion.div
-                      className="text-white"
+                      className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.gradient} opacity-10`}
                       animate={{
                         rotate: [0, 360],
+                        scale: [1, 1.2, 1],
                       }}
                       transition={{
-                        duration: 20,
+                        duration: 8,
                         repeat: Infinity,
                         ease: "linear"
                       }}
+                      style={{
+                        clipPath: "circle(50%)"
+                      }}
+                    />
+                    
+                    {/* Icon with 3D Effect */}
+                    <motion.div
+                      className={`relative z-10 w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-2xl`}
+                      whileHover={{ 
+                        rotateY: 180,
+                        scale: 1.1
+                      }}
+                      transition={{ duration: 0.6 }}
+                      style={{
+                        transformStyle: "preserve-3d"
+                      }}
                     >
-                      <feature.icon className="h-8 w-8" />
+                      <motion.div
+                        className="text-white"
+                        animate={{
+                          rotate: [0, 360],
+                        }}
+                        transition={{
+                          duration: 20,
+                          repeat: Infinity,
+                          ease: "linear"
+                        }}
+                      >
+                        <feature.icon className="h-10 w-10" />
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                  
-                  {/* Content matching About page style */}
-                  <div className="relative z-10 text-center">
-                    <motion.h3 
-                      className="text-xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      {feature.title}
-                    </motion.h3>
-                    <motion.p 
-                      className="text-muted-foreground leading-relaxed text-sm"
+                    
+                    {/* Content */}
+                    <div className="relative z-10 text-center">
+                      <motion.h3 
+                        className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        {feature.title}
+                      </motion.h3>
+                      <motion.p 
+                        className="text-muted-foreground leading-relaxed"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.8 + index * 0.2 }}
+                      >
+                        {feature.description}
+                      </motion.p>
+                    </div>
+                    
+                    {/* Floating Particles */}
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
                       initial={{ opacity: 0 }}
                       whileInView={{ opacity: 1 }}
+                      transition={{ duration: 1, delay: 1 + index * 0.2 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                      {feature.description}
-                    </motion.p>
-                  </div>
+                      {[...Array(6)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className={`absolute w-2 h-2 bg-gradient-to-r ${feature.gradient} rounded-full`}
+                          style={{
+                            left: `${20 + i * 15}%`,
+                            top: `${30 + i * 10}%`,
+                          }}
+                          animate={{
+                            y: [0, -20, 0],
+                            opacity: [0.3, 1, 0.3],
+                            scale: [0.5, 1, 0.5],
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            delay: i * 0.5,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+            </div>
+          </div>
 
         </div>
       </section>

@@ -27,7 +27,8 @@ import {
   Heart,
   Filter,
   MapPin,
-  FileText
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import {
   Card,
@@ -549,43 +550,86 @@ export default function BuyerDashboard() {
                       ))}
                   </div>
               ) : userProjects.filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)).length > 0 ? (
-                  <div className="space-y-4">
-                  {userProjects
-                    .filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status))
-                    .map((project) => (
-                      <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                          <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4">
-                              <Avatar className="h-12 w-12 border border-border/30">
-                                <AvatarFallback className="bg-primary/10 text-primary">
-                                  {project.student?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                  <>
+                    {/* 2x3 Grid Layout */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                      {userProjects
+                        .filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status))
+                        .slice(0, 6) // Show only 6 cards at a time
+                        .map((project) => (
+                          <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 hover:shadow-lg transition-all duration-200">
+                            <CardContent className="p-4 flex flex-col h-full">
+                              {/* Header */}
+                              <div className="flex items-start justify-between mb-3">
+                                <Badge variant="default" className="text-xs">
+                                  {project.status}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(project.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+
+                              {/* Student Info */}
+                              <div className="flex items-center gap-3 mb-3">
+                                <Avatar className="h-10 w-10 border border-border/30">
+                                  <AvatarFallback className="bg-primary/10 text-primary">
+                                    {project.student?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                                   </AvatarFallback>
                                 </Avatar>
-                                <div>
-                                <h3 className="font-semibold">{project.student?.name || 'Unknown Student'}</h3>
-                                <p className="text-sm text-muted-foreground">{project.service?.title || 'Project'}</p>
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-semibold text-sm truncate">{project.student?.name || 'Unknown Student'}</h3>
+                                  <p className="text-xs text-muted-foreground truncate">{project.service?.title || 'Project'}</p>
                                 </div>
                               </div>
+
+                              {/* Project Details */}
+                              <div className="flex-1 mb-3">
+                                <div className="space-y-1 text-xs text-muted-foreground">
+                                  <div className="flex justify-between">
+                                    <span>Price:</span>
+                                    <span className="font-medium">${(project.priceCents || 0) / 100}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Service:</span>
+                                    <span className="font-medium truncate ml-2">{project.service?.title || 'N/A'}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Action Button */}
                               <Button
-                              variant="default"
-                              size="sm"
-                              onClick={() => {
-                                const chatId = project.hireRequestId || project.id;
-                                console.log('🚀 Messages tab - Navigating to chat with ID:', chatId);
-                                console.log('🚀 Messages tab - Project data:', project);
-                                navigate(`/chat/${chatId}`);
-                              }}
-                                className="gap-2 bg-primary hover:bg-primary/90"
+                                variant="default"
+                                size="sm"
+                                onClick={() => {
+                                  const chatId = project.hireRequestId || project.id;
+                                  console.log('🚀 Messages tab - Navigating to chat with ID:', chatId);
+                                  console.log('🚀 Messages tab - Project data:', project);
+                                  navigate(`/chat/${chatId}`);
+                                }}
+                                className="gap-2 bg-primary hover:bg-primary/90 w-full"
                               >
                                 <MessageCircle className="h-4 w-4" />
-                              Chat
+                                Chat
                               </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                  </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                    </div>
+
+                    {/* Pagination Controls */}
+                    {userProjects.filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)).length > 6 && (
+                      <div className="flex justify-center gap-2">
+                        <Button variant="outline" size="sm" disabled>
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          Previous
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          Next
+                          <ChevronRight className="h-4 w-4 ml-1" />
+                        </Button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                     <CardContent className="p-12 text-center">

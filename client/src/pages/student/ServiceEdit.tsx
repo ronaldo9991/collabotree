@@ -465,10 +465,11 @@ export default function ServiceEdit() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="1">1 day</SelectItem>
+                                <SelectItem value="1">24 hours</SelectItem>
                                 <SelectItem value="3">3 days</SelectItem>
                                 <SelectItem value="7">1 week</SelectItem>
                                 <SelectItem value="14">2 weeks</SelectItem>
+                                <SelectItem value="21">2-3 weeks</SelectItem>
                                 <SelectItem value="30">1 month</SelectItem>
                               </SelectContent>
                             </Select>
