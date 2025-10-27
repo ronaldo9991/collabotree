@@ -543,11 +543,6 @@ export default function Landing() {
                   </div>
                   
                   <CardContent className="p-4 md:p-5 flex-1 flex flex-col">
-                    {/* Category pill */}
-                    <Badge variant="secondary" className="w-fit rounded-full text-xs mb-2">
-                      {project.category}
-                    </Badge>
-                    
                     {/* Title */}
                     <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
                     
@@ -763,11 +758,6 @@ export default function Landing() {
                   </div>
                   
                   <CardContent className="p-4 md:p-5 flex-1 flex flex-col">
-                    {/* Category pill */}
-                    <Badge variant="secondary" className="w-fit rounded-full text-xs mb-2">
-                      {project.category}
-                    </Badge>
-                    
                     {/* Title */}
                     <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
                     

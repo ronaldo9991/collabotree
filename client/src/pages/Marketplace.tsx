@@ -348,139 +348,9 @@ export default function ExploreTalent() {
         </div>
 
         {/* Main Content Layout */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Sidebar */}
-          <div className="w-full lg:w-64 flex-shrink-0 order-2 lg:order-1">
-            <Card className="glass-card bg-card/50 backdrop-blur-12 p-3 sticky top-4">
-              <h3 className="font-semibold mb-3 flex items-center gap-2 text-xs">
-                <Filter className="h-3 w-3" />
-                Filter Results
-              </h3>
-              
-              <div className="space-y-3">
-                {/* Search */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">
-                    Search {search && <span className="text-primary">({search})</span>}
-                  </label>
-                  <div className="relative">
-                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                    <Input
-                      placeholder="Search talent..."
-                      value={search}
-                      onChange={(e) => {
-                        console.log('Input onChange:', e.target.value);
-                        setSearch(e.target.value);
-                      }}
-                      className="pl-7 h-7 text-xs"
-                      data-testid="search-input"
-                    />
-                  </div>
-                </div>
-
-                {/* Category (Multi-select with checkboxes) */}
-                <div>
-                  <label className="block text-xs font-medium mb-2">Categories</label>
-                  <div className="space-y-2 max-h-48 overflow-y-auto border border-border rounded-md p-2">
-                    {categories.length === 0 ? (
-                      <p className="text-xs text-muted-foreground">Loading categories...</p>
-                    ) : (
-                      categories.map(cat => (
-                        <div key={cat.value} className="flex items-center gap-2">
-                          <Checkbox
-                            id={`cat-${cat.value}`}
-                            checked={selectedCategories.includes(cat.value)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setSelectedCategories([...selectedCategories, cat.value]);
-                              } else {
-                                setSelectedCategories(selectedCategories.filter(c => c !== cat.value));
-                              }
-                            }}
-                            className="h-4 w-4"
-                          />
-                          <label
-                            htmlFor={`cat-${cat.value}`}
-                            className="text-xs cursor-pointer flex-1"
-                          >
-                            {cat.label}
-                          </label>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  {selectedCategories.length > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedCategories([])}
-                      className="w-full mt-2 text-xs h-6"
-                    >
-                      Clear all ({selectedCategories.length})
-                    </Button>
-                  )}
-                </div>
-
-                {/* Delivery Time */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">Delivery Time</label>
-                  <Select value={deliveryDays} onValueChange={setDeliveryDays}>
-                    <SelectTrigger data-testid="delivery-select" className="h-7 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Any Delivery</SelectItem>
-                      <SelectItem value="1">24 hours</SelectItem>
-                      <SelectItem value="3">3 days</SelectItem>
-                      <SelectItem value="7">1 week</SelectItem>
-                      <SelectItem value="14">2 weeks</SelectItem>
-                      <SelectItem value="21">3 weeks</SelectItem>
-                      <SelectItem value="30">1 month</SelectItem>
-                      <SelectItem value="60">2 months</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Sort By */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">Sort By</label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-testid="sort-select" className="h-7 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="rating">Highest Rated</SelectItem>
-                      <SelectItem value="price-low">Price: Low to High</SelectItem>
-                      <SelectItem value="price-high">Price: High to Low</SelectItem>
-                      <SelectItem value="delivery">Fastest Delivery</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Price Range */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">Price Range</label>
-                  <div className="px-1 py-1 border border-border rounded bg-background">
-                    <Slider
-                      value={priceRange}
-                      onValueChange={setPriceRange}
-                      max={10000}
-                      step={50}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>${priceRange[0]}</span>
-                      <span>${priceRange[1]}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-
+        <div>
           {/* Results Section */}
-          <div className="flex-1 min-w-0 order-1 lg:order-2">
+          <div className="w-full">
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
             initial="hidden"
@@ -650,16 +520,6 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
             {project.title}
           </h3>
         </Link>
-
-        {/* Ratings */}
-        <div className="flex items-center gap-1 mb-2">
-          {[...Array(5)].map((_, i) => (
-            <Star key={i} className={`h-3 w-3 ${i < Math.floor(project.rating || 4.5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-          ))}
-          <span className="text-xs text-muted-foreground ml-1">
-            ({project.rating?.toFixed(1) || '4.5'}) · {project.totalReviews || 0} reviews
-          </span>
-        </div>
 
         {/* Simple Description */}
         <div className="flex-1 mb-4">
