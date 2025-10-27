@@ -1,0 +1,4 @@
+Force rebuild timestamp: 2025-10-27 22:05:00
+Removing all cached builds and forcing fresh compilation.
+contracts.controller.full.ts has been permanently deleted.
+
