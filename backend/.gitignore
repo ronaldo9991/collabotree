@@ -13,8 +13,3 @@ test.db
 .railway
 build/
 coverage/
-
-# Exclude problematic files
-src/controllers/contracts.controller.full.ts
-src/controllers/contracts.controller.full.js
-
