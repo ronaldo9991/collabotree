@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useRouter } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -17,9 +17,10 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
 
   const navigation = [
     { name: "Home", href: "/", icon: Home, show: true },
@@ -39,10 +40,36 @@ export function Layout({ children }: LayoutProps) {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
+  // Scroll detection for navbar styling
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 24);
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location]);
+
+  // Helper function for navigation with scroll to top
+  const handleNavigation = (href: string) => {
+    navigate(href);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setMobileMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card bg-card/80 border-b border-border backdrop-blur-12">
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'bg-white/70 dark:bg-neutral-900/60 backdrop-blur-md shadow-md border-b border-border' 
+          : 'bg-transparent border-b border-transparent'
+      }`}>
         <div className="container-unified">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -57,14 +84,16 @@ export function Layout({ children }: LayoutProps) {
             <div className="hidden lg:flex items-center gap-6">
               {navigation.map((item) => (
                 item.show && (
-                  <Link
+                  <button
                     key={item.name}
-                    href={item.href}
-                    className="text-sm font-medium text-foreground hover:text-primary transition-colors px-2 py-1 rounded-md hover:bg-muted/20"
+                    onClick={() => handleNavigation(item.href)}
+                    className={`text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-muted/20 ${
+                      location === item.href ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                    }`}
                     data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {item.name}
-                  </Link>
+                  </button>
                 )
               ))}
             </div>
@@ -99,16 +128,15 @@ export function Layout({ children }: LayoutProps) {
                     <nav className="flex flex-col gap-2 flex-1">
                       {navigation.map((item) => (
                         item.show && (
-                          <Link
+                          <button
                             key={item.name}
-                            href={item.href}
-                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item"
-                            onClick={() => setMobileMenuOpen(false)}
+                            onClick={() => handleNavigation(item.href)}
+                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item w-full text-left"
                             data-testid={`mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                           >
                             <item.icon className="h-5 w-5 flex-shrink-0 text-primary" />
                             {item.name}
-                          </Link>
+                          </button>
                         )
                       ))}
                       
@@ -120,15 +148,14 @@ export function Layout({ children }: LayoutProps) {
                         <div className="text-sm font-semibold text-primary/70 px-4 py-2 uppercase tracking-wide">Demo Dashboards</div>
                         {dashboardNavigation.map((item) => (
                           item.show && (
-                            <Link
+                            <button
                               key={item.name}
-                              href={item.href}
-                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item"
-                              onClick={() => setMobileMenuOpen(false)}
+                              onClick={() => handleNavigation(item.href)}
+                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item w-full text-left"
                             >
                               <item.icon className="h-5 w-5 flex-shrink-0 text-primary" />
                               {item.name}
-                            </Link>
+                            </button>
                           )
                         ))}
                       </div>
@@ -196,22 +223,18 @@ export function Layout({ children }: LayoutProps) {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard" className="cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Dashboard</span>
-                      </Link>
+                    <DropdownMenuItem onClick={() => handleNavigation("/dashboard")} className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={
-                        user.role === 'STUDENT' ? '/dashboard/student/settings' :
-                        user.role === 'BUYER' ? '/dashboard/buyer/settings' :
-                        user.role === 'ADMIN' ? '/dashboard/admin/settings' :
-                        '/profile'
-                      } className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </Link>
+                    <DropdownMenuItem onClick={() => handleNavigation(
+                      user.role === 'STUDENT' ? '/dashboard/student/settings' :
+                      user.role === 'BUYER' ? '/dashboard/buyer/settings' :
+                      user.role === 'ADMIN' ? '/dashboard/admin/settings' :
+                      '/profile'
+                    )} className="cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout} className="cursor-pointer">
@@ -225,12 +248,10 @@ export function Layout({ children }: LayoutProps) {
                   variant="default" 
                   size="sm"
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  asChild
+                  onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
-                  <Link href="/signin">
-                    Sign In
-                  </Link>
+                  Sign In
                 </Button>
               )}
             </div>

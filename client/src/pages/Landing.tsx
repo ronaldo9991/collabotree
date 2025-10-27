@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare, RefreshCw } from "lucide-react";
+import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "wouter";
 import { Footer } from "@/components/Footer";
 import { api } from "@/lib/api";
@@ -18,17 +18,16 @@ export default function Landing() {
   const [newProjects, setNewProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
-  // Manual refresh function
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      await fetchProjects();
-    } finally {
-      setRefreshing(false);
-    }
-  };
+  // Debounce search query (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Fetch projects from backend
   const fetchProjects = async () => {
@@ -143,8 +142,8 @@ export default function Landing() {
   };
 
   // Handle search and navigate to marketplace
-  const handleSearch = () => {
-    const trimmedQuery = searchQuery.trim();
+  const handleSearch = useCallback(() => {
+    const trimmedQuery = debouncedSearchQuery.trim();
     console.log('🚀 Hero search triggered. Query:', trimmedQuery);
     if (trimmedQuery) {
       const url = `/marketplace?search=${encodeURIComponent(trimmedQuery)}`;
@@ -154,7 +153,7 @@ export default function Landing() {
       console.log('   Empty search, navigating to marketplace');
       setLocation('/marketplace');
     }
-  };
+  }, [debouncedSearchQuery, setLocation]);
 
   // Handle popular search terms
   const handlePopularSearch = (term: string) => {
@@ -266,16 +265,16 @@ export default function Landing() {
               {/* Left Content - Hero Text */}
               <motion.div
                 className="space-y-8 text-center lg:text-left"
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
               >
                 {/* Main Heading */}
                 <motion.div
                   className="space-y-4"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
                 >
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] text-white">
                     Hire{" "}
@@ -308,13 +307,13 @@ export default function Landing() {
                 {/* CTA Buttons */}
                 <motion.div
                   className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
+                  transition={{ duration: 0.15, delay: 0.1, ease: "easeOut" }}
                 >
                   <Button
                     size="lg"
-                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
+                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/20 transition-all duration-200 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
                     asChild
                   >
                     <Link href="/signin">
@@ -325,7 +324,7 @@ export default function Landing() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
+                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
                     asChild
                   >
                     <Link href="/signin">
@@ -340,7 +339,7 @@ export default function Landing() {
                   className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.6 }}
+                  transition={{ duration: 0.15, delay: 0.2, ease: "easeOut" }}
                 >
                   <div className="flex items-center gap-2 text-white/80 text-sm">
                     <CheckCircle className="w-4 h-4 text-white" />
@@ -360,9 +359,9 @@ export default function Landing() {
               {/* Right Content - Enhanced Search Card */}
               <motion.div
                 className="relative"
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                transition={{ duration: 0.18, delay: 0.1, ease: "easeOut" }}
               >
                 {/* Glowing background effect */}
                 <div className="absolute inset-0 bg-white/10 rounded-3xl blur-3xl"></div>
@@ -384,7 +383,7 @@ export default function Landing() {
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                       <Input
                         placeholder="Try: Web Design, Logo, Data Analysis..."
-                        className="h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background/50 text-base font-medium transition-all"
+                        className="h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background text-foreground placeholder:text-muted-foreground text-base font-medium transition-all"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => {
@@ -466,25 +465,60 @@ export default function Landing() {
             </div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1 }}
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="flex flex-col items-center gap-2 text-white/60"
-          >
-            <span className="text-xs font-medium">Scroll to explore</span>
-            <ChevronRight className="w-5 h-5 rotate-90" />
-          </motion.div>
-        </motion.div>
       </section>
 
+      {/* Popular Categories Section */}
+      <section className="section-padding-y bg-gradient-to-br from-accent/5 via-background to-primary/5">
+        <div className="container-unified">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Popular Categories</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Explore our most sought-after project types
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+            initial="hidden"
+            whileInView="visible"
+            variants={containerVariants}
+            viewport={{ once: true }}
+          >
+            {[
+              { name: "Web Development", icon: Code, color: "from-blue-500 to-cyan-500" },
+              { name: "UI/UX Design", icon: Palette, color: "from-purple-500 to-pink-500" },
+              { name: "Data Analysis", icon: BarChart3, color: "from-green-500 to-emerald-500" },
+              { name: "Content Writing", icon: FileText, color: "from-orange-500 to-red-500" },
+              { name: "Mobile Apps", icon: Smartphone, color: "from-indigo-500 to-purple-500" },
+              { name: "Graphic Design", icon: PaintBucket, color: "from-pink-500 to-rose-500" }
+            ].slice(0, 6).map((category, index) => (
+              <motion.div key={index} variants={itemVariants}>
+                <button
+                  onClick={() => handlePopularSearch(category.name)}
+                  className="w-full group"
+                >
+                  <Card className="glass-card bg-card/50 border-border/50 hover:shadow-xl transition-all duration-300 backdrop-blur-12 overflow-hidden h-full">
+                    <CardContent className="p-6 text-center">
+                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`}>
+                        <category.icon className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-sm font-semibold group-hover:text-primary transition-colors">
+                        {category.name}
+                      </h3>
+                    </CardContent>
+                  </Card>
+                </button>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
 
       {/* Top Selection Section */}
       <section className="section-padding-y bg-background">
@@ -561,22 +595,22 @@ export default function Landing() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
-                  <CardContent className="p-4 md:p-5 xl:p-6 flex-1 flex flex-col">
+                  <CardContent className="p-4 md:p-5 flex-1 flex flex-col">
                     {/* Category pill */}
-                    <Badge variant="secondary" className="w-fit rounded-full text-xs mb-3">
+                    <Badge variant="secondary" className="w-fit rounded-full text-xs mb-2">
                       {project.category}
                     </Badge>
                     
                     {/* Title */}
-                    <h3 className="font-bold text-lg line-clamp-2 mb-3">{project.title}</h3>
+                    <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
                     
                     {/* Description - Fixed height for consistency */}
-                    <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-3 flex-1">
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-2 flex-1">
                       {project.description}
                     </p>
                     
                     {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1.5 mb-4 min-h-[2rem]">
+                    <div className="flex flex-wrap gap-1 mb-3">
                       {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
@@ -589,8 +623,16 @@ export default function Landing() {
                       )}
                     </div>
                     
+                    {/* Ratings row */}
+                    <div className="flex items-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                      ))}
+                      <span className="text-xs text-muted-foreground ml-1">(4.8)</span>
+                    </div>
+                    
                     {/* Author row - Consistent spacing */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <Avatar className="h-8 w-8 flex-shrink-0">
                           <AvatarImage src={project.student.avatar} alt={project.student.name} />
@@ -613,7 +655,7 @@ export default function Landing() {
                     </div>
                     
                     {/* Bottom price bar - Always at bottom */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div className="flex items-center justify-between pt-3 border-t border-border/50">
                       <span className="text-lg font-semibold">{project.price}</span>
                       <Button 
                         variant="outline" 
@@ -701,19 +743,7 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <h2 className="text-3xl lg:text-4xl font-bold">New Projects</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="flex items-center gap-2"
-              >
-                <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-                {refreshing ? 'Refreshing...' : 'Refresh'}
-              </Button>
-            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">New Projects</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Fresh opportunities from our talented student community. Discover the latest projects and innovations from verified students worldwide.
             </p>
@@ -785,22 +815,22 @@ export default function Landing() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
-                  <CardContent className="p-4 md:p-5 xl:p-6 flex-1 flex flex-col">
+                  <CardContent className="p-4 md:p-5 flex-1 flex flex-col">
                     {/* Category pill */}
-                    <Badge variant="secondary" className="w-fit rounded-full text-xs mb-3">
+                    <Badge variant="secondary" className="w-fit rounded-full text-xs mb-2">
                       {project.category}
                     </Badge>
                     
                     {/* Title */}
-                    <h3 className="font-bold text-lg line-clamp-2 mb-3">{project.title}</h3>
+                    <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
                     
                     {/* Description - Fixed height for consistency */}
-                    <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-3 flex-1">
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-2 flex-1">
                       {project.description}
                     </p>
                     
                     {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1.5 mb-4 min-h-[2rem]">
+                    <div className="flex flex-wrap gap-1 mb-3">
                       {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
@@ -813,8 +843,16 @@ export default function Landing() {
                       )}
                     </div>
                     
+                    {/* Ratings row */}
+                    <div className="flex items-center gap-1 mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                      ))}
+                      <span className="text-xs text-muted-foreground ml-1">(4.8)</span>
+                    </div>
+                    
                     {/* Author row - Consistent spacing */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <Avatar className="h-8 w-8 flex-shrink-0">
                           <AvatarImage src={project.student.avatar} alt={project.student.name} />
@@ -837,7 +875,7 @@ export default function Landing() {
                     </div>
                     
                     {/* Bottom price bar - Always at bottom */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div className="flex items-center justify-between pt-3 border-t border-border/50">
                       <span className="text-lg font-semibold">{project.price}</span>
                       <Button 
                         variant="outline" 
@@ -889,6 +927,138 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* How to Hire Section */}
+      <section className="section-padding-y bg-background">
+        <div className="container-unified">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">How to Hire with CollaboTree</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Find and hire talented students in four simple steps
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+            initial="hidden"
+            whileInView="visible"
+            variants={containerVariants}
+            viewport={{ once: true }}
+          >
+            {[
+              { icon: Search, title: "Search & Browse", description: "Explore verified student profiles and services that match your needs" },
+              { icon: MessageSquare, title: "Connect & Discuss", description: "Message students directly to discuss project requirements and timelines" },
+              { icon: CheckSquare, title: "Review & Approve", description: "Review proposals, check portfolios, and approve the perfect candidate" },
+              { icon: CreditCard, title: "Secure Payment", description: "Pay securely with funds held in escrow until work is completed" }
+            ].map((step, index) => (
+              <motion.div key={index} variants={itemVariants}>
+                <Card className="glass-card bg-card/50 border-border/50 h-full hover:shadow-xl transition-all duration-300 backdrop-blur-12">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4">
+                      <step.icon className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm mb-3">
+                      {index + 1}
+                    </div>
+                    <h3 className="text-lg font-bold mb-2">{step.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
+            <Button 
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              asChild
+            >
+              <Link href="/how-it-works">
+                Learn More About Hiring
+              </Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* How to Offer Section */}
+      <section className="section-padding-y bg-gradient-to-br from-accent/5 via-primary/5 to-secondary/5">
+        <div className="container-unified">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">How to Offer Your Project with CollaboTree</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Start earning by offering your skills in four easy steps
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+            initial="hidden"
+            whileInView="visible"
+            variants={containerVariants}
+            viewport={{ once: true }}
+          >
+            {[
+              { icon: UserCheck, title: "Get Verified", description: "Complete your profile with university credentials and portfolio" },
+              { icon: Package, title: "Create Service", description: "List your services with clear descriptions, pricing, and delivery times" },
+              { icon: MessageCircle, title: "Receive Requests", description: "Get notified when buyers are interested in your services" },
+              { icon: TrendingUp, title: "Deliver & Earn", description: "Complete projects, build your reputation, and earn income" }
+            ].map((step, index) => (
+              <motion.div key={index} variants={itemVariants}>
+                <Card className="glass-card bg-card/50 border-border/50 h-full hover:shadow-xl transition-all duration-300 backdrop-blur-12">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center mx-auto mb-4">
+                      <step.icon className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondary/10 text-secondary font-bold text-sm mb-3">
+                      {index + 1}
+                    </div>
+                    <h3 className="text-lg font-bold mb-2">{step.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
+            <Button 
+              size="lg"
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              asChild
+            >
+              <Link href="/how-it-works">
+                Learn More About Selling
+              </Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="section-padding-y bg-muted/5 overflow-hidden">
         <div className="container-unified">
@@ -918,57 +1088,99 @@ export default function Landing() {
               <motion.div 
                 key={index} 
                 variants={itemVariants}
-                className="group"
-                whileHover={{ 
-                  scale: 1.05,
-                  rotateY: 5,
-                  transition: { duration: 0.3 }
-                }}
+                className="group relative"
               >
-                <Card className="glass-card bg-card/50 border-border/50 h-full hover:shadow-2xl transition-all duration-700 backdrop-blur-12 relative overflow-hidden cursor-pointer" data-testid={`feature-${index}`}>
-                  {/* Animated gradient background */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-all duration-700`}></div>
+                {/* Unique Shape Background */}
+                <motion.div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient.replace('from-', 'from-').replace('to-', 'to-')}/20 opacity-20 blur-xl`}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.1, 0.3, 0.1],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                
+                {/* Card Container matching About page style */}
+                <motion.div
+                  className="relative p-8 rounded-3xl bg-card/80 backdrop-blur-12 border border-border/30 overflow-hidden h-full"
+                  whileHover={{ 
+                    scale: 1.05,
+                    rotateY: 5,
+                    rotateX: 5
+                  }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    perspective: "1000px"
+                  }}
+                  data-testid={`feature-${index}`}
+                >
+                  {/* Animated Shape Overlay */}
+                  <motion.div
+                    className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.gradient} opacity-10`}
+                    animate={{
+                      rotate: [0, 360],
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                    style={{
+                      clipPath: "circle(50%)"
+                    }}
+                  />
                   
-                  {/* Floating particles effect */}
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className={`absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-20 rounded-full blur-xl transition-all duration-700 transform group-hover:scale-150 group-hover:rotate-45`}></div>
-                    <div className={`absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-15 rounded-full blur-xl transition-all duration-700 transform group-hover:scale-125 group-hover:-rotate-45`}></div>
-                  </div>
-                  
-                  <CardContent className="p-8 relative z-10">
-                    {/* Icon with animation */}
-                    <motion.div 
-                      className="mb-4"
-                      whileHover={{ 
-                        scale: 1.2,
-                        rotate: 10,
-                        transition: { duration: 0.3 }
+                  {/* Icon with 3D Effect matching About page */}
+                  <motion.div
+                    className={`relative z-10 w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-2xl`}
+                    whileHover={{ 
+                      rotateY: 180,
+                      scale: 1.1
+                    }}
+                    transition={{ duration: 0.6 }}
+                    style={{
+                      transformStyle: "preserve-3d"
+                    }}
+                  >
+                    <motion.div
+                      className="text-white"
+                      animate={{
+                        rotate: [0, 360],
+                      }}
+                      transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: "linear"
                       }}
                     >
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.gradient} flex items-center justify-center mx-auto`}>
-                        <feature.icon className="w-8 h-8 text-white" />
-                      </div>
+                      <feature.icon className="h-8 w-8" />
                     </motion.div>
-                    
-                    {/* Highlight badge with pulse animation */}
-                    <motion.div 
-                      className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 mb-6"
+                  </motion.div>
+                  
+                  {/* Content matching About page style */}
+                  <div className="relative z-10 text-center">
+                    <motion.h3 
+                      className="text-xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
                       whileHover={{ scale: 1.05 }}
                     >
-                      <span className="text-xs font-medium text-primary">{feature.highlight}</span>
-                    </motion.div>
-                    
-                    {/* Content with enhanced typography */}
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-secondary transition-all duration-500">
-                        {feature.title}
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed text-sm group-hover:text-foreground/80 transition-colors duration-500">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                      {feature.title}
+                    </motion.h3>
+                    <motion.p 
+                      className="text-muted-foreground leading-relaxed text-sm"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                    >
+                      {feature.description}
+                    </motion.p>
+                  </div>
+                </motion.div>
               </motion.div>
             ))}
           </motion.div>

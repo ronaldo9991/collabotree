@@ -147,10 +147,10 @@ export default function Services() {
           className="text-center mb-12"
         >
           <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
-            Services Marketplace
+            Project Types Marketplace
           </Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            Find the Perfect Service
+            Find the Perfect Project Type
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Browse and hire talented students for your projects
@@ -170,7 +170,7 @@ export default function Services() {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                   <Input
-                    placeholder="Search services, skills, or keywords..."
+                    placeholder="Search project types, skills, or keywords..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-12 text-lg py-6 bg-background/50 border-border/50 focus:border-primary/50"
@@ -300,9 +300,9 @@ export default function Services() {
           ) : (
             <div className="col-span-full text-center py-12">
               <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No services found</h3>
+              <h3 className="text-lg font-semibold mb-2">No project types found</h3>
               <p className="text-muted-foreground">
-                Try adjusting your search terms or browse all services.
+                Try adjusting your search terms or browse all project types.
               </p>
             </div>
           )}

@@ -18,7 +18,11 @@ import {
   Package,
   User,
   ArrowLeft,
-  ShoppingCart
+  ShoppingCart,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Image as ImageIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { mockServicesWithOwners } from "@/data/mockData";
@@ -29,9 +33,19 @@ export default function ServiceDetail() {
   const { toast } = useToast();
   const [requirements, setRequirements] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   // Find service from mock data
   const service = mockServicesWithOwners.find(s => s.id === id);
+
+  // Mock portfolio images (in a real app, these would come from the service data)
+  const portfolioImages = [
+    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop',
+  ];
 
   const handleOrder = () => {
     toast({
@@ -46,6 +60,23 @@ export default function ServiceDetail() {
       title: isFavorite ? "Removed from Favorites" : "Added to Favorites",
       description: isFavorite ? "Service removed from your favorites." : "Service added to your favorites.",
     });
+  };
+
+  const handlePreviousImage = () => {
+    setSelectedImageIndex((prev) => (prev === 0 ? portfolioImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setSelectedImageIndex((prev) => (prev === portfolioImages.length - 1 ? 0 : prev + 1));
+  };
+
+  const openLightbox = (index: number) => {
+    setSelectedImageIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
   };
 
   if (!service) {
@@ -64,7 +95,99 @@ export default function ServiceDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8 px-4 sm:px-6 lg:px-8">
+    <>
+      {/* Lightbox Modal */}
+      {isLightboxOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+          onClick={closeLightbox}
+        >
+          {/* Close Button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white rounded-full p-2 transition-colors"
+            aria-label="Close lightbox"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          {/* Image Counter */}
+          <div className="absolute top-4 left-4 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium">
+            {selectedImageIndex + 1} / {portfolioImages.length}
+          </div>
+
+          {/* Previous Button */}
+          {portfolioImages.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePreviousImage();
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-colors"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-8 w-8" />
+            </button>
+          )}
+
+          {/* Main Image */}
+          <motion.img
+            key={selectedImageIndex}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2 }}
+            src={portfolioImages[selectedImageIndex]}
+            alt={`Portfolio ${selectedImageIndex + 1}`}
+            className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* Next Button */}
+          {portfolioImages.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNextImage();
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-colors"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-8 w-8" />
+            </button>
+          )}
+
+          {/* Thumbnail Strip */}
+          {portfolioImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-white/10 backdrop-blur-md p-2 rounded-lg">
+              {portfolioImages.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImageIndex(index);
+                  }}
+                  className={`relative w-16 h-16 rounded overflow-hidden transition-all ${
+                    selectedImageIndex === index 
+                      ? 'ring-2 ring-white scale-110' 
+                      : 'opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img 
+                    src={image}
+                    alt={`Thumbnail ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Breadcrumb */}
         <div className="mb-8">
@@ -133,12 +256,82 @@ export default function ServiceDetail() {
                     </Button>
                   </div>
 
-                  {/* Service Image Placeholder */}
-                  <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center mb-6">
-                    <div className="text-center">
-                      <Package className="h-16 w-16 text-white/60 mx-auto mb-4" />
-                      <p className="text-white/80 font-medium">Service Preview</p>
+                  {/* Portfolio Gallery */}
+                  <div className="space-y-4 mb-6">
+                    {/* Main Image */}
+                    <div 
+                      className="relative aspect-video bg-muted/10 rounded-lg overflow-hidden cursor-pointer group"
+                      onClick={() => openLightbox(selectedImageIndex)}
+                    >
+                      <img 
+                        src={portfolioImages[selectedImageIndex]}
+                        alt={`Portfolio ${selectedImageIndex + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 dark:bg-black/80 px-4 py-2 rounded-full flex items-center gap-2">
+                          <ImageIcon className="h-4 w-4" />
+                          <span className="text-sm font-medium">View Full Size</span>
+                        </div>
+                      </div>
+                      
+                      {/* Navigation Arrows on Main Image */}
+                      {portfolioImages.length > 1 && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePreviousImage();
+                            }}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-black/80 hover:bg-white dark:hover:bg-black rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            aria-label="Previous image"
+                          >
+                            <ChevronLeft className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleNextImage();
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-black/80 hover:bg-white dark:hover:bg-black rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            aria-label="Next image"
+                          >
+                            <ChevronRight className="h-5 w-5" />
+                          </button>
+                        </>
+                      )}
+                      
+                      {/* Image Counter */}
+                      <div className="absolute bottom-3 right-3 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                        {selectedImageIndex + 1} / {portfolioImages.length}
+                      </div>
                     </div>
+                    
+                    {/* Thumbnail Gallery */}
+                    {portfolioImages.length > 1 && (
+                      <div className="grid grid-cols-4 gap-3">
+                        {portfolioImages.map((image, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setSelectedImageIndex(index)}
+                            className={`relative aspect-video rounded-md overflow-hidden transition-all duration-200 ${
+                              selectedImageIndex === index 
+                                ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' 
+                                : 'hover:opacity-80'
+                            }`}
+                          >
+                            <img 
+                              src={image}
+                              alt={`Thumbnail ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {selectedImageIndex === index && (
+                              <div className="absolute inset-0 bg-primary/20" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Description */}
@@ -304,5 +497,6 @@ export default function ServiceDetail() {
         </div>
       </div>
     </div>
+    </>
   );
 }

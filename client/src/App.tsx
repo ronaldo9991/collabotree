@@ -15,6 +15,8 @@ import HowItWorks from "@/pages/HowItWorks";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import SignIn from "@/pages/SignIn";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/pages/Dashboard";
 import StudentDashboard from "@/pages/student/Dashboard";
 import ServiceCreate from "@/pages/student/ServiceCreate";
@@ -43,6 +45,8 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/signin" component={SignIn} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
       <Route path="/admin/signin" component={AdminSignIn} />
       <Route path="/test-login" component={TestLogin} />
 

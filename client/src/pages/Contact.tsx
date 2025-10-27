@@ -325,75 +325,55 @@ export default function Contact() {
               </Card>
             </motion.div>
 
-            {/* Additional Information */}
+            {/* Email Us Panel */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="space-y-8"
             >
-              {/* Why Contact Us */}
-              <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+              <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 h-full">
                 <CardHeader>
-                  <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                    Why Contact Us?
+                  <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                    <Mail className="h-6 w-6 text-primary" />
+                    Email Us
                   </CardTitle>
+                  <p className="text-muted-foreground">
+                    For direct inquiries or detailed requests, reach us via email.
+                  </p>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Quick response time - usually within 24 hours</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Dedicated support team ready to assist you</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Expert guidance on platform features and best practices</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Partnership opportunities for universities and organizations</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              {/* Quick Links */}
-              <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-primary" />
-                    Quick Links
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    <li>
-                      <a href="/marketplace" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
-                        Browse Services →
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/how-it-works" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
-                        How It Works →
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/about" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
-                        About Us →
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/dashboard/student" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
-                        Student Dashboard →
-                      </a>
-                    </li>
-                  </ul>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                      <Mail className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-1">General Inquiries</p>
+                        <a href="mailto:hello@collabotree.com" className="text-primary hover:text-primary/80 font-semibold">
+                          hello@collabotree.com
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                      <Users className="h-5 w-5 text-primary flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-1">Support Team</p>
+                        <a href="mailto:support@collabotree.com" className="text-primary hover:text-primary/80 font-semibold">
+                          support@collabotree.com
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 p-4 bg-muted/20 rounded-lg">
+                      <h4 className="font-semibold mb-2 flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                        Quick Response
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        We typically respond within 24 hours during business days.
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>

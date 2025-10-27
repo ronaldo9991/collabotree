@@ -7,8 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Clock, CheckCircle, MessageCircle, DollarSign, Calendar, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Clock, CheckCircle, MessageCircle, DollarSign, Calendar, Loader2, X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +27,20 @@ export default function ProjectDetail() {
     cover_letter: '',
     bid_amount: '',
   });
+  
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Mock portfolio images - in production, these would come from the project data
+  const portfolioImages = project?.cover_url ? [
+    project.cover_url,
+    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop',
+  ] : [];
 
   const projectId = params?.id;
 
@@ -169,16 +183,122 @@ export default function ProjectDetail() {
               </CardHeader>
             </Card>
 
-            {/* Project Image */}
-            {project.cover_url && (
-              <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 overflow-hidden">
-                <img 
-                  src={project.cover_url} 
-                  alt={project.title}
-                  className="w-full h-64 object-cover"
-                />
+            {/* Portfolio Gallery */}
+            {portfolioImages.length > 0 && (
+              <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Maximize2 className="h-5 w-5" />
+                    Portfolio Gallery
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {portfolioImages.map((image, index) => (
+                      <motion.div
+                        key={index}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative aspect-video rounded-lg overflow-hidden cursor-pointer group border border-border/30"
+                        onClick={() => {
+                          setCurrentImageIndex(index);
+                          setLightboxOpen(true);
+                        }}
+                      >
+                        <img
+                          src={image}
+                          alt={`Portfolio ${index + 1}`}
+                          className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
+                          <Maximize2 className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </CardContent>
               </Card>
             )}
+            
+            {/* Lightbox Dialog */}
+            <AnimatePresence>
+              {lightboxOpen && (
+                <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+                  <DialogContent className="max-w-6xl p-0 bg-black/95 border-none">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.2 }}
+                      className="relative"
+                    >
+                      {/* Close Button */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 z-50 bg-black/50 hover:bg-black/70 text-white"
+                        onClick={() => setLightboxOpen(false)}
+                      >
+                        <X className="h-6 w-6" />
+                      </Button>
+
+                      {/* Navigation Buttons */}
+                      {portfolioImages.length > 1 && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/70 text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCurrentImageIndex((prev) => 
+                                prev === 0 ? portfolioImages.length - 1 : prev - 1
+                              );
+                            }}
+                          >
+                            <ChevronLeft className="h-8 w-8" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 z-50 bg-black/50 hover:bg-black/70 text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCurrentImageIndex((prev) => 
+                                prev === portfolioImages.length - 1 ? 0 : prev + 1
+                              );
+                            }}
+                          >
+                            <ChevronRight className="h-8 w-8" />
+                          </Button>
+                        </>
+                      )}
+
+                      {/* Image Display */}
+                      <div className="relative w-full h-[80vh] flex items-center justify-center">
+                        <AnimatePresence mode="wait">
+                          <motion.img
+                            key={currentImageIndex}
+                            src={portfolioImages[currentImageIndex]}
+                            alt={`Portfolio ${currentImageIndex + 1}`}
+                            className="max-w-full max-h-full object-contain"
+                            initial={{ opacity: 0, x: 100 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -100 }}
+                            transition={{ duration: 0.2 }}
+                          />
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Image Counter */}
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
+                        {currentImageIndex + 1} / {portfolioImages.length}
+                      </div>
+                    </motion.div>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </AnimatePresence>
 
             {/* Project Description */}
             <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30">

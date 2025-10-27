@@ -190,6 +190,11 @@ export default function SignIn() {
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
+                    <div className="text-right">
+                      <Link href="/forgot-password" className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors">
+                        Forgot password?
+                      </Link>
+                    </div>
                   </div>
 
                   <Button 

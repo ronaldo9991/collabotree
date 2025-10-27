@@ -29,13 +29,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
 
+type OrderStatus = 'PENDING' | 'PAID' | 'IN_PROGRESS' | 'DELIVERED' | 'COMPLETED' | 'CANCELLED' | 'DISPUTED';
+
 interface OrderWithDetails {
   id: string;
   project_id: string;
   buyer_id: string;
   seller_id: string;
   type: 'purchase' | 'hire';
-  status: 'pending' | 'paid' | 'accepted' | 'cancelled' | 'refunded';
+  status: OrderStatus;
   amount_cents: number;
   created_at: string;
   paid_at: string | null;
@@ -104,16 +106,18 @@ export default function BuyerOrders() {
     return matchesSearch && order.status === activeTab;
   });
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      pending: { variant: "secondary" as const, icon: Clock, text: "Pending Payment" },
-      paid: { variant: "default" as const, icon: CheckCircle, text: "Paid" },
-      accepted: { variant: "default" as const, icon: CheckCircle, text: "Completed" },
-      cancelled: { variant: "destructive" as const, icon: XCircle, text: "Cancelled" },
-      refunded: { variant: "outline" as const, icon: AlertTriangle, text: "Refunded" }
+  const getStatusBadge = (status: OrderStatus) => {
+    const statusConfig: Record<OrderStatus, { variant: "default" | "secondary" | "destructive" | "outline"; icon: any; text: string }> = {
+      PENDING: { variant: "secondary", icon: Clock, text: "Pending Payment" },
+      PAID: { variant: "default", icon: CheckCircle, text: "Paid" },
+      IN_PROGRESS: { variant: "default", icon: Package, text: "In Progress" },
+      DELIVERED: { variant: "default", icon: CheckCircle, text: "Delivered" },
+      COMPLETED: { variant: "default", icon: CheckCircle, text: "Completed" },
+      CANCELLED: { variant: "destructive", icon: XCircle, text: "Cancelled" },
+      DISPUTED: { variant: "outline", icon: AlertTriangle, text: "Disputed" }
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    const config = statusConfig[status] || statusConfig.PENDING;
     const Icon = config.icon;
 
     return (
@@ -128,31 +132,31 @@ export default function BuyerOrders() {
     try {
       switch (action) {
         case 'pay':
-          await ordersApi.markOrderPaid(orderId);
+          await api.updateOrderStatus(orderId, { status: 'PAID' });
           toast({
             title: "Payment Confirmed",
-            description: "Order has been marked as paid.",
+            description: "Order has been marked as paid. The student will begin work soon.",
           });
           break;
-        case 'accept':
-          await ordersApi.acceptOrder(orderId);
+        case 'complete':
+          await api.updateOrderStatus(orderId, { status: 'COMPLETED' });
           toast({
-            title: "Order Accepted",
-            description: "Work has been accepted and completed.",
+            title: "Order Completed",
+            description: "Work has been accepted and payment will be released to the student.",
           });
           break;
         case 'cancel':
-          await api.cancelOrder(orderId);
+          await api.updateOrderStatus(orderId, { status: 'CANCELLED' });
           toast({
             title: "Order Cancelled",
             description: "Order has been cancelled.",
           });
           break;
-        case 'refund':
-          await ordersApi.requestRefund(orderId);
+        case 'dispute':
+          await api.createDispute(orderId, { reason: 'Buyer raised a dispute', description: 'Buyer is dissatisfied with the work' });
           toast({
-            title: "Refund Requested",
-            description: "Refund request has been submitted.",
+            title: "Dispute Raised",
+            description: "Your dispute has been submitted and will be reviewed by admin.",
           });
           break;
       }
@@ -173,8 +177,13 @@ export default function BuyerOrders() {
   const getOrderActions = (order: OrderWithDetails) => {
     const actions = [];
 
+    // Proper state transitions based on backend logic
+    // PENDING → PAID → IN_PROGRESS → DELIVERED → COMPLETED
+    // Any state can go to CANCELLED or DISPUTED
+    
     switch (order.status) {
-      case 'pending':
+      case 'PENDING':
+        // Buyer can pay or cancel
         actions.push(
           <Button
             key="pay"
@@ -196,17 +205,10 @@ export default function BuyerOrders() {
           </Button>
         );
         break;
-      case 'paid':
+        
+      case 'PAID':
+        // Waiting for student to start work
         actions.push(
-          <Button
-            key="accept"
-            size="sm"
-            onClick={() => handleOrderAction(order.id, 'accept')}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <CheckCircle className="h-4 w-4 mr-1" />
-            Accept Work
-          </Button>,
           <Button
             key="chat"
             size="sm"
@@ -218,17 +220,78 @@ export default function BuyerOrders() {
             Chat
           </Button>,
           <Button
-            key="refund"
+            key="dispute"
             size="sm"
             variant="outline"
-            onClick={() => handleOrderAction(order.id, 'refund')}
+            onClick={() => handleOrderAction(order.id, 'dispute')}
           >
             <AlertTriangle className="h-4 w-4 mr-1" />
-            Request Refund
+            Raise Dispute
           </Button>
         );
         break;
-      case 'accepted':
+        
+      case 'IN_PROGRESS':
+        // Student is working, buyer can chat and raise disputes
+        actions.push(
+          <Button
+            key="chat"
+            size="sm"
+            variant="outline"
+            onClick={() => navigate(`/chat/${order.id}`)}
+            className="text-primary border-primary hover:bg-primary/10"
+          >
+            <MessageCircle className="h-4 w-4 mr-1" />
+            Chat
+          </Button>,
+          <Button
+            key="dispute"
+            size="sm"
+            variant="outline"
+            onClick={() => handleOrderAction(order.id, 'dispute')}
+          >
+            <AlertTriangle className="h-4 w-4 mr-1" />
+            Raise Dispute
+          </Button>
+        );
+        break;
+        
+      case 'DELIVERED':
+        // Buyer can accept (complete) or request changes/dispute
+        actions.push(
+          <Button
+            key="complete"
+            size="sm"
+            onClick={() => handleOrderAction(order.id, 'complete')}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <CheckCircle className="h-4 w-4 mr-1" />
+            Accept & Complete
+          </Button>,
+          <Button
+            key="chat"
+            size="sm"
+            variant="outline"
+            onClick={() => navigate(`/chat/${order.id}`)}
+            className="text-primary border-primary hover:bg-primary/10"
+          >
+            <MessageCircle className="h-4 w-4 mr-1" />
+            Request Changes
+          </Button>,
+          <Button
+            key="dispute"
+            size="sm"
+            variant="outline"
+            onClick={() => handleOrderAction(order.id, 'dispute')}
+          >
+            <AlertTriangle className="h-4 w-4 mr-1" />
+            Raise Dispute
+          </Button>
+        );
+        break;
+        
+      case 'COMPLETED':
+        // Order complete, can leave review
         actions.push(
           <Button
             key="chat"
@@ -253,6 +316,38 @@ export default function BuyerOrders() {
             Rate & Review
           </Button>
         );
+        break;
+        
+      case 'DISPUTED':
+        // Under dispute, limited actions
+        actions.push(
+          <Button
+            key="chat"
+            size="sm"
+            variant="outline"
+            onClick={() => navigate(`/chat/${order.id}`)}
+            className="text-primary border-primary hover:bg-primary/10"
+          >
+            <MessageCircle className="h-4 w-4 mr-1" />
+            Chat
+          </Button>,
+          <Button
+            key="view-dispute"
+            size="sm"
+            variant="outline"
+            onClick={() => toast({
+              title: "Dispute Details",
+              description: "View dispute status and resolution.",
+            })}
+          >
+            <AlertTriangle className="h-4 w-4 mr-1" />
+            View Dispute
+          </Button>
+        );
+        break;
+        
+      case 'CANCELLED':
+        // No actions for cancelled orders
         break;
     }
 
@@ -332,13 +427,14 @@ export default function BuyerOrders() {
           transition={{ delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="all">All Orders</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="paid">Paid</TabsTrigger>
-              <TabsTrigger value="accepted">Completed</TabsTrigger>
-              <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
-              <TabsTrigger value="refunded">Refunded</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-7 gap-1 h-auto p-1">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
+              <TabsTrigger value="PENDING" className="text-xs sm:text-sm">Pending</TabsTrigger>
+              <TabsTrigger value="PAID" className="text-xs sm:text-sm">Paid</TabsTrigger>
+              <TabsTrigger value="IN_PROGRESS" className="text-xs sm:text-sm">In Progress</TabsTrigger>
+              <TabsTrigger value="DELIVERED" className="text-xs sm:text-sm">Delivered</TabsTrigger>
+              <TabsTrigger value="COMPLETED" className="text-xs sm:text-sm">Completed</TabsTrigger>
+              <TabsTrigger value="CANCELLED" className="text-xs sm:text-sm">Cancelled</TabsTrigger>
             </TabsList>
 
             <TabsContent value={activeTab} className="mt-6">

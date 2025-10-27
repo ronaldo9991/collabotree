@@ -105,3 +105,6 @@ Once fixed, you should be able to:
 
 ---
 **Status**: App is deployed and running, just needs environment variables and database setup! 🚀
+
+
+

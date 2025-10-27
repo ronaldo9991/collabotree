@@ -238,7 +238,13 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   }
 
   const deliverables = JSON.parse(contract.deliverables || '[]');
-  const userRole = user?.id === contract.buyerId ? 'BUYER' : 'STUDENT';
+  const userRole = user?.id === contract.buyer.id ? 'BUYER' : 'STUDENT';
+  
+  // Determine available actions based on contract state
+  const canSign = !contract.isSignedByBuyer || !contract.isSignedByStudent;
+  const canPay = contract.isSignedByBuyer && contract.isSignedByStudent && contract.paymentStatus === 'PENDING';
+  const canUpdateProgress = contract.status === 'ACTIVE' && contract.paymentStatus === 'PAID';
+  const canComplete = contract.status === 'ACTIVE' && contract.progressStatus === 'IN_PROGRESS' && contract.paymentStatus === 'PAID';
 
   return (
     <Card className="w-full">
@@ -381,7 +387,7 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
                 </div>
               )}
 
-              {contract.status === 'ACTIVE' && (
+              {canUpdateProgress && (
                 <div>
                   <h4 className="font-semibold mb-2">Update Progress</h4>
                   <div className="space-y-2">
@@ -435,28 +441,34 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
                 </div>
               )}
 
-              {contract.isSignedByBuyer && 
-               contract.isSignedByStudent && 
-               contract.paymentStatus === 'PENDING' && (
-                <Button 
-                  onClick={handleProcessPayment} 
-                  disabled={processing}
-                  className="w-full"
-                  size="lg"
-                >
-                  {processing ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <CreditCard className="h-4 w-4 mr-2" />
-                  )}
-                  Pay ${(contract.priceCents / 100).toFixed(2)} (Escrow)
-                </Button>
+              {canPay && (
+                <div>
+                  <h4 className="font-semibold mb-2">Escrow Payment</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Funds will be held in escrow until project completion
+                  </p>
+                  <Button 
+                    onClick={handleProcessPayment} 
+                    disabled={processing}
+                    className="w-full"
+                    size="lg"
+                  >
+                    {processing ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <CreditCard className="h-4 w-4 mr-2" />
+                    )}
+                    Pay ${(contract.priceCents / 100).toFixed(2)} (Escrow)
+                  </Button>
+                </div>
               )}
 
-              {contract.status === 'ACTIVE' && 
-               contract.progressStatus === 'IN_PROGRESS' && (
+              {canComplete && (
                 <div>
                   <h4 className="font-semibold mb-2">Mark as Completed</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Completing the contract will release payment to the student
+                  </p>
                   <div className="space-y-2">
                     <Textarea
                       placeholder="Add completion notes (optional)..."

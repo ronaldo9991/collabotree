@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useLocation } from "wouter";
 import { Search, Filter, Star, Clock, FolderSync, Heart, MapPin, Sparkles, TrendingUp, Code, Smartphone, PaintBucket, Loader2, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -40,26 +41,14 @@ export default function ExploreTalent() {
   const [location] = useLocation();
   
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [deliveryDays, setDeliveryDays] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [categories, setCategories] = useState([
-    { value: "all", label: "All Categories" }
-  ]);
+  const [categories, setCategories] = useState<Array<{ value: string; label: string }>>([]);
 
-  // Manual refresh function
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      await fetchData(true);
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   // Fetch data function
   const fetchData = useCallback(async (isBackground = false) => {
@@ -70,7 +59,6 @@ export default function ExploreTalent() {
       
       const filters = {
         search: search || undefined,
-        category: category !== 'all' ? category : undefined,
         minBudget: priceRange[0] > 0 ? priceRange[0] : undefined,
         maxBudget: priceRange[1] < 10000 ? priceRange[1] : undefined,
       };
@@ -194,7 +182,7 @@ export default function ExploreTalent() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, priceRange, toast]);
+  }, [search, priceRange, toast]);
 
   // Initialize and sync search from URL
   useEffect(() => {
@@ -220,10 +208,10 @@ export default function ExploreTalent() {
   useEffect(() => {
     console.log('📊 Fetching data triggered');
     console.log('   Search term:', search ? `"${search}"` : '(empty)');
-    console.log('   Category:', category);
+    console.log('   Selected categories:', selectedCategories);
     console.log('   Price range:', priceRange);
     fetchData();
-  }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
+  }, [search, priceRange[0], priceRange[1], sortBy, fetchData]);
 
 
 
@@ -242,10 +230,7 @@ export default function ExploreTalent() {
       label: cat,
     }));
 
-    setCategories([
-      { value: "all", label: "All Categories" },
-      ...categoryOptions,
-    ]);
+    setCategories(categoryOptions);
   }, [projects]);
 
   // Helper function for slugify
@@ -257,14 +242,20 @@ export default function ExploreTalent() {
     const price = project.budget || 0;
     const priceMatch = price >= priceRange[0] && price <= priceRange[1];
     
-    // Category filter
+    // Category filter (multi-select)
     let categoryMatch = true;
-    if (category && category !== 'all') {
-      const categorySlug = category.toLowerCase();
-      categoryMatch = (project.tags?.some((tag: string) => 
-        tag.toLowerCase().replace(/\s+/g, '-') === categorySlug || 
-        tag.toLowerCase().includes(categorySlug.replace(/-/g, ' '))
-      ) ?? false);
+    if (selectedCategories.length > 0) {
+      categoryMatch = project.tags?.some((tag: string) => 
+        selectedCategories.includes(tag.toLowerCase().replace(/\s+/g, '-'))
+      ) ?? false;
+    }
+    
+    // Delivery time filter
+    let deliveryMatch = true;
+    if (deliveryDays !== 'all') {
+      const estimatedDeliveryDays = Math.max(1, Math.floor((project.budget || 0) / 200));
+      const maxDays = parseInt(deliveryDays);
+      deliveryMatch = estimatedDeliveryDays <= maxDays;
     }
     
     // Search filter - check if search term matches title, description, or tags
@@ -278,7 +269,7 @@ export default function ExploreTalent() {
       searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch;
     }
     
-    return priceMatch && categoryMatch && searchMatch;
+    return priceMatch && categoryMatch && deliveryMatch && searchMatch;
   });
 
   const sortedProjects = filteredProjects?.sort((a, b) => {
@@ -331,20 +322,6 @@ export default function ExploreTalent() {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Discover verified student talent from top universities ready to bring your projects to life.
           </p>
-          
-          {/* Refresh Button */}
-          <div className="mb-4">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleRefresh}
-              disabled={loading || refreshing}
-              className="gap-2"
-            >
-              <Search className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refreshing...' : loading ? 'Loading...' : 'Refresh Services'}
-            </Button>
-          </div>
           
           {search && (
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -399,26 +376,49 @@ export default function ExploreTalent() {
                       data-testid="search-input"
                     />
                   </div>
-                  <div className="mt-1 text-[10px] text-muted-foreground">
-                    Value: "{search}"
-                  </div>
                 </div>
 
-                {/* Category */}
+                {/* Category (Multi-select with checkboxes) */}
                 <div>
-                  <label className="block text-xs font-medium mb-1">Category</label>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger data-testid="category-select" className="h-7 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(cat => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <label className="block text-xs font-medium mb-2">Categories</label>
+                  <div className="space-y-2 max-h-48 overflow-y-auto border border-border rounded-md p-2">
+                    {categories.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">Loading categories...</p>
+                    ) : (
+                      categories.map(cat => (
+                        <div key={cat.value} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`cat-${cat.value}`}
+                            checked={selectedCategories.includes(cat.value)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedCategories([...selectedCategories, cat.value]);
+                              } else {
+                                setSelectedCategories(selectedCategories.filter(c => c !== cat.value));
+                              }
+                            }}
+                            className="h-4 w-4"
+                          />
+                          <label
+                            htmlFor={`cat-${cat.value}`}
+                            className="text-xs cursor-pointer flex-1"
+                          >
+                            {cat.label}
+                          </label>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  {selectedCategories.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedCategories([])}
+                      className="w-full mt-2 text-xs h-6"
+                    >
+                      Clear all ({selectedCategories.length})
+                    </Button>
+                  )}
                 </div>
 
                 {/* Delivery Time */}
@@ -434,6 +434,9 @@ export default function ExploreTalent() {
                       <SelectItem value="3">3 days</SelectItem>
                       <SelectItem value="7">1 week</SelectItem>
                       <SelectItem value="14">2 weeks</SelectItem>
+                      <SelectItem value="21">3 weeks</SelectItem>
+                      <SelectItem value="30">1 month</SelectItem>
+                      <SelectItem value="60">2 months</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -647,6 +650,16 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
             {project.title}
           </h3>
         </Link>
+
+        {/* Ratings */}
+        <div className="flex items-center gap-1 mb-2">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className={`h-3 w-3 ${i < Math.floor(project.rating || 4.5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+          ))}
+          <span className="text-xs text-muted-foreground ml-1">
+            ({project.rating?.toFixed(1) || '4.5'}) · {project.totalReviews || 0} reviews
+          </span>
+        </div>
 
         {/* Simple Description */}
         <div className="flex-1 mb-4">

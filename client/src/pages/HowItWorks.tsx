@@ -181,7 +181,7 @@ export default function HowItWorks() {
                                 initial={{ opacity: 0, x: index % 2 === 0 ? 10 : -10 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.3, delay: detailIndex * 0.1 }}
-                                className={`flex items-center gap-2 ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+                                className={`flex items-center gap-2 ${index % 2 === 0 ? 'justify-end flex-row-reverse' : 'justify-start'}`}
                               >
                                 <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                                 <span>{detail}</span>

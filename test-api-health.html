@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollaboTree API Health Check</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .status { padding: 10px; border-radius: 6px; margin: 10px 0; }
+        .success { background: #10b981; color: white; }
+        .error { background: #ef4444; color: white; }
+        .warning { background: #f59e0b; color: white; }
+        .info { background: #3b82f6; color: white; }
+        button {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #0284c7; }
+        pre {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .loading { text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 CollaboTree API Health Check</h1>
+    
+    <div class="card">
+        <h2>Test Your Railway Deployment</h2>
+        <p>This will check if your backend is running and accessible.</p>
+        <button onclick="runTests()">Run Tests</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const API_URL = 'https://web-production-43a9e.up.railway.app';
+
+        async function runTests() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Running tests...</div>';
+            
+            let results = '';
+
+            // Test 1: Health Check
+            results += '<div class="card"><h3>1. Health Check Endpoint</h3>';
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                results += `<div class="status success">✅ Backend is running!</div>`;
+                results += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                results += `<div class="status error">❌ Backend not accessible: ${error.message}</div>`;
+            }
+            results += '</div>';
+
+            // Test 2: API Base
+            results += '<div class="card"><h3>2. API Base Check</h3>';
+            try {
+                const response = await fetch(`${API_URL}/api/health`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    results += `<div class="status success">✅ API is accessible!</div>`;
+                    results += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    results += `<div class="status warning">⚠️ API returned status: ${response.status}</div>`;
+                }
+            } catch (error) {
+                results += `<div class="status error">❌ API not accessible: ${error.message}</div>`;
+            }
+            results += '</div>';
+
+            // Test 3: Login Attempt
+            results += '<div class="card"><h3>3. Admin Login Test</h3>';
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@collabotree.com',
+                        password: 'admin123'
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    results += `<div class="status success">✅ Admin login successful!</div>`;
+                    results += `<div class="status info">User Role: ${data.data?.user?.role || 'N/A'}</div>`;
+                } else {
+                    results += `<div class="status error">❌ Login failed: ${data.error || data.message}</div>`;
+                }
+                results += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                results += `<div class="status error">❌ Login request failed: ${error.message}</div>`;
+            }
+            results += '</div>';
+
+            // Test 4: Check if admin exists
+            results += '<div class="card"><h3>4. Database Connection</h3>';
+            results += '<div class="status info">ℹ️ If login works, database is connected and admin user exists!</div>';
+            results += '</div>';
+
+            resultsDiv.innerHTML = results;
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>
+
+
+
+

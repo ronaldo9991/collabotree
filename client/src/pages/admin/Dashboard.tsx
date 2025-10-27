@@ -195,6 +195,8 @@ export default function AdminDashboard() {
   const [loadingConversation, setLoadingConversation] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [pendingVerifications, setPendingVerifications] = useState<any[]>([]);
+  const [messagePage, setMessagePage] = useState(1);
+  const messagesPerPage = 6; // 2×3 grid
 
   useEffect(() => {
     console.log('Admin dashboard - Current user:', user);
@@ -395,6 +397,12 @@ export default function AdminDashboard() {
     message.sender.name.toLowerCase().includes(messageSearch.toLowerCase()) ||
     message.room.hireRequest.service.title.toLowerCase().includes(messageSearch.toLowerCase())
   );
+
+  // Pagination for messages
+  const totalMessagePages = Math.ceil(filteredMessages.length / messagesPerPage);
+  const startMessageIndex = (messagePage - 1) * messagesPerPage;
+  const endMessageIndex = startMessageIndex + messagesPerPage;
+  const paginatedMessages = filteredMessages.slice(startMessageIndex, endMessageIndex);
 
   const filteredServices = services.filter(service =>
     service.title.toLowerCase().includes(serviceSearch.toLowerCase()) ||
@@ -659,7 +667,7 @@ export default function AdminDashboard() {
               >
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
               <CardTitle className="flex items-center gap-2">
                         <MessageCircle className="h-5 w-5 text-primary" />
@@ -667,13 +675,16 @@ export default function AdminDashboard() {
               </CardTitle>
                       <CardDescription>Track all conversations between students and buyers</CardDescription>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Search messages..."
                           value={messageSearch}
-                          onChange={(e) => setMessageSearch(e.target.value)}
+                          onChange={(e) => {
+                            setMessageSearch(e.target.value);
+                            setMessagePage(1); // Reset to first page on search
+                          }}
                           className="pl-10 w-full h-10"
                         />
                       </div>
@@ -681,50 +692,119 @@ export default function AdminDashboard() {
                   </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                    {filteredMessages.length > 0 ? (
-                      filteredMessages.map((message) => (
-                    <div
-                          key={message.id}
-                          className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50"
-                    >
-                          <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                      <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Badge variant={message.sender.role === 'STUDENT' ? 'default' : 'secondary'} className="text-xs">
-                                {message.sender.role}
-                          </Badge>
-                              <span className="font-medium text-sm">{message.sender.name}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(message.createdAt).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="text-sm mb-2">{message.body}</p>
-                            <div className="text-xs text-muted-foreground mb-3">
-                              <p><strong>Service:</strong> {message.room.hireRequest.service.title}</p>
-                              <p><strong>Buyer:</strong> {message.room.hireRequest.buyer.name}</p>
-                              <p><strong>Student:</strong> {message.room.hireRequest.student.name}</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
-                          disabled={loadingConversation}
-                          className="text-xs"
-                        >
-                          <MessageCircle className="w-3 h-3 mr-1" />
-                          {loadingConversation ? "Loading..." : "View Full Conversation"}
-                        </Button>
+                  {paginatedMessages.length > 0 ? (
+                    <>
+                      {/* 2×3 Grid Layout */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        {paginatedMessages.map((message) => (
+                          <Card
+                            key={message.id}
+                            className="glass-card bg-muted/20 hover:bg-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-200"
+                          >
+                            <CardContent className="p-4 flex flex-col h-full">
+                              {/* Header */}
+                              <div className="flex items-start justify-between mb-3">
+                                <Badge variant={message.sender.role === 'STUDENT' ? 'default' : 'secondary'} className="text-xs">
+                                  {message.sender.role}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(message.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+
+                              {/* Sender */}
+                              <div className="mb-2">
+                                <p className="font-medium text-sm">{message.sender.name}</p>
+                                <p className="text-xs text-muted-foreground">{message.sender.email}</p>
+                              </div>
+
+                              {/* Message Body */}
+                              <div className="flex-1 mb-3">
+                                <p className="text-sm line-clamp-3">{message.body}</p>
+                              </div>
+
+                              {/* Service & Participants Info */}
+                              <div className="space-y-1 mb-3 p-2 bg-muted/30 rounded text-xs">
+                                <p className="line-clamp-1">
+                                  <strong>Service:</strong> {message.room.hireRequest.service.title}
+                                </p>
+                                <p className="line-clamp-1">
+                                  <strong>Buyer:</strong> {message.room.hireRequest.buyer.name}
+                                </p>
+                                <p className="line-clamp-1">
+                                  <strong>Student:</strong> {message.room.hireRequest.student.name}
+                                </p>
+                              </div>
+
+                              {/* Action Button */}
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
+                                disabled={loadingConversation}
+                                className="text-xs w-full"
+                              >
+                                <MessageCircle className="w-3 h-3 mr-1" />
+                                {loadingConversation ? "Loading..." : "View Full"}
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
+
+                      {/* Pagination Controls */}
+                      {totalMessagePages > 1 && (
+                        <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                          <div className="text-sm text-muted-foreground">
+                            Showing {startMessageIndex + 1}-{Math.min(endMessageIndex, filteredMessages.length)} of {filteredMessages.length} messages
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setMessagePage(p => Math.max(1, p - 1))}
+                              disabled={messagePage === 1}
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                              Previous
+                            </Button>
+                            <div className="flex items-center gap-1">
+                              {[...Array(totalMessagePages)].map((_, i) => (
+                                <Button
+                                  key={i}
+                                  variant={messagePage === i + 1 ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setMessagePage(i + 1)}
+                                  className="w-8 h-8 p-0"
+                                >
+                                  {i + 1}
+                                </Button>
+                              ))}
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setMessagePage(p => Math.min(totalMessagePages, p + 1))}
+                              disabled={messagePage === totalMessagePages}
+                            >
+                              Next
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center text-muted-foreground py-12">
+                      <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p>No messages found</p>
+                      {messageSearch && (
+                        <p className="text-sm mt-2">
+                          Try adjusting your search terms
+                        </p>
+                      )}
                     </div>
-                  ))
-                ) : (
-                      <div className="text-center text-muted-foreground py-8">
-                        <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p>No messages found</p>
-                  </div>
-                )}
-              </div>
+                  )}
             </CardContent>
           </Card>
               </motion.div>

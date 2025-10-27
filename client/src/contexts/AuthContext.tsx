@@ -236,6 +236,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(null);
       setTokens(null);
       localStorage.removeItem('auth_tokens');
+      // Redirect to home page after logout
+      window.location.href = '/';
     }
   };
 
