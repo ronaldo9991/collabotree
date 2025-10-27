@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, ArrowRight, Network } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, ArrowRight } from "lucide-react";
 
 export function Footer() {
   const navigation = {
@@ -44,9 +44,11 @@ export function Footer() {
                 href="/" 
                 className="flex items-center gap-3 mb-6 group"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <Network className="h-6 w-6 text-white" />
-                </div>
+                <img 
+                  src="/logoa.png" 
+                  alt="CollaboTree Logo" 
+                  className="w-14 h-14 object-contain rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
+                />
                 <span className="text-2xl font-bold bg-gradient-to-r from-white to-white/90 dark:from-foreground dark:to-foreground/80 bg-clip-text">
                   CollaboTree
                 </span>

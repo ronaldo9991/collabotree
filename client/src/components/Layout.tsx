@@ -74,9 +74,11 @@ export function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity" data-testid="logo">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
-                <Network className="h-4 w-4 text-white" />
-              </div>
+              <img 
+                src="/logoa.png" 
+                alt="CollaboTree Logo" 
+                className="w-10 h-10 object-contain"
+              />
               <span className="text-xl font-semibold">CollaboTree</span>
             </Link>
 
