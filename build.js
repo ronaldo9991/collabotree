@@ -88,6 +88,14 @@ function buildProject() {
       throw new Error('Prisma client generation failed');
     }
 
+    // Step 5.5: Clean up problematic files before TypeScript build
+    log('\nStep 5.5: Cleaning up TypeScript cache...', colors.blue);
+    const tsBuildInfoPath = join(process.cwd(), 'backend', 'tsconfig.tsbuildinfo');
+    if (existsSync(tsBuildInfoPath)) {
+      log('Removing TypeScript build cache...', colors.yellow);
+      rmSync(tsBuildInfoPath, { force: true });
+    }
+
     // Step 6: Build backend
     log('\nStep 6: Building backend...', colors.blue);
     if (!runCommand('npm run build', join(process.cwd(), 'backend'))) {
