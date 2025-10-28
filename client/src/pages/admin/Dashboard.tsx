@@ -180,7 +180,7 @@ interface Message {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -202,6 +202,12 @@ export default function AdminDashboard() {
     console.log('Admin dashboard - Current user:', user);
     console.log('User role:', user?.role);
     console.log('Is authenticated:', !!user);
+    console.log('Auth loading:', authLoading);
+    
+    // Don't redirect while auth is still loading
+    if (authLoading) {
+      return;
+    }
     
     if (!user) {
       console.error('User not authenticated');
@@ -236,7 +242,7 @@ export default function AdminDashboard() {
     // }, 5000);
 
     // return () => clearInterval(interval);
-  }, [user, toast]);
+  }, [user, authLoading, navigate, toast]);
 
   const fetchAdminData = async () => {
     try {
@@ -462,7 +468,8 @@ export default function AdminDashboard() {
     );
   }
 
-  if (loading) {
+  // Show loading state while auth is loading or dashboard data is loading
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
         <div className="text-center">
@@ -471,6 +478,11 @@ export default function AdminDashboard() {
         </div>
       </div>
     );
+  }
+
+  // If no user after loading, don't render anything (will redirect)
+  if (!user) {
+    return null;
   }
 
   return (
