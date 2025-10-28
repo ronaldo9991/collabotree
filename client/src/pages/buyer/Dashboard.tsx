@@ -71,17 +71,11 @@ export default function BuyerDashboard() {
   const [hireRequestsRefresh, setHireRequestsRefresh] = useState(0);
 
   // If no user, redirect to sign in
-  if (!user) {
-    navigate('/signin');
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Redirecting to sign in...</p>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!user) {
+      navigate('/signin');
+    }
+  }, [user, navigate]);
 
   // Function to refresh hire requests
   const refreshHireRequests = async () => {
@@ -297,7 +291,8 @@ export default function BuyerDashboard() {
     }
   };
 
-  if (loading) {
+  // Show loading state or empty dashboard if no user
+  if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
