@@ -217,16 +217,6 @@ export default function AdminDashboard() {
       setTopSelectionServices([]);
     }
   }, [user?.id, user?.role]);
-    
-    // Set up auto-refresh every 5 seconds for real-time updates
-    const interval = setInterval(() => {
-      if (user?.role === 'ADMIN') {
-        fetchAdminData();
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [user, toast]);
 
   const fetchAdminData = async () => {
     if (!user?.id || user?.role !== 'ADMIN') {
