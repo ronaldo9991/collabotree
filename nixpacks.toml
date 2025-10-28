@@ -5,7 +5,7 @@ nixPkgs = ['nodejs_22', 'npm-9_x']
 cmds = ['npm ci']
 
 [phases.build]
-cmds = ['rm -rf backend/dist', 'rm -rf backend/node_modules/.cache', 'npm run build']
+cmds = ['rm -rf backend/dist', 'rm -rf backend/node_modules/.cache', 'npm run build:fast']
 
 [start]
-cmd = 'cd backend && chmod +x start-railway.sh && ./start-railway.sh'
+cmd = 'cd backend && chmod +x start-railway-optimized.sh && ./start-railway-optimized.sh'

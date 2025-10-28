@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting CollaboTree Backend on Railway..."
+echo "🚀 Starting CollaboTree Backend on Railway (Optimized)..."
 
 # Set production environment
 export NODE_ENV=production
@@ -13,7 +13,7 @@ if [ -z "$DATABASE_URL" ]; then
 fi
 
 if [ -z "$JWT_ACCESS_SECRET" ]; then
-  echo "❌ JWT_ACCESS_SECRET is not set"
+  echo "❌ JWT_ACCESS_SECRET is not set"  
   exit 1
 fi
 
@@ -24,15 +24,11 @@ fi
 
 echo "✅ Environment variables validated"
 
-# Debug: Show current DATABASE_URL (without password)
-echo "🔍 Current DATABASE_URL: $(echo $DATABASE_URL | sed 's/:[^:]*@/:***@/')"
-
 # Determine the correct database URL to use
 FINAL_DATABASE_URL=""
 
 if [ ! -z "$DATABASE_PUBLIC_URL" ]; then
   echo "🔄 Using DATABASE_PUBLIC_URL for Prisma operations..."
-  echo "🔍 DATABASE_PUBLIC_URL: $(echo $DATABASE_PUBLIC_URL | sed 's/:[^:]*@/:***@/')"
   FINAL_DATABASE_URL="$DATABASE_PUBLIC_URL"
 else
   echo "⚠️ DATABASE_PUBLIC_URL not set, using original DATABASE_URL"
@@ -42,9 +38,7 @@ fi
 # Validate the final database URL format
 if [[ ! "$FINAL_DATABASE_URL" =~ ^postgresql:// ]]; then
   echo "❌ DATABASE_URL must start with 'postgresql://'"
-  echo "🔍 Current DATABASE_URL: $(echo $FINAL_DATABASE_URL | sed 's/:[^:]*@/:***@/')"
   echo "🔧 Please fix the DATABASE_URL in Railway dashboard"
-  echo "📋 Expected format: postgresql://postgres:PASSWORD@trolley.proxy.rlwy.net:50892/railway"
   exit 1
 fi
 
@@ -54,13 +48,10 @@ echo "✅ DATABASE_URL format validated"
 echo "🗄️ Running database migrations..."
 DATABASE_URL="$FINAL_DATABASE_URL" npx prisma migrate deploy
 
-# Copy client build to backend dist if not already there
-if [ ! -d "dist/frontend" ]; then
-  echo "📁 Copying client build..."
-  mkdir -p dist
-  cp -r ../client/dist dist/frontend
-fi
+# Create admin user if needed
+echo "👤 Ensuring admin user exists..."
+node force-create-admin.js
 
 # Start the server
 echo "🌟 Starting server..."
-npm start
+node dist/server.js

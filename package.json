@@ -6,6 +6,7 @@
   "main": "backend/dist/server.js",
   "scripts": {
     "build": "node build.js",
+    "build:fast": "cd client && npm ci --omit=dev --legacy-peer-deps && npm run build && cd ../backend && npm ci --omit=dev --legacy-peer-deps && npx prisma generate && npm run build && mkdir -p dist/frontend && cp -r ../client/dist/* dist/frontend/",
     "start": "cd backend && node dist/server.js",
     "dev": "cd backend && npm run dev",
     "railway:build": "cd backend && npm run railway:build",
