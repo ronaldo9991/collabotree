@@ -211,7 +211,8 @@ export default function ExploreTalent() {
     console.log('   Selected categories:', selectedCategories);
     console.log('   Price range:', priceRange);
     fetchData();
-  }, [search, priceRange[0], priceRange[1], sortBy, fetchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, priceRange[0], priceRange[1], sortBy]);
 
 
 
@@ -354,11 +355,67 @@ export default function ExploreTalent() {
             </div>
           )}
           {!loading && sortedProjects && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
               Showing {sortedProjects.length} {sortedProjects.length === 1 ? 'result' : 'results'}
               {search && ` for "${search}"`}
             </p>
           )}
+        </div>
+
+        {/* Filters Section */}
+        <div className="max-w-5xl mx-auto mb-6">
+          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 p-4">
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Sort By */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-muted-foreground">Sort by:</label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="rating">Highest Rated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Delivery Time Filter */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-muted-foreground">Delivery:</label>
+                <Select value={deliveryDays} onValueChange={setDeliveryDays}>
+                  <SelectTrigger className="w-36 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Any Time</SelectItem>
+                    <SelectItem value="7">Within 1 Week</SelectItem>
+                    <SelectItem value="14">Within 2 Weeks</SelectItem>
+                    <SelectItem value="21">Within 3 Weeks</SelectItem>
+                    <SelectItem value="30">Within 1 Month</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Clear Filters Button */}
+              {(selectedCategories.length > 0 || deliveryDays !== 'all' || search) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedCategories([]);
+                    setDeliveryDays('all');
+                    setSearch('');
+                  }}
+                  className="h-8 text-xs"
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+          </Card>
         </div>
 
         {/* Main Content Layout */}
