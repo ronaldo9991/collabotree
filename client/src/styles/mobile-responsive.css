@@ -1,0 +1,231 @@
+/* Mobile Responsive Fixes for CollaboTree */
+
+/* Add extra small breakpoint for very small devices */
+@media (max-width: 375px) {
+  .xs\:text-xs { font-size: 0.75rem; line-height: 1rem; }
+  .xs\:text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+  .xs\:text-base { font-size: 1rem; line-height: 1.5rem; }
+  .xs\:text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+  .xs\:text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+  .xs\:text-2xl { font-size: 1.5rem; line-height: 2rem; }
+  .xs\:text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+  
+  .xs\:px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .xs\:px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .xs\:py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+  .xs\:py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+  
+  .xs\:w-full { width: 100%; }
+  .xs\:h-6 { height: 1.5rem; }
+  .xs\:h-8 { height: 2rem; }
+  .xs\:h-10 { height: 2.5rem; }
+}
+
+/* Mobile navigation fixes */
+.mobile-nav-item {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-menu-button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-sheet-content {
+  touch-action: manipulation;
+}
+
+.mobile-theme-toggle {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+  button, .button-like {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve text readability on mobile */
+  .mobile-text-readable {
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  
+  /* Better spacing for mobile cards */
+  .mobile-card-spacing {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Responsive grid improvements */
+  .mobile-grid-responsive {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  
+  /* Mobile-friendly input fields */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tablet-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .tablet-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .tablet-text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Better animations for mobile */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Contract Manager mobile improvements */
+.contract-mobile-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contract-mobile-section {
+  background: rgba(var(--background), 0.8);
+  border: 1px solid rgba(var(--border), 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.contract-mobile-action {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+/* Dashboard mobile improvements */
+.dashboard-mobile-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(var(--border), 0.1);
+}
+
+.dashboard-mobile-content {
+  padding: 1rem;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.dashboard-mobile-card {
+  background: rgba(var(--card), 0.8);
+  border: 1px solid rgba(var(--border), 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile tab improvements */
+.mobile-tabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-tab-trigger {
+  white-space: nowrap;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  min-width: fit-content;
+}
+
+/* Loading states for mobile */
+.mobile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 200px;
+}
+
+.mobile-skeleton {
+  background: linear-gradient(90deg, rgba(var(--muted), 0.3) 25%, rgba(var(--muted), 0.1) 50%, rgba(var(--muted), 0.3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Mobile-first utility classes */
+.mobile-hide { display: none; }
+.mobile-show { display: block; }
+
+@media (min-width: 768px) {
+  .mobile-hide { display: block; }
+  .mobile-show { display: none; }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Better focus states for mobile */
+  .focus-visible:focus-visible {
+    outline: 2px solid rgba(var(--primary), 0.8);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+  
+  /* Better hover states that work on mobile */
+  .mobile-hover:active {
+    background-color: rgba(var(--muted), 0.3);
+    transform: scale(0.98);
+  }
+}

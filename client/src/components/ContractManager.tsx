@@ -280,69 +280,73 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   const canComplete = contract.status === 'ACTIVE' && contract.progressStatus === 'IN_PROGRESS' && contract.paymentStatus === 'PAID';
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+    <Card className="w-full max-w-none">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            {contract.title}
+            <FileText className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <span className="text-base sm:text-lg font-semibold truncate">{contract.title}</span>
           </div>
-          <Badge variant={contract.status === 'COMPLETED' ? 'default' : 'secondary'}>
+          <Badge variant={contract.status === 'COMPLETED' ? 'default' : 'secondary'} className="w-fit">
             {contract.status}
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6">
         {/* Contract Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-primary" />
-              <span className="font-semibold">Total Price:</span>
-              <span>${(contract.priceCents / 100).toFixed(2)}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-primary flex-shrink-0" />
+                <span className="font-semibold text-sm sm:text-base">Total Price:</span>
+              </div>
+              <span className="text-sm sm:text-base font-medium">${(contract.priceCents / 100).toFixed(2)}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <span className="font-semibold">Timeline:</span>
-              <span>{contract.timeline} days</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary flex-shrink-0" />
+                <span className="font-semibold text-sm sm:text-base">Timeline:</span>
+              </div>
+              <span className="text-sm sm:text-base">{contract.timeline} days</span>
             </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">Platform Fee (10%):</span>
-              <span>${(contract.platformFeeCents / 100).toFixed(2)}</span>
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <span className="font-semibold text-sm sm:text-base">Platform Fee (10%):</span>
+              <span className="text-sm sm:text-base font-medium">${(contract.platformFeeCents / 100).toFixed(2)}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">Student Payout:</span>
-              <span>${(contract.studentPayoutCents / 100).toFixed(2)}</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <span className="font-semibold text-sm sm:text-base">Student Payout:</span>
+              <span className="text-sm sm:text-base font-medium">${(contract.studentPayoutCents / 100).toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* Parties */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
-              <span className="font-semibold">Buyer:</span>
+              <User className="h-4 w-4 text-primary flex-shrink-0" />
+              <span className="font-semibold text-sm sm:text-base">Buyer:</span>
             </div>
-            <p className="text-sm">{contract.buyer.name}</p>
+            <p className="text-sm sm:text-base pl-6 sm:pl-0">{contract.buyer.name}</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
-              <span className="font-semibold">Student:</span>
+              <User className="h-4 w-4 text-primary flex-shrink-0" />
+              <span className="font-semibold text-sm sm:text-base">Student:</span>
             </div>
-            <p className="text-sm">{contract.student.name}</p>
+            <p className="text-sm sm:text-base pl-6 sm:pl-0">{contract.student.name}</p>
           </div>
         </div>
 
         {/* Deliverables */}
         <div>
-          <h4 className="font-semibold mb-2">Deliverables</h4>
-          <ul className="list-disc list-inside space-y-1">
+          <h4 className="font-semibold mb-3 text-sm sm:text-base">Deliverables</h4>
+          <ul className="list-disc list-inside space-y-2 pl-2">
             {deliverables.map((deliverable: string, index: number) => (
-              <li key={index} className="text-sm">{deliverable}</li>
+              <li key={index} className="text-sm sm:text-base leading-relaxed">{deliverable}</li>
             ))}
           </ul>
         </div>
@@ -412,22 +416,23 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
         )}
 
         {/* Actions based on user role and contract status */}
-        <div className="space-y-4 border-t pt-4">
+        <div className="space-y-4 sm:space-y-6 border-t pt-4 sm:pt-6">
           {userRole === 'STUDENT' && (
             <>
               {!contract.isSignedByStudent && (
-                <div>
-                  <h4 className="font-semibold mb-2">Sign Contract</h4>
-                  <div className="space-y-2">
+                <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <h4 className="font-semibold mb-3 text-sm sm:text-base text-blue-900 dark:text-blue-100">Sign Contract</h4>
+                  <div className="space-y-3">
                     <Input
                       placeholder="Type your full name to sign"
                       value={signature}
                       onChange={(e) => setSignature(e.target.value)}
+                      className="text-sm sm:text-base"
                     />
                     <Button 
                       onClick={handleSignContract} 
                       disabled={!signature.trim() || processing}
-                      className="w-full"
+                      className="w-full text-sm sm:text-base py-2 sm:py-3"
                     >
                       {processing ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -470,18 +475,19 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
           {userRole === 'BUYER' && (
             <>
               {!contract.isSignedByBuyer && (
-                <div>
-                  <h4 className="font-semibold mb-2">Sign Contract</h4>
-                  <div className="space-y-2">
+                <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                  <h4 className="font-semibold mb-3 text-sm sm:text-base text-green-900 dark:text-green-100">Sign Contract</h4>
+                  <div className="space-y-3">
                     <Input
                       placeholder="Type your full name to sign"
                       value={signature}
                       onChange={(e) => setSignature(e.target.value)}
+                      className="text-sm sm:text-base"
                     />
                     <Button 
                       onClick={handleSignContract} 
                       disabled={!signature.trim() || processing}
-                      className="w-full"
+                      className="w-full text-sm sm:text-base py-2 sm:py-3"
                     >
                       {processing ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -495,15 +501,15 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
               )}
 
               {canPay && (
-                <div>
-                  <h4 className="font-semibold mb-2">Escrow Payment</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
+                <div className="bg-yellow-50 dark:bg-yellow-950/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <h4 className="font-semibold mb-3 text-sm sm:text-base text-yellow-900 dark:text-yellow-100">Escrow Payment</h4>
+                  <p className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300 mb-4 leading-relaxed">
                     Funds will be held in escrow until project completion
                   </p>
                   <Button 
                     onClick={handleProcessPayment} 
                     disabled={processing}
-                    className="w-full"
+                    className="w-full text-sm sm:text-base py-2 sm:py-3"
                     size="lg"
                   >
                     {processing ? (

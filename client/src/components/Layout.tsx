@@ -70,16 +70,16 @@ export function Layout({ children }: LayoutProps) {
           ? 'bg-background/90 dark:bg-background/90 backdrop-blur-xl shadow-lg border border-border/30' 
           : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
       }`}>
-        <div className="container-unified px-3">
-            <div className="flex items-center justify-between h-9">
+        <div className="container-unified px-2 sm:px-3">
+            <div className="flex items-center justify-between h-10 sm:h-12 md:h-9">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity" data-testid="logo">
+            <Link href="/" className="flex items-center gap-1 sm:gap-1.5 hover:opacity-80 transition-opacity" data-testid="logo">
               <img 
                 src="/logoa.png" 
                 alt="CollaboTree Logo" 
-                className="w-8 h-8 object-contain rounded-xl"
+                className="w-6 h-6 sm:w-8 sm:h-8 object-contain rounded-xl"
               />
-              <span className="text-sm font-semibold">CollaboTree</span>
+              <span className="text-xs sm:text-sm font-semibold">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}

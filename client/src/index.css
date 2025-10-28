@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import mobile responsive styles */
+@import './styles/mobile-responsive.css';
+
 :root {
   /* CollaboTree Brand Colors */
   --primary: hsl(199, 100%, 50%); /* #00A9FF - Student Blue */
