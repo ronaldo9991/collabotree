@@ -77,7 +77,7 @@ export function Layout({ children }: LayoutProps) {
               <img 
                 src="/logoa.png" 
                 alt="CollaboTree Logo" 
-                className="w-7 h-7 object-contain"
+                className="w-7 h-7 object-contain rounded-xl"
               />
               <span className="text-sm font-semibold">CollaboTree</span>
             </Link>
@@ -168,13 +168,13 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-1.5">
+            <div className="hidden lg:flex items-center gap-1.5 flex-shrink-0">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-1 rounded-lg hover:bg-muted/20 transition-colors"
+                className="p-1 rounded-lg hover:bg-muted/20 transition-colors ml-2"
                 data-testid="theme-toggle"
               >
                 {theme === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1.5 py-0.5 text-xs h-5 rounded-full"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1 py-0.5 text-xs h-5 rounded-full ml-auto"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
