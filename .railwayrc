@@ -1,0 +1,18 @@
+# Railway Configuration
+# This file helps configure Railway deployment settings
+
+# Build configuration
+BUILD_CMD="npm run build:fast"
+START_CMD="cd backend && ./start-railway-optimized.sh"
+
+# Node.js settings  
+NODE_VERSION="22"
+NPM_VERSION="9"
+
+# Build optimizations
+NODE_OPTIONS="--max-old-space-size=4096"
+NPM_CONFIG_PRODUCTION="false"
+NPM_CONFIG_CACHE="/tmp/.npm"
+
+# Prisma settings
+PRISMA_GENERATE_SKIP_DOWNLOAD="true"
