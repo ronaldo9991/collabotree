@@ -71,7 +71,7 @@ export function Layout({ children }: LayoutProps) {
           : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
       }`}>
         <div className="container-unified px-3">
-            <div className="flex items-center justify-between h-10">
+            <div className="flex items-center justify-between h-9">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity" data-testid="logo">
               <img 
@@ -168,7 +168,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-1 flex-shrink-0 mr-8">
+            <div className="hidden lg:flex items-center gap-1 flex-shrink-0 mr-6">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1.5 text-sm h-8 rounded-full font-medium"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2.5 py-1 text-xs h-7 rounded-full font-medium shadow-sm hover:shadow-md transition-all duration-200"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
@@ -262,7 +262,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-        <main className="pt-14">
+        <main className="pt-13">
         {children}
       </main>
 
