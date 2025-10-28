@@ -27,8 +27,7 @@ import {
   Heart,
   Filter,
   MapPin,
-  ChevronLeft,
-  ChevronRight
+  FileText
 } from "lucide-react";
 import {
   Card,
@@ -62,7 +61,7 @@ export default function BuyerDashboard() {
     savedServices: 0
   });
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [userProjects, setUserProjects] = useState<any[]>([]);
   const [hireRequests, setHireRequests] = useState<any[]>([]);
@@ -70,12 +69,23 @@ export default function BuyerDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [hireRequestsRefresh, setHireRequestsRefresh] = useState(0);
 
-  // If no user, redirect to sign in
   useEffect(() => {
-    if (!user && !authLoading) {
-      navigate('/signin');
+    if (user?.id) {
+      fetchDashboardData();
+    } else {
+      // Always show dashboard even without user data
+      setLoading(false);
+      setUserProjects([]);
+      setHireRequests([]);
+      setBrowseServices([]);
+      setStats({
+        totalSpent: 0,
+        activeOrders: 0,
+        completedProjects: 0,
+        savedServices: 0,
+      });
     }
-  }, [user, authLoading, navigate]);
+  }, [user?.id]);
 
   // Function to refresh hire requests
   const refreshHireRequests = async () => {
@@ -89,192 +99,177 @@ export default function BuyerDashboard() {
     }
   };
 
-  // Fetch buyer dashboard data
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      console.log('🔄 Buyer Dashboard - Starting data fetch...');
-      console.log('👤 User:', user);
-      console.log('🔐 Auth Loading:', authLoading);
+  const fetchDashboardData = async () => {
+    if (!user?.id) {
+      // Always show dashboard even without user
+      setLoading(false);
+      return;
+    }
+
+    // Set a reasonable timeout to ensure dashboard shows
+    const timeoutId = setTimeout(() => {
+      console.log('API timeout - showing dashboard anyway');
+      setLoading(false);
+    }, 3000); // 3 second timeout
+
+    try {
+      setLoading(true);
       
-      if (!user) {
-        console.log('❌ No user, setting loading to false');
-        setLoading(false);
-        return;
+      // Initialize with empty data first
+      setUserProjects([]);
+      setHireRequests([]);
+      setBrowseServices([]);
+      setStats({
+        totalSpent: 0,
+        activeOrders: 0,
+        completedProjects: 0,
+        savedServices: 0,
+      });
+
+      // Fetch real user projects data using the orders API
+      console.log('🚀 Fetching orders for user:', user?.id, 'role:', user?.role);
+      const userProjectsResponse = await api.getOrders();
+      console.log('🔍 Full Orders API response:', JSON.stringify(userProjectsResponse, null, 2));
+      
+      // Handle different possible response structures
+      let userProjects = [];
+      if (userProjectsResponse?.data?.data && Array.isArray(userProjectsResponse.data.data)) {
+        // Paginated response structure
+        userProjects = userProjectsResponse.data.data;
+        console.log('📊 Using paginated data structure:', userProjects.length, 'projects');
+      } else if (userProjectsResponse?.data && Array.isArray(userProjectsResponse.data)) {
+        // Direct array response
+        userProjects = userProjectsResponse.data;
+        console.log('📊 Using direct array structure:', userProjects.length, 'projects');
+      } else if (Array.isArray(userProjectsResponse)) {
+        // Direct array response (no wrapper)
+        userProjects = userProjectsResponse;
+        console.log('📊 Using direct response array:', userProjects.length, 'projects');
+      } else {
+        console.log('❌ No valid data structure found in response');
       }
-
-      // Set a timeout to ensure loading doesn't hang forever
-      const timeoutId = setTimeout(() => {
-        console.log('⏰ Dashboard fetch timeout - setting loading to false');
-        setLoading(false);
-      }, 10000); // 10 second timeout
-
+      
+      console.log('✅ Final parsed user projects:', userProjects);
+      
+      // Always fetch hire requests to check for accepted ones (not just when no orders)
+      console.log('🔄 Fetching hire requests to check for accepted ones...');
       try {
-        setLoading(true);
-        console.log('🚀 Fetching orders for user:', user?.id, 'role:', user?.role);
+        const hireRequestsResponse = await api.getHireRequests();
+        const hireRequestsData = (hireRequestsResponse as any)?.data?.data || (hireRequestsResponse as any)?.data || hireRequestsResponse || [];
+        console.log('🔍 Hire requests data:', hireRequestsData);
         
-        // Add error handling for API calls
-        let userProjects = [];
-        try {
-          const userProjectsResponse = await api.getOrders();
-          console.log('🔍 Orders API response:', userProjectsResponse);
-          
-          // Handle different possible response structures
-          if (userProjectsResponse?.data?.data && Array.isArray(userProjectsResponse.data.data)) {
-            userProjects = userProjectsResponse.data.data;
-            console.log('📊 Using paginated data structure:', userProjects.length, 'projects');
-          } else if (userProjectsResponse?.data && Array.isArray(userProjectsResponse.data)) {
-            userProjects = userProjectsResponse.data;
-            console.log('📊 Using direct array structure:', userProjects.length, 'projects');
-          } else if (Array.isArray(userProjectsResponse)) {
-            userProjects = userProjectsResponse;
-            console.log('📊 Using direct response array:', userProjects.length, 'projects');
-          } else {
-            console.log('❌ No valid data structure found in response');
-          }
-        } catch (ordersError) {
-          console.error('❌ Error fetching orders:', ordersError);
-          userProjects = [];
-        }
+        // Filter for accepted hire requests and convert to project format
+        const acceptedHireRequests = hireRequestsData.filter((hire: any) => hire.status === 'ACCEPTED');
+        console.log('✅ Accepted hire requests:', acceptedHireRequests);
         
-        console.log('✅ Final parsed user projects:', userProjects);
+        // Convert hire requests to project format
+        const projectsFromHires = acceptedHireRequests.map((hire: any) => ({
+          id: hire.id,
+          status: 'ACCEPTED', // Use ACCEPTED status for accepted hire requests
+          priceCents: hire.priceCents || hire.service?.priceCents || 0,
+          createdAt: hire.createdAt,
+          hireRequestId: hire.id,
+          service: hire.service,
+          student: hire.student,
+          buyer: hire.buyer
+        }));
         
-        // Debug: Let's also try a direct API call to see what we get
-        try {
-          console.log('🔍 Testing direct API call...');
-          const testResponse = await fetch('/api/orders/mine', {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('auth_tokens')}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          const testData = await testResponse.json();
-          console.log('🔍 Direct API test response:', testData);
-        } catch (testError) {
-          console.log('❌ Direct API test failed:', testError);
-        }
+        console.log('🔄 Converted hire requests to projects:', projectsFromHires);
         
-        // Always fetch hire requests to check for accepted ones
-        console.log('🔄 Fetching hire requests to check for accepted ones...');
-        try {
-          const hireRequestsResponse = await api.getHireRequests();
-          const hireRequestsData = (hireRequestsResponse as any)?.data?.data || (hireRequestsResponse as any)?.data || hireRequestsResponse || [];
-          console.log('🔍 Hire requests data:', hireRequestsData);
-          
-          // Filter for accepted hire requests and convert to project format
-          const acceptedHireRequests = hireRequestsData.filter((hire: any) => hire.status === 'ACCEPTED');
-          console.log('✅ Accepted hire requests:', acceptedHireRequests);
-          
-          // Convert hire requests to project format
-          const projectsFromHires = acceptedHireRequests.map((hire: any) => ({
-            id: hire.id,
-            status: 'ACCEPTED',
-            priceCents: hire.priceCents || hire.service?.priceCents || 0,
-            createdAt: hire.createdAt,
-            hireRequestId: hire.id,
-            service: hire.service,
-            student: hire.student,
-            buyer: hire.buyer
-          }));
-          
-          console.log('🔄 Converted hire requests to projects:', projectsFromHires);
-          
-          // Merge with existing user projects, avoiding duplicates
-          const existingProjectIds = new Set(userProjects.map((p: any) => p.id));
-          const newProjectsFromHires = projectsFromHires.filter((p: any) => !existingProjectIds.has(p.id));
-          userProjects = [...userProjects, ...newProjectsFromHires];
-        } catch (hireError) {
-          console.error('❌ Error fetching hire requests:', hireError);
-        }
-        
-        setUserProjects(userProjects);
-
-        // Fetch hire requests sent by this buyer
-        try {
-          const hireRequestsResponse = await api.getHireRequests();
-          const hireRequestsData = (hireRequestsResponse as any)?.data?.data || (hireRequestsResponse as any)?.data || hireRequestsResponse || [];
-          setHireRequests(hireRequestsData);
-        } catch (hireError) {
-          console.log('Error fetching hire requests:', hireError);
-          setHireRequests([]);
-        }
-        
-        // Fetch available services for browsing
-        try {
-          console.log('🔍 Fetching services for buyer dashboard...');
-          const servicesResponse = await api.getPublicServices();
-          console.log('📊 Services API response:', servicesResponse);
-          
-          const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];
-          console.log('📋 Extracted services data:', servicesData);
-          console.log('📊 Number of services found:', servicesData.length);
-          
-          // Map services to project format for display
-          const mappedServices = servicesData.map((service: any) => ({
-            id: service.id,
-            title: service.title,
-            description: service.description,
-            budget: service.priceCents / 100,
-            cover_url: service.coverImage, // Map coverImage to cover_url
-            created_at: service.createdAt,
-            created_by: service.ownerId,
-            tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
-            creator: {
-              full_name: service.owner?.name || 'Student',
-              role: 'student',
-              isVerified: service.owner?.isVerified || false,
-              idCardUrl: service.owner?.idCardUrl,
-              verifiedAt: service.owner?.verifiedAt
-            },
-            rating: 4.5 + Math.random() * 0.5,
-            totalReviews: Math.floor(Math.random() * 20) + 1,
-            orders: Math.floor(Math.random() * 10) + 1
-          }));
-
-          console.log('🎯 Mapped services for display:', mappedServices);
-          setBrowseServices(mappedServices);
-        } catch (projectError) {
-          console.error('❌ Error fetching services:', projectError);
-          setBrowseServices([]);
-        }
-
-        // Calculate real stats from data
-        const totalSpent = userProjects
-          .filter((project: any) => project.status === 'PAID')
-          .reduce((sum: number, project: any) => sum + (project.priceCents / 100), 0);
-
-        const activeProjects = userProjects.filter((project: any) =>
-          ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)
-        ).length;
-
-        const completedProjects = userProjects.filter((project: any) =>
-          project.status === 'COMPLETED'
-        ).length;
-
-        setStats({
-          totalSpent: Math.round(totalSpent),
-          activeOrders: activeProjects,
-          completedProjects,
-          savedServices: 0
-        });
-
-      } catch (error) {
-        console.error('Error fetching buyer data:', error);
-        setStats({
-          totalSpent: 0,
-          activeOrders: 0,
-          completedProjects: 0,
-          savedServices: 0,
-        });
-        setUserProjects([]);
-        setBrowseServices([]);
-      } finally {
-        clearTimeout(timeoutId);
-        setLoading(false);
+        // Merge with existing user projects, avoiding duplicates
+        const existingProjectIds = new Set(userProjects.map((p: any) => p.id));
+        const newProjectsFromHires = projectsFromHires.filter((p: any) => !existingProjectIds.has(p.id));
+        userProjects = [...userProjects, ...newProjectsFromHires];
+      } catch (hireError) {
+        console.log('❌ Error fetching hire requests:', hireError);
       }
-    };
+      
+      setUserProjects(userProjects);
 
-    fetchDashboardData();
-  }, [user, authLoading]);
+      // Fetch hire requests sent by this buyer
+      try {
+        const hireRequestsResponse = await api.getHireRequests();
+        const hireRequestsData = (hireRequestsResponse as any)?.data?.data || (hireRequestsResponse as any)?.data || hireRequestsResponse || [];
+        setHireRequests(hireRequestsData);
+      } catch (hireError) {
+        console.log('Error fetching hire requests:', hireError);
+        setHireRequests([]);
+      }
+      
+      // Fetch available services for browsing
+      try {
+        console.log('🔍 Fetching services for buyer dashboard...');
+        const servicesResponse = await api.getPublicServices();
+        console.log('📊 Services API response:', servicesResponse);
+        
+        const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];
+        console.log('📋 Extracted services data:', servicesData);
+        console.log('📊 Number of services found:', servicesData.length);
+        
+        // Map services to project format for display
+        const mappedServices = servicesData.map((service: any) => ({
+          id: service.id,
+          title: service.title,
+          description: service.description,
+          budget: service.priceCents / 100,
+          cover_url: service.coverImage, // Map coverImage to cover_url
+          created_at: service.createdAt,
+          created_by: service.ownerId,
+          tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
+          creator: {
+            full_name: service.owner?.name || 'Student',
+            role: 'student',
+            isVerified: service.owner?.isVerified || false,
+            idCardUrl: service.owner?.idCardUrl,
+            verifiedAt: service.owner?.verifiedAt
+          },
+          rating: 4.5 + Math.random() * 0.5,
+          totalReviews: Math.floor(Math.random() * 20) + 1,
+          orders: Math.floor(Math.random() * 10) + 1
+        }));
+
+        console.log('🎯 Mapped services for display:', mappedServices);
+        setBrowseServices(mappedServices);
+      } catch (projectError) {
+        console.error('❌ Error fetching services:', projectError);
+        setBrowseServices([]);
+      }
+
+      // Calculate real stats from data
+      const totalSpent = userProjects
+        .filter((project: any) => project.status === 'PAID')
+        .reduce((sum: number, project: any) => sum + (project.priceCents / 100), 0);
+
+      const activeProjects = userProjects.filter((project: any) =>
+        ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)
+      ).length;
+
+      const completedProjects = userProjects.filter((project: any) =>
+        project.status === 'COMPLETED'
+      ).length;
+
+      setStats({
+        totalSpent: Math.round(totalSpent),
+        activeOrders: activeProjects,
+        completedProjects,
+        savedServices: 0
+      });
+
+    } catch (error) {
+      console.error('Error fetching buyer data:', error);
+      setStats({
+        totalSpent: 0,
+        activeOrders: 0,
+        completedProjects: 0,
+        savedServices: 0,
+      });
+      setUserProjects([]);
+      setBrowseServices([]);
+    } finally {
+      clearTimeout(timeoutId);
+      setLoading(false);
+    }
+  };
 
   const formatAmount = (amountCents: number) => {
     return `$${(amountCents / 100).toFixed(2)}`;
@@ -306,32 +301,13 @@ export default function BuyerDashboard() {
     }
   };
 
-  // Show loading state while auth is loading or dashboard data is loading
-  if (authLoading || loading) {
+  // Show loading state only when auth is loading
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If no user after loading, don't render anything (will redirect)
-  if (!user) {
-    return null;
-  }
-
-  // Fallback render if we have a user but no data yet
-  if (!userProjects && !browseServices) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 section-padding-y">
-        <div className="container-unified">
-          <div className="text-center py-12">
-            <h1 className="text-2xl font-bold mb-4">Welcome, {user?.name?.split(' ')[0] || 'Buyer'}!</h1>
-            <p className="text-muted-foreground">Loading your dashboard...</p>
-          </div>
         </div>
       </div>
     );
@@ -579,86 +555,43 @@ export default function BuyerDashboard() {
                       ))}
                   </div>
               ) : userProjects.filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)).length > 0 ? (
-                  <>
-                    {/* 2x3 Grid Layout */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                      {userProjects
-                        .filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status))
-                        .slice(0, 6) // Show only 6 cards at a time
-                        .map((project) => (
-                          <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 hover:shadow-lg transition-all duration-200">
-                            <CardContent className="p-4 flex flex-col h-full">
-                              {/* Header */}
-                              <div className="flex items-start justify-between mb-3">
-                                <Badge variant="default" className="text-xs">
-                                  {project.status}
-                                </Badge>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(project.createdAt).toLocaleDateString()}
-                                </span>
-                              </div>
-
-                              {/* Student Info */}
-                              <div className="flex items-center gap-3 mb-3">
-                                <Avatar className="h-10 w-10 border border-border/30">
-                                  <AvatarFallback className="bg-primary/10 text-primary">
-                                    {project.student?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                  <div className="space-y-4">
+                  {userProjects
+                    .filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status))
+                    .map((project) => (
+                      <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+                          <CardContent className="p-6">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                              <Avatar className="h-12 w-12 border border-border/30">
+                                <AvatarFallback className="bg-primary/10 text-primary">
+                                  {project.student?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                                   </AvatarFallback>
                                 </Avatar>
-                                <div className="flex-1 min-w-0">
-                                  <h3 className="font-semibold text-sm truncate">{project.student?.name || 'Unknown Student'}</h3>
-                                  <p className="text-xs text-muted-foreground truncate">{project.service?.title || 'Project'}</p>
+                                <div>
+                                <h3 className="font-semibold">{project.student?.name || 'Unknown Student'}</h3>
+                                <p className="text-sm text-muted-foreground">{project.service?.title || 'Project'}</p>
                                 </div>
                               </div>
-
-                              {/* Project Details */}
-                              <div className="flex-1 mb-3">
-                                <div className="space-y-1 text-xs text-muted-foreground">
-                                  <div className="flex justify-between">
-                                    <span>Price:</span>
-                                    <span className="font-medium">${(project.priceCents || 0) / 100}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>Service:</span>
-                                    <span className="font-medium truncate ml-2">{project.service?.title || 'N/A'}</span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Action Button */}
                               <Button
-                                variant="default"
-                                size="sm"
-                                onClick={() => {
-                                  const chatId = project.hireRequestId || project.id;
-                                  console.log('🚀 Messages tab - Navigating to chat with ID:', chatId);
-                                  console.log('🚀 Messages tab - Project data:', project);
-                                  navigate(`/chat/${chatId}`);
-                                }}
-                                className="gap-2 bg-primary hover:bg-primary/90 w-full"
+                              variant="default"
+                              size="sm"
+                              onClick={() => {
+                                const chatId = project.hireRequestId || project.id;
+                                console.log('🚀 Messages tab - Navigating to chat with ID:', chatId);
+                                console.log('🚀 Messages tab - Project data:', project);
+                                navigate(`/chat/${chatId}`);
+                              }}
+                                className="gap-2 bg-primary hover:bg-primary/90"
                               >
                                 <MessageCircle className="h-4 w-4" />
-                                Chat
+                              Chat
                               </Button>
-                            </CardContent>
-                          </Card>
-                        ))}
-                    </div>
-
-                    {/* Pagination Controls */}
-                    {userProjects.filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status)).length > 6 && (
-                      <div className="flex justify-center gap-2">
-                        <Button variant="outline" size="sm" disabled>
-                          <ChevronLeft className="h-4 w-4 mr-1" />
-                          Previous
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          Next
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </div>
-                    )}
-                  </>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                  </div>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                     <CardContent className="p-12 text-center">

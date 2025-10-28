@@ -180,7 +180,7 @@ interface Message {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [, navigate] = useLocation();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -195,19 +195,11 @@ export default function AdminDashboard() {
   const [loadingConversation, setLoadingConversation] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [pendingVerifications, setPendingVerifications] = useState<any[]>([]);
-  const [messagePage, setMessagePage] = useState(1);
-  const messagesPerPage = 6; // 2×3 grid
 
   useEffect(() => {
     console.log('Admin dashboard - Current user:', user);
     console.log('User role:', user?.role);
     console.log('Is authenticated:', !!user);
-    console.log('Auth loading:', authLoading);
-    
-    // Don't redirect while auth is still loading
-    if (authLoading) {
-      return;
-    }
     
     if (!user) {
       console.error('User not authenticated');
@@ -216,7 +208,7 @@ export default function AdminDashboard() {
         description: "Please log in to access the admin dashboard.",
         variant: "destructive",
       });
-      navigate('/admin/signin');
+      navigate('/login');
       return;
     }
     
@@ -234,26 +226,20 @@ export default function AdminDashboard() {
     console.log('User has admin access, fetching admin data...');
     fetchAdminData();
     
-    // Removed auto-refresh to prevent annoying automatic page refreshes
-    // const interval = setInterval(() => {
-    //   if (user?.role === 'ADMIN') {
-    //     fetchAdminData();
-    //   }
-    // }, 5000);
+    // Set up auto-refresh every 5 seconds for real-time updates
+    const interval = setInterval(() => {
+      if (user?.role === 'ADMIN') {
+        fetchAdminData();
+      }
+    }, 5000);
 
-    // return () => clearInterval(interval);
-  }, [user, authLoading, navigate, toast]);
+    return () => clearInterval(interval);
+  }, [user, toast]);
 
   const fetchAdminData = async () => {
     try {
       setLoading(true);
       console.log('Fetching admin data...');
-      
-      // Set a timeout to ensure loading doesn't hang forever
-      const timeoutId = setTimeout(() => {
-        console.log('⏰ Admin dashboard fetch timeout - setting loading to false');
-        setLoading(false);
-      }, 10000); // 10 second timeout
       console.log('Current user:', user);
       console.log('Auth token:', localStorage.getItem('auth_tokens'));
 
@@ -314,7 +300,6 @@ export default function AdminDashboard() {
         variant: "destructive",
       });
     } finally {
-      clearTimeout(timeoutId);
       setLoading(false);
       setLastUpdated(new Date());
     }
@@ -411,12 +396,6 @@ export default function AdminDashboard() {
     message.room.hireRequest.service.title.toLowerCase().includes(messageSearch.toLowerCase())
   );
 
-  // Pagination for messages
-  const totalMessagePages = Math.ceil(filteredMessages.length / messagesPerPage);
-  const startMessageIndex = (messagePage - 1) * messagesPerPage;
-  const endMessageIndex = startMessageIndex + messagesPerPage;
-  const paginatedMessages = filteredMessages.slice(startMessageIndex, endMessageIndex);
-
   const filteredServices = services.filter(service =>
     service.title.toLowerCase().includes(serviceSearch.toLowerCase()) ||
     service.owner.name.toLowerCase().includes(serviceSearch.toLowerCase())
@@ -444,8 +423,8 @@ export default function AdminDashboard() {
             <CardDescription>Please log in to access the admin dashboard</CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button onClick={() => navigate('/admin/signin')} className="w-full">
-              Go to Admin Login
+            <Button onClick={() => navigate('/login')} className="w-full">
+              Go to Login
             </Button>
           </CardContent>
         </Card>
@@ -475,21 +454,12 @@ export default function AdminDashboard() {
     );
   }
 
-  // Show loading state while auth is loading or dashboard data is loading
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-          <p className="text-muted-foreground">Loading admin dashboard...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
-  }
-
-  // If no user after loading, don't render anything (will redirect)
-  if (!user) {
-    return null;
   }
 
   return (
@@ -501,18 +471,18 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-6"
+          className="text-center mb-8 sm:mb-12"
         >
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Badge variant="outline" className="gap-2 bg-primary/10 text-primary border-primary/20 px-3 py-1">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Badge variant="outline" className="gap-2 bg-primary/10 text-primary border-primary/20">
               <Shield className="h-4 w-4" />
-              Admin Dashboard
-            </Badge>
+            Admin Dashboard
+          </Badge>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-primary">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-primary dashboard-title">
             Welcome back, {user?.name || 'Admin'}!
           </h1>
-          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
             Manage the platform, monitor messages, and control top selections 
           </p>
         </motion.div>
@@ -524,7 +494,7 @@ export default function AdminDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-4 h-10 bg-background/80 backdrop-blur-12 border border-border/30 rounded-lg shadow-sm p-1">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
               <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <BarChart3 className="h-4 w-4" />
                 Overview
@@ -558,7 +528,7 @@ export default function AdminDashboard() {
                     transition={{ duration: 0.6 }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
                   >
-          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 text-center hover:shadow-lg transition-all duration-200">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
             <CardHeader className="pb-4">
               <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
                 <Users className="h-8 w-8" />
@@ -573,37 +543,37 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 text-center hover:shadow-lg transition-all duration-200">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
             <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
+              <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
                 <UserCheck className="h-8 w-8" />
               </div>
               <CardTitle className="text-xl">Verified Students</CardTitle>
             </CardHeader>
             <CardContent>
-                        <div className="text-3xl font-bold text-primary mb-2">{stats.users.verifiedStudents}</div>
+                        <div className="text-3xl font-bold text-secondary mb-2">{stats.users.verifiedStudents}</div>
               <p className="text-sm text-muted-foreground">
                           {stats.users.pendingVerifications} pending verification
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
             <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
+              <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
                 <Package className="h-8 w-8" />
               </div>
                         <CardTitle className="text-xl">Services</CardTitle>
             </CardHeader>
             <CardContent>
-                        <div className="text-3xl font-bold text-primary mb-2">{stats.services.total}</div>
+                        <div className="text-3xl font-bold text-accent mb-2">{stats.services.total}</div>
               <p className="text-sm text-muted-foreground">
                           {stats.services.active} active • {stats.services.topSelections} top selections
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
             <CardHeader className="pb-4">
               <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
                 <DollarSign className="h-8 w-8" />
@@ -626,7 +596,7 @@ export default function AdminDashboard() {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="grid grid-cols-1 md:grid-cols-3 gap-6"
                   >
-                    <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
+                    <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
                       <CardHeader className="pb-4">
                         <div className="mx-auto p-4 rounded-full bg-blue-500/10 text-blue-500 w-fit mb-4">
                           <MessageCircle className="h-8 w-8" />
@@ -641,7 +611,7 @@ export default function AdminDashboard() {
                       </CardContent>
                     </Card>
 
-                    <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
+                    <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
                       <CardHeader className="pb-4">
                         <div className="mx-auto p-4 rounded-full bg-green-500/10 text-green-500 w-fit mb-4">
                           <CheckCircle className="h-8 w-8" />
@@ -656,7 +626,7 @@ export default function AdminDashboard() {
                       </CardContent>
                     </Card>
 
-                    <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200 text-center">
+                    <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
                       <CardHeader className="pb-4">
                         <div className="mx-auto p-4 rounded-full bg-purple-500/10 text-purple-500 w-fit mb-4">
                           <Star className="h-8 w-8" />
@@ -687,9 +657,9 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center justify-between">
                     <div>
               <CardTitle className="flex items-center gap-2">
                         <MessageCircle className="h-5 w-5 text-primary" />
@@ -697,16 +667,13 @@ export default function AdminDashboard() {
               </CardTitle>
                       <CardDescription>Track all conversations between students and buyers</CardDescription>
                     </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <div className="flex items-center gap-2">
                       <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Search messages..."
                           value={messageSearch}
-                          onChange={(e) => {
-                            setMessageSearch(e.target.value);
-                            setMessagePage(1); // Reset to first page on search
-                          }}
+                          onChange={(e) => setMessageSearch(e.target.value)}
                           className="pl-10 w-full h-10"
                         />
                       </div>
@@ -714,119 +681,50 @@ export default function AdminDashboard() {
                   </div>
             </CardHeader>
             <CardContent>
-                  {paginatedMessages.length > 0 ? (
-                    <>
-                      {/* 2×3 Grid Layout */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        {paginatedMessages.map((message) => (
-                          <Card
-                            key={message.id}
-                            className="glass-card bg-muted/20 hover:bg-muted/30 border border-border/50 hover:border-primary/30 transition-all duration-200"
-                          >
-                            <CardContent className="p-4 flex flex-col h-full">
-                              {/* Header */}
-                              <div className="flex items-start justify-between mb-3">
-                                <Badge variant={message.sender.role === 'STUDENT' ? 'default' : 'secondary'} className="text-xs">
-                                  {message.sender.role}
-                                </Badge>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(message.createdAt).toLocaleDateString()}
-                                </span>
-                              </div>
-
-                              {/* Sender */}
-                              <div className="mb-2">
-                                <p className="font-medium text-sm">{message.sender.name}</p>
-                                <p className="text-xs text-muted-foreground">{message.sender.email}</p>
-                              </div>
-
-                              {/* Message Body */}
-                              <div className="flex-1 mb-3">
-                                <p className="text-sm line-clamp-3">{message.body}</p>
-                              </div>
-
-                              {/* Service & Participants Info */}
-                              <div className="space-y-1 mb-3 p-2 bg-muted/30 rounded text-xs">
-                                <p className="line-clamp-1">
-                                  <strong>Service:</strong> {message.room.hireRequest.service.title}
-                                </p>
-                                <p className="line-clamp-1">
-                                  <strong>Buyer:</strong> {message.room.hireRequest.buyer.name}
-                                </p>
-                                <p className="line-clamp-1">
-                                  <strong>Student:</strong> {message.room.hireRequest.student.name}
-                                </p>
-                              </div>
-
-                              {/* Action Button */}
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
-                                disabled={loadingConversation}
-                                className="text-xs w-full"
-                              >
-                                <MessageCircle className="w-3 h-3 mr-1" />
-                                {loadingConversation ? "Loading..." : "View Full"}
-                              </Button>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-
-                      {/* Pagination Controls */}
-                      {totalMessagePages > 1 && (
-                        <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                          <div className="text-sm text-muted-foreground">
-                            Showing {startMessageIndex + 1}-{Math.min(endMessageIndex, filteredMessages.length)} of {filteredMessages.length} messages
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setMessagePage(p => Math.max(1, p - 1))}
-                              disabled={messagePage === 1}
-                            >
-                              <ChevronLeft className="h-4 w-4" />
-                              Previous
-                            </Button>
-                            <div className="flex items-center gap-1">
-                              {[...Array(totalMessagePages)].map((_, i) => (
-                                <Button
-                                  key={i}
-                                  variant={messagePage === i + 1 ? "default" : "outline"}
-                                  size="sm"
-                                  onClick={() => setMessagePage(i + 1)}
-                                  className="w-8 h-8 p-0"
-                                >
-                                  {i + 1}
-                                </Button>
-                              ))}
+              <div className="space-y-4">
+                    {filteredMessages.length > 0 ? (
+                      filteredMessages.map((message) => (
+                    <div
+                          key={message.id}
+                          className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50"
+                    >
+                          <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant={message.sender.role === 'STUDENT' ? 'default' : 'secondary'} className="text-xs">
+                                {message.sender.role}
+                          </Badge>
+                              <span className="font-medium text-sm">{message.sender.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(message.createdAt).toLocaleString()}
+                              </span>
                             </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setMessagePage(p => Math.min(totalMessagePages, p + 1))}
-                              disabled={messagePage === totalMessagePages}
-                            >
-                              Next
-                              <ChevronRight className="h-4 w-4" />
-                            </Button>
-                          </div>
+                            <p className="text-sm mb-2">{message.body}</p>
+                            <div className="text-xs text-muted-foreground mb-3">
+                              <p><strong>Service:</strong> {message.room.hireRequest.service.title}</p>
+                              <p><strong>Buyer:</strong> {message.room.hireRequest.buyer.name}</p>
+                              <p><strong>Student:</strong> {message.room.hireRequest.student.name}</p>
                         </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="text-center text-muted-foreground py-12">
-                      <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p>No messages found</p>
-                      {messageSearch && (
-                        <p className="text-sm mt-2">
-                          Try adjusting your search terms
-                        </p>
-                      )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
+                          disabled={loadingConversation}
+                          className="text-xs"
+                        >
+                          <MessageCircle className="w-3 h-3 mr-1" />
+                          {loadingConversation ? "Loading..." : "View Full Conversation"}
+                        </Button>
+                      </div>
                     </div>
-                  )}
+                  ))
+                ) : (
+                      <div className="text-center text-muted-foreground py-8">
+                        <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p>No messages found</p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
               </motion.div>
@@ -839,7 +737,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
@@ -945,7 +843,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Current Top Selections */}
-                <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
+                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                       <Star className="h-5 w-5 text-primary" />
@@ -1006,7 +904,7 @@ export default function AdminDashboard() {
                 </Card>
 
                 {/* All Services - Available to Feature */}
-                <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
+                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Package className="h-5 w-5 text-primary" />
@@ -1298,7 +1196,7 @@ function StudentVerificationQueue() {
 
   if (loading) {
     return (
-      <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
@@ -1314,7 +1212,7 @@ function StudentVerificationQueue() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 hover:shadow-lg transition-all duration-200">
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserCheck className="h-5 w-5 text-primary" />
