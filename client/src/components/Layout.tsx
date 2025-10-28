@@ -65,12 +65,12 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className={`fixed top-2 left-2 right-2 z-50 transition-all duration-300 rounded-xl ${
+      <nav className={`fixed top-2 left-2 right-2 z-50 transition-all duration-300 rounded-full ${
         scrolled 
           ? 'bg-background/90 dark:bg-background/90 backdrop-blur-xl shadow-lg border border-border/30' 
           : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
       }`}>
-        <div className="container-unified">
+        <div className="container-unified px-4">
           <div className="flex items-center justify-between h-10">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2.5 py-1 text-xs h-7"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2 py-0.5 text-xs h-6 rounded-full"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
