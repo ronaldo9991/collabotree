@@ -1247,24 +1247,68 @@ export default function StudentDashboard() {
 function ContractsSection() {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchContracts();
   }, []);
 
-  const fetchContracts = async () => {
+  const fetchContracts = async (retryCount = 0) => {
     try {
       setLoading(true);
+      setError(null);
+      console.log('Fetching contracts for user...', retryCount > 0 ? `(Retry ${retryCount})` : '');
+      
       const response = await api.getUserContracts();
-      if (response.success) {
+      console.log('Contracts API response:', response);
+      
+      if (response && response.success) {
         setContracts(response.data || []);
+        setError(null);
+        console.log('Contracts loaded successfully:', response.data?.length || 0, 'contracts');
+      } else {
+        console.warn('API response indicates failure:', response);
+        setContracts([]);
+        const errorMsg = response?.error || 'Unknown API error';
+        setError(errorMsg);
+        toast({
+          title: "Error",
+          description: errorMsg,
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Error fetching contracts:', error);
+      setContracts([]);
+      
+      // More specific error messages based on error type
+      let errorMessage = "Failed to load contracts.";
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
+          errorMessage = "Network error: Could not connect to server. Please check your internet connection.";
+        } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          errorMessage = "Authentication error: Please try refreshing the page or logging in again.";
+        } else if (error.message.includes('500')) {
+          errorMessage = "Server error: Please try again later.";
+        } else {
+          errorMessage = `Error: ${error.message}`;
+        }
+      }
+      
+      setError(errorMessage);
+      
+      // Auto-retry once for network errors
+      if (retryCount === 0 && (error instanceof Error && 
+          (error.message.includes('Failed to fetch') || error.message.includes('Network')))) {
+        console.log('Network error detected, retrying in 2 seconds...');
+        setTimeout(() => fetchContracts(1), 2000);
+        return;
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to load contracts.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -1280,6 +1324,40 @@ function ContractsSection() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <span className="ml-2">Loading contracts...</span>
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show error state with retry option
+  if (error && contracts.length === 0) {
+    return (
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-destructive/20">
+        <CardContent className="p-12 text-center">
+          <AlertTriangle className="h-16 w-16 text-destructive mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">Unable to Load Contracts</h3>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">{error}</p>
+          <div className="flex gap-3 justify-center">
+            <Button 
+              onClick={() => fetchContracts()} 
+              className="gap-2"
+              variant="default"
+            >
+              <Activity className="h-4 w-4" />
+              Retry Loading
+            </Button>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline"
+              className="gap-2"
+            >
+              <Activity className="h-4 w-4" />
+              Refresh Page
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4">
+            Check the browser console (F12) for detailed error information.
+          </p>
         </CardContent>
       </Card>
     );
