@@ -125,6 +125,16 @@ export default function Chat() {
         // Fetch contract data if it exists
         if (hireRequestData?.contract) {
           setContract(hireRequestData.contract);
+        } else {
+          // Try to fetch contract separately if not included in hire request
+          try {
+            const contractResponse = await api.getUserContracts({ hireRequestId: hireId });
+            if (contractResponse.data && contractResponse.data.length > 0) {
+              setContract(contractResponse.data[0]);
+            }
+          } catch (error) {
+            console.log('No contract found for this hire request');
+          }
         }
       } catch (error: any) {
         console.error('Error fetching hire request:', error);

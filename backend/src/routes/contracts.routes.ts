@@ -7,7 +7,7 @@ import {
   updateProgress, 
   markCompleted,
   getUserContracts 
-} from '../controllers/contracts.controller.js';
+} from '../controllers/contracts.controller.simple.js';
 import { authenticateToken, requireAuth } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/error.js';
 

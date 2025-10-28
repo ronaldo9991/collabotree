@@ -197,6 +197,24 @@ export const getHireRequest = async (req: AuthenticatedRequest, res: Response) =
             priceCents: true,
           },
         },
+        contract: {
+          include: {
+            buyer: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            student: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 

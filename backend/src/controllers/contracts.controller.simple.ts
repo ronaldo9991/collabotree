@@ -54,6 +54,11 @@ export const createContract = async (req: AuthenticatedRequest, res: Response) =
       return sendForbidden(res, 'Only the student can create contracts');
     }
 
+    // Check if hire request is accepted
+    if (hireRequest.status !== 'ACCEPTED') {
+      return sendError(res, 'Contract can only be created for accepted hire requests', 400);
+    }
+
     // Check if contract already exists
     const existingContract = await prisma.contract.findUnique({
       where: { hireRequestId: hireRequest.id },
@@ -197,14 +202,22 @@ export const getContract = async (req: AuthenticatedRequest, res: Response) => {
 export const getUserContracts = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user!.id;
+    const { hireRequestId } = req.query;
+
+    const whereClause: any = {
+      OR: [
+        { buyerId: userId },
+        { studentId: userId },
+      ],
+    };
+
+    // Add hireRequestId filter if provided
+    if (hireRequestId) {
+      whereClause.hireRequestId = hireRequestId;
+    }
 
     const contracts = await prisma.contract.findMany({
-      where: {
-        OR: [
-          { buyerId: userId },
-          { studentId: userId },
-        ],
-      },
+      where: whereClause,
       include: {
         buyer: {
           select: {
