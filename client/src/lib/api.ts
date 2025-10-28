@@ -32,9 +32,10 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
+    options: RequestInit & { responseType?: 'json' | 'blob' } = {}
+  ): Promise<ApiResponse<T> | Blob> {
     const url = `${this.baseURL}${endpoint}`;
+    const { responseType = 'json', ...requestOptions } = options;
 
     // Get auth token from localStorage
     let authToken = null;
@@ -53,28 +54,32 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
         ...(authToken && { Authorization: `Bearer ${authToken}` }),
-        ...options.headers,
+        ...requestOptions.headers,
       },
-      ...options,
+      ...requestOptions,
     };
 
     try {
       console.log('Making API request:', { url, method: config.method, hasToken: !!authToken });
       const response = await fetch(url, config);
-      const data = await response.json();
-
-      console.log('API response:', { url, status: response.status, data });
 
       if (!response.ok) {
+        const errorData = await response.json();
         console.error('API Error:', {
           url,
           status: response.status,
-          error: data.error,
+          error: errorData.error,
           hasToken: !!authToken
         });
-        throw new Error(data.error || `HTTP ${response.status}`);
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
 
+      if (responseType === 'blob') {
+        return await response.blob();
+      }
+
+      const data = await response.json();
+      console.log('API response:', { url, status: response.status, data });
       return data;
     } catch (error) {
       console.error('API request failed:', error);
@@ -294,6 +299,13 @@ class ApiClient {
   async processPayment(contractId: string) {
     return this.request(`/contracts/${contractId}/payment`, {
       method: 'POST',
+    });
+  }
+
+  async downloadContractPDF(contractId: string) {
+    return this.request(`/contracts/${contractId}/download`, {
+      method: 'GET',
+      responseType: 'blob',
     });
   }
 

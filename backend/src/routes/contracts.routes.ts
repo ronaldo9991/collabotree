@@ -6,7 +6,8 @@ import {
   processPayment, 
   updateProgress, 
   markCompleted,
-  getUserContracts 
+  getUserContracts,
+  downloadContractPDF
 } from '../controllers/contracts.controller.simple.js';
 import { authenticateToken, requireAuth } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/error.js';
@@ -25,6 +26,7 @@ router.post('/:contractId/sign', asyncHandler(signContract));
 router.post('/:contractId/payment', asyncHandler(processPayment));
 router.post('/:contractId/progress', asyncHandler(updateProgress));
 router.post('/:contractId/complete', asyncHandler(markCompleted));
+router.get('/:contractId/download', asyncHandler(downloadContractPDF));
 
 export default router;
 
