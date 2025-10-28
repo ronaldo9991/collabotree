@@ -30,6 +30,59 @@ class ApiClient {
     this.baseURL = baseURL;
   }
 
+  private getRefreshToken(): string | null {
+    try {
+      const tokens = localStorage.getItem('auth_tokens');
+      if (tokens) {
+        const parsedTokens = JSON.parse(tokens);
+        return parsedTokens.refreshToken;
+      }
+    } catch (error) {
+      console.error('Error parsing refresh token:', error);
+    }
+    return null;
+  }
+
+  private async refreshAccessToken(): Promise<boolean> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) return false;
+
+    try {
+      console.log('Attempting to refresh access token...');
+      const response = await fetch(`${this.baseURL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) {
+        console.error('Token refresh failed:', response.status);
+        localStorage.removeItem('auth_tokens');
+        return false;
+      }
+
+      const data = await response.json();
+      if (data.success && data.data.accessToken && data.data.refreshToken) {
+        localStorage.setItem('auth_tokens', JSON.stringify({
+          accessToken: data.data.accessToken,
+          refreshToken: data.data.refreshToken,
+        }));
+        console.log('Access token refreshed successfully');
+        return true;
+      } else {
+        console.error('Invalid refresh response:', data);
+        localStorage.removeItem('auth_tokens');
+        return false;
+      }
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      localStorage.removeItem('auth_tokens');
+      return false;
+    }
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit & { responseType?: 'json' | 'blob' } = {}
@@ -44,6 +97,40 @@ class ApiClient {
       if (tokens) {
         const parsedTokens = JSON.parse(tokens);
         authToken = parsedTokens.accessToken;
+
+        // Check if token is expired or expires soon and try to refresh
+        if (authToken) {
+          try {
+            const payload = JSON.parse(atob(authToken.split('.')[1]));
+            // Refresh token if it expires in the next 2 minutes
+            if (payload.exp * 1000 < Date.now() + 2 * 60 * 1000) {
+              console.log('Access token is expired or expires soon, attempting refresh...');
+              const refreshed = await this.refreshAccessToken();
+              if (refreshed) {
+                const newTokens = localStorage.getItem('auth_tokens');
+                if (newTokens) {
+                  const newParsedTokens = JSON.parse(newTokens);
+                  authToken = newParsedTokens.accessToken;
+                }
+              } else {
+                authToken = null;
+              }
+            }
+          } catch (tokenError) {
+            console.error('Error parsing token, attempting refresh:', tokenError);
+            const refreshed = await this.refreshAccessToken();
+            if (refreshed) {
+              const newTokens = localStorage.getItem('auth_tokens');
+              if (newTokens) {
+                const newParsedTokens = JSON.parse(newTokens);
+                authToken = newParsedTokens.accessToken;
+              }
+            } else {
+              authToken = null;
+              localStorage.removeItem('auth_tokens');
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error parsing auth tokens:', error);
@@ -62,6 +149,39 @@ class ApiClient {
     try {
       console.log('Making API request:', { url, method: config.method, hasToken: !!authToken });
       const response = await fetch(url, config);
+
+      // If we get a 401 and we have a refresh token, try refreshing and retrying
+      if (response.status === 401 && this.getRefreshToken()) {
+        console.log('Got 401, attempting token refresh and retry...');
+        const refreshed = await this.refreshAccessToken();
+        if (refreshed) {
+          // Retry the request with the new token
+          const newTokens = localStorage.getItem('auth_tokens');
+          let newAuthToken = null;
+          if (newTokens) {
+            const newParsedTokens = JSON.parse(newTokens);
+            newAuthToken = newParsedTokens.accessToken;
+          }
+          
+          const retryConfig: RequestInit = {
+            ...config,
+            headers: {
+              ...config.headers,
+              ...(newAuthToken && { Authorization: `Bearer ${newAuthToken}` }),
+            },
+          };
+          
+          const retryResponse = await fetch(url, retryConfig);
+          if (retryResponse.ok) {
+            if (responseType === 'blob') {
+              return await retryResponse.blob();
+            }
+            const retryData = await retryResponse.json();
+            console.log('Retry API response:', { url, status: retryResponse.status, data: retryData });
+            return retryData;
+          }
+        }
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
