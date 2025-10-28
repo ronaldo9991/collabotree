@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1.5 text-sm h-8"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2.5 py-1 text-xs h-7"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
