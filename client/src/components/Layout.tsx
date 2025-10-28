@@ -71,13 +71,13 @@ export function Layout({ children }: LayoutProps) {
           : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
       }`}>
         <div className="container-unified px-3">
-          <div className="flex items-center justify-between h-9">
+            <div className="flex items-center justify-between h-10">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity" data-testid="logo">
               <img 
                 src="/logoa.png" 
                 alt="CollaboTree Logo" 
-                className="w-7 h-7 object-contain rounded-xl"
+                className="w-8 h-8 object-contain rounded-xl"
               />
               <span className="text-sm font-semibold">CollaboTree</span>
             </Link>
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1 py-0.5 text-[9px] h-4 rounded-full font-medium"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1.5 text-sm h-8 rounded-full font-medium"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
@@ -262,7 +262,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-13">
+        <main className="pt-14">
         {children}
       </main>
 
