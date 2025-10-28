@@ -296,6 +296,7 @@ model Contract {
   deliverables  String?
   isSignedByBuyer Boolean @default(false)
   isSignedByStudent Boolean @default(false)
+  signedAt        DateTime?
   paymentStatus String   @default("PENDING")
   progressStatus String  @default("NOT_STARTED")
   studentPayoutCents Int?
