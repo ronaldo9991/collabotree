@@ -291,6 +291,9 @@ model Contract {
   buyerId       String?
   studentId     String?
   serviceId     String?
+  priceCents    Int?
+  timeline      Int?
+  deliverables  String?
   isSignedByBuyer Boolean @default(false)
   isSignedByStudent Boolean @default(false)
   paymentStatus String   @default("PENDING")
