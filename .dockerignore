@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.env
+.env.local
+.env.production
+.git
+.gitignore
+README.md
+Dockerfile
+.dockerignore
+*.log
+dist
+coverage
+.nyc_output
+.DS_Store
+*.tgz
+*.tar.gz

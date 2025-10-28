@@ -1,0 +1,7 @@
+Force rebuild timestamp: 2025-10-28T14:57:00Z
+
+This file forces Railway to detect changes and rebuild.
+Updated nixpacks configuration and optimized start script.
+Contract signing issues fixed.
+Database schema updated with signedAt field.
+Build timeout optimizations applied.

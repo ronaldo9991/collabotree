@@ -53,3 +53,4 @@ export const submitContactForm = async (req: Request, res: Response) => {
     return sendError(res, 'Failed to submit contact form', 500);
   }
 };
+
