@@ -339,8 +339,7 @@ export const signContract = async (req: AuthenticatedRequest, res: Response) => 
     }
 
     // If both parties signed, activate contract
-    const bothSigned = (isBuyer ? true : contract.isSignedByBuyer) && 
-                      (!isBuyer ? true : contract.isSignedByStudent);
+    const bothSigned = isBuyer ? contract.isSignedByStudent : contract.isSignedByBuyer;
     
     console.log('Both signed check:', { bothSigned, isBuyer, buyerSigned: contract.isSignedByBuyer, studentSigned: contract.isSignedByStudent });
     
@@ -413,9 +412,9 @@ export const signContract = async (req: AuthenticatedRequest, res: Response) => 
   } catch (error) {
     console.error('Error signing contract:', error);
     console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : 'UnknownError'
     });
     if (error instanceof z.ZodError) {
       console.error('Validation errors:', error.errors);
@@ -867,9 +866,9 @@ export const downloadContractPDF = async (req: AuthenticatedRequest, res: Respon
           <p><strong>Contract ID:</strong> ${contract.id}</p>
           <p><strong>Created:</strong> ${new Date(contract.createdAt).toLocaleDateString()}</p>
           <p><strong>Timeline:</strong> ${contract.timeline} days</p>
-          <p><strong>Total Amount:</strong> $${(contract.priceCents / 100).toFixed(2)}</p>
-          <p><strong>Student Payout:</strong> $${(contract.studentPayoutCents / 100).toFixed(2)}</p>
-          <p><strong>Platform Fee:</strong> $${(contract.platformFeeCents / 100).toFixed(2)}</p>
+          <p><strong>Total Amount:</strong> $${((contract.priceCents || 0) / 100).toFixed(2)}</p>
+          <p><strong>Student Payout:</strong> $${((contract.studentPayoutCents || 0) / 100).toFixed(2)}</p>
+          <p><strong>Platform Fee:</strong> $${((contract.platformFeeCents || 0) / 100).toFixed(2)}</p>
         </div>
 
         <div class="section">
