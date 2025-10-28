@@ -168,7 +168,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-1.5 flex-shrink-0 mr-4">
+            <div className="hidden lg:flex items-center gap-1 flex-shrink-0 mr-8">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1 py-0.5 text-[10px] h-4.5 rounded-full font-medium"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1 py-0.5 text-[9px] h-4 rounded-full font-medium"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
