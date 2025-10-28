@@ -71,7 +71,7 @@ export function Layout({ children }: LayoutProps) {
           : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
       }`}>
         <div className="container-unified">
-          <div className="flex items-center justify-between h-12">
+          <div className="flex items-center justify-between h-10">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
               <img 
@@ -79,11 +79,11 @@ export function Layout({ children }: LayoutProps) {
                 alt="CollaboTree Logo" 
                 className="w-8 h-8 object-contain"
               />
-              <span className="text-lg font-semibold">CollaboTree</span>
+              <span className="text-base font-semibold">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-3">
               {navigation.map((item) => (
                 item.show && (
                   <button
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1.5 text-sm h-8"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
@@ -262,7 +262,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-16">
+      <main className="pt-14">
         {children}
       </main>
 
