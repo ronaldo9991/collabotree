@@ -319,34 +319,6 @@ export default function AdminDashboard() {
     }
   };
 
-      // Fetch pending verifications
-      console.log('Fetching pending verifications...');
-      const verificationResponse = await api.getPendingVerifications();
-      console.log('Verification response:', verificationResponse);
-      if (verificationResponse.success && verificationResponse.data) {
-        setPendingVerifications(verificationResponse.data as any[]);
-      }
-
-      console.log('Admin data fetch completed successfully');
-
-    } catch (error) {
-      console.error('Error fetching admin data:', error);
-      console.error('Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        name: error instanceof Error ? error.name : 'Unknown'
-      });
-      toast({
-        title: "Error",
-        description: "Failed to load admin dashboard data.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-      setLastUpdated(new Date());
-    }
-  };
-
   const handleToggleTopSelection = async (serviceId: string, isTopSelection: boolean) => {
     try {
       // Optimistically update the UI immediately
