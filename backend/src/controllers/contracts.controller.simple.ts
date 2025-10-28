@@ -259,10 +259,10 @@ export const getUserContracts = async (req: AuthenticatedRequest, res: Response)
       const terms = JSON.parse(contract.terms);
       return {
         ...contract,
-        deliverables: JSON.stringify(terms.deliverables),
-        timeline: terms.timeline,
+        deliverables: contract.deliverables || JSON.stringify(terms.deliverables),
+        timeline: contract.timeline || terms.timeline,
         description: terms.additionalTerms || 'Standard terms apply',
-        priceCents: contract.hireRequest.service.priceCents,
+        priceCents: contract.priceCents || contract.hireRequest.service.priceCents,
         service: contract.hireRequest.service,
       };
     });
@@ -378,10 +378,10 @@ export const signContract = async (req: AuthenticatedRequest, res: Response) => 
     const terms = JSON.parse(updatedContract.terms);
     const response = {
       ...updatedContract,
-      deliverables: JSON.stringify(terms.deliverables),
-      timeline: terms.timeline,
+      deliverables: updatedContract.deliverables || JSON.stringify(terms.deliverables),
+      timeline: updatedContract.timeline || terms.timeline,
       description: terms.additionalTerms || 'Standard terms apply',
-      priceCents: updatedContract.hireRequest.service.priceCents,
+      priceCents: updatedContract.priceCents || updatedContract.hireRequest.service.priceCents,
       service: updatedContract.hireRequest.service,
     };
 
