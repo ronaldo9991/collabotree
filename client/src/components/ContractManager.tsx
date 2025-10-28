@@ -154,38 +154,8 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
     }
   };
 
-  const handleDownloadPDF = async () => {
-    if (!contract) return;
-
-    try {
-      setProcessing(true);
-      const blob = await api.downloadContractPDF(contract.id) as Blob;
-      
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `contract-${contract.id}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      toast({
-        title: "PDF Downloaded",
-        description: "Contract PDF has been downloaded successfully.",
-      });
-    } catch (error) {
-      console.error('Error downloading PDF:', error);
-      toast({
-        title: "Error",
-        description: "Failed to download PDF. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessing(false);
-    }
-  };
+  // PDF download functionality temporarily disabled
+  // const handleDownloadPDF = async () => { ... }
 
   const handleUpdateProgress = async () => {
     if (!contract || !progressNotes.trim()) return;
@@ -387,23 +357,22 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
           </Badge>
         </div>
 
-        {/* PDF Download */}
+        {/* PDF Download - Temporarily Disabled */}
         {contract.isSignedByBuyer && contract.isSignedByStudent && (
           <div>
             <h4 className="font-semibold mb-2">Contract Document</h4>
             <Button 
-              onClick={handleDownloadPDF} 
-              disabled={processing}
+              disabled={true}
               variant="outline"
-              className="w-full"
+              className="w-full opacity-50 cursor-not-allowed"
+              title="PDF download feature is temporarily unavailable"
             >
-              {processing ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <FileText className="h-4 w-4 mr-2" />
-              )}
-              Download Contract PDF
+              <FileText className="h-4 w-4 mr-2" />
+              PDF Coming Soon
             </Button>
+            <p className="text-xs text-muted-foreground mt-1">
+              PDF download will be available in a future update
+            </p>
           </div>
         )}
 

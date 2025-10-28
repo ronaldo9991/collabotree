@@ -423,10 +423,8 @@ class ApiClient {
   }
 
   async downloadContractPDF(contractId: string) {
-    return this.request(`/contracts/${contractId}/download`, {
-      method: 'GET',
-      responseType: 'blob',
-    });
+    // PDF download functionality is temporarily disabled
+    throw new Error('PDF download feature is temporarily unavailable. This feature will be restored in a future update.');
   }
 
   async updateProgress(contractId: string, data: any) {
