@@ -248,6 +248,12 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       console.log('Fetching admin data...');
+      
+      // Set a timeout to ensure loading doesn't hang forever
+      const timeoutId = setTimeout(() => {
+        console.log('⏰ Admin dashboard fetch timeout - setting loading to false');
+        setLoading(false);
+      }, 10000); // 10 second timeout
       console.log('Current user:', user);
       console.log('Auth token:', localStorage.getItem('auth_tokens'));
 
@@ -308,6 +314,7 @@ export default function AdminDashboard() {
         variant: "destructive",
       });
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
       setLastUpdated(new Date());
     }

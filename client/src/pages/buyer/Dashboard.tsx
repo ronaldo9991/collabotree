@@ -92,34 +92,48 @@ export default function BuyerDashboard() {
   // Fetch buyer dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
+      console.log('🔄 Buyer Dashboard - Starting data fetch...');
+      console.log('👤 User:', user);
+      console.log('🔐 Auth Loading:', authLoading);
+      
       if (!user) {
+        console.log('❌ No user, setting loading to false');
         setLoading(false);
         return;
       }
 
+      // Set a timeout to ensure loading doesn't hang forever
+      const timeoutId = setTimeout(() => {
+        console.log('⏰ Dashboard fetch timeout - setting loading to false');
+        setLoading(false);
+      }, 10000); // 10 second timeout
+
       try {
         setLoading(true);
-        // Fetch real user projects data using the orders API
         console.log('🚀 Fetching orders for user:', user?.id, 'role:', user?.role);
-        const userProjectsResponse = await api.getOrders();
-        console.log('🔍 Full Orders API response:', JSON.stringify(userProjectsResponse, null, 2));
         
-        // Handle different possible response structures
+        // Add error handling for API calls
         let userProjects = [];
-        if (userProjectsResponse?.data?.data && Array.isArray(userProjectsResponse.data.data)) {
-          // Paginated response structure
-          userProjects = userProjectsResponse.data.data;
-          console.log('📊 Using paginated data structure:', userProjects.length, 'projects');
-        } else if (userProjectsResponse?.data && Array.isArray(userProjectsResponse.data)) {
-          // Direct array response
-          userProjects = userProjectsResponse.data;
-          console.log('📊 Using direct array structure:', userProjects.length, 'projects');
-        } else if (Array.isArray(userProjectsResponse)) {
-          // Direct array response (no wrapper)
-          userProjects = userProjectsResponse;
-          console.log('📊 Using direct response array:', userProjects.length, 'projects');
-        } else {
-          console.log('❌ No valid data structure found in response');
+        try {
+          const userProjectsResponse = await api.getOrders();
+          console.log('🔍 Orders API response:', userProjectsResponse);
+          
+          // Handle different possible response structures
+          if (userProjectsResponse?.data?.data && Array.isArray(userProjectsResponse.data.data)) {
+            userProjects = userProjectsResponse.data.data;
+            console.log('📊 Using paginated data structure:', userProjects.length, 'projects');
+          } else if (userProjectsResponse?.data && Array.isArray(userProjectsResponse.data)) {
+            userProjects = userProjectsResponse.data;
+            console.log('📊 Using direct array structure:', userProjects.length, 'projects');
+          } else if (Array.isArray(userProjectsResponse)) {
+            userProjects = userProjectsResponse;
+            console.log('📊 Using direct response array:', userProjects.length, 'projects');
+          } else {
+            console.log('❌ No valid data structure found in response');
+          }
+        } catch (ordersError) {
+          console.error('❌ Error fetching orders:', ordersError);
+          userProjects = [];
         }
         
         console.log('✅ Final parsed user projects:', userProjects);
@@ -139,7 +153,7 @@ export default function BuyerDashboard() {
           console.log('❌ Direct API test failed:', testError);
         }
         
-        // Always fetch hire requests to check for accepted ones (not just when no orders)
+        // Always fetch hire requests to check for accepted ones
         console.log('🔄 Fetching hire requests to check for accepted ones...');
         try {
           const hireRequestsResponse = await api.getHireRequests();
@@ -153,7 +167,7 @@ export default function BuyerDashboard() {
           // Convert hire requests to project format
           const projectsFromHires = acceptedHireRequests.map((hire: any) => ({
             id: hire.id,
-            status: 'ACCEPTED', // Use ACCEPTED status for accepted hire requests
+            status: 'ACCEPTED',
             priceCents: hire.priceCents || hire.service?.priceCents || 0,
             createdAt: hire.createdAt,
             hireRequestId: hire.id,
@@ -169,7 +183,7 @@ export default function BuyerDashboard() {
           const newProjectsFromHires = projectsFromHires.filter((p: any) => !existingProjectIds.has(p.id));
           userProjects = [...userProjects, ...newProjectsFromHires];
         } catch (hireError) {
-          console.log('❌ Error fetching hire requests:', hireError);
+          console.error('❌ Error fetching hire requests:', hireError);
         }
         
         setUserProjects(userProjects);
@@ -254,12 +268,13 @@ export default function BuyerDashboard() {
         setUserProjects([]);
         setBrowseServices([]);
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, [user, toast, hireRequestsRefresh]);
+  }, [user, authLoading]);
 
   const formatAmount = (amountCents: number) => {
     return `$${(amountCents / 100).toFixed(2)}`;
@@ -306,6 +321,20 @@ export default function BuyerDashboard() {
   // If no user after loading, don't render anything (will redirect)
   if (!user) {
     return null;
+  }
+
+  // Fallback render if we have a user but no data yet
+  if (!userProjects && !browseServices) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 section-padding-y">
+        <div className="container-unified">
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold mb-4">Welcome, {user?.name?.split(' ')[0] || 'Buyer'}!</h1>
+            <p className="text-muted-foreground">Loading your dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
