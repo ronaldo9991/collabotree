@@ -70,26 +70,26 @@ export function Layout({ children }: LayoutProps) {
           ? 'bg-background/90 dark:bg-background/90 backdrop-blur-xl shadow-lg border border-border/30' 
           : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
       }`}>
-        <div className="container-unified px-4">
-          <div className="flex items-center justify-between h-10">
+        <div className="container-unified px-3">
+          <div className="flex items-center justify-between h-9">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
+            <Link href="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity" data-testid="logo">
               <img 
                 src="/logoa.png" 
                 alt="CollaboTree Logo" 
-                className="w-8 h-8 object-contain"
+                className="w-7 h-7 object-contain"
               />
-              <span className="text-base font-semibold">CollaboTree</span>
+              <span className="text-sm font-semibold">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
               {navigation.map((item) => (
                 item.show && (
                   <button
                     key={item.name}
                     onClick={() => handleNavigation(item.href)}
-                    className={`text-sm font-medium transition-colors px-2 py-1 rounded-md hover:bg-muted/20 ${
+                    className={`text-xs font-medium transition-colors px-1.5 py-0.5 rounded-md hover:bg-muted/20 ${
                       location === item.href ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
                     }`}
                     data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
@@ -168,16 +168,16 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-1.5">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-1.5 rounded-lg hover:bg-muted/20 transition-colors"
+                className="p-1 rounded-lg hover:bg-muted/20 transition-colors"
                 data-testid="theme-toggle"
               >
-                {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                {theme === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
               </Button>
 
               {/* Command Palette */}
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2 py-0.5 text-xs h-6 rounded-full"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1.5 py-0.5 text-xs h-5 rounded-full"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
@@ -262,7 +262,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-14">
+      <main className="pt-13">
         {children}
       </main>
 
