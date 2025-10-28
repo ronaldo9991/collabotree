@@ -104,19 +104,9 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   const handleSignContract = async () => {
     if (!contract || !signature.trim()) return;
 
-    console.log('🔍 handleSignContract Debug:', {
-      contractId: contract.id,
-      userId: user?.id,
-      userRole: user?.id === contract.buyerId ? 'BUYER' : 'STUDENT',
-      signature: signature.trim(),
-      isSignedByBuyer: contract.isSignedByBuyer,
-      isSignedByStudent: contract.isSignedByStudent
-    });
-
     try {
       setProcessing(true);
       const response = await api.signContract(contract.id, { signature: signature.trim() });
-      console.log('🔍 Sign contract response:', response);
       if (response.success) {
         setContract(response.data);
         setSignature('');
@@ -249,18 +239,6 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
 
   const deliverables = JSON.parse(contract.deliverables || '[]');
   const userRole = user?.id === contract.buyerId ? 'BUYER' : 'STUDENT';
-  
-  // Debug logging
-  console.log('🔍 ContractManager Debug:', {
-    userId: user?.id,
-    contractBuyerId: contract.buyerId,
-    contractStudentId: contract.studentId,
-    userRole,
-    isSignedByBuyer: contract.isSignedByBuyer,
-    isSignedByStudent: contract.isSignedByStudent,
-    contractStatus: contract.status,
-    paymentStatus: contract.paymentStatus
-  });
   
   // Determine available actions based on contract state
   const canSign = !contract.isSignedByBuyer || !contract.isSignedByStudent;
