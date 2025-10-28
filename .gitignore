@@ -5,3 +5,6 @@ client/node_modules
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Allow backend/dist to be committed for Railway
+!backend/dist/
