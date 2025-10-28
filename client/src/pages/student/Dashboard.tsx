@@ -64,7 +64,7 @@ interface ApplicationWithDetails {
 
 export default function StudentDashboard() {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
   const [applications, setApplications] = useState<ApplicationWithDetails[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -1315,7 +1315,7 @@ function ContractsSection() {
 
 // Student Verification Component
 function StudentVerification() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [verificationStatus, setVerificationStatus] = useState({
     isVerified: false,

@@ -52,7 +52,7 @@ interface OrderStats {
 
 export default function BuyerDashboard() {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
   
   const [stats, setStats] = useState<OrderStats>({
@@ -72,10 +72,10 @@ export default function BuyerDashboard() {
 
   // If no user, redirect to sign in
   useEffect(() => {
-    if (!user) {
+    if (!user && !authLoading) {
       navigate('/signin');
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   // Function to refresh hire requests
   const refreshHireRequests = async () => {
@@ -291,8 +291,8 @@ export default function BuyerDashboard() {
     }
   };
 
-  // Show loading state or empty dashboard if no user
-  if (loading || !user) {
+  // Show loading state while auth is loading or dashboard data is loading
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -301,6 +301,11 @@ export default function BuyerDashboard() {
         </div>
       </div>
     );
+  }
+
+  // If no user after loading, don't render anything (will redirect)
+  if (!user) {
+    return null;
   }
 
   return (
