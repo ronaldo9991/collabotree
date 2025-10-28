@@ -168,13 +168,13 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-1.5 flex-shrink-0">
+            <div className="hidden lg:flex items-center gap-1.5 flex-shrink-0 mr-4">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-1 rounded-lg hover:bg-muted/20 transition-colors ml-2"
+                className="p-1 rounded-lg hover:bg-muted/20 transition-colors"
                 data-testid="theme-toggle"
               >
                 {theme === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
@@ -249,7 +249,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1 py-0.5 text-xs h-5 rounded-full ml-auto"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-1 py-0.5 text-[10px] h-4.5 rounded-full font-medium"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
