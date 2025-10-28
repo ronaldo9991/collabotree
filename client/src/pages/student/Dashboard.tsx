@@ -38,7 +38,8 @@ import {
   Play,
   Upload,
   Shield,
-  CheckCircle2
+  CheckCircle2,
+  LayoutDashboard
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -512,41 +513,46 @@ export default function StudentDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-gradient-to-r from-[#00B2FF]/10 via-[#4AC8FF]/15 to-[#8FE5FF]/10 dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 border-2 border-[#00B2FF]/30 dark:border-[#00B2FF]/20 rounded-xl shadow-lg p-1">
+            <TabsList className="grid w-full grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-4 sm:mb-6 lg:mb-8 h-auto min-h-12 bg-gradient-to-r from-[#00B2FF]/10 via-[#4AC8FF]/15 to-[#8FE5FF]/10 dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 border-2 border-[#00B2FF]/30 dark:border-[#00B2FF]/20 rounded-xl shadow-lg p-1 gap-1">
               <TabsTrigger 
                 value="overview" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg py-2 px-2 sm:px-3"
               >
-                <span className="hidden sm:inline">Overview</span>
-                <span className="sm:hidden">Stats</span>
+                <LayoutDashboard className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="hidden xs:inline">Overview</span>
+                <span className="xs:hidden">Stats</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="orders" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg py-2 px-2 sm:px-3"
               >
+                <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="hidden sm:inline">Buyer Requests</span>
                 <span className="sm:hidden">Orders</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="messages" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg py-2 px-2 sm:px-3"
               >
-                <span className="hidden sm:inline">Messages</span>
-                <span className="sm:hidden">Chat</span>
+                <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="hidden xs:inline">Messages</span>
+                <span className="xs:hidden">Chat</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="services" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg py-2 px-2 sm:px-3"
               >
+                <Briefcase className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="hidden sm:inline">My Services</span>
                 <span className="sm:hidden">Services</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="contracts" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg h-full flex items-center justify-center"
+                className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg py-2 px-2 sm:px-3"
               >
-                <span className="hidden sm:inline">Contracts</span>
-                <span className="sm:hidden">Contracts</span>
+                <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="hidden xs:inline">Contracts</span>
+                <span className="xs:hidden">Docs</span>
               </TabsTrigger>
             </TabsList>
 
@@ -566,83 +572,83 @@ export default function StudentDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6"
+                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6"
               >
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="projects-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                      <Package className="h-8 w-8" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-2 sm:mb-4">
+                      <Package className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Projects</CardTitle>
+                    <CardTitle className="text-sm sm:text-lg lg:text-xl">Projects</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">{stats.totalProjects}</div>
-                    <p className="text-sm text-muted-foreground">Total projects</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">{stats.totalProjects}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Total projects</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="accepted-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
-                      <TrendingUp className="h-8 w-8" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-2 sm:mb-4">
+                      <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Accepted</CardTitle>
+                    <CardTitle className="text-sm sm:text-lg lg:text-xl">Accepted</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary mb-2">{stats.acceptedApplications}</div>
-                    <p className="text-sm text-muted-foreground">Accepted applications</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-secondary mb-1 sm:mb-2">{stats.acceptedApplications}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Accepted apps</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="earnings-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
-                      <DollarSign className="h-8 w-8" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-2 sm:mb-4">
+                      <DollarSign className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Earnings</CardTitle>
+                    <CardTitle className="text-sm sm:text-lg lg:text-xl">Earnings</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-accent mb-2">${stats.totalEarnings}</div>
-                    <p className="text-sm text-muted-foreground">Total earnings</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent mb-1 sm:mb-2">${stats.totalEarnings}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Total earned</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="pending-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                      <Clock className="h-8 w-8" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-2 sm:mb-4">
+                      <Clock className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Pending</CardTitle>
+                    <CardTitle className="text-sm sm:text-lg lg:text-xl">Pending</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">{stats.pendingApplications}</div>
-                    <p className="text-sm text-muted-foreground">Pending applications</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">{stats.pendingApplications}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Pending apps</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="pending-orders-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
-                      <MessageCircle className="h-8 w-8" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-2 sm:mb-4">
+                      <MessageCircle className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Buyer Requests</CardTitle>
+                    <CardTitle className="text-sm sm:text-lg lg:text-xl">Requests</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary mb-2">{stats.pendingOrders}</div>
-                    <p className="text-sm text-muted-foreground">Pending orders</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-secondary mb-1 sm:mb-2">{stats.pendingOrders}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Pending orders</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="order-value-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
-                      <Star className="h-8 w-8" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-2 sm:mb-4">
+                      <Star className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Order Value</CardTitle>
+                    <CardTitle className="text-sm sm:text-lg lg:text-xl">Value</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-accent mb-2">${stats.totalOrderValue}</div>
-                    <p className="text-sm text-muted-foreground">From orders</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent mb-1 sm:mb-2">${stats.totalOrderValue}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">From orders</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -1088,7 +1094,7 @@ export default function StudentDashboard() {
                 </div>
 
                 {services.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {services.map((service) => (
                       <motion.div
                         key={service.id}

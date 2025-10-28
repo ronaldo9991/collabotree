@@ -334,26 +334,31 @@ export default function BuyerDashboard() {
 
         {/* Navigation Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-gradient-to-r from-[#00B2FF]/10 via-[#4AC8FF]/15 to-[#8FE5FF]/10 dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 border-2 border-[#00B2FF]/30 dark:border-[#00B2FF]/20 rounded-xl shadow-lg p-1">
-            <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
-              <LayoutDashboard className="h-4 w-4" />
-              Overview
+            <TabsList className="grid w-full grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-4 sm:mb-6 lg:mb-8 h-auto min-h-12 bg-gradient-to-r from-[#00B2FF]/10 via-[#4AC8FF]/15 to-[#8FE5FF]/10 dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] backdrop-blur-12 border-2 border-[#00B2FF]/30 dark:border-[#00B2FF]/20 rounded-xl shadow-lg p-1 gap-1">
+            <TabsTrigger value="overview" className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200 text-xs sm:text-sm py-2 px-2 sm:px-3">
+              <LayoutDashboard className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden xs:inline">Overview</span>
+              <span className="xs:hidden">Stats</span>
               </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
-              <Briefcase className="h-4 w-4" />
-              My Projects
+            <TabsTrigger value="orders" className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200 text-xs sm:text-sm py-2 px-2 sm:px-3">
+              <Briefcase className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">My Projects</span>
+              <span className="sm:hidden">Projects</span>
               </TabsTrigger>
-            <TabsTrigger value="messages" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
-              <MessageCircle className="h-4 w-4" />
-              Messages
+            <TabsTrigger value="messages" className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200 text-xs sm:text-sm py-2 px-2 sm:px-3">
+              <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden xs:inline">Messages</span>
+              <span className="xs:hidden">Chat</span>
               </TabsTrigger>
-            <TabsTrigger value="browse" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
-              <Users className="h-4 w-4" />
-              Browse Talent
+            <TabsTrigger value="browse" className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200 text-xs sm:text-sm py-2 px-2 sm:px-3">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Browse Talent</span>
+              <span className="sm:hidden">Browse</span>
               </TabsTrigger>
-            <TabsTrigger value="contracts" className="flex items-center gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200">
-              <FileText className="h-4 w-4" />
-              Contracts
+            <TabsTrigger value="contracts" className="flex items-center justify-center gap-1 sm:gap-2 data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white hover:bg-[#00B2FF]/10 transition-all duration-200 text-xs sm:text-sm py-2 px-2 sm:px-3">
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden xs:inline">Contracts</span>
+              <span className="xs:hidden">Docs</span>
               </TabsTrigger>
             </TabsList>
 
@@ -363,56 +368,56 @@ export default function BuyerDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6"
               >
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                    <DollarSign className="h-6 w-6" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-2 sm:mb-4">
+                    <DollarSign className="h-4 w-4 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">${stats.totalSpent}</div>
-                  <p className="text-xs text-muted-foreground">on completed projects</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">${stats.totalSpent}</div>
+                  <p className="text-xs text-muted-foreground">completed projects</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
-                    <Activity className="h-6 w-6" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-2 sm:mb-4">
+                    <Activity className="h-4 w-4 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Active Projects</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Active Projects</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary mb-2">{stats.activeOrders}</div>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-secondary mb-1 sm:mb-2">{stats.activeOrders}</div>
                   <p className="text-xs text-muted-foreground">in progress</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
-                    <CheckCircle className="h-6 w-6" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-2 sm:mb-4">
+                    <CheckCircle className="h-4 w-4 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Completed</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-accent mb-2">{stats.completedProjects}</div>
-                  <p className="text-xs text-muted-foreground">successfully delivered</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent mb-1 sm:mb-2">{stats.completedProjects}</div>
+                  <p className="text-xs text-muted-foreground">delivered</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                    <Bookmark className="h-6 w-6" />
+                  <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-2 sm:mb-4">
+                    <Bookmark className="h-4 w-4 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Saved Services</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Saved Services</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">{stats.savedServices}</div>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-1 sm:mb-2">{stats.savedServices}</div>
                   <p className="text-xs text-muted-foreground">for later</p>
                   </CardContent>
                 </Card>
@@ -453,40 +458,40 @@ export default function BuyerDashboard() {
                   <div className="space-y-4">
                   {userProjects.map((project) => (
                     <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                              <h3 className="text-lg font-semibold">{project.service?.title || 'Untitled Project'}</h3>
-                              <Badge className={`${getStatusColor(project.status)} border`}>
+                        <CardContent className="p-4 sm:p-6">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                              <h3 className="text-base sm:text-lg font-semibold line-clamp-2">{project.service?.title || 'Untitled Project'}</h3>
+                              <Badge className={`${getStatusColor(project.status)} border self-start sm:self-center flex-shrink-0`}>
                                   <span className="flex items-center gap-1">
                                   {getStatusIcon(project.status)}
-                                  {project.status}
+                                  <span className="text-xs">{project.status}</span>
                                   </span>
                                 </Badge>
                               </div>
                               
-                              <p className="text-muted-foreground mb-4 line-clamp-2">
+                              <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">
                               {project.service?.description || 'No description available'}
                               </p>
                               
-                              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                              <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 text-xs sm:text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
-                                  <UserIcon className="h-4 w-4" />
-                                {project.student?.name || 'Unknown Student'}
+                                  <UserIcon className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span className="truncate">{project.student?.name || 'Unknown Student'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <DollarSign className="h-4 w-4" />
-                                {formatAmount(project.priceCents || 0)}
+                                  <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span>{formatAmount(project.priceCents || 0)}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Calendar className="h-4 w-4" />
-                                {new Date(project.createdAt).toLocaleDateString()}
+                                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span>{new Date(project.createdAt).toLocaleDateString()}</span>
                                 </div>
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-2 ml-4">
+                            <div className="flex items-center gap-2 sm:ml-4 self-start sm:self-center">
                             {(project.status === 'PENDING' || project.status === 'PAID' || project.status === 'IN_PROGRESS' || project.status === 'DELIVERED' || project.status === 'ACCEPTED') ? (
                                 <Button
                                   variant="default"
@@ -497,9 +502,9 @@ export default function BuyerDashboard() {
                                   console.log('🚀 Project data:', project);
                                   navigate(`/chat/${chatId}`);
                                 }}
-                                  className="gap-2 bg-primary hover:bg-primary/90"
+                                  className="gap-2 bg-primary hover:bg-primary/90 text-xs sm:text-sm px-3 py-2"
                                 >
-                                  <MessageCircle className="h-4 w-4" />
+                                  <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                                   Chat
                                 </Button>
                               ) : (
@@ -830,7 +835,7 @@ function BrowseTalentSection({ searchTerm, projects, hireRequests, onHireSuccess
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 items-stretch">
       {filteredProjects.map((project) => (
         <div key={project.id} className="h-full flex">
           <ProjectCard 
