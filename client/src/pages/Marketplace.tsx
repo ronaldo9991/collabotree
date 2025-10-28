@@ -184,25 +184,16 @@ export default function ExploreTalent() {
     }
   }, [search, priceRange, toast]);
 
-  // Initialize and sync search from URL
+  // Initialize search from URL only once on mount
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const searchQuery = searchParams.get('search') || '';
     
-    console.log('==== SEARCH SYNC ====');
-    console.log('Window location:', window.location.href);
-    console.log('URL search param:', searchQuery);
-    console.log('Current state:', search);
-    console.log('Are they different?', searchQuery !== search);
-    
-    // Always update if URL has search and it's different from current state
-    if (searchQuery !== search) {
-      console.log('✅ UPDATING search state to:', searchQuery);
+    if (searchQuery && !search) {
       setSearch(searchQuery);
-    } else {
-      console.log('⏭️ Skipping update - values match');
     }
-  }, [location, search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   // Fetch data when search or filters change
   useEffect(() => {
