@@ -209,18 +209,36 @@ if (env.NODE_ENV === 'production') {
       if (err) {
         console.error(`❌ Error serving asset ${req.path}:`, err);
         
-        // Try alternative path - maybe assets are in a different location
-        const altPath = path.join(__dirname, 'frontend', req.path);
-        console.log(`🔄 Trying alternative path: ${altPath}`);
+        // Try alternative paths
+        const altPaths = [
+          path.join(__dirname, 'frontend', req.path),
+          path.join(__dirname, '..', 'client', 'dist', req.path),
+          path.join(process.cwd(), 'client', 'dist', req.path)
+        ];
         
-        res.sendFile(altPath, (altErr) => {
-          if (altErr) {
-            console.error(`❌ Alternative path also failed:`, altErr);
+        let altIndex = 0;
+        const tryNextPath = () => {
+          if (altIndex >= altPaths.length) {
+            console.error(`❌ All alternative paths failed for ${req.path}`);
             res.status(404).send('Asset not found');
-          } else {
-            console.log(`✅ Successfully served asset from alternative path: ${req.path}`);
+            return;
           }
-        });
+          
+          const altPath = altPaths[altIndex];
+          console.log(`🔄 Trying alternative path ${altIndex + 1}: ${altPath}`);
+          
+          res.sendFile(altPath, (altErr) => {
+            if (altErr) {
+              console.error(`❌ Alternative path ${altIndex + 1} failed:`, altErr);
+              altIndex++;
+              tryNextPath();
+            } else {
+              console.log(`✅ Successfully served asset from alternative path ${altIndex + 1}: ${req.path}`);
+            }
+          });
+        };
+        
+        tryNextPath();
       } else {
         console.log(`✅ Successfully served asset: ${req.path}`);
       }
