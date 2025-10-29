@@ -2,7 +2,7 @@ import { Switch, Route } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Layout } from "@/components/Layout";
+import { TopNavigation } from "@/components/TopNavigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 // Pages
@@ -75,10 +75,10 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="collabotree-theme">
       <AuthProvider>
         <TooltipProvider>
-          <Layout>
+          <TopNavigation>
             <Toaster />
             <Router />
-          </Layout>
+          </TopNavigation>
         </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>
