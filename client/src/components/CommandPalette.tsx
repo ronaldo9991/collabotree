@@ -43,14 +43,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       case "search-services":
         navigate("/marketplace");
         break;
-      case "student-dashboard":
-        navigate("/dashboard/student");
-        break;
-      case "buyer-dashboard":
-        navigate("/dashboard/buyer");
-        break;
-      case "admin-dashboard":
-        navigate("/admin");
+      case "explore-talent":
+        navigate("/marketplace");
         break;
       case "home":
         navigate("/");
@@ -75,27 +69,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       items: [
         { id: "home", label: "Home", icon: Home, shortcut: "⌘H" },
         { id: "about", label: "About", icon: Users, shortcut: "⌘A" },
+        { id: "explore-talent", label: "Explore Talent", icon: ShoppingCart, shortcut: "⌘E" },
         { id: "how-it-works", label: "How it Works", icon: FileText, shortcut: "⌘W" },
         { id: "contact", label: "Contact", icon: MessageSquare, shortcut: "⌘C" },
       ]
     },
     {
-      group: "Marketplace",
+      group: "Services",
       items: [
         { id: "search-services", label: "Search Services", icon: Search, shortcut: "⌘S" },
-      ]
-    },
-    {
-      group: "Demo Dashboards",
-      items: [
-        { id: "student-dashboard", label: "Student Dashboard", icon: User, shortcut: "⌘1" },
-        { id: "buyer-dashboard", label: "Buyer Dashboard", icon: ShoppingCart, shortcut: "⌘2" },
-        { id: "admin-dashboard", label: "Admin Dashboard", icon: BarChart3, shortcut: "⌘3" },
-      ]
-    },
-    {
-      group: "Actions",
-      items: [
         { id: "create-service", label: "Create Service", icon: Plus, shortcut: "⌘N" },
       ]
     }
@@ -111,37 +93,37 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0">
-        <Command className="rounded-lg border shadow-md">
+      <DialogContent className="max-w-2xl p-0 bg-card border-primary/20">
+        <Command className="rounded-lg border border-primary/20 shadow-xl bg-card">
           <CommandInput
             placeholder="Type a command or search..."
             value={search}
             onValueChange={setSearch}
-            className="border-0 focus:ring-0"
+            className="border-0 focus:ring-0 bg-card/80 text-foreground placeholder-muted-foreground"
           />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+          <CommandList className="max-h-96">
+            <CommandEmpty className="text-muted-foreground">No results found.</CommandEmpty>
             {filteredCommands.map((group, groupIndex) => (
               <div key={group.group}>
-                <CommandGroup heading={group.group}>
+                <CommandGroup heading={group.group} className="text-primary font-semibold">
                   {group.items.map((item) => (
                     <CommandItem
                       key={item.id}
                       value={item.id}
                       onSelect={() => handleCommand(item.id)}
-                      className="flex items-center gap-3 px-3 py-2 cursor-pointer"
+                      className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-primary/10 focus:bg-primary/10 text-foreground"
                     >
-                      <item.icon className="h-4 w-4 text-muted-foreground" />
-                      <span className="flex-1">{item.label}</span>
+                      <item.icon className="h-4 w-4 text-primary" />
+                      <span className="flex-1 font-medium">{item.label}</span>
                       {item.shortcut && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30">
                           {item.shortcut}
                         </Badge>
                       )}
                     </CommandItem>
                   ))}
                 </CommandGroup>
-                {groupIndex < filteredCommands.length - 1 && <CommandSeparator />}
+                {groupIndex < filteredCommands.length - 1 && <CommandSeparator className="bg-primary/20" />}
               </div>
             ))}
           </CommandList>

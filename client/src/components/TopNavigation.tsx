@@ -163,11 +163,11 @@ export function TopNavigation({ children }: TopNavigationProps) {
                   type="text"
                   placeholder="Search services..."
                   onClick={() => setCommandOpen(true)}
-                  className="w-40 px-4 py-2 pl-10 bg-muted/50 border border-border rounded-full text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                  className="w-48 px-4 py-2.5 pl-10 bg-card/80 border border-primary/20 rounded-full text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-200 backdrop-blur-sm"
                   readOnly
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Badge variant="outline" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-1.5 py-0.5 text-xs bg-primary/10 text-primary border-primary/20">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
+                <Badge variant="outline" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-0.5 text-xs bg-primary/10 text-primary border-primary/30 rounded-md">
                   ⌘K
                 </Badge>
               </div>
