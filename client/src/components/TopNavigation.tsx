@@ -80,35 +80,28 @@ export function TopNavigation({ children }: TopNavigationProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Bar */}
-      <div className="bg-slate-800 text-white text-center py-3 text-sm font-medium">
-        <span>Welcome to CollaboTree - Connect with Verified University Students</span>
-      </div>
+      {/* Main Navigation - Curved Design */}
+      <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4">
+        <div className={`rounded-full transition-all duration-500 ${
+          scrolled 
+            ? 'bg-card/95 dark:bg-card/95 backdrop-blur-xl shadow-xl border border-primary/20' 
+            : 'bg-card/80 dark:bg-card/80 backdrop-blur-lg shadow-lg border border-primary/10'
+        }`}>
+          <div className="flex items-center justify-between h-16 px-6">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                <img 
+                  src="/logoa.png" 
+                  alt="CollaboTree Logo" 
+                  className="w-7 h-7 object-contain"
+                />
+              </div>
+              <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200">CollaboTree</span>
+            </Link>
 
-      {/* Main Navigation */}
-      <nav className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-lg border-b border-slate-200/20' 
-          : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-sm'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center h-20 relative">
-            {/* Logo - Left Positioned */}
-            <div className="absolute left-0">
-              <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 bg-blue-400 rounded-lg flex items-center justify-center">
-                  <img 
-                    src="/logoa.png" 
-                    alt="CollaboTree Logo" 
-                    className="w-8 h-8 object-contain"
-                  />
-                </div>
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">CollaboTree</span>
-              </Link>
-            </div>
-
-            {/* Center Navigation - Desktop - Centered */}
-            <div className="hidden lg:flex items-center space-x-6 mx-auto">
+            {/* Center Navigation - Desktop */}
+            <div className="hidden lg:flex items-center space-x-1 mx-auto">
               {navigation.map((item) => (
                 item.show && (
                   <div key={item.name} className="relative group">
@@ -150,8 +143,8 @@ export function TopNavigation({ children }: TopNavigationProps) {
                       <Button
                         variant="ghost"
                         onClick={() => handleNavigation(item.href)}
-                        className={`text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-semibold px-4 py-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-base ${
-                          location === item.href ? 'text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800' : ''
+                        className={`text-foreground/80 hover:text-primary font-medium px-4 py-2 rounded-full hover:bg-primary/10 transition-all duration-200 text-sm ${
+                          location === item.href ? 'text-primary bg-primary/10 font-semibold' : ''
                         }`}
                       >
                         {item.name}
@@ -162,32 +155,32 @@ export function TopNavigation({ children }: TopNavigationProps) {
               ))}
             </div>
 
-            {/* Right Actions - Desktop - Right Positioned */}
-            <div className="hidden lg:flex items-center gap-4 absolute right-0">
-              {/* Theme Toggle */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors h-10"
-              >
-                {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-              </Button>
-
+            {/* Right Actions - Desktop */}
+            <div className="hidden lg:flex items-center gap-3">
               {/* Search Bar */}
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search services..."
                   onClick={() => setCommandOpen(true)}
-                  className="w-48 px-4 py-2 pl-10 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-40 px-4 py-2 pl-10 bg-muted/50 border border-border rounded-full text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                   readOnly
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" />
-                <Badge variant="outline" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-1.5 py-0.5 text-xs">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Badge variant="outline" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-1.5 py-0.5 text-xs bg-primary/10 text-primary border-primary/20">
                   ⌘K
                 </Badge>
               </div>
+
+              {/* Theme Toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleTheme}
+                className="p-2 rounded-full hover:bg-primary/10 transition-colors h-10 w-10"
+              >
+                {theme === "light" ? <Moon className="h-4 w-4 text-foreground" /> : <Sun className="h-4 w-4 text-foreground" />}
+              </Button>
 
               {/* Auth Actions */}
               {user ? (
@@ -235,7 +228,7 @@ export function TopNavigation({ children }: TopNavigationProps) {
               ) : (
                 <Button 
                   onClick={() => handleNavigation("/signin")}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-full font-medium text-sm shadow-md hover:shadow-lg transition-all duration-200 h-10"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-full font-medium text-sm shadow-md hover:shadow-lg transition-all duration-200 h-10"
                 >
                   Sign In
                 </Button>
@@ -246,8 +239,8 @@ export function TopNavigation({ children }: TopNavigationProps) {
             <div className="lg:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <Menu className="h-5 w-5" />
+                  <Button variant="ghost" size="sm" className="p-2 rounded-full hover:bg-primary/10 transition-colors">
+                    <Menu className="h-5 w-5 text-foreground" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[280px] sm:w-[320px]">
@@ -290,7 +283,7 @@ export function TopNavigation({ children }: TopNavigationProps) {
       </nav>
 
       {/* Main Content */}
-      <main>
+      <main className="pt-20">
         {children}
       </main>
 
@@ -298,7 +291,7 @@ export function TopNavigation({ children }: TopNavigationProps) {
       {showScrollTop && (
         <Button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-40 h-12 w-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          className="fixed bottom-8 right-8 z-40 h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <ArrowUp className="h-5 w-5" />
         </Button>
