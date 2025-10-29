@@ -314,144 +314,156 @@ export default function ExploreTalent() {
           <p className="text-base text-muted-foreground max-w-xl mx-auto mb-6">
             Discover verified student talent from top universities ready to bring your projects to life.
           </p>
-          
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto mb-6">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="Search for skills, services, or student names..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-12 pl-12 pr-4 text-base bg-background/80 backdrop-blur-12 border-2 border-border/30 focus:border-primary/50 rounded-xl shadow-lg"
-                style={{ color: 'inherit' }}
-              />
-            </div>
-          </div>
-          
-          {search && (
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Badge variant="secondary" className="px-3 py-1 text-sm">
-                <Search className="h-3 w-3 mr-2" />
-                Searching for: <span className="font-semibold ml-1">"{search}"</span>
-              </Badge>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setSearch('')}
-                className="text-xs"
-              >
-                Clear
-              </Button>
-            </div>
-          )}
-          {!loading && sortedProjects && (
-            <p className="text-sm text-muted-foreground mb-4">
-              Showing {sortedProjects.length} {sortedProjects.length === 1 ? 'result' : 'results'}
-              {search && ` for "${search}"`}
-            </p>
-          )}
         </div>
 
-        {/* Filters Section */}
-        <div className="max-w-5xl mx-auto mb-6">
-          <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 p-4">
-            <div className="flex flex-wrap items-center gap-4">
-              {/* Sort By */}
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-muted-foreground">Sort by:</label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-40 h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="rating">Highest Rated</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Delivery Time Filter */}
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-muted-foreground">Delivery:</label>
-                <Select value={deliveryDays} onValueChange={setDeliveryDays}>
-                  <SelectTrigger className="w-36 h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Any Time</SelectItem>
-                    <SelectItem value="7">Within 1 Week</SelectItem>
-                    <SelectItem value="14">Within 2 Weeks</SelectItem>
-                    <SelectItem value="21">Within 3 Weeks</SelectItem>
-                    <SelectItem value="30">Within 1 Month</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Clear Filters Button */}
-              {(selectedCategories.length > 0 || deliveryDays !== 'all' || search) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedCategories([]);
-                    setDeliveryDays('all');
-                    setSearch('');
-                  }}
-                  className="h-8 text-xs"
-                >
-                  Clear Filters
-                </Button>
-              )}
-            </div>
-          </Card>
-        </div>
-
-        {/* Main Content Layout */}
-        <div>
-          {/* Results Section */}
-          <div className="w-full">
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-          >
-            {sortedProjects?.length === 0 ? (
-              <div className="col-span-full text-center py-12">
-                <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-muted-foreground" />
+        {/* Main Content Layout with Sidebar */}
+        <div className="flex gap-6">
+          {/* Left Sidebar - Search and Filters */}
+          <div className="w-full md:w-80 flex-shrink-0">
+            <Card className="glass-card bg-background/80 backdrop-blur-12 border border-border/30 sticky top-4">
+              <CardContent className="p-4">
+                {/* Search Bar */}
+                <div className="mb-6">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      placeholder="Search for skills, services, or student names..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="h-11 pl-10 pr-4 text-base bg-background/80 backdrop-blur-12 border-2 border-border/30 focus:border-primary/50 rounded-xl"
+                      style={{ color: 'inherit' }}
+                    />
+                  </div>
                 </div>
-                <h3 className="text-lg font-medium mb-2">No projects found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your search criteria or browse all projects.
+
+                {/* Search Status */}
+                {search && (
+                  <div className="mb-4 pb-4 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="px-2 py-1 text-xs">
+                        <Search className="h-3 w-3 mr-1" />
+                        "{search}"
+                      </Badge>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setSearch('')}
+                        className="h-6 px-2 text-xs"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Filters Title */}
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border/30">
+                  <Filter className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="font-semibold text-sm">Filters</h3>
+                </div>
+
+                {/* Sort By */}
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Sort by:</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-full h-9 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest First</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="rating">Highest Rated</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Delivery Time Filter */}
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Delivery:</label>
+                  <Select value={deliveryDays} onValueChange={setDeliveryDays}>
+                    <SelectTrigger className="w-full h-9 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Any Time</SelectItem>
+                      <SelectItem value="7">Within 1 Week</SelectItem>
+                      <SelectItem value="14">Within 2 Weeks</SelectItem>
+                      <SelectItem value="21">Within 3 Weeks</SelectItem>
+                      <SelectItem value="30">Within 1 Month</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Clear Filters Button */}
+                {(selectedCategories.length > 0 || deliveryDays !== 'all' || search) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedCategories([]);
+                      setDeliveryDays('all');
+                      setSearch('');
+                    }}
+                    className="w-full h-9"
+                  >
+                    Clear Filters
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Content - Results */}
+          <div className="flex-1">
+            {!loading && sortedProjects && (
+              <div className="mb-6">
+                <p className="text-sm text-muted-foreground">
+                  Showing {sortedProjects.length} {sortedProjects.length === 1 ? 'result' : 'results'}
+                  {search && ` for "${search}"`}
                 </p>
               </div>
-            ) : loading ? (
-              // Loading skeleton
-              [...Array(6)].map((_, index) => (
-                <motion.div key={index} variants={itemVariants}>
-                  <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 h-full flex flex-col">
-                    <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
-                    <CardContent className="p-4 flex-1 flex flex-col space-y-3">
-                      <div className="h-4 bg-muted/20 animate-pulse rounded" />
-                      <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
-                      <div className="flex-1" />
-                      <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))
-            ) : (
-              sortedProjects?.map((project) => (
-                <motion.div key={project.id} variants={itemVariants} className="h-full flex">
-                  <ProjectCard project={project} />
-                </motion.div>
-              ))
             )}
-          </motion.div>
+            {/* Results Grid */}
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
+              {sortedProjects?.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">No projects found</h3>
+                  <p className="text-muted-foreground">
+                    Try adjusting your search criteria or browse all projects.
+                  </p>
+                </div>
+              ) : loading ? (
+                // Loading skeleton
+                [...Array(6)].map((_, index) => (
+                  <motion.div key={index} variants={itemVariants}>
+                    <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 h-full flex flex-col">
+                      <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
+                      <CardContent className="p-4 flex-1 flex flex-col space-y-3">
+                        <div className="h-4 bg-muted/20 animate-pulse rounded" />
+                        <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
+                        <div className="flex-1" />
+                        <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))
+              ) : (
+                sortedProjects?.map((project) => (
+                  <motion.div key={project.id} variants={itemVariants} className="h-full flex">
+                    <ProjectCard project={project} />
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
           </div>
         </div>
         </div>
