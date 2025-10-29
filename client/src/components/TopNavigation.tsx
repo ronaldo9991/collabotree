@@ -126,17 +126,19 @@ export function TopNavigation({ children }: TopNavigationProps) {
           : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-sm'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">^</span>
-              </div>
-              <span className="text-2xl font-bold text-slate-900 dark:text-white">CollaboTree</span>
-            </Link>
+          <div className="flex items-center justify-center h-20 relative">
+            {/* Logo - Left Positioned */}
+            <div className="absolute left-0">
+              <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">^</span>
+                </div>
+                <span className="text-2xl font-bold text-slate-900 dark:text-white">CollaboTree</span>
+              </Link>
+            </div>
 
-            {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center space-x-10">
+            {/* Center Navigation - Desktop - Centered */}
+            <div className="hidden lg:flex items-center space-x-6 mx-auto">
               {navigation.map((item) => (
                 item.show && (
                   <div key={item.name} className="relative group">
@@ -190,8 +192,8 @@ export function TopNavigation({ children }: TopNavigationProps) {
               ))}
             </div>
 
-            {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-4">
+            {/* Right Actions - Desktop - Right Positioned */}
+            <div className="hidden lg:flex items-center gap-4 absolute right-0">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
