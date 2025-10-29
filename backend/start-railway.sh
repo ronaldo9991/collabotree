@@ -24,7 +24,12 @@ fi
 
 # Run database migrations quickly
 echo "🗄️ Running database migrations..."
-DATABASE_URL="$FINAL_DATABASE_URL" npx prisma migrate deploy --schema=prisma/schema.prisma
+DATABASE_URL="$FINAL_DATABASE_URL" npx prisma migrate deploy --schema=prisma/schema.prisma || {
+  echo "⚠️ Migration failed, attempting to reset migration state..."
+  DATABASE_URL="$FINAL_DATABASE_URL" node reset-migration-state.js || {
+    echo "❌ Migration reset failed, continuing with existing schema..."
+  }
+}
 
 # Ensure admin exists
 echo "👤 Creating admin user..."

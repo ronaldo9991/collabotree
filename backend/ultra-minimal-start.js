@@ -30,6 +30,19 @@ try {
     stdio: 'inherit',
     timeout: 60000 // 1 minute timeout
   });
+} catch (migrationError) {
+  console.log('⚠️ Migration failed, attempting to reset migration state...');
+  try {
+    execSync('node reset-migration-state.js', {
+      env: { ...process.env, DATABASE_URL: dbUrl },
+      stdio: 'inherit',
+      timeout: 30000
+    });
+    console.log('✅ Migration state reset');
+  } catch (fixError) {
+    console.log('❌ Migration reset failed, continuing with existing schema...');
+  }
+}
   
   // Create admin user quickly
   console.log('👤 Creating admin...');
@@ -48,3 +61,4 @@ import('./dist/server.js').catch(error => {
   console.error('❌ Server failed to start:', error);
   process.exit(1);
 });
+
