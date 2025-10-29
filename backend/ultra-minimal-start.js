@@ -43,6 +43,18 @@ try {
     console.log('❌ Migration reset failed, continuing with existing schema...');
   }
 }
+
+// Ensure assets are available
+console.log('🔧 Ensuring assets are available...');
+try {
+  execSync('node ensure-assets.js', {
+    stdio: 'inherit',
+    timeout: 30000
+  });
+  console.log('✅ Assets ensured');
+} catch (assetError) {
+  console.log('⚠️ Asset setup failed, continuing...', assetError.message);
+}
   
   // Create admin user quickly
   console.log('👤 Creating admin...');
