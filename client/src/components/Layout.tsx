@@ -65,32 +65,35 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className={`fixed top-2 left-2 right-2 z-50 transition-all duration-300 rounded-full ${
-        scrolled 
-          ? 'bg-background/90 dark:bg-background/90 backdrop-blur-xl shadow-lg border border-border/30' 
-          : 'bg-background/80 dark:bg-background/80 backdrop-blur-lg shadow-md border border-border/20'
-      }`}>
-        <div className="container-unified px-2 sm:px-3">
-            <div className="flex items-center justify-between h-10 sm:h-12 md:h-9">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 dark:from-blue-800 dark:via-blue-900 dark:to-blue-950 shadow-lg border-b border-blue-500/20">
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+        {/* Speckles overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px] opacity-40"></div>
+        
+        <div className="container-unified px-4 sm:px-6 relative">
+            <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-1 sm:gap-1.5 hover:opacity-80 transition-opacity" data-testid="logo">
-              <img 
-                src="/logoa.png" 
-                alt="CollaboTree Logo" 
-                className="w-6 h-6 sm:w-8 sm:h-8 object-contain rounded-xl"
-              />
-              <span className="text-xs sm:text-sm font-semibold">CollaboTree</span>
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
+              <div className="w-8 h-8 bg-blue-400 rounded-lg flex items-center justify-center">
+                <img 
+                  src="/logoa.png" 
+                  alt="CollaboTree Logo" 
+                  className="w-6 h-6 object-contain"
+                />
+              </div>
+              <span className="text-lg font-semibold text-white">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+            <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
               {navigation.map((item) => (
                 item.show && (
                   <button
                     key={item.name}
                     onClick={() => handleNavigation(item.href)}
-                    className={`text-xs font-medium transition-colors px-1.5 py-0.5 rounded-md hover:bg-muted/20 ${
-                      location === item.href ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+                    className={`text-sm font-medium transition-colors px-3 py-2 rounded-md hover:bg-white/10 ${
+                      location === item.href ? 'text-blue-200 font-semibold bg-white/10' : 'text-white hover:text-blue-200'
                     }`}
                     data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   >
@@ -104,7 +107,7 @@ export function Layout({ children }: LayoutProps) {
             <div className="lg:hidden">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-2 mobile-menu-button">
+                  <Button variant="ghost" size="sm" className="p-2 mobile-menu-button text-white hover:bg-white/10">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
@@ -168,48 +171,36 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-1 flex-shrink-0 mr-6">
+            <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
+              {/* Search Icon */}
+              <Button
+                variant="ghost"
+                onClick={() => setCommandOpen(true)}
+                className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
+                data-testid="command-palette-trigger"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-1 rounded-lg hover:bg-muted/20 transition-colors"
+                className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
                 data-testid="theme-toggle"
               >
-                {theme === "light" ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
-              </Button>
-
-              {/* Command Palette */}
-              <Button
-                variant="ghost"
-                onClick={() => setCommandOpen(true)}
-                className="hidden xl:flex items-center gap-1.5 px-2 py-1.5 bg-muted/20 rounded-lg text-sm text-muted-foreground hover:bg-muted/30 transition-colors"
-                data-testid="command-palette-trigger"
-              >
-                <Search className="h-4 w-4" />
-                <span className="hidden 2xl:inline">Search</span>
-                <Badge variant="outline" className="px-1 py-0.5 text-xs hidden 2xl:inline-block">
-                  ⌘K
-                </Badge>
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setCommandOpen(true)}
-                className="xl:hidden p-1.5"
-                data-testid="command-palette-trigger-mobile"
-              >
-                <Search className="h-4 w-4" />
+                {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               </Button>
 
               {/* Auth Actions */}
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors">
+                      <Avatar className="h-10 w-10">
                         <AvatarImage src="" alt={user.name} />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-blue-400 text-white font-semibold">
                           {user.name.split(' ').map((n: string) => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
@@ -262,7 +253,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-        <main className="pt-13">
+      <main className="pt-16 sm:pt-18">
         {children}
       </main>
 
