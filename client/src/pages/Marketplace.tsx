@@ -330,8 +330,7 @@ export default function ExploreTalent() {
                       placeholder="Search for skills, services, or student names..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="h-11 pl-10 pr-4 text-base bg-background/80 backdrop-blur-12 border-2 border-border/30 focus:border-primary/50 rounded-xl"
-                      style={{ color: 'inherit' }}
+                      className="h-11 pl-10 pr-4 text-base bg-background/80 backdrop-blur-12 border-2 border-border/30 focus:border-primary/50 rounded-xl text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                 </div>
@@ -356,60 +355,109 @@ export default function ExploreTalent() {
                   </div>
                 )}
 
-                {/* Filters Title */}
-                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border/30">
-                  <Filter className="h-4 w-4 text-muted-foreground" />
-                  <h3 className="font-semibold text-sm">Filters</h3>
-                </div>
+                {/* Filters Section */}
+                <div className="space-y-6">
+                  {/* Filters Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-4 w-4 text-primary" />
+                      <h3 className="font-semibold text-foreground">Filters</h3>
+                    </div>
+                    {(selectedCategories.length > 0 || deliveryDays !== 'all' || search) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCategories([]);
+                          setDeliveryDays('all');
+                          setSearch('');
+                        }}
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                      >
+                        Clear All
+                      </Button>
+                    )}
+                  </div>
 
-                {/* Sort By */}
-                <div className="mb-4">
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Sort by:</label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-full h-9 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest First</SelectItem>
-                      <SelectItem value="price-low">Price: Low to High</SelectItem>
-                      <SelectItem value="price-high">Price: High to Low</SelectItem>
-                      <SelectItem value="rating">Highest Rated</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  {/* Sort By */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Sort by</label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="w-full h-10 text-sm bg-background/50 border-border/40 hover:border-primary/50 focus:border-primary/50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border-border/40">
+                        <SelectItem value="newest" className="text-foreground hover:bg-primary/10">Newest First</SelectItem>
+                        <SelectItem value="price-low" className="text-foreground hover:bg-primary/10">Price: Low to High</SelectItem>
+                        <SelectItem value="price-high" className="text-foreground hover:bg-primary/10">Price: High to Low</SelectItem>
+                        <SelectItem value="rating" className="text-foreground hover:bg-primary/10">Highest Rated</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Delivery Time Filter */}
-                <div className="mb-4">
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Delivery:</label>
-                  <Select value={deliveryDays} onValueChange={setDeliveryDays}>
-                    <SelectTrigger className="w-full h-9 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Any Time</SelectItem>
-                      <SelectItem value="7">Within 1 Week</SelectItem>
-                      <SelectItem value="14">Within 2 Weeks</SelectItem>
-                      <SelectItem value="21">Within 3 Weeks</SelectItem>
-                      <SelectItem value="30">Within 1 Month</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  {/* Delivery Time Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Delivery Time</label>
+                    <Select value={deliveryDays} onValueChange={setDeliveryDays}>
+                      <SelectTrigger className="w-full h-10 text-sm bg-background/50 border-border/40 hover:border-primary/50 focus:border-primary/50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border-border/40">
+                        <SelectItem value="all" className="text-foreground hover:bg-primary/10">Any Time</SelectItem>
+                        <SelectItem value="7" className="text-foreground hover:bg-primary/10">Within 1 Week</SelectItem>
+                        <SelectItem value="14" className="text-foreground hover:bg-primary/10">Within 2 Weeks</SelectItem>
+                        <SelectItem value="21" className="text-foreground hover:bg-primary/10">Within 3 Weeks</SelectItem>
+                        <SelectItem value="30" className="text-foreground hover:bg-primary/10">Within 1 Month</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Clear Filters Button */}
-                {(selectedCategories.length > 0 || deliveryDays !== 'all' || search) && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedCategories([]);
-                      setDeliveryDays('all');
-                      setSearch('');
-                    }}
-                    className="w-full h-9"
-                  >
-                    Clear Filters
-                  </Button>
-                )}
+                  {/* Price Range Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Budget Range</label>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span>${priceRange[0]}</span>
+                        <span>-</span>
+                        <span>${priceRange[1]}</span>
+                      </div>
+                      <div className="px-2">
+                        <Slider
+                          value={priceRange}
+                          onValueChange={setPriceRange}
+                          max={10000}
+                          min={0}
+                          step={100}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Active Filters Summary */}
+                  {(selectedCategories.length > 0 || deliveryDays !== 'all' || priceRange[0] > 0 || priceRange[1] < 10000) && (
+                    <div className="pt-2 border-t border-border/30">
+                      <div className="text-xs text-muted-foreground mb-2">Active Filters:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {deliveryDays !== 'all' && (
+                          <Badge variant="secondary" className="text-xs px-2 py-1">
+                            Delivery: {deliveryDays === '7' ? '1 Week' : deliveryDays === '14' ? '2 Weeks' : deliveryDays === '21' ? '3 Weeks' : '1 Month'}
+                          </Badge>
+                        )}
+                        {(priceRange[0] > 0 || priceRange[1] < 10000) && (
+                          <Badge variant="secondary" className="text-xs px-2 py-1">
+                            Budget: ${priceRange[0]} - ${priceRange[1]}
+                          </Badge>
+                        )}
+                        {selectedCategories.length > 0 && (
+                          <Badge variant="secondary" className="text-xs px-2 py-1">
+                            {selectedCategories.length} Categories
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

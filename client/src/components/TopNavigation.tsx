@@ -164,7 +164,7 @@ export function TopNavigation({ children }: TopNavigationProps) {
                   type="text"
                   placeholder="Search services..."
                   onClick={() => setCommandOpen(true)}
-                  className="w-64 pl-12 pr-20 py-3 bg-white/95 border border-primary/30 rounded-full text-sm text-gray-700 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-64 pl-12 pr-20 py-3 bg-background/95 border border-primary/30 rounded-full text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
                   readOnly
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
