@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { generalLimiter } from './middleware/rateLimit.js';
@@ -142,7 +143,7 @@ app.get('/debug-files', async (req, res) => {
     
     res.send(result);
   } catch (error) {
-    res.send(`<h1>❌ Debug Error</h1><p>${error.message}</p>`);
+    res.send(`<h1>❌ Debug Error</h1><p>${error instanceof Error ? error.message : String(error)}</p>`);
   }
 });
 
