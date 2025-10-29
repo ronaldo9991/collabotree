@@ -93,6 +93,21 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test endpoint to check if server is working
+app.get('/test', (req, res) => {
+  res.send(`
+    <html>
+      <head><title>CollaboTree Test</title></head>
+      <body>
+        <h1>🚀 CollaboTree Server is Running!</h1>
+        <p>Environment: ${env.NODE_ENV}</p>
+        <p>Time: ${new Date().toISOString()}</p>
+        <p>Frontend should be served at the root path (/)</p>
+      </body>
+    </html>
+  `);
+});
+
 // API routes
 app.use('/api', routes);
 
@@ -104,6 +119,23 @@ if (env.NODE_ENV === 'production') {
   console.log(`🌍 Production mode: Serving frontend + backend`);
   console.log(`📁 Frontend path: ${frontendPath}`);
   console.log(`📁 Current directory: ${__dirname}`);
+  
+  // Debug: Check if frontend files exist
+  const { existsSync, readdirSync } = await import('fs');
+  if (existsSync(frontendPath)) {
+    console.log(`✅ Frontend directory exists`);
+    const files = readdirSync(frontendPath);
+    console.log(`📋 Frontend files:`, files);
+    
+    const indexPath = path.join(frontendPath, 'index.html');
+    if (existsSync(indexPath)) {
+      console.log(`✅ index.html exists at: ${indexPath}`);
+    } else {
+      console.log(`❌ index.html NOT found at: ${indexPath}`);
+    }
+  } else {
+    console.log(`❌ Frontend directory does NOT exist: ${frontendPath}`);
+  }
   
   // Serve static files with proper headers for CSS/JS assets
   app.use(express.static(frontendPath, {
