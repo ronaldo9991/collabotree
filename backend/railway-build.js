@@ -40,9 +40,19 @@ try {
     mkdirSync(frontendTargetPath, { recursive: true });
   }
   
+  // Remove existing frontend directory to ensure clean copy
+  console.log('🗑️ Removing existing frontend directory...');
+  const { rmSync } = await import('fs');
+  if (existsSync(frontendTargetPath)) {
+    rmSync(frontendTargetPath, { recursive: true, force: true });
+  }
+  
   // Copy frontend files
   console.log('📋 Copying frontend files...');
-  cpSync(frontendDistPath, frontendTargetPath, { recursive: true });
+  console.log(`   From: ${path.resolve(frontendDistPath)}`);
+  console.log(`   To: ${path.resolve(frontendTargetPath)}`);
+  
+  cpSync(frontendDistPath, frontendTargetPath, { recursive: true, force: true });
   
   // Verify files were copied
   const indexFile = path.join(frontendTargetPath, 'index.html');
@@ -53,10 +63,37 @@ try {
   console.log('✅ Frontend files copied successfully');
   console.log('📁 Frontend files location:', path.resolve(frontendTargetPath));
   
-  // List copied files
-  const { readdirSync } = await import('fs');
+  // List copied files and verify assets folder
+  const { readdirSync, statSync } = await import('fs');
   const files = readdirSync(frontendTargetPath);
   console.log('📋 Copied files:', files);
+  
+  // Check if assets folder exists
+  const assetsPath = path.join(frontendTargetPath, 'assets');
+  if (existsSync(assetsPath)) {
+    const assetsStat = statSync(assetsPath);
+    if (assetsStat.isDirectory()) {
+      const assetFiles = readdirSync(assetsPath);
+      console.log(`✅ Assets folder found with ${assetFiles.length} files`);
+      console.log('📦 Asset files:', assetFiles);
+    } else {
+      console.log('⚠️ Assets path exists but is not a directory');
+    }
+  } else {
+    console.log('❌ Assets folder NOT found!');
+    // Try to copy assets folder explicitly
+    const sourceAssetsPath = path.join(frontendDistPath, 'assets');
+    if (existsSync(sourceAssetsPath)) {
+      console.log('🔄 Attempting to copy assets folder explicitly...');
+      cpSync(sourceAssetsPath, assetsPath, { recursive: true, force: true });
+      if (existsSync(assetsPath)) {
+        const assetFiles = readdirSync(assetsPath);
+        console.log(`✅ Assets folder copied successfully with ${assetFiles.length} files`);
+      }
+    } else {
+      console.log('❌ Source assets folder not found:', sourceAssetsPath);
+    }
+  }
   
   // Build backend
   console.log('🔨 Building backend...');

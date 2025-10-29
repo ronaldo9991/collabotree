@@ -48,6 +48,31 @@ try {
     console.log('✅ Contract fields already exist');
   }
   
+  // Mark the migration as completed since columns already exist
+  if (columnsExist.length === 3) {
+    console.log('📝 Marking migration as completed (columns already exist)...');
+    await prisma.$executeRawUnsafe(`
+      INSERT INTO "_prisma_migrations" (
+        "migration_name",
+        "checksum",
+        "finished_at",
+        "started_at",
+        "applied_steps_count"
+      )
+      SELECT 
+        '20251028061801_add_contract_fields',
+        '',
+        NOW(),
+        NOW() - INTERVAL '1 minute',
+        1
+      WHERE NOT EXISTS (
+        SELECT 1 FROM "_prisma_migrations" 
+        WHERE "migration_name" = '20251028061801_add_contract_fields'
+      )
+    `);
+    console.log('✅ Migration marked as completed');
+  }
+  
   console.log('🎉 Migration state reset successfully!');
   
 } catch (error) {
