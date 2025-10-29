@@ -79,7 +79,7 @@ export function Layout({ children }: LayoutProps) {
                 <img 
                   src="/logoa.png" 
                   alt="CollaboTree Logo" 
-                  className="w-16 h-16 object-contain rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-200"
+                  className="w-20 h-20 object-contain rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-200"
                 />
               </div>
               <span className="text-lg font-semibold text-white group-hover:text-blue-200 transition-colors duration-200">CollaboTree</span>

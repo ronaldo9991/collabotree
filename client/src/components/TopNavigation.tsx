@@ -87,14 +87,14 @@ export function TopNavigation({ children }: TopNavigationProps) {
             ? 'bg-card/95 dark:bg-card/95 backdrop-blur-xl shadow-xl border border-primary/20' 
             : 'bg-card/80 dark:bg-card/80 backdrop-blur-lg shadow-lg border border-primary/10'
         }`}>
-          <div className="flex items-center justify-between h-16 px-6">
+          <div className="flex items-center justify-between h-20 px-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
               <div className="group-hover:scale-105 transition-transform duration-200">
                 <img 
                   src="/logoa.png" 
                   alt="CollaboTree Logo" 
-                  className="w-16 h-16 object-contain rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-200"
+                  className="w-20 h-20 object-contain rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-200"
                 />
               </div>
               <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200">CollaboTree</span>
@@ -285,7 +285,7 @@ export function TopNavigation({ children }: TopNavigationProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-20">
+      <main className="pt-24">
         {children}
       </main>
 
