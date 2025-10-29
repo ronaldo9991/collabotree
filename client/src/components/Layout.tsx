@@ -172,15 +172,17 @@ export function Layout({ children }: LayoutProps) {
 
             {/* Right Actions - Desktop */}
             <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
-              {/* Search Icon */}
-              <Button
-                variant="ghost"
-                onClick={() => setCommandOpen(true)}
-                className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
-                data-testid="command-palette-trigger"
-              >
-                <Search className="h-5 w-5" />
-              </Button>
+              {/* Search Bar */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search services..."
+                  onClick={() => setCommandOpen(true)}
+                  className="w-48 px-4 py-2 pl-10 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent transition-all duration-200"
+                  readOnly
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70" />
+              </div>
 
               {/* Theme Toggle */}
               <Button
@@ -240,7 +242,7 @@ export function Layout({ children }: LayoutProps) {
                 <Button 
                   variant="default" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-2.5 py-1 text-xs h-7 rounded-full font-medium shadow-sm hover:shadow-md transition-all duration-200"
+                  className="bg-white hover:bg-gray-100 text-blue-600 px-4 py-2 text-sm h-8 rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200"
                   onClick={() => handleNavigation("/signin")}
                   data-testid="sign-in-button"
                 >
