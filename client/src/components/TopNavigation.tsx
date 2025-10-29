@@ -40,45 +40,11 @@ export function TopNavigation({ children }: TopNavigationProps) {
   const [location, navigate] = useLocation();
 
   const navigation = [
-    { 
-      name: "Platform", 
-      href: "/platform", 
-      icon: Network, 
-      show: true,
-      hasDropdown: true,
-      dropdownItems: [
-        { name: "Student Hub", href: "/platform/students", description: "Connect with verified students" },
-        { name: "Buyer Portal", href: "/platform/buyers", description: "Find quality services" },
-        { name: "Admin Panel", href: "/platform/admin", description: "Manage the platform" }
-      ]
-    },
-    { 
-      name: "Resources", 
-      href: "/resources", 
-      icon: FileText, 
-      show: true,
-      hasDropdown: true,
-      dropdownItems: [
-        { name: "How it Works", href: "/how-it-works", description: "Learn about our process" },
-        { name: "Help Center", href: "/help", description: "Get support and answers" },
-        { name: "Blog", href: "/blog", description: "Latest news and updates" },
-        { name: "Guides", href: "/guides", description: "Step-by-step tutorials" }
-      ]
-    },
-    { 
-      name: "Integrations", 
-      href: "/integrations", 
-      icon: Network, 
-      show: true,
-      hasDropdown: true,
-      dropdownItems: [
-        { name: "API Documentation", href: "/api-docs", description: "Developer resources" },
-        { name: "Webhooks", href: "/webhooks", description: "Real-time notifications" },
-        { name: "Third-party Apps", href: "/apps", description: "Connect your tools" }
-      ]
-    },
-    { name: "Marketplace", href: "/marketplace", icon: ShoppingCart, show: true, hasDropdown: false },
-    { name: "Pricing", href: "/pricing", icon: Users, show: true, hasDropdown: false },
+    { name: "Home", href: "/", icon: Home, show: true, hasDropdown: false },
+    { name: "About", href: "/about", icon: Users, show: true, hasDropdown: false },
+    { name: "Explore Talent", href: "/marketplace", icon: ShoppingCart, show: true, hasDropdown: false },
+    { name: "How it Works", href: "/how-it-works", icon: FileText, show: true, hasDropdown: false },
+    { name: "Contact", href: "/contact", icon: MessageSquare, show: true, hasDropdown: false },
   ];
 
   const toggleTheme = () => {
@@ -130,8 +96,12 @@ export function TopNavigation({ children }: TopNavigationProps) {
             {/* Logo - Left Positioned */}
             <div className="absolute left-0">
               <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">^</span>
+                <div className="w-10 h-10 bg-blue-400 rounded-lg flex items-center justify-center">
+                  <img 
+                    src="/logoa.png" 
+                    alt="CollaboTree Logo" 
+                    className="w-8 h-8 object-contain"
+                  />
                 </div>
                 <span className="text-2xl font-bold text-slate-900 dark:text-white">CollaboTree</span>
               </Link>
@@ -204,18 +174,20 @@ export function TopNavigation({ children }: TopNavigationProps) {
                 {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               </Button>
 
-              {/* Command Palette */}
-              <Button
-                variant="ghost"
-                onClick={() => setCommandOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium h-10"
-              >
-                <Search className="h-4 w-4" />
-                <span>Search</span>
-                <Badge variant="outline" className="px-1.5 py-0.5 text-xs">
+              {/* Search Bar */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search services..."
+                  onClick={() => setCommandOpen(true)}
+                  className="w-48 px-4 py-2 pl-10 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  readOnly
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" />
+                <Badge variant="outline" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-1.5 py-0.5 text-xs">
                   ⌘K
                 </Badge>
-              </Button>
+              </div>
 
               {/* Auth Actions */}
               {user ? (
