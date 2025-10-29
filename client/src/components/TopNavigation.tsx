@@ -197,20 +197,20 @@ export function TopNavigation({ children }: TopNavigationProps) {
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors h-10"
               >
-                {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               </Button>
 
               {/* Command Palette */}
               <Button
                 variant="ghost"
                 onClick={() => setCommandOpen(true)}
-                className="flex items-center gap-2 px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium"
+                className="flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium h-10"
               >
-                <Search className="h-5 w-5" />
+                <Search className="h-4 w-4" />
                 <span>Search</span>
-                <Badge variant="outline" className="px-2 py-1 text-xs">
+                <Badge variant="outline" className="px-1.5 py-0.5 text-xs">
                   ⌘K
                 </Badge>
               </Button>
@@ -219,10 +219,10 @@ export function TopNavigation({ children }: TopNavigationProps) {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-11 w-11 rounded-full">
-                      <Avatar className="h-11 w-11">
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-10 w-10">
                         <AvatarImage src="" alt={user.name} />
-                        <AvatarFallback className="bg-blue-100 text-blue-600 text-lg font-semibold">
+                        <AvatarFallback className="bg-blue-100 text-blue-600 text-sm font-semibold">
                           {user.name.split(' ').map((n: string) => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
@@ -261,9 +261,9 @@ export function TopNavigation({ children }: TopNavigationProps) {
               ) : (
                 <Button 
                   onClick={() => handleNavigation("/signin")}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-3 rounded-lg font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-full font-medium text-sm shadow-md hover:shadow-lg transition-all duration-200 h-10"
                 >
-                  Get Started
+                  Sign In
                 </Button>
               )}
             </div>
