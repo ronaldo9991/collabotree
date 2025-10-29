@@ -551,8 +551,8 @@ export default function StudentDashboard() {
                 className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium data-[state=active]:bg-[#00B2FF] data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-[#00B2FF]/10 transition-all duration-200 rounded-lg py-2 px-2 sm:px-3"
               >
                 <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="hidden xs:inline">Contracts</span>
-                <span className="xs:hidden">Docs</span>
+                <span className="hidden sm:inline">Contracts</span>
+                <span className="sm:hidden">Contracts</span>
               </TabsTrigger>
             </TabsList>
 

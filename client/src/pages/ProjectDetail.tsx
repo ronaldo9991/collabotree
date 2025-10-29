@@ -8,7 +8,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Clock, CheckCircle, MessageCircle, DollarSign, Calendar, Loader2, X, ChevronLeft, ChevronRight, Maximize2, Star, User, MapPin, Award, TrendingUp, Eye } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import {stage-0
+  RUN cd backend && npx prisma generate
+  1s
+  Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+  
+  stage-0
+  RUN cd backend && npm run build
+  3s
+  npm warn config production Use `--omit=dev` instead.
+  > collabotree-backend@1.0.0 build
+  > tsc
+  src/app.ts(121,9): error TS2304: Cannot find name 'existsSync'.
+  
+  src/app.ts(145,42): error TS18046: 'error' is of type 'unknown'.
+  
+  Dockerfile:25
+  -------------------
+  23 |     COPY . /app/.
+  24 |     RUN --mount=type=cache,id=s/63c91588-6110-45bd-bc91-bc114140d2b3-node_modules/cache,target=/app/node_modules/.cache cd backend && npx prisma generate
+  25 | >>> RUN --mount=type=cache,id=s/63c91588-6110-45bd-bc91-bc114140d2b3-node_modules/cache,target=/app/node_modules/.cache cd backend && npm run build
+  26 |
+  27 |
+  -------------------
+  ERROR: failed to build: failed to solve: process "/bin/bash -ol pipefail -c cd backend && npm run build" did not complete successfully: exit code: 2
+  Error: Docker build failed motion, AnimatePresence } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";

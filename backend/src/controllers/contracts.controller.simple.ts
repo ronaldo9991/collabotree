@@ -731,21 +731,42 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
 export const updateContractProgress = updateProgress;
 export const markContractCompleted = markCompleted;
 
-// Download contract as PDF - TEMPORARILY DISABLED
+// Download contract as PDF
 export const downloadContractPDF = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { contractId } = req.params;
     const userId = req.user!.id;
 
-    // Verify contract exists and user has access
+    // Get full contract details
     const contract = await prisma.contract.findUnique({
       where: { id: contractId },
-      select: {
-        id: true,
-        buyerId: true,
-        studentId: true,
-        isSignedByBuyer: true,
-        isSignedByStudent: true,
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        student: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        hireRequest: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                priceCents: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -763,11 +784,183 @@ export const downloadContractPDF = async (req: AuthenticatedRequest, res: Respon
       return sendError(res, 'Contract must be signed by both parties before downloading', 400);
     }
 
-    // PDF functionality is temporarily disabled
-    return sendError(res, 'PDF download feature is temporarily unavailable. This feature will be restored in a future update.', 503);
+    // Parse contract data
+    const terms = typeof contract.terms === 'string' ? JSON.parse(contract.terms) : contract.terms;
+    const deliverables = typeof terms.deliverables === 'string' ? JSON.parse(terms.deliverables) : terms.deliverables;
+    
+    const price = (contract.priceCents || 0) / 100;
+    const platformFee = (contract.platformFeeCents || 0) / 100;
+    const studentPayout = (contract.studentPayoutCents || 0) / 100;
+
+    // Generate HTML contract document
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Contract - ${contract.title}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 40px;
+      color: #333;
+    }
+    .header {
+      text-align: center;
+      border-bottom: 3px solid #00B2FF;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      color: #00B2FF;
+      margin: 0;
+    }
+    .section {
+      margin-bottom: 25px;
+    }
+    .section h2 {
+      color: #00B2FF;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 8px;
+      margin-top: 30px;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    .info-table td {
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+    }
+    .info-table td:first-child {
+      font-weight: bold;
+      background-color: #f5f5f5;
+      width: 30%;
+    }
+    .deliverables-list {
+      list-style-type: decimal;
+      margin-left: 25px;
+    }
+    .signatures {
+      margin-top: 50px;
+      display: flex;
+      justify-content: space-around;
+    }
+    .signature-box {
+      width: 300px;
+      border-top: 2px solid #333;
+      padding-top: 5px;
+      text-align: center;
+    }
+    .signature-box p:first-child {
+      font-weight: bold;
+      margin-bottom: 40px;
+    }
+    .footer {
+      margin-top: 50px;
+      font-size: 0.85em;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>PROFESSIONAL SERVICE CONTRACT</h1>
+    <p>CollaboTree Platform</p>
+    <p>Contract ID: ${contract.id}</p>
+  </div>
+
+  <div class="section">
+    <h2>1. Parties</h2>
+    <table class="info-table">
+      <tr>
+        <td>Student (Service Provider)</td>
+        <td>${contract.student?.name || 'N/A'}<br>${contract.student?.email || 'N/A'}</td>
+      </tr>
+      <tr>
+        <td>Buyer (Client)</td>
+        <td>${contract.buyer?.name || 'N/A'}<br>${contract.buyer?.email || 'N/A'}</td>
+      </tr>
+      <tr>
+        <td>Service</td>
+        <td>${contract.hireRequest?.service?.title || 'N/A'}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>2. Contract Terms</h2>
+    <table class="info-table">
+      <tr>
+        <td>Contract Title</td>
+        <td>${contract.title || 'N/A'}</td>
+      </tr>
+      <tr>
+        <td>Timeline</td>
+        <td>${contract.timeline || terms.timeline || 'N/A'} days</td>
+      </tr>
+      <tr>
+        <td>Total Price</td>
+        <td>$${price.toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td>Platform Fee</td>
+        <td>$${platformFee.toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td>Student Payout</td>
+        <td>$${studentPayout.toFixed(2)}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>3. Deliverables</h2>
+    <ol class="deliverables-list">
+      ${deliverables.map((d: string) => `<li>${d}</li>`).join('')}
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>4. Additional Terms</h2>
+    <p>${terms.additionalTerms || 'Standard terms apply as per CollaboTree platform policies.'}</p>
+  </div>
+
+  <div class="section">
+    <h2>5. Signatures</h2>
+    <div class="signatures">
+      <div class="signature-box">
+        <p>Student Signature</p>
+        <p>Date: ${contract.signedAt ? new Date(contract.signedAt).toLocaleDateString() : 'N/A'}</p>
+      </div>
+      <div class="signature-box">
+        <p>Buyer Signature</p>
+        <p>Date: ${contract.signedAt ? new Date(contract.signedAt).toLocaleDateString() : 'N/A'}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>This contract was electronically signed through CollaboTree platform on ${contract.signedAt ? new Date(contract.signedAt).toLocaleString() : 'N/A'}</p>
+    <p>Contract Status: ${contract.status} | Payment Status: ${contract.paymentStatus}</p>
+  </div>
+</body>
+</html>
+    `;
+
+    // Set headers for PDF download
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Disposition', `attachment; filename="contract-${contract.id}.html"`);
+    
+    // Send HTML (client-side can print to PDF)
+    return res.send(htmlContent);
+    
   } catch (error) {
-    console.error('Error in PDF download:', error);
-    return sendError(res, 'PDF download feature is temporarily unavailable', 503);
+    console.error('Error generating contract PDF:', error);
+    return sendError(res, 'Failed to generate contract PDF', 500);
   }
 };
 export const getContractProgress = getContract;

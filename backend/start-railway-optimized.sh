@@ -56,3 +56,4 @@ node force-create-admin.js
 echo "🌟 Starting server..."
 node dist/server.js
 
+
