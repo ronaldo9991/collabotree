@@ -148,16 +148,20 @@ if (env.NODE_ENV === 'production') {
         res.setHeader('Content-Type', 'text/css; charset=utf-8');
       } else if (filePath.endsWith('.js')) {
         res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      } else if (filePath.endsWith('.html')) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
       }
     }
   }));
   
   // Handle SPA routing - serve index.html for non-API routes
+  // This must come AFTER static file serving
   app.get('*', (req, res, next) => {
     // Don't handle API routes, health check, or socket.io
     if (req.path.startsWith('/api') || 
         req.path.startsWith('/socket.io') || 
-        req.path === '/health') {
+        req.path === '/health' ||
+        req.path === '/test') {
       return next();
     }
     
