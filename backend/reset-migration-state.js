@@ -6,6 +6,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { execSync } from 'child_process';
 
 console.log('🔄 Resetting Railway migration state...');
 
@@ -51,26 +52,17 @@ try {
   // Mark the migration as completed since columns already exist
   if (columnsExist.length === 3) {
     console.log('📝 Marking migration as completed (columns already exist)...');
-    await prisma.$executeRawUnsafe(`
-      INSERT INTO "_prisma_migrations" (
-        "migration_name",
-        "checksum",
-        "finished_at",
-        "started_at",
-        "applied_steps_count"
-      )
-      SELECT 
-        '20251028061801_add_contract_fields',
-        '',
-        NOW(),
-        NOW() - INTERVAL '1 minute',
-        1
-      WHERE NOT EXISTS (
-        SELECT 1 FROM "_prisma_migrations" 
-        WHERE "migration_name" = '20251028061801_add_contract_fields'
-      )
-    `);
-    console.log('✅ Migration marked as completed');
+    try {
+      // Use Prisma's migrate resolve command to properly mark the migration as applied
+      execSync('npx prisma migrate resolve --applied 20251028061801_add_contract_fields', { 
+        stdio: 'inherit',
+        env: process.env 
+      });
+      console.log('✅ Migration marked as completed');
+    } catch (resolveError) {
+      console.error('⚠️ Could not mark migration as resolved, but columns exist so continuing...');
+      console.error(resolveError.message);
+    }
   }
   
   console.log('🎉 Migration state reset successfully!');

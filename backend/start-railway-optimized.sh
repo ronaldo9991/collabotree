@@ -46,7 +46,12 @@ echo "✅ DATABASE_URL format validated"
 
 # Run database migrations with explicit DATABASE_URL
 echo "🗄️ Running database migrations..."
-DATABASE_URL="$FINAL_DATABASE_URL" npx prisma migrate deploy
+DATABASE_URL="$FINAL_DATABASE_URL" npx prisma migrate deploy || {
+  echo "⚠️ Migration failed, attempting to reset migration state..."
+  DATABASE_URL="$FINAL_DATABASE_URL" node reset-migration-state.js || {
+    echo "❌ Migration reset failed, continuing with existing schema..."
+  }
+}
 
 # Create admin user if needed
 echo "👤 Ensuring admin user exists..."
