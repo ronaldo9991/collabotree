@@ -158,18 +158,20 @@ export function TopNavigation({ children }: TopNavigationProps) {
             {/* Right Actions - Desktop */}
             <div className="hidden lg:flex items-center gap-3">
               {/* Search Bar */}
-              <div className="relative">
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/70 group-hover:text-primary transition-colors duration-200" />
                 <input
                   type="text"
                   placeholder="Search services..."
                   onClick={() => setCommandOpen(true)}
-                  className="w-48 px-4 py-2.5 pl-10 bg-card/80 border border-primary/20 rounded-full text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all duration-200 backdrop-blur-sm"
+                  className="w-64 pl-12 pr-20 py-3 bg-white/95 border border-primary/30 rounded-full text-sm text-gray-700 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
                   readOnly
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
-                <Badge variant="outline" className="absolute right-2 top-1/2 transform -translate-y-1/2 px-2 py-0.5 text-xs bg-primary/10 text-primary border-primary/30 rounded-md">
-                  ⌘K
-                </Badge>
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <Badge className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-md border border-primary/20 hover:bg-primary/20 transition-colors duration-200">
+                    ⌘K
+                  </Badge>
+                </div>
               </div>
 
               {/* Theme Toggle */}
