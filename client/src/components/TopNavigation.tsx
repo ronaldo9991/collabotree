@@ -94,7 +94,7 @@ export function TopNavigation({ children }: TopNavigationProps) {
                 <img 
                   src="/logoa.png" 
                   alt="CollaboTree Logo" 
-                  className="w-10 h-10 object-contain"
+                  className="w-12 h-12 object-contain rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-200"
                 />
               </div>
               <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200">CollaboTree</span>
