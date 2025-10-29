@@ -153,19 +153,54 @@ if (env.NODE_ENV === 'production') {
       }
     }
   }));
+
+  // Explicitly serve assets with correct MIME types
+  app.get('/assets/*', (req, res) => {
+    const filePath = path.join(frontendPath, req.path);
+    console.log(`🔍 Serving asset: ${req.path} from ${filePath}`);
+    
+    // Set correct MIME type
+    if (req.path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    } else if (req.path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=utf-8');
+    }
+    
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error(`❌ Error serving asset ${req.path}:`, err);
+        res.status(404).send('Asset not found');
+      } else {
+        console.log(`✅ Successfully served asset: ${req.path}`);
+      }
+    });
+  });
   
+  // Serve root index.html
+  app.get('/', (req, res) => {
+    console.log('🏠 Serving root index.html');
+    res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        res.status(500).send('Error loading application');
+      }
+    });
+  });
+
   // Handle SPA routing - serve index.html for non-API routes
   // This must come AFTER static file serving
   app.get('*', (req, res, next) => {
-    // Don't handle API routes, health check, or socket.io
+    // Don't handle API routes, health check, socket.io, or assets
     if (req.path.startsWith('/api') || 
         req.path.startsWith('/socket.io') || 
+        req.path.startsWith('/assets/') ||
         req.path === '/health' ||
         req.path === '/test') {
       return next();
     }
     
     // Serve index.html for all other routes (SPA routing)
+    console.log(`🔄 SPA routing: serving index.html for ${req.path}`);
     res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
       if (err) {
         console.error('Error serving index.html:', err);
