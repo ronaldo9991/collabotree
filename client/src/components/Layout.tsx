@@ -74,15 +74,15 @@ export function Layout({ children }: LayoutProps) {
         <div className="container-unified px-4 sm:px-6 relative">
             <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
-              <div className="w-8 h-8 bg-blue-400 rounded-lg flex items-center justify-center">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group" data-testid="logo">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg group-hover:shadow-xl">
                 <img 
                   src="/logoa.png" 
                   alt="CollaboTree Logo" 
-                  className="w-6 h-6 object-contain"
+                  className="w-7 h-7 object-contain rounded-lg"
                 />
               </div>
-              <span className="text-lg font-semibold text-white">CollaboTree</span>
+              <span className="text-lg font-semibold text-white group-hover:text-blue-200 transition-colors duration-200">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}

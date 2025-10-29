@@ -90,11 +90,11 @@ export function TopNavigation({ children }: TopNavigationProps) {
           <div className="flex items-center justify-between h-16 px-6">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg group-hover:shadow-xl">
                 <img 
                   src="/logoa.png" 
                   alt="CollaboTree Logo" 
-                  className="w-7 h-7 object-contain"
+                  className="w-8 h-8 object-contain rounded-lg"
                 />
               </div>
               <span className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200">CollaboTree</span>
