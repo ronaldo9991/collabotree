@@ -108,6 +108,44 @@ app.get('/test', (req, res) => {
   `);
 });
 
+// Debug endpoint to check frontend files
+app.get('/debug-files', async (req, res) => {
+  try {
+    const { readdirSync, statSync } = await import('fs');
+    const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, 'frontend');
+    
+    let result = `<h1>🔍 Frontend Files Debug</h1>`;
+    result += `<p><strong>Frontend Path:</strong> ${frontendPath}</p>`;
+    result += `<p><strong>Current Directory:</strong> ${__dirname}</p>`;
+    
+    if (existsSync(frontendPath)) {
+      result += `<h2>📁 Frontend Directory Contents:</h2><ul>`;
+      const files = readdirSync(frontendPath);
+      files.forEach(file => {
+        const filePath = path.join(frontendPath, file);
+        const stat = statSync(filePath);
+        result += `<li>${file} (${stat.isDirectory() ? 'DIR' : 'FILE'})</li>`;
+        
+        if (file === 'assets' && stat.isDirectory()) {
+          result += `<ul>`;
+          const assetFiles = readdirSync(filePath);
+          assetFiles.forEach(asset => {
+            result += `<li>${asset}</li>`;
+          });
+          result += `</ul>`;
+        }
+      });
+      result += `</ul>`;
+    } else {
+      result += `<p>❌ Frontend directory does not exist!</p>`;
+    }
+    
+    res.send(result);
+  } catch (error) {
+    res.send(`<h1>❌ Debug Error</h1><p>${error.message}</p>`);
+  }
+});
+
 // API routes
 app.use('/api', routes);
 
@@ -169,7 +207,19 @@ if (env.NODE_ENV === 'production') {
     res.sendFile(filePath, (err) => {
       if (err) {
         console.error(`❌ Error serving asset ${req.path}:`, err);
-        res.status(404).send('Asset not found');
+        
+        // Try alternative path - maybe assets are in a different location
+        const altPath = path.join(__dirname, 'frontend', req.path);
+        console.log(`🔄 Trying alternative path: ${altPath}`);
+        
+        res.sendFile(altPath, (altErr) => {
+          if (altErr) {
+            console.error(`❌ Alternative path also failed:`, altErr);
+            res.status(404).send('Asset not found');
+          } else {
+            console.log(`✅ Successfully served asset from alternative path: ${req.path}`);
+          }
+        });
       } else {
         console.log(`✅ Successfully served asset: ${req.path}`);
       }
