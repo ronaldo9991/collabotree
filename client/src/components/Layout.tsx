@@ -75,11 +75,11 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group" data-testid="logo">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg group-hover:shadow-xl">
+              <div className="group-hover:scale-105 transition-transform duration-200">
                 <img 
                   src="/logoa.png" 
                   alt="CollaboTree Logo" 
-                  className="w-7 h-7 object-contain rounded-lg"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
               <span className="text-lg font-semibold text-white group-hover:text-blue-200 transition-colors duration-200">CollaboTree</span>
