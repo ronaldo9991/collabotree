@@ -115,10 +115,12 @@ app.get('/debug-files', async (req, res) => {
     const { readdirSync, statSync } = await import('fs');
     const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, 'frontend');
     
-    let result = `<h1>🔍 Frontend Files Debug</h1>`;
+    let result = `<h1>🔍 Comprehensive Files Debug</h1>`;
     result += `<p><strong>Frontend Path:</strong> ${frontendPath}</p>`;
     result += `<p><strong>Current Directory:</strong> ${__dirname}</p>`;
+    result += `<p><strong>Process CWD:</strong> ${process.cwd()}</p>`;
     
+    // Check frontend directory
     if (existsSync(frontendPath)) {
       result += `<h2>📁 Frontend Directory Contents:</h2><ul>`;
       const files = readdirSync(frontendPath);
@@ -140,6 +142,56 @@ app.get('/debug-files', async (req, res) => {
     } else {
       result += `<p>❌ Frontend directory does not exist!</p>`;
     }
+    
+    // Check client dist directory
+    const clientDistPath = path.join(process.cwd(), 'client', 'dist');
+    result += `<h2>📁 Client Dist Directory:</h2>`;
+    result += `<p><strong>Path:</strong> ${clientDistPath}</p>`;
+    
+    if (existsSync(clientDistPath)) {
+      result += `<p>✅ Client dist directory exists</p>`;
+      const clientFiles = readdirSync(clientDistPath);
+      result += `<ul>`;
+      clientFiles.forEach(file => {
+        const filePath = path.join(clientDistPath, file);
+        const stat = statSync(filePath);
+        result += `<li>${file} (${stat.isDirectory() ? 'DIR' : 'FILE'})</li>`;
+        
+        if (file === 'assets' && stat.isDirectory()) {
+          result += `<ul>`;
+          const assetFiles = readdirSync(filePath);
+          assetFiles.forEach(asset => {
+            result += `<li>${asset}</li>`;
+          });
+          result += `</ul>`;
+        }
+      });
+      result += `</ul>`;
+    } else {
+      result += `<p>❌ Client dist directory does not exist!</p>`;
+    }
+    
+    // Check alternative paths
+    const altPaths = [
+      path.join(__dirname, '..', 'client', 'dist'),
+      path.join(process.cwd(), '..', 'client', 'dist'),
+      path.join('/app', 'client', 'dist'),
+      path.join('/app', 'backend', '..', 'client', 'dist')
+    ];
+    
+    result += `<h2>🔍 Alternative Paths Check:</h2>`;
+    altPaths.forEach((altPath, index) => {
+      result += `<p><strong>Path ${index + 1}:</strong> ${altPath} - `;
+      if (existsSync(altPath)) {
+        result += `✅ EXISTS`;
+        if (existsSync(path.join(altPath, 'assets'))) {
+          result += ` (with assets)`;
+        }
+      } else {
+        result += `❌ NOT FOUND`;
+      }
+      result += `</p>`;
+    });
     
     res.send(result);
   } catch (error) {
@@ -193,31 +245,58 @@ if (env.NODE_ENV === 'production') {
     }
   }));
 
-  // Serve assets directly from client dist directory as fallback
-  const clientDistPath = path.join(process.cwd(), 'client', 'dist');
-  if (existsSync(clientDistPath)) {
-    console.log(`📁 Client dist directory exists: ${clientDistPath}`);
-    app.use('/assets', express.static(path.join(clientDistPath, 'assets'), {
-      maxAge: '1d',
-      etag: true,
-      lastModified: true,
-      setHeaders: (res, filePath) => {
-        if (filePath.endsWith('.css')) {
-          res.setHeader('Content-Type', 'text/css; charset=utf-8');
-        } else if (filePath.endsWith('.js')) {
-          res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      // Find and serve assets from multiple possible locations
+      const possibleAssetPaths = [
+        path.join(process.cwd(), 'client', 'dist', 'assets'),
+        path.join(__dirname, '..', 'client', 'dist', 'assets'),
+        path.join(process.cwd(), '..', 'client', 'dist', 'assets'),
+        path.join('/app', 'client', 'dist', 'assets'),
+        path.join('/app', 'backend', '..', 'client', 'dist', 'assets'),
+        path.join('/app', 'client_dist_backup', 'assets'),
+        path.join(frontendPath, 'assets')
+      ];
+      
+      let assetsServed = false;
+      for (const assetPath of possibleAssetPaths) {
+        if (existsSync(assetPath)) {
+          console.log(`📁 Found assets directory: ${assetPath}`);
+          app.use('/assets', express.static(assetPath, {
+            maxAge: '1d',
+            etag: true,
+            lastModified: true,
+            setHeaders: (res, filePath) => {
+              if (filePath.endsWith('.css')) {
+                res.setHeader('Content-Type', 'text/css; charset=utf-8');
+              } else if (filePath.endsWith('.js')) {
+                res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+              }
+            }
+          }));
+          console.log(`✅ Assets served from: ${assetPath}`);
+          assetsServed = true;
+          break;
         }
       }
-    }));
-    console.log(`✅ Assets served from client dist: ${path.join(clientDistPath, 'assets')}`);
-  } else {
-    console.log(`❌ Client dist directory does NOT exist: ${clientDistPath}`);
-  }
+      
+      if (!assetsServed) {
+        console.log(`❌ No assets directory found in any of the possible locations:`);
+        possibleAssetPaths.forEach((p, i) => console.log(`  ${i + 1}. ${p}`));
+      }
 
-  // Explicitly serve assets with correct MIME types
+  // Explicitly serve assets with correct MIME types (comprehensive fallback)
   app.get('/assets/*', (req, res) => {
-    const filePath = path.join(frontendPath, req.path);
-    console.log(`🔍 Serving asset: ${req.path} from ${filePath}`);
+    const possiblePaths = [
+      path.join(frontendPath, req.path),
+      path.join(process.cwd(), 'client', 'dist', req.path),
+      path.join(__dirname, '..', 'client', 'dist', req.path),
+      path.join(process.cwd(), '..', 'client', 'dist', req.path),
+      path.join('/app', 'client', 'dist', req.path),
+      path.join('/app', 'backend', '..', 'client', 'dist', req.path),
+      path.join('/app', 'client_dist_backup', req.path),
+      path.join(__dirname, 'frontend', req.path)
+    ];
+    
+    console.log(`🔍 Serving asset: ${req.path}`);
     
     // Set correct MIME type
     if (req.path.endsWith('.js')) {
@@ -226,44 +305,36 @@ if (env.NODE_ENV === 'production') {
       res.setHeader('Content-Type', 'text/css; charset=utf-8');
     }
     
-    res.sendFile(filePath, (err) => {
-      if (err) {
-        console.error(`❌ Error serving asset ${req.path}:`, err);
-        
-        // Try alternative paths
-        const altPaths = [
-          path.join(__dirname, 'frontend', req.path),
-          path.join(__dirname, '..', 'client', 'dist', req.path),
-          path.join(process.cwd(), 'client', 'dist', req.path)
-        ];
-        
-        let altIndex = 0;
-        const tryNextPath = () => {
-          if (altIndex >= altPaths.length) {
-            console.error(`❌ All alternative paths failed for ${req.path}`);
-            res.status(404).send('Asset not found');
-            return;
-          }
-          
-          const altPath = altPaths[altIndex];
-          console.log(`🔄 Trying alternative path ${altIndex + 1}: ${altPath}`);
-          
-          res.sendFile(altPath, (altErr) => {
-            if (altErr) {
-              console.error(`❌ Alternative path ${altIndex + 1} failed:`, altErr);
-              altIndex++;
-              tryNextPath();
-            } else {
-              console.log(`✅ Successfully served asset from alternative path ${altIndex + 1}: ${req.path}`);
-            }
-          });
-        };
-        
-        tryNextPath();
-      } else {
-        console.log(`✅ Successfully served asset: ${req.path}`);
+    let pathIndex = 0;
+    const tryNextPath = () => {
+      if (pathIndex >= possiblePaths.length) {
+        console.error(`❌ All paths failed for ${req.path}`);
+        res.status(404).send('Asset not found');
+        return;
       }
-    });
+      
+      const filePath = possiblePaths[pathIndex];
+      console.log(`🔄 Trying path ${pathIndex + 1}: ${filePath}`);
+      
+      if (existsSync(filePath)) {
+        console.log(`✅ Found asset at: ${filePath}`);
+        res.sendFile(filePath, (err) => {
+          if (err) {
+            console.error(`❌ Error serving from ${filePath}:`, err);
+            pathIndex++;
+            tryNextPath();
+          } else {
+            console.log(`✅ Successfully served asset: ${req.path}`);
+          }
+        });
+      } else {
+        console.log(`❌ Path not found: ${filePath}`);
+        pathIndex++;
+        tryNextPath();
+      }
+    };
+    
+    tryNextPath();
   });
   
   // Serve root index.html
