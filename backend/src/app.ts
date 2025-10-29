@@ -193,6 +193,27 @@ if (env.NODE_ENV === 'production') {
     }
   }));
 
+  // Serve assets directly from client dist directory as fallback
+  const clientDistPath = path.join(process.cwd(), 'client', 'dist');
+  if (existsSync(clientDistPath)) {
+    console.log(`📁 Client dist directory exists: ${clientDistPath}`);
+    app.use('/assets', express.static(path.join(clientDistPath, 'assets'), {
+      maxAge: '1d',
+      etag: true,
+      lastModified: true,
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.css')) {
+          res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        } else if (filePath.endsWith('.js')) {
+          res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        }
+      }
+    }));
+    console.log(`✅ Assets served from client dist: ${path.join(clientDistPath, 'assets')}`);
+  } else {
+    console.log(`❌ Client dist directory does NOT exist: ${clientDistPath}`);
+  }
+
   // Explicitly serve assets with correct MIME types
   app.get('/assets/*', (req, res) => {
     const filePath = path.join(frontendPath, req.path);
