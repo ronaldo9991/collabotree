@@ -247,13 +247,16 @@ if (env.NODE_ENV === 'production') {
 
       // Find and serve assets from multiple possible locations
       const possibleAssetPaths = [
+        path.join(frontendPath, 'assets'),
+        path.join(__dirname, 'static-assets'),
+        path.join(process.cwd(), 'static-assets'),
+        path.join('/app', 'static_assets'),
         path.join(process.cwd(), 'client', 'dist', 'assets'),
         path.join(__dirname, '..', 'client', 'dist', 'assets'),
         path.join(process.cwd(), '..', 'client', 'dist', 'assets'),
         path.join('/app', 'client', 'dist', 'assets'),
         path.join('/app', 'backend', '..', 'client', 'dist', 'assets'),
-        path.join('/app', 'client_dist_backup', 'assets'),
-        path.join(frontendPath, 'assets')
+        path.join('/app', 'client_dist_backup', 'assets')
       ];
       
       let assetsServed = false;
@@ -287,6 +290,9 @@ if (env.NODE_ENV === 'production') {
   app.get('/assets/*', (req, res) => {
     const possiblePaths = [
       path.join(frontendPath, req.path),
+      path.join(__dirname, 'static-assets', req.path.replace('/assets/', '')),
+      path.join(process.cwd(), 'static-assets', req.path.replace('/assets/', '')),
+      path.join('/app', 'static_assets', req.path.replace('/assets/', '')),
       path.join(process.cwd(), 'client', 'dist', req.path),
       path.join(__dirname, '..', 'client', 'dist', req.path),
       path.join(process.cwd(), '..', 'client', 'dist', req.path),

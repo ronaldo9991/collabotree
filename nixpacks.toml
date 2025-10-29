@@ -2,12 +2,41 @@
 nixPkgs = ['nodejs_22']
 
 [phases.install]
-cmds = ['cd backend && npm ci --omit=dev --no-audit --no-fund']
+cmds = [
+  'cd client && npm ci --legacy-peer-deps --no-audit --no-fund',
+  'cd backend && npm ci --omit=dev --no-audit --no-fund'
+]
 
 [phases.build]
 cmds = [
+  'cd client && npm run build',
+  'cd client && ls -la dist/',
+  'cd client && ls -la dist/assets/ || echo "Client assets not found"',
+  'cd client && find dist -type f | head -20',
   'cd backend && npx prisma generate',
-  'cd backend && npm run build'
+  'cd backend && npm run build',
+  'echo "=== CREATING MULTIPLE ASSET COPIES ==="',
+  'cd backend && rm -rf dist/frontend',
+  'cd backend && mkdir -p dist/frontend',
+  'cd backend && cp -r ../client/dist/* dist/frontend/',
+  'cd backend && ls -la dist/frontend/',
+  'cd backend && ls -la dist/frontend/assets/ || echo "Backend assets not found"',
+  'cd backend && find dist/frontend -name "*.js" -o -name "*.css" | head -10',
+  'echo "=== CREATING STATIC ASSETS DIRECTORY ==="',
+  'cd backend && mkdir -p static-assets',
+  'cd backend && cp -r ../client/dist/assets/* static-assets/',
+  'cd backend && ls -la static-assets/',
+  'echo "=== CREATING RUNTIME BACKUP ==="',
+  'mkdir -p /app/static_assets',
+  'cp -r client/dist/assets/* /app/static_assets/',
+  'ls -la /app/static_assets/',
+  'echo "=== FINAL VERIFICATION ==="',
+  'echo "Client dist contents:" && ls -la client/dist/',
+  'echo "Client assets contents:" && ls -la client/dist/assets/ || echo "No client assets"',
+  'echo "Backend frontend contents:" && ls -la backend/dist/frontend/',
+  'echo "Backend frontend assets:" && ls -la backend/dist/frontend/assets/ || echo "No backend frontend assets"',
+  'echo "Backend static assets:" && ls -la backend/static-assets/ || echo "No static assets"',
+  'echo "Runtime backup assets:" && ls -la /app/static_assets/ || echo "No runtime backup"'
 ]
 
 [start]

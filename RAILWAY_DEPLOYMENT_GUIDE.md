@@ -59,3 +59,4 @@ If build still times out:
 - ✅ signedAt field validation errors
 
 The deployment should now complete successfully within Railway's build time limits.
+

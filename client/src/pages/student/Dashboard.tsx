@@ -44,7 +44,7 @@ import {
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { api } from "@/lib/api";
+import { api, ApiResponse } from "@/lib/api";
 import { ContractManager } from "@/components/ContractManager";
 // import { supabase } from "@/lib/supabase";
 
@@ -1258,59 +1258,90 @@ function ContractsSection() {
     try {
       setLoading(true);
       setError(null);
-      console.log('Fetching contracts for user...', retryCount > 0 ? `(Retry ${retryCount})` : '');
+      console.log('🔍 Fetching contracts for user...', retryCount > 0 ? `(Retry ${retryCount})` : '');
       
-      const response = await api.getUserContracts();
-      console.log('Contracts API response:', response);
+      // Get auth tokens for debugging
+      const tokens = localStorage.getItem('auth_tokens');
+      console.log('🔐 Auth tokens available:', !!tokens);
+      if (tokens) {
+        try {
+          const parsedTokens = JSON.parse(tokens);
+          console.log('🔐 Has access token:', !!parsedTokens.accessToken);
+          console.log('🔐 Has refresh token:', !!parsedTokens.refreshToken);
+          
+          // Check if token is expired
+          if (parsedTokens.accessToken) {
+            const payload = JSON.parse(atob(parsedTokens.accessToken.split('.')[1]));
+            const isExpired = payload.exp * 1000 < Date.now();
+            console.log('🔐 Token expired:', isExpired);
+            console.log('🔐 Token expires at:', new Date(payload.exp * 1000));
+          }
+        } catch (e) {
+          console.error('🔐 Error parsing tokens:', e);
+        }
+      }
+      
+      const response = await api.getUserContracts() as ApiResponse<any>;
+      console.log('📄 Contracts API response:', response);
       
       if (response && response.success) {
         setContracts(response.data || []);
         setError(null);
-        console.log('Contracts loaded successfully:', response.data?.length || 0, 'contracts');
+        console.log('✅ Contracts loaded successfully:', response.data?.length || 0, 'contracts');
       } else {
-        console.warn('API response indicates failure:', response);
+        console.warn('⚠️ API response indicates failure:', response);
         setContracts([]);
-        const errorMsg = response?.error || 'Unknown API error';
+        const errorMsg = response?.error || response?.message || 'Unknown API error';
         setError(errorMsg);
-        toast({
-          title: "Error",
-          description: errorMsg,
-          variant: "destructive",
-        });
+        
+        // Don't show toast immediately, let the UI handle the error display
+        console.error('❌ Contract loading failed:', errorMsg);
       }
     } catch (error) {
-      console.error('Error fetching contracts:', error);
+      console.error('❌ Error fetching contracts:', error);
       setContracts([]);
       
       // More specific error messages based on error type
-      let errorMessage = "Failed to load contracts.";
+      let errorMessage = "Failed to load contracts";
+      let debugInfo = "";
+      
       if (error instanceof Error) {
-        if (error.message.includes('Failed to fetch') || error.message.includes('Network')) {
-          errorMessage = "Network error: Could not connect to server. Please check your internet connection.";
+        console.error('❌ Error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+        
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          errorMessage = "Network error: Could not connect to server";
+          debugInfo = "Please check your internet connection and try again.";
         } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-          errorMessage = "Authentication error: Please try refreshing the page or logging in again.";
+          errorMessage = "Authentication error: Session expired";
+          debugInfo = "Please refresh the page or log in again.";
+        } else if (error.message.includes('403') || error.message.includes('Forbidden')) {
+          errorMessage = "Access denied: Insufficient permissions";
+          debugInfo = "You may not have permission to view contracts.";
+        } else if (error.message.includes('404')) {
+          errorMessage = "Contracts endpoint not found";
+          debugInfo = "The contracts API endpoint may not be available.";
         } else if (error.message.includes('500')) {
-          errorMessage = "Server error: Please try again later.";
+          errorMessage = "Server error: Internal server error";
+          debugInfo = "The server is experiencing issues. Please try again later.";
         } else {
-          errorMessage = `Error: ${error.message}`;
+          errorMessage = `API Error: ${error.message}`;
+          debugInfo = "Check browser console for more details.";
         }
       }
       
-      setError(errorMessage);
+      setError(`${errorMessage}. ${debugInfo}`);
       
       // Auto-retry once for network errors
       if (retryCount === 0 && (error instanceof Error && 
-          (error.message.includes('Failed to fetch') || error.message.includes('Network')))) {
-        console.log('Network error detected, retrying in 2 seconds...');
-        setTimeout(() => fetchContracts(1), 2000);
+          (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')))) {
+        console.log('🔄 Network error detected, retrying in 3 seconds...');
+        setTimeout(() => fetchContracts(1), 3000);
         return;
       }
-      
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
     } finally {
       setLoading(false);
     }
@@ -1335,9 +1366,21 @@ function ContractsSection() {
       <Card className="glass-card bg-card/50 backdrop-blur-12 border border-destructive/20">
         <CardContent className="p-12 text-center">
           <AlertTriangle className="h-16 w-16 text-destructive mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">Unable to Load Contracts</h3>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">{error}</p>
-          <div className="flex gap-3 justify-center">
+          <h3 className="text-xl font-semibold mb-2 text-destructive">Unable to Load Contracts</h3>
+          <p className="text-muted-foreground mb-6 max-w-lg mx-auto leading-relaxed">{error}</p>
+          
+          {/* Debug information */}
+          <div className="bg-muted/30 rounded-lg p-4 mb-6 max-w-md mx-auto">
+            <p className="text-sm font-medium text-foreground mb-2">Debug Information:</p>
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p>• API URL: {import.meta.env.PROD ? '/api' : 'http://localhost:4000/api'}</p>
+              <p>• Environment: {import.meta.env.PROD ? 'Production' : 'Development'}</p>
+              <p>• Auth tokens: {localStorage.getItem('auth_tokens') ? '✓ Available' : '✗ Missing'}</p>
+              <p>• Endpoint: GET /contracts/user</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button 
               onClick={() => fetchContracts()} 
               className="gap-2"
@@ -1347,17 +1390,54 @@ function ContractsSection() {
               Retry Loading
             </Button>
             <Button 
-              onClick={() => window.location.reload()} 
+              onClick={() => {
+                // Test API connectivity
+                console.log('🧪 Testing API connectivity...');
+                api.getProfile().then(response => {
+                  const apiResponse = response as ApiResponse<any>;
+                  console.log('🧪 Profile API test:', apiResponse);
+                  if (apiResponse?.success) {
+                    console.log('✅ API is reachable, retrying contracts...');
+                    fetchContracts();
+                  } else {
+                    console.error('❌ API test failed:', apiResponse);
+                  }
+                }).catch(error => {
+                  console.error('❌ API test error:', error);
+                });
+              }}
               variant="outline"
+              className="gap-2"
+            >
+              <Activity className="h-4 w-4" />
+              Test API
+            </Button>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="secondary"
               className="gap-2"
             >
               <Activity className="h-4 w-4" />
               Refresh Page
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-4">
-            Check the browser console (F12) for detailed error information.
-          </p>
+          
+          <details className="mt-6">
+            <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+              Show troubleshooting steps
+            </summary>
+            <div className="mt-3 text-xs text-left text-muted-foreground bg-muted/20 rounded-lg p-3 max-w-md mx-auto">
+              <p className="font-medium mb-2">Troubleshooting steps:</p>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Check your internet connection</li>
+                <li>Try refreshing the page (F5)</li>
+                <li>Clear browser cache and cookies</li>
+                <li>Log out and log back in</li>
+                <li>Open browser console (F12) for detailed errors</li>
+                <li>Contact support if issue persists</li>
+              </ol>
+            </div>
+          </details>
         </CardContent>
       </Card>
     );
@@ -1417,7 +1497,7 @@ function StudentVerification() {
   const fetchVerificationStatus = async () => {
     try {
       setLoading(true);
-      const response = await api.getVerificationStatus();
+      const response = await api.getVerificationStatus() as ApiResponse<any>;
       if (response.success) {
         setVerificationStatus(response.data);
       }
@@ -1462,7 +1542,7 @@ function StudentVerification() {
         
         try {
           console.log('Uploading ID card, base64 length:', base64String.length);
-          const response = await api.uploadIdCard(base64String);
+          const response = await api.uploadIdCard(base64String) as ApiResponse<any>;
           
           if (response.success) {
             console.log('ID card uploaded successfully:', response.data);

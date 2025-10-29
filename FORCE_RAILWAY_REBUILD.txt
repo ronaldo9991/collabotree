@@ -5,3 +5,4 @@ Updated nixpacks configuration and optimized start script.
 Contract signing issues fixed.
 Database schema updated with signedAt field.
 Build timeout optimizations applied.
+

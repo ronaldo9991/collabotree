@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { api } from "@/lib/api";
+import { api, ApiResponse } from "@/lib/api";
 import { 
   LayoutDashboard,
   Briefcase,
@@ -27,7 +27,8 @@ import {
   Heart,
   Filter,
   MapPin,
-  FileText
+  FileText,
+  AlertTriangle
 } from "lucide-react";
 import {
   Card,
@@ -128,7 +129,7 @@ export default function BuyerDashboard() {
 
       // Fetch real user projects data using the orders API
       console.log('🚀 Fetching orders for user:', user?.id, 'role:', user?.role);
-      const userProjectsResponse = await api.getOrders();
+      const userProjectsResponse = await api.getOrders() as ApiResponse<any>;
       console.log('🔍 Full Orders API response:', JSON.stringify(userProjectsResponse, null, 2));
       
       // Handle different possible response structures
@@ -767,7 +768,7 @@ function BrowseTalentSection({ searchTerm, projects, hireRequests, onHireSuccess
       
       console.log('Sending hire request to API...');
       try {
-      const result = await api.createHireRequest(hireRequestData);
+      const result = await api.createHireRequest(hireRequestData) as ApiResponse<any>;
         console.log('Hire request result:', result);
 
         if (result.success) {
@@ -976,26 +977,77 @@ function ProjectCard({ project, onHireNow, hasHiredProject }: {
 function BuyerContractsSection() {
   const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchContracts();
   }, []);
 
-  const fetchContracts = async () => {
+  const fetchContracts = async (retryCount = 0) => {
     try {
       setLoading(true);
-      const response = await api.getUserContracts();
-      if (response.success) {
+      setError(null);
+      console.log('🔍 [Buyer] Fetching contracts for user...', retryCount > 0 ? `(Retry ${retryCount})` : '');
+      
+      const response = await api.getUserContracts() as ApiResponse<any>;
+      console.log('📄 [Buyer] Contracts API response:', response);
+      
+      if (response && response.success) {
         setContracts(response.data || []);
+        setError(null);
+        console.log('✅ [Buyer] Contracts loaded successfully:', response.data?.length || 0, 'contracts');
+      } else {
+        console.warn('⚠️ [Buyer] API response indicates failure:', response);
+        setContracts([]);
+        const errorMsg = response?.error || response?.message || 'Unknown API error';
+        setError(errorMsg);
+        console.error('❌ [Buyer] Contract loading failed:', errorMsg);
       }
     } catch (error) {
-      console.error('Error fetching contracts:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load contracts.",
-        variant: "destructive",
-      });
+      console.error('❌ [Buyer] Error fetching contracts:', error);
+      setContracts([]);
+      
+      let errorMessage = "Failed to load contracts";
+      let debugInfo = "";
+      
+      if (error instanceof Error) {
+        console.error('❌ [Buyer] Error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+        
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          errorMessage = "Network error: Could not connect to server";
+          debugInfo = "Please check your internet connection and try again.";
+        } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          errorMessage = "Authentication error: Session expired";
+          debugInfo = "Please refresh the page or log in again.";
+        } else if (error.message.includes('403') || error.message.includes('Forbidden')) {
+          errorMessage = "Access denied: Insufficient permissions";
+          debugInfo = "You may not have permission to view contracts.";
+        } else if (error.message.includes('404')) {
+          errorMessage = "Contracts endpoint not found";
+          debugInfo = "The contracts API endpoint may not be available.";
+        } else if (error.message.includes('500')) {
+          errorMessage = "Server error: Internal server error";
+          debugInfo = "The server is experiencing issues. Please try again later.";
+        } else {
+          errorMessage = `API Error: ${error.message}`;
+          debugInfo = "Check browser console for more details.";
+        }
+      }
+      
+      setError(`${errorMessage}. ${debugInfo}`);
+      
+      // Auto-retry once for network errors
+      if (retryCount === 0 && (error instanceof Error && 
+          (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')))) {
+        console.log('🔄 [Buyer] Network error detected, retrying in 3 seconds...');
+        setTimeout(() => fetchContracts(1), 3000);
+        return;
+      }
     } finally {
       setLoading(false);
     }
@@ -1008,6 +1060,72 @@ function BuyerContractsSection() {
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <span className="ml-2">Loading contracts...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show error state with retry option
+  if (error && contracts.length === 0) {
+    return (
+      <Card className="glass-card bg-card/50 backdrop-blur-12 border border-destructive/20">
+        <CardContent className="p-12 text-center">
+          <AlertTriangle className="h-16 w-16 text-destructive mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2 text-destructive">Unable to Load Contracts</h3>
+          <p className="text-muted-foreground mb-6 max-w-lg mx-auto leading-relaxed">{error}</p>
+          
+          {/* Debug information */}
+          <div className="bg-muted/30 rounded-lg p-4 mb-6 max-w-md mx-auto">
+            <p className="text-sm font-medium text-foreground mb-2">Debug Information:</p>
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p>• API URL: {import.meta.env.PROD ? '/api' : 'http://localhost:4000/api'}</p>
+              <p>• Environment: {import.meta.env.PROD ? 'Production' : 'Development'}</p>
+              <p>• Auth tokens: {localStorage.getItem('auth_tokens') ? '✓ Available' : '✗ Missing'}</p>
+              <p>• Endpoint: GET /contracts/user (Buyer)</p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button 
+              onClick={() => fetchContracts()} 
+              className="gap-2"
+              variant="default"
+            >
+              <Activity className="h-4 w-4" />
+              Retry Loading
+            </Button>
+            <Button 
+              onClick={() => {
+                // Test API connectivity
+                console.log('🧪 [Buyer] Testing API connectivity...');
+                api.getProfile().then(response => {
+                  const apiResponse = response as ApiResponse<any>;
+                  console.log('🧪 [Buyer] Profile API test:', apiResponse);
+                  if (apiResponse?.success) {
+                    console.log('✅ [Buyer] API is reachable, retrying contracts...');
+                    fetchContracts();
+                  } else {
+                    console.error('❌ [Buyer] API test failed:', apiResponse);
+                  }
+                }).catch(error => {
+                  console.error('❌ [Buyer] API test error:', error);
+                });
+              }}
+              variant="outline"
+              className="gap-2"
+            >
+              <Activity className="h-4 w-4" />
+              Test API
+            </Button>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="secondary"
+              className="gap-2"
+            >
+              <Activity className="h-4 w-4" />
+              Refresh Page
+            </Button>
           </div>
         </CardContent>
       </Card>
