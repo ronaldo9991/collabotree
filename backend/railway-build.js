@@ -52,6 +52,10 @@ try {
   console.log(`   From: ${path.resolve(frontendDistPath)}`);
   console.log(`   To: ${path.resolve(frontendTargetPath)}`);
   
+  // List source files before copying
+  const sourceFiles = readdirSync(frontendDistPath);
+  console.log('📦 Source files:', sourceFiles);
+  
   cpSync(frontendDistPath, frontendTargetPath, { recursive: true, force: true });
   
   // Verify files were copied
@@ -85,13 +89,21 @@ try {
     const sourceAssetsPath = path.join(frontendDistPath, 'assets');
     if (existsSync(sourceAssetsPath)) {
       console.log('🔄 Attempting to copy assets folder explicitly...');
+      console.log(`   From: ${path.resolve(sourceAssetsPath)}`);
+      console.log(`   To: ${path.resolve(assetsPath)}`);
+      
+      // Create assets directory first
+      mkdirSync(assetsPath, { recursive: true });
+      
       cpSync(sourceAssetsPath, assetsPath, { recursive: true, force: true });
       if (existsSync(assetsPath)) {
         const assetFiles = readdirSync(assetsPath);
         console.log(`✅ Assets folder copied successfully with ${assetFiles.length} files`);
+        console.log('📦 Copied asset files:', assetFiles);
       }
     } else {
       console.log('❌ Source assets folder not found:', sourceAssetsPath);
+      console.log('📁 Source directory contents:', readdirSync(frontendDistPath));
     }
   }
   
