@@ -237,141 +237,45 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
-        {/* Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
-        
-        {/* Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
+      {/* Hero Section (restored to image-based version) */}
+      <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-center overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/jhero.png"
+            alt="CollaboTree Hero"
+            className="w-full h-full object-cover"
           />
-          <motion.div 
-            className="absolute top-40 right-20 w-32 h-32 bg-secondary/10 rounded-full blur-xl"
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.4, 0.7, 0.4],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2
-            }}
-          />
-          <motion.div 
-            className="absolute bottom-20 left-1/4 w-24 h-24 bg-accent/10 rounded-full blur-xl"
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.2, 0.5, 0.2],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 4
-            }}
-          />
+          <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
         </div>
-
-        {/* Main Content */}
-        <div className="relative z-10 container-unified w-full py-16 md:py-20 px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto text-center">
-              <motion.div
-              initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-8"
-              >
-              {/* Verified Students Badge */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-medium">
-                  <Star className="w-4 h-4 mr-2" />
-                  Verified Students Only
-                </Badge>
-                </motion.div>
-
-              {/* Main Heading with Gradient */}
-              <motion.h1
-                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6"
-                initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              >
-                <span className="block">Connect with</span>
-                <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  Top Student Talent
-                      </span>
-                <span className="block">Worldwide</span>
-              </motion.h1>
-
-              {/* Subcopy */}
-              <motion.p
-                className="text-lg sm:text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-8"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-              >
-                Discover verified university students offering high-quality services. 
-                <span className="text-primary font-semibold">Quality work, competitive rates, secure payments.</span>
-              </motion.p>
-
-              {/* CTA Buttons */}
-                <motion.div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-                initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.7 }}
-              >
-                <Button size="lg" asChild className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+        <div className="relative z-10 container-unified px-4 sm:px-6">
+          <div className="max-w-3xl">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-medium">
+                Verified Students Only
+              </Badge>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight text-white drop-shadow">
+                Connect with Top Student Talent
+              </h1>
+              <p className="mt-4 text-lg sm:text-xl text-white/90 max-w-2xl">
+                Quality work at competitive rates with secure payments and verified profiles.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <Button size="lg" asChild className="bg-primary text-white hover:bg-primary/90">
                   <Link href="/marketplace">
-                    <TrendingUp className="w-5 h-5 mr-2" />
                     Explore Marketplace
-                    </Link>
-                  </Button>
-                <Button size="lg" variant="outline" asChild className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300">
+                  </Link>
+                </Button>
+                <Button size="lg" variant="secondary" asChild className="bg-white text-primary hover:bg-white/90">
                   <Link href="/how-it-works">
-                    <Users className="w-5 h-5 mr-2" />
                     How It Works
-                    </Link>
-                  </Button>
-                </motion.div>
-
-              {/* Trust Indicators */}
-                <motion.div
-                className="flex flex-wrap items-center justify-center gap-8 pt-8"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.9 }}
-              >
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                    <span className="font-medium">Verified Students</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Lock className="w-5 h-5 text-primary" />
-                    <span className="font-medium">Secure Payments</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Star className="w-5 h-5 text-primary" />
-                    <span className="font-medium">Quality Guaranteed</span>
-                </div>
-                  </motion.div>
-                </motion.div>
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
