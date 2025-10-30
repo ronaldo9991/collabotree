@@ -3,7 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare } from "lucide-react";
+import { 
+  Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, 
+  GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, 
+  Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, 
+  PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, 
+  Package, UserCheck, MessageCircle, CreditCard, CheckSquare,
+  ArrowRight, Heart, Eye, ThumbsUp, Award as AwardIcon
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "wouter";
@@ -38,7 +45,7 @@ export default function Landing() {
         const topSelectionResponse = await api.getPublicTopSelectionServices();
         let topSelectionServices = [];
         
-        if (topSelectionResponse.success && topSelectionResponse.data) {
+      if (topSelectionResponse && typeof topSelectionResponse === 'object' && 'success' in topSelectionResponse && topSelectionResponse.success && topSelectionResponse.data) {
           topSelectionServices = topSelectionResponse.data as any[];
         }
         
@@ -99,143 +106,149 @@ export default function Landing() {
         setNewProjects(mappedNewProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
-        setTopSelectionProjects([]);
-        setNewProjects([]);
       } finally {
         setLoading(false);
       }
     };
 
-  // Fetch projects on component mount
   useEffect(() => {
     fetchProjects();
   }, []);
 
-  const projectsPerSlide = 3;
-  const totalSlides = Math.ceil(Math.max(topSelectionProjects.length, 1) / projectsPerSlide);
-  const totalNewProjectSlides = Math.ceil(Math.max(newProjects.length, 1) / projectsPerSlide);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-  const nextNewProjectSlide = () => {
-    setCurrentNewProjectSlide((prev) => (prev + 1) % totalNewProjectSlides);
-  };
-
-  const prevNewProjectSlide = () => {
-    setCurrentNewProjectSlide((prev) => (prev - 1 + totalNewProjectSlides) % totalNewProjectSlides);
-  };
-
-  const getCurrentProjects = () => {
-    const startIndex = currentSlide * projectsPerSlide;
-    return topSelectionProjects.slice(startIndex, startIndex + projectsPerSlide);
-  };
-
-  const getCurrentNewProjects = () => {
-    const startIndex = currentNewProjectSlide * projectsPerSlide;
-    return newProjects.slice(startIndex, startIndex + projectsPerSlide);
-  };
-
-  // Handle search and navigate to marketplace
   const handleSearch = useCallback(() => {
-    const trimmedQuery = debouncedSearchQuery.trim();
-    console.log('🚀 Hero search triggered. Query:', trimmedQuery);
-    if (trimmedQuery) {
-      const url = `/marketplace?search=${encodeURIComponent(trimmedQuery)}`;
+    if (debouncedSearchQuery.trim()) {
+      const url = `/marketplace?search=${encodeURIComponent(debouncedSearchQuery)}`;
       console.log('   Navigating to:', url);
       setLocation(url);
-    } else {
-      console.log('   Empty search, navigating to marketplace');
-      setLocation('/marketplace');
     }
   }, [debouncedSearchQuery, setLocation]);
 
-  // Handle popular search terms
   const handlePopularSearch = (term: string) => {
-    console.log('🏷️ Popular search clicked:', term);
     const url = `/marketplace?search=${encodeURIComponent(term)}`;
     console.log('   Navigating to:', url);
     setLocation(url);
   };
 
-  // Auto-slide functionality removed - user wants manual control only
-
+  // Features data
   const features = [
     {
-      title: "Verified Student Sellers",
+      title: "Verified Students",
       description: "All students are verified through their university credentials and academic records before joining our platform.",
-      gradient: "from-blue-500 to-cyan-500",
-      highlight: "Authentic Talent",
-      icon: UserCheck
+      icon: UserCheck,
+      gradient: "from-blue-500 to-cyan-500"
     },
     {
-      title: "Direct Communication",
-      description: "Connect directly with students through our built-in messaging system. No middlemen, just clear communication.",
-      gradient: "from-purple-500 to-pink-500",
-      highlight: "Real Connection",
-      icon: MessageCircle
-    },
-    {
-      title: "Secure Payments",
-      description: "Your payments are protected with secure escrow system. Money is only released when you're satisfied with the work.",
-      gradient: "from-green-500 to-emerald-500",
-      highlight: "Payment Protection",
-      icon: CreditCard
-    },
-    {
-      title: "Quality Control",
+      title: "Quality Assurance",
       description: "Review and approve work before final payment. Request revisions until you're completely satisfied.",
-      gradient: "from-orange-500 to-red-500",
-      highlight: "Your Approval",
-      icon: CheckSquare
+      icon: CheckSquare,
+      gradient: "from-green-500 to-emerald-500"
     },
+    {
+      title: "Global Reach",
+      description: "Access talented students from top universities worldwide. Connect with diverse perspectives and skills.",
+      icon: Globe,
+      gradient: "from-purple-500 to-pink-500"
+    },
+    {
+      title: "Safe Payments",
+      description: "Your payments are protected with secure escrow system. Money is only released when you're satisfied.",
+      icon: CreditCard,
+      gradient: "from-orange-500 to-red-500"
+    },
+    {
+      title: "Dispute Resolution",
+      description: "Fair and transparent dispute resolution process to ensure both parties are treated fairly.",
+      icon: Shield,
+      gradient: "from-indigo-500 to-blue-500"
+    },
+    {
+      title: "Communication",
+      description: "Connect directly with students through our built-in messaging system. No middlemen, just clear communication.",
+      icon: MessageCircle,
+      gradient: "from-teal-500 to-green-500"
+    }
   ];
 
+  // Category pills data
+  const categories = [
+    { name: "Web Dev", icon: Code, color: "bg-blue-500" },
+    { name: "Design", icon: Palette, color: "bg-purple-500" },
+    { name: "Data", icon: BarChart3, color: "bg-green-500" },
+    { name: "Content", icon: FileText, color: "bg-orange-500" },
+    { name: "Research", icon: Search, color: "bg-indigo-500" },
+    { name: "Tutoring", icon: GraduationCap, color: "bg-pink-500" }
+  ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
+  // Testimonials data
+  const testimonials = [
+    {
+      name: "Sarah Johnson",
+      role: "Marketing Director",
+      company: "TechCorp",
+      content: "CollaboTree has been a game-changer for our content needs. The students deliver high-quality work on time and within budget.",
+      rating: 5,
+      avatar: ""
     },
-  };
+    {
+      name: "Michael Chen",
+      role: "Student",
+      university: "Stanford University",
+      content: "I've earned over $5,000 through CollaboTree while studying. It's the perfect platform for students to showcase their skills.",
+      rating: 5,
+      avatar: ""
+    },
+    {
+      name: "Emily Rodriguez",
+      role: "Startup Founder",
+      company: "InnovateLab",
+      content: "The quality of work from verified students is outstanding. We've built our entire MVP with student talent from CollaboTree.",
+      rating: 5,
+      avatar: ""
+    }
+  ];
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+  // FAQ data
+  const faqs = [
+    {
+      question: "How do I verify that a student is legitimate?",
+      answer: "All students must provide university credentials and academic records. We verify their identity and enrollment status before they can join our platform."
     },
-  };
+    {
+      question: "What payment methods do you accept?",
+      answer: "We accept all major credit cards, PayPal, and bank transfers. Payments are held in escrow until you approve the completed work."
+    },
+    {
+      question: "Can I request revisions to completed work?",
+      answer: "Yes! You can request unlimited revisions until you're completely satisfied with the work. The student must deliver according to your requirements."
+    },
+    {
+      question: "How do I communicate with the student?",
+      answer: "We provide a built-in messaging system where you can chat directly with the student, share files, and track project progress in real-time."
+    },
+    {
+      question: "What if there's a dispute?",
+      answer: "Our dispute resolution team will review the case fairly and help resolve any issues. We have a transparent process to ensure both parties are treated fairly."
+    },
+    {
+      question: "How quickly can I get my project completed?",
+      answer: "Most projects are completed within 3-7 days, depending on complexity. Students set their own delivery timelines, and you can filter by delivery time when searching."
+    }
+  ];
 
   return (
     <div className="min-h-screen">
-      {/* Futuristic 3D Web3 Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Dynamic 3D Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 dark:from-slate-950 dark:via-blue-950 dark:to-slate-900">
-          {/* Animated 3D gradient mesh */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF]/20 via-[#4AC8FF]/30 to-[#00B2FF]/20 dark:from-[#00B2FF]/30 dark:via-[#4AC8FF]/40 dark:to-[#00B2FF]/30"></div>
-          
-          {/* 3D Grid Pattern */}
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] dark:bg-grid-white/[0.05]"></div>
-          
-          {/* Animated gradient orbs with 3D effect */}
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
-            className="absolute top-0 -left-4 w-96 h-96 bg-gradient-to-br from-[#4AC8FF] to-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-40 dark:opacity-50"
+            className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl"
             animate={{
               scale: [1, 1.2, 1],
-              rotate: [0, 180, 360],
-              x: [0, 50, 0],
-              y: [0, -30, 0],
+              opacity: [0.3, 0.6, 0.3],
             }}
             transition={{
               duration: 8,
@@ -244,12 +257,10 @@ export default function Landing() {
             }}
           />
           <motion.div 
-            className="absolute top-0 -right-4 w-96 h-96 bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-40 dark:opacity-50"
+            className="absolute top-40 right-20 w-32 h-32 bg-secondary/10 rounded-full blur-xl"
             animate={{
-              scale: [1, 1.3, 1],
-              rotate: [360, 180, 0],
-              x: [0, -50, 0],
-              y: [0, 30, 0],
+              scale: [1.2, 1, 1.2],
+              opacity: [0.4, 0.7, 0.4],
             }}
             transition={{
               duration: 10,
@@ -259,12 +270,10 @@ export default function Landing() {
             }}
           />
           <motion.div 
-            className="absolute -bottom-8 left-20 w-96 h-96 bg-gradient-to-br from-[#0096C7] to-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-40 dark:opacity-50"
+            className="absolute bottom-20 left-1/4 w-24 h-24 bg-accent/10 rounded-full blur-xl"
             animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, -180, -360],
-              x: [0, 30, 0],
-              y: [0, 20, 0],
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.5, 0.2],
             }}
             transition={{
               duration: 12,
@@ -273,452 +282,174 @@ export default function Landing() {
               delay: 4
             }}
           />
-          
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40 dark:from-black/40 dark:via-black/30 dark:to-black/50"></div>
-        </div>
-
-        {/* 3D Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Floating 3D Cubes */}
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={`cube-${i}`}
-              className="absolute w-4 h-4 bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] opacity-60 dark:opacity-80"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                transform: 'rotateX(45deg) rotateY(45deg)',
-              }}
-              animate={{
-                y: [0, -100, 0],
-                x: [0, Math.random() * 50 - 25, 0],
-                rotateX: [0, 360, 0],
-                rotateY: [0, 360, 0],
-                rotateZ: [0, 180, 360],
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.8, 0.3],
-              }}
-              transition={{
-                duration: 6 + Math.random() * 4,
-                repeat: Infinity,
-                delay: Math.random() * 3,
-                ease: "easeInOut"
-              }}
-            />
-          ))}
-          
-          {/* Floating 3D Spheres */}
-          {[...Array(12)].map((_, i) => (
-            <motion.div
-              key={`sphere-${i}`}
-              className="absolute w-3 h-3 bg-gradient-to-br from-[#4AC8FF] to-[#00B2FF] rounded-full opacity-50 dark:opacity-70"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -80, 0],
-                x: [0, Math.random() * 40 - 20, 0],
-                scale: [0.5, 1.5, 0.5],
-                opacity: [0.2, 0.9, 0.2],
-              }}
-              transition={{
-                duration: 4 + Math.random() * 3,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut"
-              }}
-            />
-          ))}
-          
-          {/* Web3 Connection Lines */}
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={`line-${i}`}
-              className="absolute h-px bg-gradient-to-r from-transparent via-[#00B2FF] to-transparent opacity-30 dark:opacity-50"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${100 + Math.random() * 200}px`,
-                transform: `rotate(${Math.random() * 360}deg)`,
-              }}
-              animate={{
-                opacity: [0.1, 0.6, 0.1],
-                scaleX: [0.5, 1.2, 0.5],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut"
-              }}
-            />
-          ))}
         </div>
 
         {/* Main Content */}
         <div className="relative z-10 container-unified w-full py-16 md:py-20 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              
-              {/* Left Content - Futuristic Hero Text */}
+          <div className="max-w-6xl mx-auto text-center">
               <motion.div
-                className="space-y-8 text-center lg:text-left"
-                initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+              transition={{ duration: 0.6 }}
+              className="space-y-8"
               >
-                {/* Web3 Badge */}
+              {/* Verified Students Badge */}
                 <motion.div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#00B2FF]/20 to-[#4AC8FF]/20 border border-[#00B2FF]/30 backdrop-blur-sm"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <div className="w-2 h-2 bg-[#00B2FF] rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-white/90">Web3 Talent Marketplace</span>
+                <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-medium">
+                  <Star className="w-4 h-4 mr-2" />
+                  Verified Students Only
+                </Badge>
                 </motion.div>
 
-                {/* Main Heading with 3D Effect */}
-                <motion.div
-                  className="space-y-6"
-                  initial={{ opacity: 0, y: 10 }}
+              {/* Main Heading with Gradient */}
+              <motion.h1
+                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6"
+                initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] text-white">
-                    <span className="block">Hire</span>
-                    <span className="relative inline-block">
-                      <span className="relative z-10 bg-gradient-to-r from-[#00B2FF] via-[#4AC8FF] to-[#00B2FF] bg-clip-text text-transparent animate-pulse">
-                        Elite Talent
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <span className="block">Connect with</span>
+                <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  Top Student Talent
                       </span>
-                      <motion.span
-                        className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/30 to-[#4AC8FF]/30 blur-2xl"
-                        animate={{
-                          scale: [1, 1.2, 1],
-                          opacity: [0.3, 0.6, 0.3],
-                        }}
-                        transition={{
-                          duration: 4,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                    </span>
-                    <span className="block">From Top Universities</span>
-                  </h1>
-                  
-                  <p className="text-lg sm:text-xl text-white/90 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    Connect directly with verified students in our decentralized talent marketplace. 
-                    <span className="text-[#4AC8FF] font-semibold">Quality work, competitive rates, secure payments.</span>
-                  </p>
-                </motion.div>
+                <span className="block">Worldwide</span>
+              </motion.h1>
 
-                {/* Futuristic CTA Buttons */}
+              {/* Subcopy */}
+              <motion.p
+                className="text-lg sm:text-xl lg:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-8"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                Discover verified university students offering high-quality services. 
+                <span className="text-primary font-semibold">Quality work, competitive rates, secure payments.</span>
+              </motion.p>
+
+              {/* CTA Buttons */}
                 <motion.div
-                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-                  initial={{ opacity: 0, y: 10 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    size="lg"
-                      className="relative bg-gradient-to-r from-[#00B2FF] to-[#4AC8FF] text-white hover:from-[#4AC8FF] hover:to-[#00B2FF] shadow-2xl hover:shadow-[#00B2FF]/30 transition-all duration-300 hover:scale-105 h-16 px-8 text-lg font-bold rounded-2xl group overflow-hidden"
-                    asChild
-                  >
-                    <Link href="/signin">
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform relative z-10" />
-                        <span className="relative z-10">Start Hiring Now</span>
+                transition={{ duration: 0.8, delay: 0.7 }}
+              >
+                <Button size="lg" asChild className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Link href="/marketplace">
+                    <TrendingUp className="w-5 h-5 mr-2" />
+                    Explore Marketplace
                     </Link>
                   </Button>
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                  <Button
-                    size="lg"
-                    variant="outline"
-                      className="relative border-2 border-[#00B2FF]/50 bg-[#00B2FF]/10 backdrop-blur-lg hover:bg-[#00B2FF]/20 hover:border-[#00B2FF] text-white shadow-lg hover:shadow-[#00B2FF]/20 transition-all duration-300 hover:scale-105 h-16 px-8 text-lg font-bold rounded-2xl group overflow-hidden"
-                    asChild
-                  >
-                    <Link href="/signin">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#4AC8FF]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform relative z-10" />
-                        <span className="relative z-10">Become a Seller</span>
+                <Button size="lg" variant="outline" asChild className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300">
+                  <Link href="/how-it-works">
+                    <Users className="w-5 h-5 mr-2" />
+                    How It Works
                     </Link>
                   </Button>
-                  </motion.div>
                 </motion.div>
 
-                {/* Futuristic Trust Indicators */}
+              {/* Trust Indicators */}
                 <motion.div
-                  className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-6"
+                className="flex flex-wrap items-center justify-center gap-8 pt-8"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
-                >
-                  <motion.div 
-                    className="flex items-center gap-2 text-white/90 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="w-2 h-2 bg-[#00B2FF] rounded-full animate-pulse"></div>
-                    <CheckCircle className="w-4 h-4 text-[#4AC8FF]" />
-                    <span className="font-medium">Verified Students</span>
-                  </motion.div>
-                  <motion.div 
-                    className="flex items-center gap-2 text-white/90 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="w-2 h-2 bg-[#4AC8FF] rounded-full animate-pulse"></div>
-                    <Lock className="w-4 h-4 text-[#00B2FF]" />
-                    <span className="font-medium">Secure Payments</span>
-                  </motion.div>
-                  <motion.div 
-                    className="flex items-center gap-2 text-white/90 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="w-2 h-2 bg-[#00B2FF] rounded-full animate-pulse"></div>
-                    <Star className="w-4 h-4 text-[#4AC8FF]" />
-                    <span className="font-medium">Quality Guaranteed</span>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-
-              {/* Right Content - Futuristic 3D Search Card */}
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                transition={{ duration: 0.8, delay: 0.9 }}
               >
-                {/* 3D Glowing background effect */}
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-br from-[#00B2FF]/20 to-[#4AC8FF]/20 rounded-3xl blur-3xl"
-                  animate={{
-                    scale: [1, 1.05, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                
-                {/* Main 3D Search Card */}
-                <motion.div 
-                  className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-[#00B2FF]/30"
-                  whileHover={{ 
-                    scale: 1.02,
-                    rotateY: 2,
-                    rotateX: 1
-                  }}
-                  transition={{ duration: 0.3 }}
-                  style={{
-                    transformStyle: "preserve-3d",
-                    perspective: "1000px"
-                  }}
-                >
-                  {/* Futuristic Header */}
-                  <div className="text-center mb-6">
-                    <motion.div 
-                      className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] mb-4 shadow-lg"
-                      whileHover={{ 
-                        scale: 1.1,
-                        rotateY: 180
-                      }}
-                      transition={{ duration: 0.5 }}
-                      style={{
-                        transformStyle: "preserve-3d"
-                      }}
-                    >
-                      <motion.div
-                        animate={{ rotate: [0, 360] }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                      >
-                        <Search className="w-8 h-8 text-white" />
-                      </motion.div>
-                    </motion.div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2 bg-gradient-to-r from-[#00B2FF] to-[#4AC8FF] bg-clip-text text-transparent">
-                      Find Your Perfect Match
-                    </h3>
-                    <p className="text-sm text-muted-foreground">Search from hundreds of verified student services in our Web3 marketplace</p>
-                  </div>
-
-                  {/* Futuristic Search Input */}
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <motion.div
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#00B2FF] pointer-events-none"
-                        animate={{ 
-                          scale: [1, 1.1, 1],
-                          opacity: [0.7, 1, 0.7]
-                        }}
-                        transition={{ 
-                          duration: 2, 
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        <Search className="w-5 h-5" />
-                      </motion.div>
-                      <Input
-                        placeholder="Try: Web Design, Logo, Data Analysis..."
-                        className="h-16 pl-12 pr-4 rounded-2xl border-2 border-[#00B2FF]/30 focus:border-[#00B2FF] bg-background/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground text-base font-medium transition-all shadow-lg hover:shadow-xl focus:shadow-[#00B2FF]/20"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSearch();
-                          }
-                        }}
-                        style={{ color: 'inherit' }}
-                      />
-                    </div>
-                    
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Button
-                        size="lg"
-                        className="w-full h-16 bg-gradient-to-r from-[#00B2FF] to-[#4AC8FF] hover:from-[#4AC8FF] hover:to-[#00B2FF] text-white rounded-2xl font-bold text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all group overflow-hidden relative"
-                        onClick={handleSearch}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <motion.div
-                          animate={{ rotate: [0, 360] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                          className="mr-2"
-                        >
-                          <Search className="h-5 w-5" />
-                        </motion.div>
-                        <span className="relative z-10">Search Services</span>
-                      </Button>
-                    </motion.div>
-                  </div>
-
-                  {/* Futuristic Divider */}
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full h-px bg-gradient-to-r from-transparent via-[#00B2FF]/50 to-transparent"></div>
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white dark:bg-slate-900 px-4 py-1 text-[#00B2FF] font-bold rounded-full border border-[#00B2FF]/30">
-                        Popular Categories
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Futuristic Popular Searches */}
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { term: 'Web Developer', icon: Code, color: 'from-[#00B2FF] to-[#4AC8FF]' },
-                      { term: 'UI/UX Design', icon: Palette, color: 'from-[#4AC8FF] to-[#00B2FF]' },
-                      { term: 'Social Media', icon: Users, color: 'from-[#00B2FF] to-[#4AC8FF]' },
-                      { term: 'Data Analysis', icon: BarChart3, color: 'from-[#4AC8FF] to-[#00B2FF]' },
-                      { term: 'Content Writing', icon: FileText, color: 'from-[#00B2FF] to-[#4AC8FF]' },
-                      { term: 'Mobile App', icon: Smartphone, color: 'from-[#4AC8FF] to-[#00B2FF]' }
-                    ].map(({ term, icon: Icon, color }) => (
-                      <motion.div
-                        key={term}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button
-                          variant="outline"
-                          className={`h-14 justify-start gap-3 hover:bg-gradient-to-r ${color}/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group rounded-xl border-[#00B2FF]/20 bg-background/50 backdrop-blur-sm`}
-                          onClick={() => handlePopularSearch(term)}
-                        >
-                          <motion.div
-                            className={`w-8 h-8 rounded-lg bg-gradient-to-r ${color} flex items-center justify-center`}
-                            whileHover={{ rotate: 360 }}
-                            transition={{ duration: 0.5 }}
-                          >
-                            <Icon className="w-4 h-4 text-white" />
-                          </motion.div>
-                          <span className="text-sm font-medium">{term}</span>
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                    <span className="font-medium">Verified Students</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Lock className="w-5 h-5 text-primary" />
+                    <span className="font-medium">Secure Payments</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Star className="w-5 h-5 text-primary" />
+                    <span className="font-medium">Quality Guaranteed</span>
+                </div>
+                  </motion.div>
                 </motion.div>
-
-                {/* Futuristic 3D Floating Elements */}
-                <motion.div
-                  className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-[#00B2FF]/40 to-[#4AC8FF]/40 rounded-full blur-3xl"
-                  animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.4, 0.8, 0.4],
-                    rotate: [0, 180, 360],
-                  }}
-                  transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <motion.div
-                  className="absolute -bottom-8 -left-8 w-40 h-40 bg-gradient-to-br from-[#4AC8FF]/40 to-[#00B2FF]/40 rounded-full blur-3xl"
-                  animate={{
-                    scale: [1, 1.4, 1],
-                    opacity: [0.4, 0.7, 0.4],
-                    rotate: [360, 180, 0],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    delay: 2,
-                    ease: "easeInOut"
-                  }}
-                />
-                
-                {/* Additional 3D geometric shapes */}
-                <motion.div
-                  className="absolute top-1/2 -right-12 w-6 h-6 bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] opacity-60"
-                  style={{
-                    transform: 'rotateX(45deg) rotateY(45deg)',
-                  }}
-                  animate={{
-                    rotateX: [0, 360],
-                    rotateY: [0, 360],
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.8, 0.3],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <motion.div
-                  className="absolute top-1/3 -left-12 w-4 h-4 bg-gradient-to-br from-[#4AC8FF] to-[#00B2FF] rounded-full opacity-50"
-                  animate={{
-                    y: [0, -20, 0],
-                    scale: [0.8, 1.3, 0.8],
-                    opacity: [0.2, 0.9, 0.2],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: 1,
-                    ease: "easeInOut"
-                  }}
-                />
-              </motion.div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Top Selection Section */}
+      {/* Trust Strip */}
+      <section className="py-12 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 border-y border-border/20">
+        <div className="container-unified">
+              <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
+                initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+              >
+                <motion.div 
+              className="space-y-2"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-3xl md:text-4xl font-bold text-primary">
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  2,500+
+                </motion.span>
+                  </div>
+              <p className="text-sm text-muted-foreground font-medium">Verified Students</p>
+                      </motion.div>
+                    
+                    <motion.div
+              className="space-y-2"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-3xl md:text-4xl font-bold text-secondary">
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 0.3 }}
+                  viewport={{ once: true }}
+                >
+                  98%
+                </motion.span>
+                  </div>
+              <p className="text-sm text-muted-foreground font-medium">Success Rate</p>
+            </motion.div>
+            
+                      <motion.div
+              className="space-y-2"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+            >
+              <div className="text-3xl md:text-4xl font-bold text-accent">
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 0.4 }}
+                  viewport={{ once: true }}
+                >
+                  24h
+                </motion.span>
+                  </div>
+              <p className="text-sm text-muted-foreground font-medium">Response Time</p>
+                </motion.div>
+              </motion.div>
+        </div>
+      </section>
+
+      {/* Top 5 Student Projects */}
       <section className="section-padding-y bg-background">
         <div className="container-unified">
           <motion.div
@@ -728,186 +459,101 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Top Selection</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Top Student Projects</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Hand-picked by our admin team. These featured projects showcase the highest quality and most exceptional work from our verified student talent.
+              Discover the best work from our verified students. These projects showcase the quality and creativity you can expect.
             </p>
           </motion.div>
 
-          {/* Carousel with External Navigation */}
-          <div className="flex items-center gap-6">
-            {/* Previous Arrow - Outside Left */}
-            <Button
-              onClick={prevSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="carousel-prev-button"
-            >
-              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-            
-            {/* Carousel Content */}
-            <div className="flex-1">
-
-              {/* Carousel Container */}
-              <motion.div 
-                className="w-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
-                {topSelectionProjects.length === 0 ? (
-                  <div className="col-span-full text-center py-12">
-                    <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Package className="h-8 w-8 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-medium mb-2">No Featured Projects Yet</h3>
-                    <p className="text-muted-foreground">
-                      Our admin team hasn't selected any projects for the top selection yet. Check back later!
-                    </p>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="h-48 bg-muted rounded-t-lg"></div>
+                  <CardContent className="p-6">
+                    <div className="h-4 bg-muted rounded mb-2"></div>
+                    <div className="h-3 bg-muted rounded mb-4"></div>
+                    <div className="h-8 bg-muted rounded"></div>
+                  </CardContent>
+                </Card>
+              ))}
                   </div>
                 ) : (
-                  getCurrentProjects().map((project, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {topSelectionProjects.slice(0, 6).map((project, index) => (
                     <motion.div 
-                      key={`${currentSlide}-${project.id}`}
-                      className="w-full h-full flex"
-                      data-testid={`top-project-${project.id}`}
+                  key={project.id}
                       initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      whileHover={{ scale: 1.02, y: -5 }}
-                    >
-                <Card 
-                  className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] overflow-hidden flex flex-col group border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80"
-                  aria-label={project.title}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
                 >
-                  {/* Project Image with Gradient Overlay */}
-                  <div className="relative h-48 overflow-hidden rounded-t-2xl">
+                  <Card className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/20">
+                    <div className="relative overflow-hidden rounded-t-lg">
+                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                        {project.image ? (
                     <img 
                       src={project.image} 
                       alt={project.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
+                        ) : (
+                          <project.icon className="w-16 h-16 text-primary/50" />
+                        )}
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   
-                  <CardContent className="p-4 flex-1 flex flex-col">
-                    {/* Title */}
-                    <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
-                    
-                    {/* Description - Fixed height for consistency */}
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-2 flex-1">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="font-bold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                          {project.title}
+                        </h3>
+                        <Badge variant="outline" className="ml-2 flex-shrink-0">
+                          <Star className="w-3 h-3 mr-1" />
+                          {project.price}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-muted-foreground text-sm line-clamp-2 mb-4">
                       {project.description}
                     </p>
                     
-                    {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {project.tags.slice(0, 3).map((tag: string) => (
-                        <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {project.tags.length > 3 && (
-                        <Badge variant="outline" className="rounded-full text-xs px-2 py-1">
-                          +{project.tags.length - 3}
-                        </Badge>
-                      )}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="w-8 h-8">
+                            <AvatarImage src={project.student.avatar} />
+                            <AvatarFallback>{project.student.name[0]}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium">{project.student.name}</p>
+                            <p className="text-xs text-muted-foreground">{project.student.university}</p>
                     </div>
-                    
-                    {/* Ratings row */}
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                      ))}
-                      <span className="text-xs text-muted-foreground ml-1">(4.8) • 127 reviews</span>
                     </div>
-                    
-                    {/* Author row - Consistent spacing */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <Avatar className="h-8 w-8 flex-shrink-0">
-                          <AvatarImage src={project.student.avatar} alt={project.student.name} />
-                          <AvatarFallback className="text-xs">
-                            {project.student.name.split(' ').map((n: string) => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1">
-                            <p className="font-medium text-sm truncate">{project.student.name}</p>
                             {project.student.verified && (
-                              <CheckCircle className="h-3 w-3 text-primary flex-shrink-0" />
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {project.student.university}
-                          </p>
-                        </div>
-                      </div>
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            Verified
+                          </Badge>
+                        )}
                     </div>
                     
-                    {/* Bottom price bar - Always at bottom */}
-                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                      <span className="text-lg font-semibold">{project.price}</span>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        asChild
-                        data-testid={`view-project-${project.id}`}
-                      >
+                      <Button className="w-full" asChild>
                         <Link href={`/service/${project.id}`}>
-                          View Details
+                          View Project
+                          <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
                       </Button>
-                    </div>
                   </CardContent>
                 </Card>
                   </motion.div>
-                  ))
-                )}
-              </div>
-            </motion.div>
+              ))}
             </div>
-            
-            {/* Next Arrow - Outside Right */}
-            <Button
-              onClick={nextSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="carousel-next-button"
-            >
-              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-          </div>
-
-
-          {/* View All Projects Button */}
-          <motion.div 
-            className="text-center mt-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <Button 
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              asChild
-              data-testid="view-all-projects-button"
-            >
-              <Link href="/marketplace">
-                <FolderSync className="mr-2 h-5 w-5" />
-                Explore All Projects
-              </Link>
-            </Button>
-          </motion.div>
+          )}
         </div>
       </section>
 
-      {/* New Projects Section */}
+      {/* Features Grid */}
       <section className="section-padding-y bg-gradient-to-br from-accent/5 via-primary/5 to-secondary/5">
         <div className="container-unified">
           <motion.div
@@ -917,186 +563,128 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">New Projects</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose CollaboTree?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Fresh opportunities from our talented student community. Discover the latest projects and innovations from verified students worldwide.
+              We provide everything you need for successful collaboration with verified student talent.
             </p>
           </motion.div>
 
-          {/* Carousel with External Navigation */}
-          <div className="flex items-center gap-6">
-            {/* Previous Arrow - Outside Left */}
-            <Button
-              onClick={prevNewProjectSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="new-projects-prev-button"
-            >
-              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-            
-            {/* Carousel Content */}
-            <div className="flex-1">
-              {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
-                  {[...Array(3)].map((_, index) => (
-                    <div key={index} className="w-full h-full flex">
-                      <Card className="rounded-2xl border h-full w-full bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] overflow-hidden flex flex-col">
-                        <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-2xl" />
-                        <CardContent className="p-6 flex-1 flex flex-col space-y-3">
-                          <div className="h-4 bg-muted/20 animate-pulse rounded" />
-                          <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
-                          <div className="flex-1" />
-                          <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ))}
-                </div>
-              ) : newProjects.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">No New Projects Yet</h3>
-                  <p className="text-muted-foreground">
-                    No new projects have been created yet. Students are working on creating their first services!
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
-                  {getCurrentNewProjects().map((project, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
               <motion.div 
-                key={project.id} 
-                variants={itemVariants}
-                className="w-full h-full flex"
-                data-testid={`new-project-${project.id}`}
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
               >
-                <Card 
-                  className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] overflow-hidden flex flex-col group border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80"
-                  aria-label={project.title}
-                >
-                  {/* Project Image with Gradient Overlay */}
-                  <div className="relative h-48 overflow-hidden rounded-t-2xl">
-                    <img 
-                      src={project.image} 
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
+                <Card className="h-full p-6 text-center hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/20">
+                  <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${feature.gradient} flex items-center justify-center`}>
+                    <feature.icon className="w-8 h-8 text-white" />
                   </div>
-                  
-                  <CardContent className="p-4 flex-1 flex flex-col">
-                    {/* Title */}
-                    <h3 className="font-bold text-base line-clamp-2 mb-2">{project.title}</h3>
-                    
-                    {/* Description - Fixed height for consistency */}
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-2 flex-1">
-                      {project.description}
-                    </p>
-                    
-                    {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {project.tags.slice(0, 3).map((tag: string) => (
-                        <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {project.tags.length > 3 && (
-                        <Badge variant="outline" className="rounded-full text-xs px-2 py-1">
-                          +{project.tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {/* Ratings row */}
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                      ))}
-                      <span className="text-xs text-muted-foreground ml-1">(4.8) • 127 reviews</span>
-                    </div>
-                    
-                    {/* Author row - Consistent spacing */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <Avatar className="h-8 w-8 flex-shrink-0">
-                          <AvatarImage src={project.student.avatar} alt={project.student.name} />
-                          <AvatarFallback className="text-xs">
-                            {project.student.name.split(' ').map((n: string) => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1">
-                            <p className="font-medium text-sm truncate">{project.student.name}</p>
-                            {project.student.verified && (
-                              <CheckCircle className="h-3 w-3 text-primary flex-shrink-0" />
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {project.student.university}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Bottom price bar - Always at bottom */}
-                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                      <span className="text-lg font-semibold">{project.price}</span>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        asChild
-                        data-testid={`view-new-project-${project.id}`}
-                      >
-                        <Link href={`/service/${project.id}`}>
-                          View Details
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
+                  <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                 </Card>
               </motion.div>
-                ))}
-                </div>
-              )}
-            </div>
-
-            {/* Next Arrow - Outside Right */}
-            <Button
-              onClick={nextNewProjectSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="new-projects-next-button"
-            >
-              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-          </div>
-
-          {/* Slide indicators */}
-          <div className="flex justify-center gap-2 mt-8">
-            {Array.from({ length: totalNewProjectSlides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentNewProjectSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentNewProjectSlide
-                    ? 'bg-primary w-8'
-                    : 'bg-border/50 hover:bg-border'
-                }`}
-                data-testid={`new-projects-indicator-${index}`}
-              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* How to Hire Section */}
+      {/* Category Pills */}
+      <section className="section-padding-y bg-background">
+        <div className="container-unified">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Browse by Category</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Find exactly what you need with our organized categories
+            </p>
+          </motion.div>
+
+          <div className="flex flex-wrap justify-center gap-4">
+            {categories.map((category, index) => (
+          <motion.div
+                key={category.name}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+            viewport={{ once: true }}
+          >
+            <Button 
+                  variant="outline"
+                  className="h-16 px-6 rounded-full hover:bg-primary/10 hover:border-primary transition-all duration-300 group"
+                  onClick={() => handlePopularSearch(category.name)}
+                >
+                  <div className={`w-8 h-8 rounded-full ${category.color} flex items-center justify-center mr-3 group-hover:scale-110 transition-transform`}>
+                    <category.icon className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="font-medium">{category.name}</span>
+            </Button>
+          </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="section-padding-y bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10">
+        <div className="container-unified">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Users Say</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Hear from both buyers and students about their CollaboTree experience
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+          <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+            viewport={{ once: true }}
+          >
+                <Card className="h-full p-6 hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/20">
+                  <div className="flex items-center mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    ))}
+                    </div>
+                  <p className="text-muted-foreground mb-4 italic">"{testimonial.content}"</p>
+                  <div className="flex items-center">
+                    <Avatar className="w-10 h-10 mr-3">
+                      <AvatarImage src={testimonial.avatar} />
+                      <AvatarFallback>{testimonial.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {testimonial.role} {testimonial.company && `at ${testimonial.company}`}
+                        {testimonial.university && `at ${testimonial.university}`}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
       <section className="section-padding-y bg-background">
         <div className="container-unified">
           <motion.div
@@ -1106,348 +694,65 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">How to Hire with CollaboTree</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Find and hire talented students in four simple steps
+              Get answers to common questions about using CollaboTree
             </p>
           </motion.div>
 
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-            initial="hidden"
-            whileInView="visible"
-            variants={containerVariants}
-            viewport={{ once: true }}
-          >
-            {[
-              { icon: Search, title: "Search & Browse", description: "Explore verified student profiles and services that match your needs" },
-              { icon: MessageSquare, title: "Connect & Discuss", description: "Message students directly to discuss project requirements and timelines" },
-              { icon: CheckSquare, title: "Review & Approve", description: "Review proposals, check portfolios, and approve the perfect candidate" },
-              { icon: CreditCard, title: "Secure Payment", description: "Pay securely with funds held in escrow until work is completed" }
-            ].map((step, index) => (
-              <motion.div key={index} variants={itemVariants}>
-                <Card className="glass-card bg-card/50 border-border/50 h-full hover:shadow-xl transition-all duration-300 backdrop-blur-12">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-4">
-                      <step.icon className="w-7 h-7 text-white" />
-                    </div>
-                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm mb-3">
-                      {index + 1}
-                    </div>
-                    <h3 className="text-lg font-bold mb-2">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div 
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <Button 
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              asChild
-            >
-              <Link href="/how-it-works">
-                Learn More About Hiring
-              </Link>
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* How to Offer Section */}
-      <section className="section-padding-y bg-gradient-to-br from-accent/5 via-primary/5 to-secondary/5">
-        <div className="container-unified">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">How to Offer Your Project with CollaboTree</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Start earning by offering your skills in four easy steps
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-            initial="hidden"
-            whileInView="visible"
-            variants={containerVariants}
-            viewport={{ once: true }}
-          >
-            {[
-              { icon: UserCheck, title: "Get Verified", description: "Complete your profile with university credentials and portfolio" },
-              { icon: Package, title: "Create Service", description: "List your services with clear descriptions, pricing, and delivery times" },
-              { icon: MessageCircle, title: "Receive Requests", description: "Get notified when buyers are interested in your services" },
-              { icon: TrendingUp, title: "Deliver & Earn", description: "Complete projects, build your reputation, and earn income" }
-            ].map((step, index) => (
-              <motion.div key={index} variants={itemVariants}>
-                <Card className="glass-card bg-card/50 border-border/50 h-full hover:shadow-xl transition-all duration-300 backdrop-blur-12">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center mx-auto mb-4">
-                      <step.icon className="w-7 h-7 text-white" />
-                    </div>
-                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondary/10 text-secondary font-bold text-sm mb-3">
-                      {index + 1}
-                    </div>
-                    <h3 className="text-lg font-bold mb-2">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div 
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <Button 
-              size="lg"
-              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              asChild
-            >
-              <Link href="/how-it-works">
-                Learn More About Selling
-              </Link>
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="section-padding-y bg-muted/5 overflow-hidden">
-        <div className="container-unified">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-              Why Choose CollaboTree
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              A simple platform where verified university students offer their skills and services to buyers who need quality work done.
-            </p>
-          </motion.div>
-
-          <div className="relative">
-            {/* Central Connecting Lines */}
-            <motion.div
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              transition={{ duration: 1.5, delay: 0.5 }}
-              viewport={{ once: true }}
-            />
-            
-            {/* Mission Cards with Unique Shapes */}
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-12 items-stretch">
-              {features.map((feature, index) => (
+          <div className="max-w-3xl mx-auto space-y-4">
+            {faqs.map((faq, index) => (
                 <motion.div
                   key={index}
-                  initial={{ 
-                    opacity: 0, 
-                    y: 100, 
-                    scale: 0.5,
-                    rotateX: 90
-                  }}
-                  whileInView={{ 
-                    opacity: 1, 
-                    y: 0, 
-                    scale: 1,
-                    rotateX: 0
-                  }}
-                  transition={{ 
-                    duration: 1, 
-                    delay: 0.3 + index * 0.3,
-                    ease: "easeOut"
-                  }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="group relative"
-                >
-                  {/* Unique Shape Background */}
-                  <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient.replace('from-', 'from-').replace('to-', 'to-')}/20 opacity-20 blur-xl`}
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.1, 0.3, 0.1],
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                  
-                  {/* Morphing Shape Container */}
-                  <motion.div
-                    className={`relative p-8 rounded-3xl bg-card/80 backdrop-blur-12 border border-border/30 overflow-hidden`}
-                    whileHover={{ 
-                      scale: 1.05,
-                      rotateY: 5,
-                      rotateX: 5
-                    }}
-                    transition={{ duration: 0.3 }}
-                    style={{
-                      perspective: "1000px"
-                    }}
-                    data-testid={`feature-${index}`}
-                  >
-                    {/* Animated Shape Overlay */}
-                    <motion.div
-                      className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${feature.gradient} opacity-10`}
-                      animate={{
-                        rotate: [0, 360],
-                        scale: [1, 1.2, 1],
-                      }}
-                      transition={{
-                        duration: 8,
-                        repeat: Infinity,
-                        ease: "linear"
-                      }}
-                      style={{
-                        clipPath: "circle(50%)"
-                      }}
-                    />
-                    
-                    {/* Icon with 3D Effect */}
-                    <motion.div
-                      className={`relative z-10 w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-2xl`}
-                      whileHover={{ 
-                        rotateY: 180,
-                        scale: 1.1
-                      }}
-                      transition={{ duration: 0.6 }}
-                      style={{
-                        transformStyle: "preserve-3d"
-                      }}
-                    >
-                      <motion.div
-                        className="text-white"
-                        animate={{
-                          rotate: [0, 360],
-                        }}
-                        transition={{
-                          duration: 20,
-                          repeat: Infinity,
-                          ease: "linear"
-                        }}
-                      >
-                        <feature.icon className="h-10 w-10" />
-                      </motion.div>
-                    </motion.div>
-                    
-                    {/* Content */}
-                    <div className="relative z-10 text-center">
-                      <motion.h3 
-                        className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        {feature.title}
-                      </motion.h3>
-                      <motion.p 
-                        className="text-muted-foreground leading-relaxed"
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.8 + index * 0.2 }}
-                      >
-                        {feature.description}
-                      </motion.p>
+              >
+                <Card className="border-border/50 hover:border-primary/20 transition-all duration-300">
+                  <details className="group">
+                    <summary className="p-6 cursor-pointer list-none flex items-center justify-between hover:bg-muted/50 transition-colors">
+                      <h3 className="font-semibold text-left pr-4">{faq.question}</h3>
+                      <ChevronRight className="w-5 h-5 text-muted-foreground group-open:rotate-90 transition-transform" />
+                    </summary>
+                    <div className="px-6 pb-6">
+                      <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
                     </div>
-                    
-                    {/* Floating Particles */}
-                    <motion.div
-                      className="absolute inset-0 pointer-events-none"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 1, delay: 1 + index * 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      {[...Array(6)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          className={`absolute w-2 h-2 bg-gradient-to-r ${feature.gradient} rounded-full`}
-                          style={{
-                            left: `${20 + i * 15}%`,
-                            top: `${30 + i * 10}%`,
-                          }}
-                          animate={{
-                            y: [0, -20, 0],
-                            opacity: [0.3, 1, 0.3],
-                            scale: [0.5, 1, 0.5],
-                          }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            delay: i * 0.5,
-                            ease: "easeInOut"
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  </motion.div>
+                  </details>
+                </Card>
                 </motion.div>
               ))}
             </div>
-          </div>
-
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding-y bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10">
+      <section className="section-padding-y bg-gradient-to-r from-primary via-secondary to-accent">
         <div className="container-unified text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
+            className="max-w-3xl mx-auto"
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              Ready to Begin?
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Ready to Get Started?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Join thousands of professionals and students who are already creating exceptional projects together.
+            <p className="text-xl text-white/90 mb-8">
+              Join thousands of buyers and students already using CollaboTree
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                asChild
-                data-testid="cta-hire-talent-button"
-              >
-                <Link href="/signin">
-                  <TrendingUp className="mr-2 h-5 w-5" />
-                  Hire Talent Now
+              <Button size="lg" variant="secondary" asChild className="bg-white text-primary hover:bg-white/90">
+                <Link href="/marketplace">
+                  <TrendingUp className="w-5 h-5 mr-2" />
+                  Explore Marketplace
                 </Link>
               </Button>
-              <Button 
-                size="lg"
-                variant="outline"
-                className="border-border bg-background hover:bg-accent/10 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                asChild
-                data-testid="cta-student-button"
-              >
+              <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white/10">
                 <Link href="/signin">
-                  <GraduationCap className="mr-2 h-5 w-5" />
-                  Become a Student Seller
+                  <Users className="w-5 h-5 mr-2" />
+                  Join as Student
                 </Link>
               </Button>
             </div>
@@ -1455,7 +760,6 @@ export default function Landing() {
         </div>
       </section>
       
-      {/* Footer */}
       <Footer />
     </div>
   );

@@ -64,36 +64,47 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 dark:from-blue-800 dark:via-blue-900 dark:to-blue-950 shadow-lg border-b border-blue-500/20">
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
-        {/* Speckles overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px] opacity-40"></div>
+      {/* Curved Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50">
+        {/* Curved background with gradient */}
+        <div className="relative">
+          {/* Main curved background */}
+          <div className="bg-gradient-to-r from-primary via-secondary to-accent shadow-2xl">
+            {/* Curved bottom edge */}
+            <div className="absolute -bottom-1 left-0 right-0 h-2 bg-gradient-to-r from-primary via-secondary to-accent"></div>
+            <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-primary/80 via-secondary/80 to-accent/80"></div>
+            <div className="absolute -bottom-3 left-0 right-0 h-1 bg-gradient-to-r from-primary/60 via-secondary/60 to-accent/60"></div>
+            
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+            {/* Speckles overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px] opacity-40"></div>
+          </div>
+        </div>
         
-        <div className="container-unified px-4 sm:px-6 relative">
-            <div className="flex items-center justify-between h-14 sm:h-16">
+        <div className="container-unified px-4 sm:px-6 relative z-10">
+            <div className="flex items-center justify-between h-16 sm:h-18">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity group" data-testid="logo">
               <div className="group-hover:scale-105 transition-transform duration-200">
                 <img 
                   src="/logoa.png" 
                   alt="CollaboTree Logo" 
-                  className="w-14 h-14 object-contain rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-200"
+                  className="w-12 h-12 object-contain rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-200"
                 />
               </div>
-              <span className="text-lg font-semibold text-white group-hover:text-blue-200 transition-colors duration-200">CollaboTree</span>
+              <span className="text-lg font-bold text-white group-hover:text-white/80 transition-colors duration-200">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+            <div className="hidden lg:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
               {navigation.map((item) => (
                 item.show && (
                   <button
                     key={item.name}
                     onClick={() => handleNavigation(item.href)}
-                    className={`text-sm font-medium transition-colors px-3 py-2 rounded-md hover:bg-white/10 ${
-                      location === item.href ? 'text-blue-200 font-semibold bg-white/10' : 'text-white hover:text-blue-200'
+                    className={`text-sm font-medium transition-all duration-300 px-4 py-2 rounded-full hover:bg-white/10 hover:scale-105 ${
+                      location === item.href ? 'text-white font-bold bg-white/15 shadow-lg' : 'text-white/90 hover:text-white'
                     }`}
                     data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   >
