@@ -6,7 +6,7 @@
  */
 
 import { execSync } from 'child_process';
-import { existsSync, mkdirSync, cpSync } from 'fs';
+import { existsSync, mkdirSync, cpSync, readdirSync, statSync } from 'fs';
 import path from 'path';
 
 console.log('🚀 Railway Build Script Starting...');
@@ -68,7 +68,6 @@ try {
   console.log('📁 Frontend files location:', path.resolve(frontendTargetPath));
   
   // List copied files and verify assets folder
-  const { readdirSync, statSync } = await import('fs');
   const files = readdirSync(frontendTargetPath);
   console.log('📋 Copied files:', files);
   
