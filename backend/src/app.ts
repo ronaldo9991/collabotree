@@ -288,22 +288,30 @@ if (env.NODE_ENV === 'production') {
 
   // Explicitly serve assets with correct MIME types (comprehensive fallback)
   app.get('/assets/*', (req, res) => {
+    // Extract the filename from the request path
+    const filename = req.path.replace('/assets/', '');
+    
     const possiblePaths = [
-      path.join(frontendPath, 'assets', req.path.replace('/assets/', '')),
+      // Primary location: backend/dist/frontend/assets/filename
+      path.join(frontendPath, 'assets', filename),
+      // Backup locations
+      path.join(__dirname, 'static-assets', filename),
+      path.join(process.cwd(), 'static-assets', filename),
+      path.join('/app', 'static_assets', filename),
+      // Client dist locations
+      path.join(process.cwd(), 'client', 'dist', 'assets', filename),
+      path.join(__dirname, '..', 'client', 'dist', 'assets', filename),
+      path.join(process.cwd(), '..', 'client', 'dist', 'assets', filename),
+      path.join('/app', 'client', 'dist', 'assets', filename),
+      path.join('/app', 'backend', '..', 'client', 'dist', 'assets', filename),
+      path.join('/app', 'client_dist_backup', 'assets', filename),
+      // Fallback locations
       path.join(frontendPath, req.path),
-      path.join(__dirname, 'static-assets', req.path.replace('/assets/', '')),
-      path.join(process.cwd(), 'static-assets', req.path.replace('/assets/', '')),
-      path.join('/app', 'static_assets', req.path.replace('/assets/', '')),
-      path.join(process.cwd(), 'client', 'dist', req.path),
-      path.join(__dirname, '..', 'client', 'dist', req.path),
-      path.join(process.cwd(), '..', 'client', 'dist', req.path),
-      path.join('/app', 'client', 'dist', req.path),
-      path.join('/app', 'backend', '..', 'client', 'dist', req.path),
-      path.join('/app', 'client_dist_backup', req.path),
       path.join(__dirname, 'frontend', req.path)
     ];
     
     console.log(`🔍 Serving asset: ${req.path}`);
+    console.log(`📄 Filename: ${filename}`);
     console.log(`📁 Frontend path: ${frontendPath}`);
     console.log(`📁 __dirname: ${__dirname}`);
     console.log(`📁 process.cwd(): ${process.cwd()}`);
