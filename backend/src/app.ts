@@ -224,6 +224,31 @@ if (env.NODE_ENV === 'production') {
     } else {
       console.log(`❌ index.html NOT found at: ${indexPath}`);
     }
+    
+    // Check if assets directory exists and has files
+    const assetsPath = path.join(frontendPath, 'assets');
+    if (existsSync(assetsPath)) {
+      const assetFiles = readdirSync(assetsPath);
+      console.log(`📦 Assets directory has ${assetFiles.length} files:`, assetFiles);
+      
+      // Check for specific required files
+      const requiredFiles = ['style-toksF8Z_.css', 'index-jozdwah1.js'];
+      const missingFiles = requiredFiles.filter(file => !assetFiles.includes(file));
+      
+      if (missingFiles.length > 0) {
+        console.log(`⚠️ Missing required assets: ${missingFiles.join(', ')}`);
+        console.log('🔧 Attempting to generate missing assets...');
+        try {
+          const { execSync } = await import('child_process');
+          execSync('node generate-assets.js', { stdio: 'inherit', timeout: 10000 });
+          console.log('✅ Assets generated successfully');
+        } catch (error) {
+          console.log('❌ Asset generation failed:', error.message);
+        }
+      }
+    } else {
+      console.log(`❌ Assets directory does NOT exist: ${assetsPath}`);
+    }
   } else {
     console.log(`❌ Frontend directory does NOT exist: ${frontendPath}`);
   }

@@ -53,7 +53,16 @@ try {
   });
   console.log('✅ Assets ensured');
 } catch (assetError) {
-  console.log('⚠️ Asset setup failed, continuing...', assetError.message);
+  console.log('⚠️ Asset setup failed, trying asset generation...', assetError.message);
+  try {
+    execSync('node generate-assets.js', {
+      stdio: 'inherit',
+      timeout: 30000
+    });
+    console.log('✅ Assets generated');
+  } catch (genError) {
+    console.log('⚠️ Asset generation failed, continuing...', genError.message);
+  }
 }
   
   // Create admin user quickly
