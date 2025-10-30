@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import { existsSync, readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
