@@ -243,7 +243,7 @@ if (env.NODE_ENV === 'production') {
           execSync('node generate-assets.js', { stdio: 'inherit', timeout: 10000 });
           console.log('✅ Assets generated successfully');
         } catch (error) {
-          console.log('❌ Asset generation failed:', error.message);
+          console.log('❌ Asset generation failed:', error instanceof Error ? error.message : String(error));
         }
       }
     } else {
