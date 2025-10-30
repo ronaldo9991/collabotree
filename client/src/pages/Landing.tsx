@@ -218,44 +218,10 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Modern Optimized Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
-          {/* Animated gradient orbs */}
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-          <div className="absolute top-0 -right-4 w-72 h-72 bg-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
-          
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:50px_50px]"></div>
-          
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/40"></div>
-        </div>
-
-        {/* Floating particles animation */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white/30 rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -30, 0],
-                opacity: [0.2, 0.5, 0.2],
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
-        </div>
+      {/* Clean Simple Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#00B2FF] to-[#0077B6]">
+        {/* Simple background overlay */}
+        <div className="absolute inset-0 bg-black/20"></div>
 
         {/* Main Content */}
         <div className="relative z-10 container-unified w-full py-16 md:py-20 px-4 sm:px-6">
@@ -263,37 +229,13 @@ export default function Landing() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               
               {/* Left Content - Hero Text */}
-              <motion.div
-                className="space-y-8 text-center lg:text-left"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              >
+              <div className="space-y-8 text-center lg:text-left">
                 {/* Main Heading */}
-                <motion.div
-                  className="space-y-4"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
+                <div className="space-y-4">
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] text-white">
                     Hire{" "}
-                    <span className="relative inline-block">
-                      <span className="relative z-10 bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
-                        Elite Talent
-                      </span>
-                      <motion.span
-                        className="absolute inset-0 bg-white/20 blur-2xl"
-                        animate={{
-                          scale: [1, 1.1, 1],
-                          opacity: [0.2, 0.4, 0.2],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
+                    <span className="text-cyan-200">
+                      Elite Talent
                     </span>
                     <br />
                     From Top Universities
@@ -303,45 +245,35 @@ export default function Landing() {
                     Connect directly with verified students offering professional services. 
                     Quality work, competitive rates, secure payments.
                   </p>
-                </motion.div>
+                </div>
 
                 {/* CTA Buttons */}
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
-                >
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <Button
                     size="lg"
-                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/20 transition-all duration-200 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
+                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-lg hover:shadow-xl transition-all duration-200 h-14 px-8 text-lg font-bold rounded-xl"
                     asChild
                   >
                     <Link href="/signin">
-                      <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      <Users className="mr-2 h-5 w-5" />
                       Start Hiring Now
                     </Link>
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
+                    className="border-2 border-white/40 bg-white/10 hover:bg-white/20 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-200 h-14 px-8 text-lg font-bold rounded-xl"
                     asChild
                   >
                     <Link href="/signin">
-                      <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      <GraduationCap className="mr-2 h-5 w-5" />
                       Become a Seller
                     </Link>
                   </Button>
-                </motion.div>
+                </div>
 
                 {/* Trust Indicators */}
-                <motion.div
-                  className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
-                >
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
                   <div className="flex items-center gap-2 text-white/80 text-sm">
                     <CheckCircle className="w-4 h-4 text-white" />
                     <span>Verified Students</span>
@@ -354,21 +286,13 @@ export default function Landing() {
                     <Star className="w-4 h-4 text-white" />
                     <span>Quality Guaranteed</span>
                   </div>
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
 
-              {/* Right Content - Enhanced Search Card */}
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-              >
-                {/* Glowing background effect */}
-                <div className="absolute inset-0 bg-white/10 rounded-3xl blur-3xl"></div>
-                
+              {/* Right Content - Simple Search Card */}
+              <div className="relative">
                 {/* Main Search Card */}
-                <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20">
+                <div className="bg-white/95 dark:bg-slate-900/95 rounded-2xl p-6 sm:p-8 shadow-xl border border-white/20">
                   {/* Header */}
                   <div className="text-center mb-6">
                     <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] mb-4">
@@ -384,7 +308,7 @@ export default function Landing() {
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                       <Input
                         placeholder="Try: Web Design, Logo, Data Analysis..."
-                        className="h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background text-foreground placeholder:text-muted-foreground text-base font-medium transition-all"
+                        className="h-12 pl-12 pr-4 rounded-lg border border-gray-300 focus:border-[#00B2FF] focus:ring-2 focus:ring-[#00B2FF]/20 bg-background text-foreground placeholder:text-muted-foreground"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => {
@@ -398,7 +322,7 @@ export default function Landing() {
                     
                     <Button
                       size="lg"
-                      className="w-full h-14 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all transform hover:scale-[1.02]"
+                      className="w-full h-12 bg-[#00B2FF] hover:bg-[#0096C7] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                       onClick={handleSearch}
                     >
                       <Search className="h-5 w-5 mr-2" />
@@ -418,7 +342,7 @@ export default function Landing() {
                     </div>
                   </div>
 
-                  {/* Popular Searches - Enhanced */}
+                  {/* Popular Searches */}
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { term: 'Web Developer', icon: Code },
@@ -431,41 +355,16 @@ export default function Landing() {
                       <Button
                         key={term}
                         variant="outline"
-                        className="h-12 justify-start gap-2 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group"
+                        className="h-10 justify-start gap-2 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all"
                         onClick={() => handlePopularSearch(term)}
                       >
-                        <Icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">{term}</span>
+                        <Icon className="w-4 h-4" />
+                        <span className="text-sm">{term}</span>
                       </Button>
                     ))}
                   </div>
                 </div>
-
-                {/* Floating decorative elements */}
-                <motion.div
-                  className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-[#00B2FF]/30 to-[#4AC8FF]/30 rounded-full blur-2xl"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                  }}
-                />
-                <motion.div
-                  className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#4AC8FF]/30 to-[#00B2FF]/30 rounded-full blur-2xl"
-                  animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.5, 0.7, 0.5],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    delay: 1,
-                  }}
-                />
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
