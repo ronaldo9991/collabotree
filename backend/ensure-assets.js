@@ -9,7 +9,9 @@ const sourcePaths = [
   path.join(process.cwd(), 'client', 'dist'),
   path.join('/app', 'client', 'dist'),
   path.join('/app', 'client_dist_backup'),
-  path.join('/app', 'static_assets')
+  path.join('/app', 'static_assets'),
+  path.join(process.cwd(), '..', 'client', 'dist', 'assets'),
+  path.join('/app', 'client', 'dist', 'assets')
 ];
 
 const targetPath = path.join(process.cwd(), 'dist', 'frontend');
@@ -22,6 +24,15 @@ for (const sourcePath of sourcePaths) {
   console.log(`Checking: ${sourcePath}`);
   if (existsSync(sourcePath)) {
     console.log(`✅ Found source: ${sourcePath}`);
+    
+    // Check if this is already an assets directory
+    if (sourcePath.endsWith('assets')) {
+      console.log(`✅ Found assets directory: ${sourcePath}`);
+      sourceFound = path.dirname(sourcePath); // Get parent directory
+      break;
+    }
+    
+    // Check for assets subdirectory
     const assetsPath = path.join(sourcePath, 'assets');
     if (existsSync(assetsPath)) {
       console.log(`✅ Found assets: ${assetsPath}`);
