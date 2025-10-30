@@ -205,7 +205,7 @@ app.use('/api', routes);
 // Serve static files in production
 if (env.NODE_ENV === 'production') {
   // Frontend files are copied to dist/frontend during build
-  const frontendPath = process.env.FRONTEND_PATH || path.join(process.cwd(), 'dist', 'frontend');
+  const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, 'frontend');
   
   console.log(`🌍 Production mode: Serving frontend + backend`);
   console.log(`📁 Frontend path: ${frontendPath}`);
@@ -289,6 +289,7 @@ if (env.NODE_ENV === 'production') {
   // Explicitly serve assets with correct MIME types (comprehensive fallback)
   app.get('/assets/*', (req, res) => {
     const possiblePaths = [
+      path.join(frontendPath, 'assets', req.path.replace('/assets/', '')),
       path.join(frontendPath, req.path),
       path.join(__dirname, 'static-assets', req.path.replace('/assets/', '')),
       path.join(process.cwd(), 'static-assets', req.path.replace('/assets/', '')),
@@ -303,6 +304,9 @@ if (env.NODE_ENV === 'production') {
     ];
     
     console.log(`🔍 Serving asset: ${req.path}`);
+    console.log(`📁 Frontend path: ${frontendPath}`);
+    console.log(`📁 __dirname: ${__dirname}`);
+    console.log(`📁 process.cwd(): ${process.cwd()}`);
     
     // Set correct MIME type
     if (req.path.endsWith('.js')) {
@@ -315,6 +319,8 @@ if (env.NODE_ENV === 'production') {
     const tryNextPath = () => {
       if (pathIndex >= possiblePaths.length) {
         console.error(`❌ All paths failed for ${req.path}`);
+        console.error(`📋 Tried paths:`);
+        possiblePaths.forEach((p, i) => console.error(`  ${i + 1}. ${p}`));
         res.status(404).send('Asset not found');
         return;
       }
