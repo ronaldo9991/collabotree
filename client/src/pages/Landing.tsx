@@ -218,140 +218,40 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Futuristic 3D Web3 Hero Section */}
+      {/* Modern Optimized Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Dynamic 3D Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 dark:from-slate-950 dark:via-blue-950 dark:to-slate-900">
-          {/* Animated 3D gradient mesh */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF]/20 via-[#4AC8FF]/30 to-[#00B2FF]/20 dark:from-[#00B2FF]/30 dark:via-[#4AC8FF]/40 dark:to-[#00B2FF]/30"></div>
+        {/* Animated Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
+          {/* Animated gradient orbs */}
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
           
-          {/* 3D Grid Pattern */}
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px] dark:bg-grid-white/[0.05]"></div>
-          
-          {/* Animated gradient orbs with 3D effect */}
-          <motion.div 
-            className="absolute top-0 -left-4 w-96 h-96 bg-gradient-to-br from-[#4AC8FF] to-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-40 dark:opacity-50"
-            animate={{
-              scale: [1, 1.2, 1],
-              rotate: [0, 180, 360],
-              x: [0, 50, 0],
-              y: [0, -30, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <motion.div 
-            className="absolute top-0 -right-4 w-96 h-96 bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-40 dark:opacity-50"
-            animate={{
-              scale: [1, 1.3, 1],
-              rotate: [360, 180, 0],
-              x: [0, -50, 0],
-              y: [0, 30, 0],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 2
-            }}
-          />
-          <motion.div 
-            className="absolute -bottom-8 left-20 w-96 h-96 bg-gradient-to-br from-[#0096C7] to-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-40 dark:opacity-50"
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, -180, -360],
-              x: [0, 30, 0],
-              y: [0, 20, 0],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 4
-            }}
-          />
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:50px_50px]"></div>
           
           {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40 dark:from-black/40 dark:via-black/30 dark:to-black/50"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/40"></div>
         </div>
 
-        {/* 3D Floating Elements */}
+        {/* Floating particles animation */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Floating 3D Cubes */}
-          {[...Array(8)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <motion.div
-              key={`cube-${i}`}
-              className="absolute w-4 h-4 bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] opacity-60 dark:opacity-80"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                transform: 'rotateX(45deg) rotateY(45deg)',
-              }}
-              animate={{
-                y: [0, -100, 0],
-                x: [0, Math.random() * 50 - 25, 0],
-                rotateX: [0, 360, 0],
-                rotateY: [0, 360, 0],
-                rotateZ: [0, 180, 360],
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.8, 0.3],
-              }}
-              transition={{
-                duration: 6 + Math.random() * 4,
-                repeat: Infinity,
-                delay: Math.random() * 3,
-                ease: "easeInOut"
-              }}
-            />
-          ))}
-          
-          {/* Floating 3D Spheres */}
-          {[...Array(12)].map((_, i) => (
-            <motion.div
-              key={`sphere-${i}`}
-              className="absolute w-3 h-3 bg-gradient-to-br from-[#4AC8FF] to-[#00B2FF] rounded-full opacity-50 dark:opacity-70"
+              key={i}
+              className="absolute w-1 h-1 bg-white/30 rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
               }}
               animate={{
-                y: [0, -80, 0],
-                x: [0, Math.random() * 40 - 20, 0],
-                scale: [0.5, 1.5, 0.5],
-                opacity: [0.2, 0.9, 0.2],
-              }}
-              transition={{
-                duration: 4 + Math.random() * 3,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-                ease: "easeInOut"
-              }}
-            />
-          ))}
-          
-          {/* Web3 Connection Lines */}
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={`line-${i}`}
-              className="absolute h-px bg-gradient-to-r from-transparent via-[#00B2FF] to-transparent opacity-30 dark:opacity-50"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${100 + Math.random() * 200}px`,
-                transform: `rotate(${Math.random() * 360}deg)`,
-              }}
-              animate={{
-                opacity: [0.1, 0.6, 0.1],
-                scaleX: [0.5, 1.2, 0.5],
+                y: [0, -30, 0],
+                opacity: [0.2, 0.5, 0.2],
               }}
               transition={{
                 duration: 3 + Math.random() * 2,
                 repeat: Infinity,
                 delay: Math.random() * 2,
-                ease: "easeInOut"
               }}
             />
           ))}
@@ -362,216 +262,129 @@ export default function Landing() {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               
-              {/* Left Content - Futuristic Hero Text */}
+              {/* Left Content - Hero Text */}
               <motion.div
                 className="space-y-8 text-center lg:text-left"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               >
-                {/* Web3 Badge */}
+                {/* Main Heading */}
                 <motion.div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#00B2FF]/20 to-[#4AC8FF]/20 border border-[#00B2FF]/30 backdrop-blur-sm"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  <div className="w-2 h-2 bg-[#00B2FF] rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-white/90">Web3 Talent Marketplace</span>
-                </motion.div>
-
-                {/* Main Heading with 3D Effect */}
-                <motion.div
-                  className="space-y-6"
+                  className="space-y-4"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 >
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] text-white">
-                    <span className="block">Hire</span>
+                    Hire{" "}
                     <span className="relative inline-block">
-                      <span className="relative z-10 bg-gradient-to-r from-[#00B2FF] via-[#4AC8FF] to-[#00B2FF] bg-clip-text text-transparent animate-pulse">
+                      <span className="relative z-10 bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
                         Elite Talent
                       </span>
                       <motion.span
-                        className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/30 to-[#4AC8FF]/30 blur-2xl"
+                        className="absolute inset-0 bg-white/20 blur-2xl"
                         animate={{
-                          scale: [1, 1.2, 1],
-                          opacity: [0.3, 0.6, 0.3],
+                          scale: [1, 1.1, 1],
+                          opacity: [0.2, 0.4, 0.2],
                         }}
                         transition={{
-                          duration: 4,
+                          duration: 3,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
                       />
                     </span>
-                    <span className="block">From Top Universities</span>
+                    <br />
+                    From Top Universities
                   </h1>
                   
                   <p className="text-lg sm:text-xl text-white/90 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    Connect directly with verified students in our decentralized talent marketplace. 
-                    <span className="text-[#4AC8FF] font-semibold">Quality work, competitive rates, secure payments.</span>
+                    Connect directly with verified students offering professional services. 
+                    Quality work, competitive rates, secure payments.
                   </p>
                 </motion.div>
 
-                {/* Futuristic CTA Buttons */}
+                {/* CTA Buttons */}
                 <motion.div
                   className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <Button
+                    size="lg"
+                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/20 transition-all duration-200 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
+                    asChild
                   >
-                    <Button
-                      size="lg"
-                      className="relative bg-gradient-to-r from-[#00B2FF] to-[#4AC8FF] text-white hover:from-[#4AC8FF] hover:to-[#00B2FF] shadow-2xl hover:shadow-[#00B2FF]/30 transition-all duration-300 hover:scale-105 h-16 px-8 text-lg font-bold rounded-2xl group overflow-hidden"
-                      asChild
-                    >
-                      <Link href="/signin">
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform relative z-10" />
-                        <span className="relative z-10">Start Hiring Now</span>
-                      </Link>
-                    </Button>
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    <Link href="/signin">
+                      <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Start Hiring Now
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
+                    asChild
                   >
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="relative border-2 border-[#00B2FF]/50 bg-[#00B2FF]/10 backdrop-blur-lg hover:bg-[#00B2FF]/20 hover:border-[#00B2FF] text-white shadow-lg hover:shadow-[#00B2FF]/20 transition-all duration-300 hover:scale-105 h-16 px-8 text-lg font-bold rounded-2xl group overflow-hidden"
-                      asChild
-                    >
-                      <Link href="/signin">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#4AC8FF]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform relative z-10" />
-                        <span className="relative z-10">Become a Seller</span>
-                      </Link>
-                    </Button>
-                  </motion.div>
+                    <Link href="/signin">
+                      <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Become a Seller
+                    </Link>
+                  </Button>
                 </motion.div>
 
-                {/* Futuristic Trust Indicators */}
+                {/* Trust Indicators */}
                 <motion.div
-                  className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-6"
+                  className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
                 >
-                  <motion.div 
-                    className="flex items-center gap-2 text-white/90 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="w-2 h-2 bg-[#00B2FF] rounded-full animate-pulse"></div>
-                    <CheckCircle className="w-4 h-4 text-[#4AC8FF]" />
-                    <span className="font-medium">Verified Students</span>
-                  </motion.div>
-                  <motion.div 
-                    className="flex items-center gap-2 text-white/90 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="w-2 h-2 bg-[#4AC8FF] rounded-full animate-pulse"></div>
-                    <Lock className="w-4 h-4 text-[#00B2FF]" />
-                    <span className="font-medium">Secure Payments</span>
-                  </motion.div>
-                  <motion.div 
-                    className="flex items-center gap-2 text-white/90 text-sm"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="w-2 h-2 bg-[#00B2FF] rounded-full animate-pulse"></div>
-                    <Star className="w-4 h-4 text-[#4AC8FF]" />
-                    <span className="font-medium">Quality Guaranteed</span>
-                  </motion.div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm">
+                    <CheckCircle className="w-4 h-4 text-white" />
+                    <span>Verified Students</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm">
+                    <Lock className="w-4 h-4 text-white" />
+                    <span>Secure Payments</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm">
+                    <Star className="w-4 h-4 text-white" />
+                    <span>Quality Guaranteed</span>
+                  </div>
                 </motion.div>
               </motion.div>
 
-              {/* Right Content - Futuristic 3D Search Card */}
+              {/* Right Content - Enhanced Search Card */}
               <motion.div
                 className="relative"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
               >
-                {/* 3D Glowing background effect */}
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-br from-[#00B2FF]/20 to-[#4AC8FF]/20 rounded-3xl blur-3xl"
-                  animate={{
-                    scale: [1, 1.05, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
+                {/* Glowing background effect */}
+                <div className="absolute inset-0 bg-white/10 rounded-3xl blur-3xl"></div>
                 
-                {/* Main 3D Search Card */}
-                <motion.div 
-                  className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-[#00B2FF]/30"
-                  whileHover={{ 
-                    scale: 1.02,
-                    rotateY: 2,
-                    rotateX: 1
-                  }}
-                  transition={{ duration: 0.3 }}
-                  style={{
-                    transformStyle: "preserve-3d",
-                    perspective: "1000px"
-                  }}
-                >
-                  {/* Futuristic Header */}
+                {/* Main Search Card */}
+                <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20">
+                  {/* Header */}
                   <div className="text-center mb-6">
-                    <motion.div 
-                      className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] mb-4 shadow-lg"
-                      whileHover={{ 
-                        scale: 1.1,
-                        rotateY: 180
-                      }}
-                      transition={{ duration: 0.5 }}
-                      style={{
-                        transformStyle: "preserve-3d"
-                      }}
-                    >
-                      <motion.div
-                        animate={{ rotate: [0, 360] }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                      >
-                        <Search className="w-8 h-8 text-white" />
-                      </motion.div>
-                    </motion.div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2 bg-gradient-to-r from-[#00B2FF] to-[#4AC8FF] bg-clip-text text-transparent">
-                      Find Your Perfect Match
-                    </h3>
-                    <p className="text-sm text-muted-foreground">Search from hundreds of verified student services in our Web3 marketplace</p>
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] mb-4">
+                      <Search className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground mb-2">Find Your Perfect Match</h3>
+                    <p className="text-sm text-muted-foreground">Search from hundreds of verified student services</p>
                   </div>
 
-                  {/* Futuristic Search Input */}
+                  {/* Search Input */}
                   <div className="space-y-4">
                     <div className="relative">
-                      <motion.div
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#00B2FF] pointer-events-none"
-                        animate={{ 
-                          scale: [1, 1.1, 1],
-                          opacity: [0.7, 1, 0.7]
-                        }}
-                        transition={{ 
-                          duration: 2, 
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        <Search className="w-5 h-5" />
-                      </motion.div>
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                       <Input
                         placeholder="Try: Web Design, Logo, Data Analysis..."
-                        className="h-16 pl-12 pr-4 rounded-2xl border-2 border-[#00B2FF]/30 focus:border-[#00B2FF] bg-background/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground text-base font-medium transition-all shadow-lg hover:shadow-xl focus:shadow-[#00B2FF]/20"
+                        className="h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background text-foreground placeholder:text-muted-foreground text-base font-medium transition-all"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => {
@@ -583,133 +396,73 @@ export default function Landing() {
                       />
                     </div>
                     
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <Button
+                      size="lg"
+                      className="w-full h-14 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all transform hover:scale-[1.02]"
+                      onClick={handleSearch}
                     >
-                      <Button
-                        size="lg"
-                        className="w-full h-16 bg-gradient-to-r from-[#00B2FF] to-[#4AC8FF] hover:from-[#4AC8FF] hover:to-[#00B2FF] text-white rounded-2xl font-bold text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all group overflow-hidden relative"
-                        onClick={handleSearch}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <motion.div
-                          animate={{ rotate: [0, 360] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                          className="mr-2"
-                        >
-                          <Search className="h-5 w-5" />
-                        </motion.div>
-                        <span className="relative z-10">Search Services</span>
-                      </Button>
-                    </motion.div>
+                      <Search className="h-5 w-5 mr-2" />
+                      Search Services
+                    </Button>
                   </div>
 
-                  {/* Futuristic Divider */}
+                  {/* Divider */}
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full h-px bg-gradient-to-r from-transparent via-[#00B2FF]/50 to-transparent"></div>
+                      <div className="w-full border-t border-border"></div>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white dark:bg-slate-900 px-4 py-1 text-[#00B2FF] font-bold rounded-full border border-[#00B2FF]/30">
+                      <span className="bg-white dark:bg-slate-900 px-3 text-muted-foreground font-medium">
                         Popular Categories
                       </span>
                     </div>
                   </div>
 
-                  {/* Futuristic Popular Searches */}
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Popular Searches - Enhanced */}
+                  <div className="grid grid-cols-2 gap-2">
                     {[
-                      { term: 'Web Developer', icon: Code, color: 'from-[#00B2FF] to-[#4AC8FF]' },
-                      { term: 'UI/UX Design', icon: Palette, color: 'from-[#4AC8FF] to-[#00B2FF]' },
-                      { term: 'Social Media', icon: Users, color: 'from-[#00B2FF] to-[#4AC8FF]' },
-                      { term: 'Data Analysis', icon: BarChart3, color: 'from-[#4AC8FF] to-[#00B2FF]' },
-                      { term: 'Content Writing', icon: FileText, color: 'from-[#00B2FF] to-[#4AC8FF]' },
-                      { term: 'Mobile App', icon: Smartphone, color: 'from-[#4AC8FF] to-[#00B2FF]' }
-                    ].map(({ term, icon: Icon, color }) => (
-                      <motion.div
+                      { term: 'Web Developer', icon: Code },
+                      { term: 'UI/UX Design', icon: Palette },
+                      { term: 'Social Media', icon: Users },
+                      { term: 'Data Analysis', icon: BarChart3 },
+                      { term: 'Content Writing', icon: FileText },
+                      { term: 'Mobile App', icon: Smartphone }
+                    ].map(({ term, icon: Icon }) => (
+                      <Button
                         key={term}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
+                        variant="outline"
+                        className="h-12 justify-start gap-2 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group"
+                        onClick={() => handlePopularSearch(term)}
                       >
-                        <Button
-                          variant="outline"
-                          className={`h-14 justify-start gap-3 hover:bg-gradient-to-r ${color}/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group rounded-xl border-[#00B2FF]/20 bg-background/50 backdrop-blur-sm`}
-                          onClick={() => handlePopularSearch(term)}
-                        >
-                          <motion.div
-                            className={`w-8 h-8 rounded-lg bg-gradient-to-r ${color} flex items-center justify-center`}
-                            whileHover={{ rotate: 360 }}
-                            transition={{ duration: 0.5 }}
-                          >
-                            <Icon className="w-4 h-4 text-white" />
-                          </motion.div>
-                          <span className="text-sm font-medium">{term}</span>
-                        </Button>
-                      </motion.div>
+                        <Icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <span className="text-sm font-medium">{term}</span>
+                      </Button>
                     ))}
                   </div>
-                </motion.div>
+                </div>
 
-                {/* Futuristic 3D Floating Elements */}
+                {/* Floating decorative elements */}
                 <motion.div
-                  className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-[#00B2FF]/40 to-[#4AC8FF]/40 rounded-full blur-3xl"
+                  className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-[#00B2FF]/30 to-[#4AC8FF]/30 rounded-full blur-2xl"
                   animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.4, 0.8, 0.4],
-                    rotate: [0, 180, 360],
-                  }}
-                  transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <motion.div
-                  className="absolute -bottom-8 -left-8 w-40 h-40 bg-gradient-to-br from-[#4AC8FF]/40 to-[#00B2FF]/40 rounded-full blur-3xl"
-                  animate={{
-                    scale: [1, 1.4, 1],
-                    opacity: [0.4, 0.7, 0.4],
-                    rotate: [360, 180, 0],
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    delay: 2,
-                    ease: "easeInOut"
-                  }}
-                />
-                
-                {/* Additional 3D geometric shapes */}
-                <motion.div
-                  className="absolute top-1/2 -right-12 w-6 h-6 bg-gradient-to-br from-[#00B2FF] to-[#4AC8FF] opacity-60"
-                  style={{
-                    transform: 'rotateX(45deg) rotateY(45deg)',
-                  }}
-                  animate={{
-                    rotateX: [0, 360],
-                    rotateY: [0, 360],
                     scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.8, 0.3],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <motion.div
-                  className="absolute top-1/3 -left-12 w-4 h-4 bg-gradient-to-br from-[#4AC8FF] to-[#00B2FF] rounded-full opacity-50"
-                  animate={{
-                    y: [0, -20, 0],
-                    scale: [0.8, 1.3, 0.8],
-                    opacity: [0.2, 0.9, 0.2],
+                    opacity: [0.5, 0.8, 0.5],
                   }}
                   transition={{
                     duration: 3,
                     repeat: Infinity,
+                  }}
+                />
+                <motion.div
+                  className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#4AC8FF]/30 to-[#00B2FF]/30 rounded-full blur-2xl"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.5, 0.7, 0.5],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
                     delay: 1,
-                    ease: "easeInOut"
                   }}
                 />
               </motion.div>

@@ -1,53 +1,11 @@
 [phases.setup]
-nixPkgs = ['nodejs_22']
+nixPkgs = ['nodejs_22', 'npm-9_x']
 
 [phases.install]
-cmds = [
-  'cd client && npm ci --legacy-peer-deps --no-audit --no-fund',
-  'cd backend && npm ci --omit=dev --no-audit --no-fund'
-]
+cmds = ['npm ci']
 
 [phases.build]
-cmds = [
-  'cd client && npm run build',
-  'cd client && ls -la dist/',
-  'cd client && ls -la dist/assets/ || echo "Client assets not found"',
-  'cd client && find dist -type f | head -20',
-  'cd backend && npx prisma generate',
-  'cd backend && npm run build',
-  'echo "=== CREATING MULTIPLE ASSET COPIES ==="',
-  'cd backend && rm -rf dist/frontend',
-  'cd backend && mkdir -p dist/frontend',
-  'echo "Copying client dist to backend dist/frontend..."',
-  'cd backend && cp -r ../client/dist/* dist/frontend/',
-  'echo "Verifying copy..."',
-  'cd backend && ls -la dist/frontend/',
-  'cd backend && ls -la dist/frontend/assets/ || echo "Backend assets not found"',
-  'cd backend && find dist/frontend -name "*.js" -o -name "*.css" | head -10',
-  'echo "Checking specific asset files..."',
-  'cd backend && ls -la dist/frontend/assets/ || echo "No assets directory"',
-  'cd backend && find dist/frontend/assets -type f | head -10 || echo "No files in assets"',
-  'echo "=== CREATING STATIC ASSETS DIRECTORY ==="',
-  'cd backend && mkdir -p static-assets',
-  'echo "Copying assets to static-assets..."',
-  'cd backend && cp -r ../client/dist/assets/* static-assets/',
-  'cd backend && ls -la static-assets/',
-  'cd backend && find static-assets -type f | head -10 || echo "No files in static-assets"',
-  'echo "=== CREATING RUNTIME BACKUP ==="',
-  'mkdir -p /app/static_assets',
-  'cp -r client/dist/assets/* /app/static_assets/',
-  'ls -la /app/static_assets/',
-  'echo "=== FINAL VERIFICATION ==="',
-  'echo "Client dist contents:" && ls -la client/dist/',
-  'echo "Client assets contents:" && ls -la client/dist/assets/ || echo "No client assets"',
-  'echo "Backend frontend contents:" && ls -la backend/dist/frontend/',
-  'echo "Backend frontend assets:" && ls -la backend/dist/frontend/assets/ || echo "No backend frontend assets"',
-  'echo "Backend static assets:" && ls -la backend/static-assets/ || echo "No static assets"',
-  'echo "Runtime backup assets:" && ls -la /app/static_assets/ || echo "No runtime backup"',
-  'echo "=== ENSURING ASSETS EXIST ==="',
-  'cd backend && if [ ! -d "dist/frontend/assets" ] || [ -z "$(ls -A dist/frontend/assets)" ]; then echo "Assets missing, creating fallback..."; mkdir -p dist/frontend/assets; cp -r ../client/dist/assets/* dist/frontend/assets/ 2>/dev/null || echo "Fallback copy failed"; fi',
-  'cd backend && if [ ! -d "static-assets" ] || [ -z "$(ls -A static-assets)" ]; then echo "Static assets missing, creating fallback..."; mkdir -p static-assets; cp -r ../client/dist/assets/* static-assets/ 2>/dev/null || echo "Static fallback copy failed"; fi'
-]
+cmds = ['rm -rf backend/dist', 'rm -rf backend/node_modules/.cache', 'npm run build']
 
 [start]
-cmd = 'cd backend && node ultra-minimal-start.js'
+cmd = 'cd backend && chmod +x start-railway.sh && ./start-railway.sh'
