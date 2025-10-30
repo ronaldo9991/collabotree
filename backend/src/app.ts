@@ -115,10 +115,53 @@ if (env.NODE_ENV === 'production') {
     }
     
     // Serve index.html for all other routes (SPA routing)
-    res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
+    const indexPath = path.join(frontendPath, 'index.html');
+    console.log(`🔍 Attempting to serve index.html from: ${indexPath}`);
+    
+    if (!existsSync(indexPath)) {
+      console.error(`❌ index.html not found at: ${indexPath}`);
+      console.log(`📁 Frontend directory contents:`, readdirSync(frontendPath));
+      
+      // Try to serve fallback HTML
+      const fallbackPath = path.join(__dirname, 'fallback-index.html');
+      if (existsSync(fallbackPath)) {
+        console.log(`🔄 Serving fallback HTML from: ${fallbackPath}`);
+        res.sendFile(fallbackPath);
+        return;
+      }
+      
+      res.status(500).send(`
+        <html>
+          <head><title>CollaboTree - Setup Required</title></head>
+          <body style="font-family: Arial, sans-serif; padding: 40px; text-align: center; background: #f5f5f5;">
+            <h1 style="color: #00B2FF;">CollaboTree</h1>
+            <h2>Application Setup Required</h2>
+            <p>The frontend files are not available. This usually means the build process needs to complete.</p>
+            <p>Please check the deployment logs for build errors.</p>
+            <p style="color: #666; font-size: 14px; margin-top: 20px;">
+              Frontend path: ${frontendPath}<br>
+              Index file: ${indexPath}
+            </p>
+          </body>
+        </html>
+      `);
+      return;
+    }
+    
+    res.sendFile(indexPath, (err) => {
       if (err) {
         console.error('Error serving index.html:', err);
-        res.status(500).send('Error loading application');
+        res.status(500).send(`
+          <html>
+            <head><title>CollaboTree - Error</title></head>
+            <body style="font-family: Arial, sans-serif; padding: 40px; text-align: center; background: #f5f5f5;">
+              <h1 style="color: #00B2FF;">CollaboTree</h1>
+              <h2>Error Loading Application</h2>
+              <p>There was an error serving the application files.</p>
+              <p style="color: #666; font-size: 14px; margin-top: 20px;">Error: ${err.message}</p>
+            </body>
+          </html>
+        `);
       }
     });
   });
