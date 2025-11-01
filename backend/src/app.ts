@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import { existsSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
@@ -21,7 +21,8 @@ app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false, // Disable CSP for now to allow assets to load
 }));
 
 // CORS configuration - more permissive for production
@@ -121,6 +122,7 @@ if (env.NODE_ENV === 'production') {
   }
   
   // Serve static files with proper headers for CSS/JS assets
+  // This must come BEFORE the catch-all route to handle asset requests
   app.use(express.static(frontendPath, {
     maxAge: '1d', // Cache static files for 1 day
     etag: true,
@@ -134,6 +136,22 @@ if (env.NODE_ENV === 'production') {
       }
     }
   }));
+  
+  // Log asset directory contents for debugging
+  const assetsPath = path.join(frontendPath, 'assets');
+  if (existsSync(assetsPath)) {
+    try {
+      const assets = readdirSync(assetsPath);
+      console.log(`📦 Found ${assets.length} assets in frontend/assets:`);
+      assets.slice(0, 5).forEach(asset => {
+        console.log(`   - ${asset}`);
+      });
+    } catch (err) {
+      console.error('Error reading assets directory:', err);
+    }
+  } else {
+    console.warn(`⚠️  Assets directory not found at: ${assetsPath}`);
+  }
   
   // Handle SPA routing - serve index.html for non-API routes
   app.get('*', (req, res, next) => {
