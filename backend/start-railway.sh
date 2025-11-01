@@ -58,8 +58,12 @@ DATABASE_URL="$FINAL_DATABASE_URL" npx prisma generate
 echo "🗄️ Pushing database schema..."
 DATABASE_URL="$FINAL_DATABASE_URL" npx prisma db push --accept-data-loss
 
-# Build the application
-echo "🔨 Building application..."
+# Build frontend first
+echo "🎨 Building frontend..."
+npm run build:frontend
+
+# Build the backend application
+echo "🔨 Building backend application..."
 npm run build
 
 # Start the server

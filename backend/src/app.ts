@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
@@ -105,6 +106,20 @@ if (env.NODE_ENV === 'production') {
   console.log(`📁 Frontend path: ${frontendPath}`);
   console.log(`📁 Current directory: ${__dirname}`);
   
+  // Check if frontend directory exists
+  if (!existsSync(frontendPath)) {
+    console.error(`❌ Frontend directory not found at: ${frontendPath}`);
+    console.error(`⚠️  Frontend may not be built or copied correctly`);
+  } else {
+    console.log(`✅ Frontend directory found`);
+    const indexPath = path.join(frontendPath, 'index.html');
+    if (existsSync(indexPath)) {
+      console.log(`✅ Frontend index.html found`);
+    } else {
+      console.error(`❌ Frontend index.html not found at: ${indexPath}`);
+    }
+  }
+  
   // Serve static files with proper headers for CSS/JS assets
   app.use(express.static(frontendPath, {
     maxAge: '1d', // Cache static files for 1 day
@@ -130,9 +145,11 @@ if (env.NODE_ENV === 'production') {
     }
     
     // Serve index.html for all other routes (SPA routing)
-    res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
+    const indexHtmlPath = path.join(frontendPath, 'index.html');
+    console.log(`🔍 Attempting to serve index.html from: ${indexHtmlPath}`);
+    res.sendFile(indexHtmlPath, (err) => {
       if (err) {
-        console.error('Error serving index.html:', err);
+        console.error(`❌ Error serving index.html from ${indexHtmlPath}:`, err);
         res.status(500).send('Error loading application');
       }
     });
