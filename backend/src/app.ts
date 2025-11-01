@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
@@ -104,6 +104,48 @@ app.get('/health', (req, res) => {
     version: '1.0.0'
   });
 });
+
+// Debug endpoint to check frontend build
+if (env.NODE_ENV === 'production') {
+  app.get('/debug/frontend', (req, res) => {
+    const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, 'frontend');
+    const indexPath = path.join(frontendPath, 'index.html');
+    const assetsPath = path.join(frontendPath, 'assets');
+    
+    const result: any = {
+      frontendPath,
+      indexHtmlExists: existsSync(indexPath),
+      assetsDirExists: existsSync(assetsPath),
+    };
+    
+    if (existsSync(assetsPath)) {
+      try {
+        const assets = readdirSync(assetsPath);
+        result.assetsCount = assets.length;
+        result.assets = assets.slice(0, 10); // First 10 assets
+      } catch (err: any) {
+        result.assetsError = err.message;
+      }
+    }
+    
+    if (existsSync(indexPath)) {
+      try {
+        const htmlContent = readFileSync(indexPath, 'utf-8');
+        // Extract asset references from HTML
+        const cssMatches = htmlContent.match(/href="([^"]*\.css)"/g) || [];
+        const jsMatches = htmlContent.match(/src="([^"]*\.js)"/g) || [];
+        result.htmlAssets = {
+          css: cssMatches.map((m: string) => m.match(/href="([^"]*)"/)?.[1]),
+          js: jsMatches.map((m: string) => m.match(/src="([^"]*)"/)?.[1]),
+        };
+      } catch (err: any) {
+        result.htmlError = err.message;
+      }
+    }
+    
+    res.json(result);
+  });
+}
 
 // API routes
 app.use('/api', routes);
