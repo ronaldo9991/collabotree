@@ -85,6 +85,16 @@ app.use(cookieParser());
 // Logging
 app.use(logger);
 
+// Additional request logging for debugging asset requests
+if (env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/assets') || req.path.endsWith('.css') || req.path.endsWith('.js')) {
+      console.log(`📦 Asset request: ${req.method} ${req.path}`);
+    }
+    next();
+  });
+}
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
@@ -155,9 +165,10 @@ if (env.NODE_ENV === 'production') {
   
   // Handle SPA routing - serve index.html for non-API routes
   app.get('*', (req, res, next) => {
-    // Don't handle API routes, health check, or socket.io
+    // Don't handle API routes, health check, socket.io, or static assets
     if (req.path.startsWith('/api') || 
         req.path.startsWith('/socket.io') || 
+        req.path.startsWith('/assets') ||
         req.path === '/health') {
       return next();
     }
