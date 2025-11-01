@@ -361,23 +361,29 @@ export const signContract = async (req: AuthenticatedRequest, res: Response) => 
 
     // Create notification for the other party
     const otherPartyId = isBuyer ? contract.studentId : contract.buyerId;
-    const signerName = isBuyer ? contract.buyer.name : contract.student.name;
+    const signerName = isBuyer ? contract.buyer?.name : contract.student?.name;
     
-    await createNotification(
-      otherPartyId,
-      'CONTRACT_SIGNED',
-      'Contract Signed',
-      `${signerName} has signed the contract for "${contract.hireRequest.service.title}"`
-    );
+    if (otherPartyId && signerName) {
+      await createNotification(
+        otherPartyId,
+        'CONTRACT_SIGNED',
+        'Contract Signed',
+        `${signerName} has signed the contract for "${contract.hireRequest.service.title}"`
+      );
+    }
 
     // If both signed, notify both parties
     if (updatedContract.isSignedByBuyer && updatedContract.isSignedByStudent) {
-      await createNotificationForUsers(
-        [contract.buyerId, contract.studentId],
-        'CONTRACT_SIGNED',
-        'Contract Fully Executed',
-        `Contract for "${contract.hireRequest.service.title}" is now active`
-      );
+      const buyerId = contract.buyerId;
+      const studentId = contract.studentId;
+      if (buyerId && studentId) {
+        await createNotificationForUsers(
+          [buyerId, studentId],
+          'CONTRACT_SIGNED',
+          'Contract Fully Executed',
+          `Contract for "${contract.hireRequest.service.title}" is now active`
+        );
+      }
     }
 
     console.log('✅ Contract signed successfully:', contractId);
@@ -484,12 +490,14 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
     });
 
     // Create notification for student
-    await createNotification(
-      contract.studentId,
-      'PAYMENT_RECEIVED',
-      'Payment Received',
-      `Payment received for contract: "${contract.hireRequest.service.title}"`
-    );
+    if (contract.studentId) {
+      await createNotification(
+        contract.studentId,
+        'PAYMENT_RECEIVED',
+        'Payment Received',
+        `Payment received for contract: "${contract.hireRequest.service.title}"`
+      );
+    }
 
     console.log('✅ Payment processed successfully:', contractId);
     return sendSuccess(res, updatedContract, 'Payment processed successfully');
@@ -581,12 +589,14 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
     });
 
     // Create notification for buyer
-    await createNotification(
-      contract.buyerId!,
-      'PROGRESS_UPDATED',
-      'Progress Updated',
-      `${contract.student.name} updated progress on "${contract.hireRequest.service.title}"`
-    );
+    if (contract.buyerId && contract.student?.name) {
+      await createNotification(
+        contract.buyerId,
+        'PROGRESS_UPDATED',
+        'Progress Updated',
+        `${contract.student.name} updated progress on "${contract.hireRequest.service.title}"`
+      );
+    }
 
     console.log('✅ Progress updated successfully:', contractId);
     return sendSuccess(res, updatedContract, 'Progress updated successfully');
@@ -689,24 +699,28 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
       });
 
       // Credit student wallet with their payout (after platform fee)
-      await tx.walletEntry.create({
-        data: {
-          userId: contract.studentId!,
-          amountCents: contract.studentPayoutCents!,
-          reason: `Payment for completed contract: ${contract.hireRequest.service.title}`,
-        },
-      });
+      if (contract.studentId && contract.studentPayoutCents) {
+        await tx.walletEntry.create({
+          data: {
+            userId: contract.studentId,
+            amountCents: contract.studentPayoutCents,
+            reason: `Payment for completed contract: ${contract.hireRequest.service.title}`,
+          },
+        });
+      }
 
       return updated;
     });
 
     // Create notification for buyer
-    await createNotification(
-      contract.buyerId!,
-      'CONTRACT_COMPLETED',
-      'Contract Completed',
-      `${contract.student.name} has completed the contract for "${contract.hireRequest.service.title}"`
-    );
+    if (contract.buyerId && contract.student?.name) {
+      await createNotification(
+        contract.buyerId,
+        'CONTRACT_COMPLETED',
+        'Contract Completed',
+        `${contract.student.name} has completed the contract for "${contract.hireRequest.service.title}"`
+      );
+    }
 
     console.log('✅ Contract marked as completed:', contractId);
     return sendSuccess(res, updatedContract, 'Contract marked as completed successfully');
