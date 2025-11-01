@@ -16,6 +16,7 @@ const PORT = process.env.PORT || env.PORT || 4000;
 
 // Start server - bind to 0.0.0.0 for Railway
 httpServer.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`\n${'='.repeat(60)}`);
   console.log(`🚀 CollaboTree Backend Server running on port ${PORT}`);
   console.log(`📡 Environment: ${env.NODE_ENV}`);
   console.log(`🔗 Client Origin: ${env.CLIENT_ORIGIN || 'Same domain'}`);
@@ -24,7 +25,10 @@ httpServer.listen(Number(PORT), '0.0.0.0', () => {
   
   if (env.NODE_ENV === 'production') {
     console.log(`🌍 Production mode: Serving frontend + backend`);
+    console.log(`🔗 Server URL: http://0.0.0.0:${PORT}`);
+    console.log(`📋 Debug endpoint: http://0.0.0.0:${PORT}/debug/frontend`);
   }
+  console.log(`${'='.repeat(60)}\n`);
 });
 
 // Handle server errors
