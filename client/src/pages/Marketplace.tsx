@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -57,15 +57,19 @@ export default function ExploreTalent() {
         setLoading(true);
       }
       
+      // Use current search value directly, not from closure
+      const currentSearch = search?.trim() || undefined;
       const filters = {
-        search: search?.trim() || undefined,
+        search: currentSearch,
         category: category !== 'all' ? category : undefined,
         minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
         maxPrice: priceRange[1] < 10000 ? priceRange[1] : undefined,
       };
 
       console.log('🔎 Fetching data with filters:', filters);
+      console.log('   Current search state:', search);
       console.log('   Search filter value:', filters.search || '(none)');
+      console.log('   Will send to API:', filters);
 
       // Fetch projects (student services) - use public endpoint like landing page
       console.log('🌐 Making API call to getPublicServices with params:', { 
@@ -155,7 +159,21 @@ export default function ExploreTalent() {
       // Set projects data (even if empty)
       setProjects(mappedProjects);
       console.log(`✅ Loaded ${mappedProjects.length} projects from API`);
-      console.log('   Current search filter:', search || '(none)');
+      console.log('   Current search state:', search || '(none)');
+      console.log('   Search used in API call:', filters.search || '(none)');
+      
+      // Log sample titles to verify filtering
+      if (mappedProjects.length > 0) {
+        console.log('   Sample titles:', mappedProjects.slice(0, 3).map(p => p.title));
+      }
+      
+      // If search was used, verify results match
+      if (filters.search && mappedProjects.length > 0) {
+        const matchingTitles = mappedProjects.filter(p => 
+          p.title?.toLowerCase().includes(filters.search!.toLowerCase())
+        ).length;
+        console.log(`   📊 Projects matching search "${filters.search}": ${matchingTitles} out of ${mappedProjects.length}`);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
       console.log('API Error details:', error);
@@ -196,17 +214,22 @@ export default function ExploreTalent() {
 
   // Fetch data when search or filters change - with debounce for search
   useEffect(() => {
-    console.log('📊 Fetching data triggered');
+    console.log('📊 useEffect triggered - Fetching data');
     console.log('   Search term:', search ? `"${search}"` : '(empty)');
     console.log('   Category:', category);
     console.log('   Price range:', priceRange);
+    console.log('   SortBy:', sortBy);
     
     // Debounce search to avoid too many API calls
     const timeoutId = setTimeout(() => {
+      console.log('⏰ Debounce timeout fired, calling fetchData');
       fetchData();
-    }, search ? 300 : 0); // 300ms delay if search, immediate if clearing
+    }, search && search.trim() ? 300 : 0); // 300ms delay if search has value, immediate if clearing
     
-    return () => clearTimeout(timeoutId);
+    return () => {
+      console.log('🧹 Cleaning up timeout');
+      clearTimeout(timeoutId);
+    };
   }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
 
 
@@ -235,35 +258,53 @@ export default function ExploreTalent() {
   // Helper function for slugify
   const slugify = (str: string) => str.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
 
-  // Client-side filtering and sorting
-  const filteredProjects = projects?.filter((project) => {
-    // Price filter
-    const price = project.budget || 0;
-    const priceMatch = price >= priceRange[0] && price <= priceRange[1];
+  // Client-side filtering and sorting (acts as fallback if API doesn't filter)
+  const filteredProjects = useMemo(() => {
+    console.log('🔍 Client-side filtering starting');
+    console.log('   Projects to filter:', projects?.length || 0);
+    console.log('   Search term:', search ? `"${search}"` : '(empty)');
     
-    // Category filter
-    let categoryMatch = true;
-    if (category && category !== 'all') {
-      const categorySlug = category.toLowerCase();
-      categoryMatch = (project.tags?.some((tag: string) => 
-        tag.toLowerCase().replace(/\s+/g, '-') === categorySlug || 
-        tag.toLowerCase().includes(categorySlug.replace(/-/g, ' '))
-      ) ?? false);
+    if (!projects || projects.length === 0) {
+      console.log('   No projects to filter');
+      return [];
     }
     
-    // Search filter - check if search term matches title, description, or tags
-    let searchMatch: boolean = true;
-    if (search && search.trim()) {
-      const searchLower = search.toLowerCase().trim();
-      const titleMatch = (project.title?.toLowerCase().includes(searchLower)) || false;
-      const descMatch = (project.description?.toLowerCase().includes(searchLower)) || false;
-      const tagsMatch = (project.tags?.some((tag: string) => tag.toLowerCase().includes(searchLower))) || false;
-      const creatorMatch = (project.creator?.full_name?.toLowerCase().includes(searchLower)) || false;
-      searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch;
-    }
+    const filtered = projects.filter((project) => {
+      // Price filter
+      const price = project.budget || 0;
+      const priceMatch = price >= priceRange[0] && price <= priceRange[1];
+      
+      // Category filter
+      let categoryMatch = true;
+      if (category && category !== 'all') {
+        const categorySlug = category.toLowerCase();
+        categoryMatch = (project.tags?.some((tag: string) => 
+          tag.toLowerCase().replace(/\s+/g, '-') === categorySlug || 
+          tag.toLowerCase().includes(categorySlug.replace(/-/g, ' '))
+        ) ?? false);
+      }
+      
+      // Search filter - check if search term matches title, description, or tags
+      let searchMatch: boolean = true;
+      if (search && search.trim()) {
+        const searchLower = search.toLowerCase().trim();
+        const titleMatch = (project.title?.toLowerCase().includes(searchLower)) || false;
+        const descMatch = (project.description?.toLowerCase().includes(searchLower)) || false;
+        const tagsMatch = (project.tags?.some((tag: string) => tag.toLowerCase().includes(searchLower))) || false;
+        const creatorMatch = (project.creator?.full_name?.toLowerCase().includes(searchLower)) || false;
+        searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch;
+        
+        if (!searchMatch) {
+          console.log(`   ❌ Project "${project.title}" doesn't match search "${search}"`);
+        }
+      }
+      
+      return priceMatch && categoryMatch && searchMatch;
+    });
     
-    return priceMatch && categoryMatch && searchMatch;
-  });
+    console.log(`   ✅ Filtered ${filtered.length} projects from ${projects.length}`);
+    return filtered;
+  }, [projects, search, category, priceRange]);
 
   const sortedProjects = filteredProjects?.sort((a, b) => {
     switch (sortBy) {
@@ -363,13 +404,15 @@ export default function ExploreTalent() {
                       value={search}
                       onChange={(e) => {
                         const value = e.target.value;
-                        console.log('Input onChange:', value);
+                        console.log('🔤 Search input onChange:', value);
                         setSearch(value);
+                        // Note: fetchData will be called by useEffect after debounce
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          // Trigger search immediately on Enter
+                          console.log('⌨️ Enter key pressed, triggering search');
+                          // Clear any pending debounce and search immediately
                           fetchData();
                         }
                       }}
