@@ -212,8 +212,10 @@ export default function ExploreTalent() {
 
   // Initial data fetch on mount
   useEffect(() => {
+    console.log('🚀 Component mounted, fetching initial data');
     fetchData();
-  }, []); // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount - fetchData is stable and doesn't need to be in deps
 
 
 
