@@ -50,26 +50,22 @@ export default function ExploreTalent() {
     { value: "all", label: "All Categories" }
   ]);
 
-  // Fetch data function
+  // Fetch data function - only fetch on mount or when non-search filters change
   const fetchData = useCallback(async (isBackground = false) => {
     try {
       if (!isBackground) {
         setLoading(true);
       }
       
-      // Use current search value directly, not from closure
-      const currentSearch = search?.trim() || undefined;
+      // Don't send search to API - we'll filter client-side for instant results
       const filters = {
-        search: currentSearch,
+        // search: undefined, // Filter client-side instead
         category: category !== 'all' ? category : undefined,
         minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
         maxPrice: priceRange[1] < 10000 ? priceRange[1] : undefined,
       };
 
-      console.log('🔎 Fetching data with filters:', filters);
-      console.log('   Current search state:', search);
-      console.log('   Search filter value:', filters.search || '(none)');
-      console.log('   Will send to API:', filters);
+      console.log('🔎 Fetching data with filters (search filtered client-side):', filters);
 
       // Fetch projects (student services) - use public endpoint like landing page
       console.log('🌐 Making API call to getPublicServices with params:', { 
@@ -159,20 +155,11 @@ export default function ExploreTalent() {
       // Set projects data (even if empty)
       setProjects(mappedProjects);
       console.log(`✅ Loaded ${mappedProjects.length} projects from API`);
-      console.log('   Current search state:', search || '(none)');
-      console.log('   Search used in API call:', filters.search || '(none)');
+      console.log('   All projects loaded - search will be filtered client-side');
       
-      // Log sample titles to verify filtering
+      // Log sample titles
       if (mappedProjects.length > 0) {
         console.log('   Sample titles:', mappedProjects.slice(0, 3).map(p => p.title));
-      }
-      
-      // If search was used, verify results match
-      if (filters.search && mappedProjects.length > 0) {
-        const matchingTitles = mappedProjects.filter(p => 
-          p.title?.toLowerCase().includes(filters.search!.toLowerCase())
-        ).length;
-        console.log(`   📊 Projects matching search "${filters.search}": ${matchingTitles} out of ${mappedProjects.length}`);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -190,7 +177,7 @@ export default function ExploreTalent() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, priceRange, toast]);
+  }, [category, priceRange, toast]); // Removed search from dependencies - filter client-side
 
   // Initialize and sync search from URL
   useEffect(() => {
@@ -212,25 +199,21 @@ export default function ExploreTalent() {
     }
   }, [location, search]);
 
-  // Fetch data when search or filters change - with debounce for search
+  // Fetch data when filters change (but NOT when search changes - search is client-side only)
   useEffect(() => {
-    console.log('📊 useEffect triggered - Fetching data');
-    console.log('   Search term:', search ? `"${search}"` : '(empty)');
+    console.log('📊 useEffect triggered - Fetching data from API');
     console.log('   Category:', category);
     console.log('   Price range:', priceRange);
-    console.log('   SortBy:', sortBy);
+    console.log('   Note: Search is filtered client-side, not sent to API');
     
-    // Debounce search to avoid too many API calls
-    const timeoutId = setTimeout(() => {
-      console.log('⏰ Debounce timeout fired, calling fetchData');
-      fetchData();
-    }, search && search.trim() ? 300 : 0); // 300ms delay if search has value, immediate if clearing
-    
-    return () => {
-      console.log('🧹 Cleaning up timeout');
-      clearTimeout(timeoutId);
-    };
-  }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
+    // Fetch data immediately when non-search filters change
+    fetchData();
+  }, [category, priceRange[0], priceRange[1], fetchData]); // Removed search - it's client-side only
+
+  // Initial data fetch on mount
+  useEffect(() => {
+    fetchData();
+  }, []); // Only run once on mount
 
 
 
@@ -258,16 +241,13 @@ export default function ExploreTalent() {
   // Helper function for slugify
   const slugify = (str: string) => str.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
 
-  // Client-side filtering and sorting (acts as fallback if API doesn't filter)
+  // Client-side filtering and sorting - search is instant, no API call needed
   const filteredProjects = useMemo(() => {
-    console.log('🔍 Client-side filtering starting');
-    console.log('   Projects to filter:', projects?.length || 0);
-    console.log('   Search term:', search ? `"${search}"` : '(empty)');
-    
     if (!projects || projects.length === 0) {
-      console.log('   No projects to filter');
       return [];
     }
+    
+    const searchTerm = search?.trim().toLowerCase() || '';
     
     const filtered = projects.filter((project) => {
       // Price filter
@@ -284,25 +264,22 @@ export default function ExploreTalent() {
         ) ?? false);
       }
       
-      // Search filter - check if search term matches title, description, or tags
+      // Search filter - instant client-side filtering
       let searchMatch: boolean = true;
-      if (search && search.trim()) {
-        const searchLower = search.toLowerCase().trim();
-        const titleMatch = (project.title?.toLowerCase().includes(searchLower)) || false;
-        const descMatch = (project.description?.toLowerCase().includes(searchLower)) || false;
-        const tagsMatch = (project.tags?.some((tag: string) => tag.toLowerCase().includes(searchLower))) || false;
-        const creatorMatch = (project.creator?.full_name?.toLowerCase().includes(searchLower)) || false;
+      if (searchTerm) {
+        const titleMatch = project.title?.toLowerCase().includes(searchTerm) || false;
+        const descMatch = project.description?.toLowerCase().includes(searchTerm) || false;
+        const tagsMatch = project.tags?.some((tag: string) => 
+          tag.toLowerCase().includes(searchTerm)
+        ) || false;
+        const creatorMatch = project.creator?.full_name?.toLowerCase().includes(searchTerm) || false;
         searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch;
-        
-        if (!searchMatch) {
-          console.log(`   ❌ Project "${project.title}" doesn't match search "${search}"`);
-        }
       }
       
       return priceMatch && categoryMatch && searchMatch;
     });
     
-    console.log(`   ✅ Filtered ${filtered.length} projects from ${projects.length}`);
+    console.log(`🔍 Search "${search || '(none)'}": ${filtered.length} results from ${projects.length} projects`);
     return filtered;
   }, [projects, search, category, priceRange]);
 
@@ -411,9 +388,8 @@ export default function ExploreTalent() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          console.log('⌨️ Enter key pressed, triggering search');
-                          // Clear any pending debounce and search immediately
-                          fetchData();
+                          console.log('⌨️ Enter key pressed - search is instant (client-side)');
+                          // Search is instant - no API call needed
                         }
                       }}
                       className="pl-7 h-7 text-xs"
