@@ -44,13 +44,11 @@ export function Footer() {
                 href="/" 
                 className="flex items-center gap-3 mb-6 group"
               >
-                <div className="relative overflow-hidden rounded-2xl p-2 bg-card/20 dark:bg-card/30 border-2 border-primary/30 dark:border-primary/40 group-hover:border-primary/50 dark:group-hover:border-primary/60 transition-all duration-300">
-                  <img 
-                    src="/logo.png" 
-                    alt="CollaboTree Logo" 
-                    className="h-10 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+                <img 
+                  src="/logo.png" 
+                  alt="CollaboTree Logo" 
+                  className="h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                />
                 <span className="text-2xl font-bold bg-gradient-to-r from-white to-white/90 dark:from-foreground dark:to-foreground/80 bg-clip-text">
                   CollaboTree
                 </span>
