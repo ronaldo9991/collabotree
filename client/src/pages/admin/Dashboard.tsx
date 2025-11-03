@@ -226,14 +226,7 @@ export default function AdminDashboard() {
     console.log('User has admin access, fetching admin data...');
     fetchAdminData();
     
-    // Set up auto-refresh every 5 seconds for real-time updates
-    const interval = setInterval(() => {
-      if (user?.role === 'ADMIN') {
-        fetchAdminData();
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
+    // Auto-refresh removed - data will only refresh on manual actions or component remount
   }, [user, toast]);
 
   const fetchAdminData = async () => {
