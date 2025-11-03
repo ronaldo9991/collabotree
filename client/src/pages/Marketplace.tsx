@@ -46,20 +46,9 @@ export default function ExploreTalent() {
   const [sortBy, setSortBy] = useState("newest");
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [categories, setCategories] = useState([
     { value: "all", label: "All Categories" }
   ]);
-
-  // Manual refresh function
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      await fetchData(true);
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   // Fetch data function
   const fetchData = useCallback(async (isBackground = false) => {
@@ -69,10 +58,10 @@ export default function ExploreTalent() {
       }
       
       const filters = {
-        search: search || undefined,
+        search: search?.trim() || undefined,
         category: category !== 'all' ? category : undefined,
-        minBudget: priceRange[0] > 0 ? priceRange[0] : undefined,
-        maxBudget: priceRange[1] < 10000 ? priceRange[1] : undefined,
+        minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
+        maxPrice: priceRange[1] < 10000 ? priceRange[1] : undefined,
       };
 
       console.log('🔎 Fetching data with filters:', filters);
@@ -167,17 +156,6 @@ export default function ExploreTalent() {
       setProjects(mappedProjects);
       console.log(`✅ Loaded ${mappedProjects.length} projects from API`);
       console.log('   Current search filter:', search || '(none)');
-      if (search) {
-        const filtered = mappedProjects.filter(p => 
-          p.title?.toLowerCase().includes(search.toLowerCase()) ||
-          p.description?.toLowerCase().includes(search.toLowerCase()) ||
-          p.tags?.some((t: string) => t.toLowerCase().includes(search.toLowerCase()))
-        );
-        console.log(`   ✨ Projects matching "${search}":`, filtered.length);
-        if (filtered.length > 0) {
-          console.log('   📋 Matching project titles:', filtered.map(p => p.title).slice(0, 3));
-        }
-      }
     } catch (error) {
       console.error('Error fetching data:', error);
       console.log('API Error details:', error);
@@ -216,13 +194,19 @@ export default function ExploreTalent() {
     }
   }, [location, search]);
 
-  // Fetch data when search or filters change
+  // Fetch data when search or filters change - with debounce for search
   useEffect(() => {
     console.log('📊 Fetching data triggered');
     console.log('   Search term:', search ? `"${search}"` : '(empty)');
     console.log('   Category:', category);
     console.log('   Price range:', priceRange);
-    fetchData();
+    
+    // Debounce search to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      fetchData();
+    }, search ? 300 : 0); // 300ms delay if search, immediate if clearing
+    
+    return () => clearTimeout(timeoutId);
   }, [search, category, priceRange[0], priceRange[1], sortBy, fetchData]);
 
 
@@ -332,20 +316,6 @@ export default function ExploreTalent() {
             Discover verified student talent from top universities ready to bring your projects to life.
           </p>
           
-          {/* Refresh Button */}
-          <div className="mb-4">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleRefresh}
-              disabled={loading || refreshing}
-              className="gap-2"
-            >
-              <Search className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refreshing...' : loading ? 'Loading...' : 'Refresh Services'}
-            </Button>
-          </div>
-          
           {search && (
             <div className="flex items-center justify-center gap-2 mb-4">
               <Badge variant="secondary" className="px-4 py-2 text-sm">
@@ -392,15 +362,20 @@ export default function ExploreTalent() {
                       placeholder="Search talent..."
                       value={search}
                       onChange={(e) => {
-                        console.log('Input onChange:', e.target.value);
-                        setSearch(e.target.value);
+                        const value = e.target.value;
+                        console.log('Input onChange:', value);
+                        setSearch(value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          // Trigger search immediately on Enter
+                          fetchData();
+                        }
                       }}
                       className="pl-7 h-7 text-xs"
                       data-testid="search-input"
                     />
-                  </div>
-                  <div className="mt-1 text-[10px] text-muted-foreground">
-                    Value: "{search}"
                   </div>
                 </div>
 

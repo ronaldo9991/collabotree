@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare, RefreshCw } from "lucide-react";
+import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
@@ -18,17 +18,6 @@ export default function Landing() {
   const [newProjects, setNewProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Manual refresh function
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      await fetchProjects();
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   // Fetch projects from backend
   const fetchProjects = async () => {
@@ -701,18 +690,8 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="flex items-center justify-center mb-4">
               <h2 className="text-3xl lg:text-4xl font-bold">New Projects</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="flex items-center gap-2"
-              >
-                <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-                {refreshing ? 'Refreshing...' : 'Refresh'}
-              </Button>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Fresh opportunities from our talented student community. Discover the latest projects and innovations from verified students worldwide.
