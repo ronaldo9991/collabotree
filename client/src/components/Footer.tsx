@@ -44,9 +44,11 @@ export function Footer() {
                 href="/" 
                 className="flex items-center gap-3 mb-6 group"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <span className="text-white font-bold text-lg">CT</span>
-                </div>
+                <img 
+                  src="/logo.png" 
+                  alt="CollaboTree Logo" 
+                  className="h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                />
                 <span className="text-2xl font-bold bg-gradient-to-r from-white to-white/90 dark:from-foreground dark:to-foreground/80 bg-clip-text">
                   CollaboTree
                 </span>
