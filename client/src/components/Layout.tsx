@@ -42,38 +42,46 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card bg-card/80 border-b border-border backdrop-blur-12">
+      <nav className="fixed top-0 left-0 right-0 z-50 pt-4 px-4">
         <div className="container-unified">
-          <div className="flex items-center justify-between h-16">
+          {/* Pill-shaped Navigation Container */}
+          <div className="flex items-center justify-between h-14 px-6 rounded-full border-2 border-primary/40 dark:border-primary/60 bg-card/95 dark:bg-card/90 backdrop-blur-xl shadow-lg shadow-primary/5 dark:shadow-primary/10">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity" data-testid="logo">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
-                <Network className="h-4 w-4 text-white" />
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center flex-shrink-0">
+                <Network className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="text-xl font-semibold">CollaboTree</span>
+              <span className="text-lg font-semibold text-foreground">CollaboTree</span>
             </Link>
 
             {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center gap-6">
-              {navigation.map((item) => (
-                item.show && (
+            <div className="hidden lg:flex items-center gap-2 mx-auto">
+              {navigation.map((item) => {
+                const isActive = location === item.href || 
+                  (item.href !== "/" && location.startsWith(item.href));
+                
+                return item.show && (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="text-sm font-medium text-foreground hover:text-primary transition-colors px-2 py-1 rounded-md hover:bg-muted/20"
+                    className={`text-sm font-medium transition-all px-4 py-1.5 rounded-full ${
+                      isActive
+                        ? "text-foreground border-2 border-primary/50 dark:border-primary/70 bg-card dark:bg-card/80"
+                        : "text-foreground/70 hover:text-foreground hover:bg-muted/30"
+                    }`}
                     data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     {item.name}
                   </Link>
-                )
-              ))}
+                );
+              })}
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="lg:hidden">
+            <div className="lg:hidden ml-auto">
               <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-2 mobile-menu-button">
+                  <Button variant="ghost" size="sm" className="p-2 rounded-full mobile-menu-button h-8 w-8">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
@@ -139,13 +147,13 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Actions - Desktop */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-muted/20 transition-colors"
+                className="p-2 rounded-full hover:bg-muted/30 transition-colors h-8 w-8"
                 data-testid="theme-toggle"
               >
                 {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
@@ -155,19 +163,19 @@ export function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 onClick={() => setCommandOpen(true)}
-                className="hidden xl:flex items-center gap-2 px-3 py-2 bg-muted/20 rounded-lg text-sm text-muted-foreground hover:bg-muted/30 transition-colors"
+                className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/20 text-sm text-muted-foreground hover:bg-muted/30 transition-colors h-8"
                 data-testid="command-palette-trigger"
               >
-                <Search className="h-4 w-4" />
-                <span className="hidden 2xl:inline">Search</span>
-                <Badge variant="outline" className="px-1.5 py-0.5 text-xs hidden 2xl:inline-block">
+                <Search className="h-3.5 w-3.5" />
+                <span className="hidden 2xl:inline text-xs">Search</span>
+                <Badge variant="outline" className="px-1.5 py-0.5 text-xs hidden 2xl:inline-block border-primary/30">
                   ⌘K
                 </Badge>
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => setCommandOpen(true)}
-                className="xl:hidden p-2"
+                className="xl:hidden p-2 rounded-full h-8 w-8"
                 data-testid="command-palette-trigger-mobile"
               >
                 <Search className="h-4 w-4" />
@@ -178,7 +186,7 @@ export function Layout({ children }: LayoutProps) {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="h-8 w-8 border-2 border-primary/30">
                         <AvatarImage src="" alt={user.name} />
                         <AvatarFallback>
                           {user.name.split(' ').map((n: string) => n[0]).join('')}
@@ -222,14 +230,15 @@ export function Layout({ children }: LayoutProps) {
                 </DropdownMenu>
               ) : (
                 <Button 
-                  variant="default" 
+                  variant="outline" 
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  className="border-2 border-primary/50 dark:border-primary/70 bg-transparent hover:bg-muted/30 text-foreground rounded-full px-4 py-1.5 h-8 flex items-center gap-1.5"
                   asChild
                   data-testid="sign-in-button"
                 >
                   <Link href="/signin">
-                    Sign In
+                    Get Started
+                    <span className="text-xs">→</span>
                   </Link>
                 </Button>
               )}
@@ -239,7 +248,7 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-16">
+      <main className="pt-24">
         {children}
       </main>
 
