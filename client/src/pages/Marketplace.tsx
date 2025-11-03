@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Link, useLocation } from "wouter";
-import { Search, Filter, Star, Clock, FolderSync, Heart, MapPin, Sparkles, TrendingUp, Code, Smartphone, PaintBucket, Loader2, CheckCircle } from "lucide-react";
+import { Search, Filter, Star, Clock, FolderSync, Heart, MapPin, Sparkles, TrendingUp, Code, Smartphone, PaintBucket, Loader2, CheckCircle, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -273,16 +273,30 @@ export default function ExploreTalent() {
         ) ?? false);
       }
       
-      // Search filter - instant client-side filtering
+      // Search filter - instant client-side filtering - search in multiple fields
       let searchMatch: boolean = true;
       if (searchTerm) {
-        const titleMatch = project.title?.toLowerCase().includes(searchTerm) || false;
-        const descMatch = project.description?.toLowerCase().includes(searchTerm) || false;
+        const searchLower = searchTerm.toLowerCase().trim();
+        
+        // Search in title (most important)
+        const titleMatch = project.title?.toLowerCase().includes(searchLower) || false;
+        
+        // Search in description
+        const descMatch = project.description?.toLowerCase().includes(searchLower) || false;
+        
+        // Search in tags
         const tagsMatch = project.tags?.some((tag: string) => 
-          tag.toLowerCase().includes(searchTerm)
+          tag.toLowerCase().includes(searchLower)
         ) || false;
-        const creatorMatch = project.creator?.full_name?.toLowerCase().includes(searchTerm) || false;
-        searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch;
+        
+        // Search in creator name
+        const creatorMatch = project.creator?.full_name?.toLowerCase().includes(searchLower) || false;
+        
+        // Search in creator email (partial match)
+        const emailMatch = project.creator?.email?.toLowerCase().includes(searchLower) || false;
+        
+        // Match if any field contains the search term
+        searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch || emailMatch;
       }
       
       return priceMatch && categoryMatch && searchMatch;
@@ -361,59 +375,80 @@ export default function ExploreTalent() {
               </Button>
             </div>
           )}
-          {!loading && filteredAndSortedProjects !== undefined && (
-            <p className="text-sm text-muted-foreground">
-              Showing {filteredAndSortedProjects.length} {filteredAndSortedProjects.length === 1 ? 'result' : 'results'}
-              {search && ` for "${search}"`}
-            </p>
+          {!loading && filteredAndSortedProjects !== undefined && filteredAndSortedProjects.length > 0 && (
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <p className="text-sm text-muted-foreground">
+                Showing <span className="font-semibold text-foreground">{filteredAndSortedProjects.length}</span> {filteredAndSortedProjects.length === 1 ? 'result' : 'results'}
+                {search && (
+                  <span className="ml-2">
+                    for <span className="font-semibold text-primary">"{search}"</span>
+                  </span>
+                )}
+              </p>
+            </div>
           )}
         </div>
 
         {/* Main Content Layout */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Sidebar */}
-          <div className="w-full lg:w-64 flex-shrink-0 order-2 lg:order-1">
-            <Card className="glass-card bg-card/50 backdrop-blur-12 p-3 sticky top-4">
-              <h3 className="font-semibold mb-3 flex items-center gap-2 text-xs">
-                <Filter className="h-3 w-3" />
-                Filter Results
-              </h3>
-              
-              <div className="space-y-3">
-                {/* Search */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">
-                    Search {search && <span className="text-primary">({search})</span>}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Filters Sidebar - Left Side */}
+          <div className="w-full lg:w-80 flex-shrink-0 order-2 lg:order-1">
+            <Card className="glass-card bg-card/80 backdrop-blur-md border-2 border-border/50 shadow-xl sticky top-6">
+              <CardHeader className="pb-4 border-b border-border/30">
+                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                  <Filter className="h-5 w-5 text-primary" />
+                  Filter Results
+                </CardTitle>
+                <CardDescription className="text-xs mt-1">
+                  Refine your search to find the perfect talent
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
+                {/* Search - Prominent */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-foreground">
+                    Search Talent
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                     <Input
-                      placeholder="Search talent..."
+                      placeholder="Search by title, description, tags, or creator..."
                       value={search}
                       onChange={(e) => {
                         const value = e.target.value;
                         console.log('🔤 Search input onChange - Setting search to:', value);
                         setSearch(value);
-                        // Search state change will trigger useMemo to re-filter instantly
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          console.log('⌨️ Enter key pressed - search is instant (client-side)');
-                          // Search is instant - no API call needed
                         }
                       }}
-                      className="pl-7 h-7 text-xs"
+                      className="pl-10 h-11 text-sm border-2 focus:border-primary transition-colors"
                       data-testid="search-input"
                     />
+                    {search && (
+                      <button
+                        onClick={() => setSearch('')}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label="Clear search"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
+                  {search && (
+                    <p className="text-xs text-muted-foreground">
+                      Searching for: <span className="text-primary font-medium">"{search}"</span>
+                    </p>
+                  )}
                 </div>
 
                 {/* Category */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">Category</label>
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-foreground">Category</label>
                   <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger data-testid="category-select" className="h-7 text-xs">
+                    <SelectTrigger data-testid="category-select" className="h-10 text-sm border-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -426,11 +461,53 @@ export default function ExploreTalent() {
                   </Select>
                 </div>
 
+                {/* Price Range */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold text-foreground">Price Range</label>
+                  <div className="px-2 py-4 border-2 border-border/50 rounded-lg bg-background/50">
+                    <Slider
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                      max={10000}
+                      step={50}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between items-center mt-3 pt-3 border-t border-border/30">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">Min</span>
+                        <span className="text-sm font-semibold">${priceRange[0].toLocaleString()}</span>
+                      </div>
+                      <div className="h-8 w-px bg-border/50" />
+                      <div className="flex flex-col items-end">
+                        <span className="text-xs text-muted-foreground">Max</span>
+                        <span className="text-sm font-semibold">${priceRange[1].toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sort By */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-foreground">Sort By</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger data-testid="sort-select" className="h-10 text-sm border-2">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest First</SelectItem>
+                      <SelectItem value="rating">Highest Rated</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="delivery">Fastest Delivery</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* Delivery Time */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">Delivery Time</label>
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-foreground">Delivery Time</label>
                   <Select value={deliveryDays} onValueChange={setDeliveryDays}>
-                    <SelectTrigger data-testid="delivery-select" className="h-7 text-xs">
+                    <SelectTrigger data-testid="delivery-select" className="h-10 text-sm border-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -443,46 +520,23 @@ export default function ExploreTalent() {
                   </Select>
                 </div>
 
-                {/* Sort By */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">Sort By</label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger data-testid="sort-select" className="h-7 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="rating">Highest Rated</SelectItem>
-                      <SelectItem value="price-low">Price: Low to High</SelectItem>
-                      <SelectItem value="price-high">Price: High to Low</SelectItem>
-                      <SelectItem value="delivery">Fastest Delivery</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Price Range */}
-                <div>
-                  <label className="block text-xs font-medium mb-1">Price Range</label>
-                  <div className="px-1 py-1 border border-border rounded bg-background">
-                    <Slider
-                      value={priceRange}
-                      onValueChange={setPriceRange}
-                      max={10000}
-                      step={50}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>${priceRange[0]}</span>
-                      <span>${priceRange[1]}</span>
+                {/* Results Count */}
+                {!loading && filteredAndSortedProjects !== undefined && (
+                  <div className="pt-4 border-t border-border/30">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Results</span>
+                      <span className="text-lg font-bold text-primary">
+                        {filteredAndSortedProjects.length}
+                      </span>
                     </div>
                   </div>
-                </div>
-              </div>
+                )}
+              </CardContent>
             </Card>
           </div>
 
           {/* Results Section */}
-          <div className="flex-1 min-w-0 order-1 lg:order-2">
+          <div className="flex-1 min-w-0 order-1 lg:order-2 lg:pl-4">
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
             initial="hidden"
