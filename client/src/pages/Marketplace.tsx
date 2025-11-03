@@ -242,12 +242,19 @@ export default function ExploreTalent() {
   const slugify = (str: string) => str.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "and");
 
   // Client-side filtering and sorting - search is instant, no API call needed
-  const filteredProjects = useMemo(() => {
+  const filteredAndSortedProjects = useMemo(() => {
     if (!projects || projects.length === 0) {
       return [];
     }
     
     const searchTerm = search?.trim().toLowerCase() || '';
+    
+    console.log('🔍 Filtering projects...', {
+      totalProjects: projects.length,
+      searchTerm: searchTerm || '(none)',
+      category,
+      priceRange
+    });
     
     const filtered = projects.filter((project) => {
       // Price filter
@@ -279,30 +286,32 @@ export default function ExploreTalent() {
       return priceMatch && categoryMatch && searchMatch;
     });
     
-    console.log(`🔍 Search "${search || '(none)'}": ${filtered.length} results from ${projects.length} projects`);
-    return filtered;
-  }, [projects, search, category, priceRange]);
-
-  const sortedProjects = filteredProjects?.sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return (a.budget || 0) - (b.budget || 0);
-      case "price-high":
-        return (b.budget || 0) - (a.budget || 0);
-      case "rating":
-        return (b.rating || 0) - (a.rating || 0);
-      case "delivery":
-        // Mock delivery time based on budget
-        const aDelivery = Math.max(1, Math.floor((a.budget || 0) / 200));
-        const bDelivery = Math.max(1, Math.floor((b.budget || 0) / 200));
-        return aDelivery - bDelivery;
-      default:
-        // newest - handle undefined created_at
-        const aTime = a.created_at && typeof a.created_at === 'string' ? new Date(a.created_at).getTime() : 0;
-        const bTime = b.created_at && typeof b.created_at === 'string' ? new Date(b.created_at).getTime() : 0;
-        return bTime - aTime;
-    }
-  });
+    console.log(`✅ Filtered ${filtered.length} projects from ${projects.length} total`);
+    
+    // Sort the filtered results
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "price-low":
+          return (a.budget || 0) - (b.budget || 0);
+        case "price-high":
+          return (b.budget || 0) - (a.budget || 0);
+        case "rating":
+          return (b.rating || 0) - (a.rating || 0);
+        case "delivery":
+          // Mock delivery time based on budget
+          const aDelivery = Math.max(1, Math.floor((a.budget || 0) / 200));
+          const bDelivery = Math.max(1, Math.floor((b.budget || 0) / 200));
+          return aDelivery - bDelivery;
+        default:
+          // newest - handle undefined created_at
+          const aTime = a.created_at && typeof a.created_at === 'string' ? new Date(a.created_at).getTime() : 0;
+          const bTime = b.created_at && typeof b.created_at === 'string' ? new Date(b.created_at).getTime() : 0;
+          return bTime - aTime;
+      }
+    });
+    
+    return sorted;
+  }, [projects, search, category, priceRange, sortBy]); // Added sortBy to dependencies
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -350,9 +359,9 @@ export default function ExploreTalent() {
               </Button>
             </div>
           )}
-          {!loading && sortedProjects && (
+          {!loading && filteredAndSortedProjects !== undefined && (
             <p className="text-sm text-muted-foreground">
-              Showing {sortedProjects.length} {sortedProjects.length === 1 ? 'result' : 'results'}
+              Showing {filteredAndSortedProjects.length} {filteredAndSortedProjects.length === 1 ? 'result' : 'results'}
               {search && ` for "${search}"`}
             </p>
           )}
@@ -381,9 +390,9 @@ export default function ExploreTalent() {
                       value={search}
                       onChange={(e) => {
                         const value = e.target.value;
-                        console.log('🔤 Search input onChange:', value);
+                        console.log('🔤 Search input onChange - Setting search to:', value);
                         setSearch(value);
-                        // Note: fetchData will be called by useEffect after debounce
+                        // Search state change will trigger useMemo to re-filter instantly
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -478,7 +487,7 @@ export default function ExploreTalent() {
             animate="visible"
             variants={containerVariants}
           >
-            {sortedProjects?.length === 0 ? (
+            {filteredAndSortedProjects?.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="h-8 w-8 text-muted-foreground" />
@@ -504,7 +513,7 @@ export default function ExploreTalent() {
                 </motion.div>
               ))
             ) : (
-              sortedProjects?.map((project) => (
+              filteredAndSortedProjects?.map((project) => (
                 <motion.div key={project.id} variants={itemVariants} className="h-full flex">
                   <ProjectCard project={project} />
                 </motion.div>
