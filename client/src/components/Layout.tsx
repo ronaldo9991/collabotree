@@ -45,7 +45,7 @@ export function Layout({ children }: LayoutProps) {
       <nav className="fixed top-0 left-0 right-0 z-50 pt-4 px-4">
         <div className="container-unified">
           {/* Pill-shaped Navigation Container */}
-          <div className="flex items-center justify-between h-14 px-6 rounded-full border-2 border-primary/40 dark:border-primary/60 bg-card/95 dark:bg-card/90 backdrop-blur-xl shadow-lg shadow-primary/5 dark:shadow-primary/10">
+          <div className="flex items-center justify-between h-14 px-6 rounded-full border-2 border-primary/40 dark:border-primary/60 bg-card/95 dark:bg-card/90 backdrop-blur-md shadow-lg shadow-primary/5 dark:shadow-primary/10">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
               <div className="w-7 h-7 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center flex-shrink-0">
@@ -55,7 +55,7 @@ export function Layout({ children }: LayoutProps) {
             </Link>
 
             {/* Center Navigation - Desktop */}
-            <div className="hidden lg:flex items-center gap-2 mx-auto">
+            <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
               {navigation.map((item) => {
                 const isActive = location === item.href || 
                   (item.href !== "/" && location.startsWith(item.href));
@@ -64,7 +64,7 @@ export function Layout({ children }: LayoutProps) {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`text-sm font-medium transition-all px-4 py-1.5 rounded-full ${
+                    className={`text-sm font-medium transition-all px-4 py-1.5 rounded-full whitespace-nowrap ${
                       isActive
                         ? "text-foreground border-2 border-primary/50 dark:border-primary/70 bg-card dark:bg-card/80"
                         : "text-foreground/70 hover:text-foreground hover:bg-muted/30"
