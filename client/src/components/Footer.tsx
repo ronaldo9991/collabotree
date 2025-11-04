@@ -34,7 +34,7 @@ export function Footer() {
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-grid-small-white/[0.02] dark:bg-grid-small-white/[0.02]" />
       
-      {/* Footer container - matches navbar padding for consistent alignment */}
+      {/* Footer container - perfectly aligned with navbar padding using container-unified */}
       <div className="relative container-unified">
         {/* Main Footer Content */}
         <div className="py-16">
