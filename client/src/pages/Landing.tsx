@@ -491,16 +491,38 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          {/* Carousel Content */}
-          <div>
+          {/* Carousel with Navigation */}
+          <div className="flex items-center gap-6">
+            {/* Previous Arrow */}
+            <Button
+              onClick={prevSlide}
+              variant="outline"
+              size="icon"
+              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              data-testid="carousel-prev-button"
+            >
+              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+            </Button>
 
-              {/* Carousel Container */}
-              <motion.div 
-                className="w-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
+            {/* Carousel Content */}
+            <motion.div 
+              className="flex-1 w-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipeThreshold = 50;
+                const velocityThreshold = 500;
+                if (offset.x > swipeThreshold || velocity.x > velocityThreshold) {
+                  prevSlide();
+                } else if (offset.x < -swipeThreshold || velocity.x < -velocityThreshold) {
+                  nextSlide();
+                }
+              }}
+            >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
                 {topSelectionProjects.length === 0 ? (
                   <div className="col-span-full text-center py-12">
@@ -605,6 +627,17 @@ export default function Landing() {
                 )}
               </div>
             </motion.div>
+
+            {/* Next Arrow */}
+            <Button
+              onClick={nextSlide}
+              variant="outline"
+              size="icon"
+              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              data-testid="carousel-next-button"
+            >
+              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+            </Button>
           </div>
 
           {/* View All Projects Button */}
@@ -648,7 +681,35 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          {/* Projects Grid */}
+          {/* Carousel with Navigation */}
+          <div className="flex items-center gap-6">
+            {/* Previous Arrow */}
+            <Button
+              onClick={prevNewProjectSlide}
+              variant="outline"
+              size="icon"
+              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              data-testid="new-projects-prev-button"
+            >
+              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+            </Button>
+
+            {/* Projects Grid */}
+            <motion.div
+              className="flex-1 w-full"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipeThreshold = 50;
+                const velocityThreshold = 500;
+                if (offset.x > swipeThreshold || velocity.x > velocityThreshold) {
+                  prevNewProjectSlide();
+                } else if (offset.x < -swipeThreshold || velocity.x < -velocityThreshold) {
+                  nextNewProjectSlide();
+                }
+              }}
+            >
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
                   {[...Array(3)].map((_, index) => (
@@ -767,6 +828,19 @@ export default function Landing() {
                 ))}
                 </div>
               )}
+            </motion.div>
+
+            {/* Next Arrow */}
+            <Button
+              onClick={nextNewProjectSlide}
+              variant="outline"
+              size="icon"
+              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              data-testid="new-projects-next-button"
+            >
+              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+            </Button>
+          </div>
         </div>
       </section>
 
