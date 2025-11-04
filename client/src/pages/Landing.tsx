@@ -549,8 +549,8 @@ export default function Landing() {
                   className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] overflow-hidden flex flex-col group border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80"
                   aria-label={project.title}
                 >
-                  {/* Project Image with Gradient Overlay */}
-                  <div className="relative h-48 overflow-hidden rounded-t-2xl">
+                  {/* Project Image with Gradient Overlay - 40-45% of card height */}
+                  <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden rounded-t-2xl">
                     <img 
                       src={project.image} 
                       alt={project.title}
@@ -559,12 +559,12 @@ export default function Landing() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
-                  <CardContent className="p-4 md:p-5 xl:p-6 flex-1 flex flex-col">
+                  <CardContent className="p-5 md:p-6 flex-1 flex flex-col">
                     {/* Title */}
-                    <h3 className="font-bold text-lg line-clamp-2 mb-3">{project.title}</h3>
+                    <h3 className="font-bold text-xl md:text-xl line-clamp-2 mb-3">{project.title}</h3>
                     
                     {/* Description - Fixed height for consistency */}
-                    <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-3 flex-1">
+                    <p className="text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed mb-4 flex-1">
                       {project.description}
                     </p>
                     
@@ -607,7 +607,7 @@ export default function Landing() {
                     
                     {/* Bottom price bar - Always at bottom */}
                     <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                      <span className="text-lg font-semibold">{project.price}</span>
+                      <span className="text-xl font-semibold">{project.price}</span>
                       <Button 
                         variant="outline" 
                         size="sm"
