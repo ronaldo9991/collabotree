@@ -605,7 +605,6 @@ export default function Landing() {
                 )}
               </div>
             </motion.div>
-            </div>
           </div>
 
           {/* View All Projects Button */}
