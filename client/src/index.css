@@ -375,9 +375,12 @@
 
 @layer components {
   /* Unified Container System - Based on Navbar Baseline */
+  /* Navbar structure: wrapper (px-6/8/10) + pill (px-6) = content starts at px-12/14/16 */
+  /* All page sections align with navbar content start position */
   .container-unified {
     @apply max-w-[95%] xl:max-w-[1600px] mx-auto;
-    @apply px-6 md:px-10 xl:px-24;
+    /* Padding matches navbar content area: wrapper padding + pill padding */
+    @apply px-12 md:px-14 xl:px-16;
   }
 
   /* Section Spacing System */

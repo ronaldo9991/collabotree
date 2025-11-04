@@ -69,7 +69,7 @@ export default function About() {
       <section ref={heroRef} className="section-padding-y bg-gradient-to-br from-background via-background to-muted/20 relative">
         <motion.div style={{ y, opacity }} className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
         
-        <div className="container-unified text-center relative z-10 max-w-6xl">
+        <div className="container-unified text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
