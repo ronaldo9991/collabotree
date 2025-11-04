@@ -648,8 +648,7 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          {/* Carousel Content */}
-          <div>
+          {/* Projects Grid */}
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
                   {[...Array(3)].map((_, index) => (
@@ -768,8 +767,6 @@ export default function Landing() {
                 ))}
                 </div>
               )}
-            </div>
-          </div>
         </div>
       </section>
 
