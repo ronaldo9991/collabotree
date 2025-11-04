@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +38,11 @@ export function Layout({ children }: LayoutProps) {
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location]);
 
   return (
     <div className="min-h-screen bg-background">
