@@ -498,15 +498,15 @@ export default function Landing() {
               onClick={prevSlide}
               variant="outline"
               size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              className="flex-shrink-0 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-lg rounded-full w-14 h-14 group"
               data-testid="carousel-prev-button"
             >
-              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+              <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
             </Button>
 
             {/* Carousel Content */}
             <motion.div 
-              className="flex-1 w-full"
+              className="w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
@@ -523,7 +523,7 @@ export default function Landing() {
                 }
               }}
             >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
                 {topSelectionProjects.length === 0 ? (
                   <div className="col-span-full text-center py-12">
                     <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -633,10 +633,10 @@ export default function Landing() {
               onClick={nextSlide}
               variant="outline"
               size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              className="flex-shrink-0 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-lg rounded-full w-14 h-14 group"
               data-testid="carousel-next-button"
             >
-              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+              <ChevronRight className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
             </Button>
           </div>
 
@@ -688,15 +688,15 @@ export default function Landing() {
               onClick={prevNewProjectSlide}
               variant="outline"
               size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              className="flex-shrink-0 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-lg rounded-full w-14 h-14 group"
               data-testid="new-projects-prev-button"
             >
-              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+              <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
             </Button>
 
             {/* Projects Grid */}
             <motion.div
-              className="flex-1 w-full"
+              className="w-full"
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
@@ -835,10 +835,10 @@ export default function Landing() {
               onClick={nextNewProjectSlide}
               variant="outline"
               size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
+              className="flex-shrink-0 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-lg rounded-full w-14 h-14 group"
               data-testid="new-projects-next-button"
             >
-              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
+              <ChevronRight className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
             </Button>
           </div>
         </div>
