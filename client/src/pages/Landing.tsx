@@ -474,6 +474,207 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* About CollaboTree Section - Detailed Features */}
+      <section className="section-padding-y bg-gradient-to-b from-background via-muted/5 to-background">
+        <div className="container-unified">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-2">
+              <Sparkles className="w-4 h-4 mr-2" />
+              About CollaboTree
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              The Platform That Connects Talent with Opportunity
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              CollaboTree is the premier marketplace connecting verified university students with buyers seeking quality services. 
+              We bridge the gap between academic excellence and real-world professional experience.
+            </p>
+          </motion.div>
+
+          {/* Key Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/30">
+                <CardContent className="p-6">
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <UserCheck className="w-7 h-7 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">University-Verified Students</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Every student on our platform is verified through their university credentials. We ensure authentic talent 
+                    with verified academic backgrounds and skills.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/30">
+                <CardContent className="p-6">
+                  <div className="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center mb-4 group-hover:bg-secondary/20 transition-colors">
+                    <Shield className="w-7 h-7 text-secondary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">Secure & Protected Transactions</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Our escrow system protects both buyers and sellers. Payments are held securely until work is completed 
+                    and approved, ensuring satisfaction for everyone.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/30">
+                <CardContent className="p-6">
+                  <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+                    <MessageCircle className="w-7 h-7 text-accent" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">Real-Time Collaboration</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Communicate directly with students through our integrated messaging system. Track progress, share feedback, 
+                    and collaborate seamlessly throughout the project.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/30">
+                <CardContent className="p-6">
+                  <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
+                    <Star className="w-7 h-7 text-green-500" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">Quality Assurance</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Every project goes through our quality review process. Students provide detailed portfolios and work samples, 
+                    ensuring you get professional-grade results.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/30">
+                <CardContent className="p-6">
+                  <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
+                    <Zap className="w-7 h-7 text-blue-500" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">Fast & Efficient Delivery</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Students work with clear deadlines and milestones. Get your projects delivered on time with regular updates 
+                    and progress tracking throughout the process.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+              className="group"
+            >
+              <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/30">
+                <CardContent className="p-6">
+                  <div className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
+                    <TrendingUp className="w-7 h-7 text-purple-500" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">Competitive Pricing</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Get professional services at student-friendly rates. Access top university talent without the premium prices 
+                    of traditional agencies.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* How It Works Summary */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl p-8 md:p-12 border border-primary/20"
+          >
+            <div className="text-center mb-8">
+              <h3 className="text-2xl md:text-3xl font-bold mb-4">How CollaboTree Works</h3>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Simple, secure, and efficient - get started in minutes
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-primary">1</span>
+                </div>
+                <h4 className="font-bold text-lg mb-2">Browse & Select</h4>
+                <p className="text-muted-foreground text-sm">
+                  Explore verified student services, view portfolios, and read reviews to find the perfect match for your project.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-secondary">2</span>
+                </div>
+                <h4 className="font-bold text-lg mb-2">Connect & Collaborate</h4>
+                <p className="text-muted-foreground text-sm">
+                  Message directly with the student, discuss requirements, set milestones, and track progress in real-time.
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-accent">3</span>
+                </div>
+                <h4 className="font-bold text-lg mb-2">Review & Pay</h4>
+                <p className="text-muted-foreground text-sm">
+                  Review completed work, request revisions if needed, and release payment only when you're completely satisfied.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Top Selection Section */}
       <section className="section-padding-y bg-background">
