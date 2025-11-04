@@ -34,7 +34,7 @@ export function Footer() {
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-grid-small-white/[0.02] dark:bg-grid-small-white/[0.02]" />
       
-      <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div className="relative container-unified">
         {/* Main Footer Content */}
         <div className="py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8">

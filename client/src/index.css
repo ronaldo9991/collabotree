@@ -376,8 +376,8 @@
 @layer components {
   /* Unified Container System - Based on Navbar Baseline */
   .container-unified {
-    @apply max-w-7xl mx-auto;
-    @apply px-6 md:px-10 xl:px-20;
+    @apply max-w-[95%] xl:max-w-[1600px] mx-auto;
+    @apply px-6 md:px-10 xl:px-24;
   }
 
   /* Section Spacing System */

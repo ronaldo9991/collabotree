@@ -248,8 +248,8 @@ export default function Landing() {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 container-unified w-full pb-16 md:pb-20 px-4 sm:px-6">
-          <div className="max-w-7xl mx-auto">
+        <div className="relative z-10 container-unified w-full pb-16 md:pb-20">
+          <div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               
               {/* Left Content - Hero Text */}
