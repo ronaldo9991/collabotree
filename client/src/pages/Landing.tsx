@@ -475,492 +475,298 @@ export default function Landing() {
       </section>
 
       {/* About CollaboTree Section - Detailed Features */}
-      <section className="section-padding-y bg-gradient-to-b from-background via-muted/5 to-background">
-        <div className="container-unified">
+      <section className="section-padding-y bg-gradient-to-b from-background via-muted/5 to-background relative overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+        </div>
+        
+        <div className="container-unified relative z-10">
           <motion.div
-            className="text-center mb-16 relative"
-            initial={{ opacity: 0, y: 30, rotateX: -10 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 0.8 }}
+            className="text-center mb-20"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
           >
-            {/* 3D Floating Badge */}
             <motion.div
-              whileHover={{ 
-                y: -5,
-                rotateY: 10,
-                scale: 1.05,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d', display: 'inline-block' }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="inline-block mb-6"
             >
-              <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-2 relative backdrop-blur-sm" style={{ transform: 'translateZ(20px)' }}>
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  style={{ display: 'inline-block', transformStyle: 'preserve-3d' }}
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                </motion.div>
+              <Badge className="bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 text-primary border-primary/20 px-5 py-2.5 text-sm font-semibold shadow-sm">
+                <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
                 About CollaboTree
-                <motion.div 
-                  className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100"
-                  animate={{ scale: [1, 1.2, 1], opacity: [0, 0.3, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  style={{ transform: 'translateZ(-10px)' }}
-                />
               </Badge>
             </motion.div>
             
-            {/* 3D Title with Gradient */}
             <motion.h2 
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent relative"
-              whileHover={{ 
-                scale: 1.02,
-                rotateY: 5,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d', transform: 'translateZ(30px)' }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              viewport={{ once: true }}
             >
-              <motion.span
-                className="block"
-                animate={{ 
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                }}
-                transition={{ duration: 5, repeat: Infinity }}
-              >
-                The Platform That Connects Talent with Opportunity
-              </motion.span>
+              The Platform That Connects<br className="hidden sm:block" /> Talent with Opportunity
             </motion.h2>
             
-            {/* 3D Description */}
             <motion.p 
-              className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed relative"
-              style={{ transform: 'translateZ(20px)' }}
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.2 }}
+              className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
             >
               CollaboTree is the premier marketplace connecting verified university students with buyers seeking quality services. 
               We bridge the gap between academic excellence and real-world professional experience.
             </motion.p>
-            
-            {/* Animated Background Orbs */}
-            <motion.div 
-              className="absolute top-1/2 left-1/4 w-32 h-32 bg-primary/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"
-              animate={{ 
-                x: ['0%', '20%', '0%'],
-                y: ['0%', '-20%', '0%'],
-                scale: [1, 1.3, 1],
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              style={{ transform: 'translateZ(-100px)' }}
-            />
-            <motion.div 
-              className="absolute top-1/2 right-1/4 w-40 h-40 bg-secondary/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"
-              animate={{ 
-                x: ['0%', '-20%', '0%'],
-                y: ['0%', '20%', '0%'],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-              style={{ transform: 'translateZ(-100px)' }}
-            />
           </motion.div>
 
-          {/* Key Features Grid - 3D Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" style={{ perspective: '1000px' }}>
+          {/* Key Features Grid - Modern Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             <motion.div
-              initial={{ opacity: 0, y: 30, rotateX: -15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
               viewport={{ once: true }}
               className="group"
-              whileHover={{ 
-                y: -10,
-                rotateY: 5,
-                rotateX: 5,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d' }}
             >
-              <Card className="h-full hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 backdrop-blur-sm" style={{ transformStyle: 'preserve-3d' }}>
-                <CardContent className="p-6 relative" style={{ transform: 'translateZ(20px)' }}>
-                  <motion.div 
-                    className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors"
-                    whileHover={{ rotateY: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <UserCheck className="w-7 h-7 text-primary" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-3">University-Verified Students</h3>
-                  <p className="text-muted-foreground leading-relaxed">
+              <Card className="h-full border-2 border-border/50 hover:border-primary/40 bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-8">
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-primary/10">
+                      <UserCheck className="w-8 h-8 text-primary" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary/30 rounded-full blur-sm group-hover:bg-primary/50 transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">University-Verified Students</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     Every student on our platform is verified through their university credentials. We ensure authentic talent 
                     with verified academic backgrounds and skills.
                   </p>
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ transform: 'translateZ(-10px)' }}
-                  />
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30, rotateX: -15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: true }}
               className="group"
-              whileHover={{ 
-                y: -10,
-                rotateY: -5,
-                rotateX: 5,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d' }}
             >
-              <Card className="h-full hover:shadow-2xl transition-all duration-300 border-2 hover:border-secondary/30 bg-gradient-to-br from-card to-card/95 backdrop-blur-sm" style={{ transformStyle: 'preserve-3d' }}>
-                <CardContent className="p-6 relative" style={{ transform: 'translateZ(20px)' }}>
-                  <motion.div 
-                    className="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center mb-4 group-hover:bg-secondary/20 transition-colors"
-                    whileHover={{ rotateY: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <Shield className="w-7 h-7 text-secondary" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-3">Secure & Protected Transactions</h3>
-                  <p className="text-muted-foreground leading-relaxed">
+              <Card className="h-full border-2 border-border/50 hover:border-secondary/40 bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-8">
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-secondary/10">
+                      <Shield className="w-8 h-8 text-secondary" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary/30 rounded-full blur-sm group-hover:bg-secondary/50 transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-secondary transition-colors">Secure & Protected Transactions</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     Our escrow system protects both buyers and sellers. Payments are held securely until work is completed 
                     and approved, ensuring satisfaction for everyone.
                   </p>
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ transform: 'translateZ(-10px)' }}
-                  />
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30, rotateX: -15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
               className="group"
-              whileHover={{ 
-                y: -10,
-                rotateY: 5,
-                rotateX: -5,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d' }}
             >
-              <Card className="h-full hover:shadow-2xl transition-all duration-300 border-2 hover:border-accent/30 bg-gradient-to-br from-card to-card/95 backdrop-blur-sm" style={{ transformStyle: 'preserve-3d' }}>
-                <CardContent className="p-6 relative" style={{ transform: 'translateZ(20px)' }}>
-                  <motion.div 
-                    className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors"
-                    whileHover={{ rotateY: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <MessageCircle className="w-7 h-7 text-accent" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-3">Real-Time Collaboration</h3>
-                  <p className="text-muted-foreground leading-relaxed">
+              <Card className="h-full border-2 border-border/50 hover:border-accent/40 bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-8">
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-accent/10">
+                      <MessageCircle className="w-8 h-8 text-accent" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-accent/30 rounded-full blur-sm group-hover:bg-accent/50 transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-accent transition-colors">Real-Time Collaboration</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     Communicate directly with students through our integrated messaging system. Track progress, share feedback, 
                     and collaborate seamlessly throughout the project.
                   </p>
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ transform: 'translateZ(-10px)' }}
-                  />
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30, rotateX: -15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               viewport={{ once: true }}
               className="group"
-              whileHover={{ 
-                y: -10,
-                rotateY: -5,
-                rotateX: -5,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d' }}
             >
-              <Card className="h-full hover:shadow-2xl transition-all duration-300 border-2 hover:border-green-500/30 bg-gradient-to-br from-card to-card/95 backdrop-blur-sm" style={{ transformStyle: 'preserve-3d' }}>
-                <CardContent className="p-6 relative" style={{ transform: 'translateZ(20px)' }}>
-                  <motion.div 
-                    className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors"
-                    whileHover={{ rotateY: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <Star className="w-7 h-7 text-green-500" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-3">Quality Assurance</h3>
-                  <p className="text-muted-foreground leading-relaxed">
+              <Card className="h-full border-2 border-border/50 hover:border-green-500/40 bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-8">
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-green-500/10">
+                      <Star className="w-8 h-8 text-green-500" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500/30 rounded-full blur-sm group-hover:bg-green-500/50 transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-green-500 transition-colors">Quality Assurance</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     Every project goes through our quality review process. Students provide detailed portfolios and work samples, 
                     ensuring you get professional-grade results.
                   </p>
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ transform: 'translateZ(-10px)' }}
-                  />
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30, rotateX: -15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
               viewport={{ once: true }}
               className="group"
-              whileHover={{ 
-                y: -10,
-                rotateY: 5,
-                rotateX: 5,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d' }}
             >
-              <Card className="h-full hover:shadow-2xl transition-all duration-300 border-2 hover:border-blue-500/30 bg-gradient-to-br from-card to-card/95 backdrop-blur-sm" style={{ transformStyle: 'preserve-3d' }}>
-                <CardContent className="p-6 relative" style={{ transform: 'translateZ(20px)' }}>
-                  <motion.div 
-                    className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors"
-                    whileHover={{ rotateY: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <Zap className="w-7 h-7 text-blue-500" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-3">Fast & Efficient Delivery</h3>
-                  <p className="text-muted-foreground leading-relaxed">
+              <Card className="h-full border-2 border-border/50 hover:border-blue-500/40 bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-8">
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-blue-500/10">
+                      <Zap className="w-8 h-8 text-blue-500" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500/30 rounded-full blur-sm group-hover:bg-blue-500/50 transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-blue-500 transition-colors">Fast & Efficient Delivery</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     Students work with clear deadlines and milestones. Get your projects delivered on time with regular updates 
                     and progress tracking throughout the process.
                   </p>
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ transform: 'translateZ(-10px)' }}
-                  />
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30, rotateX: -15 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
               viewport={{ once: true }}
               className="group"
-              whileHover={{ 
-                y: -10,
-                rotateY: -5,
-                rotateX: -5,
-                transition: { duration: 0.3 }
-              }}
-              style={{ transformStyle: 'preserve-3d' }}
             >
-              <Card className="h-full hover:shadow-2xl transition-all duration-300 border-2 hover:border-purple-500/30 bg-gradient-to-br from-card to-card/95 backdrop-blur-sm" style={{ transformStyle: 'preserve-3d' }}>
-                <CardContent className="p-6 relative" style={{ transform: 'translateZ(20px)' }}>
-                  <motion.div 
-                    className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors"
-                    whileHover={{ rotateY: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    style={{ transformStyle: 'preserve-3d' }}
-                  >
-                    <TrendingUp className="w-7 h-7 text-purple-500" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-3">Competitive Pricing</h3>
-                  <p className="text-muted-foreground leading-relaxed">
+              <Card className="h-full border-2 border-border/50 hover:border-purple-500/40 bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-8">
+                  <div className="relative mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/10">
+                      <TrendingUp className="w-8 h-8 text-purple-500" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500/30 rounded-full blur-sm group-hover:bg-purple-500/50 transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-purple-500 transition-colors">Competitive Pricing</h3>
+                  <p className="text-muted-foreground leading-relaxed text-sm">
                     Get professional services at student-friendly rates. Access top university talent without the premium prices 
                     of traditional agencies.
                   </p>
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ transform: 'translateZ(-10px)' }}
-                  />
                 </CardContent>
               </Card>
             </motion.div>
           </div>
 
-          {/* How It Works Summary - 3D Enhanced */}
+          {/* How It Works Summary - Modern Design */}
           <motion.div
-            initial={{ opacity: 0, y: 30, rotateX: -10 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="relative bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl p-8 md:p-12 border border-primary/20 overflow-hidden"
-            style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
-            whileHover={{ 
-              scale: 1.02,
-              rotateY: 2,
-              transition: { duration: 0.4 }
-            }}
+            className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 rounded-3xl p-8 md:p-12 border-2 border-primary/10 overflow-hidden"
           >
-            {/* 3D Background Effects */}
-            <motion.div 
-              className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl"
-              animate={{ 
-                rotate: [0, 360],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              style={{ transform: 'translateZ(-50px)' }}
-            />
-            <motion.div 
-              className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl"
-              animate={{ 
-                rotate: [360, 0],
-                scale: [1, 1.3, 1],
-              }}
-              transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-              style={{ transform: 'translateZ(-50px)' }}
-            />
+            {/* Decorative Background */}
+            <div className="absolute inset-0 bg-grid-small-white/[0.02] dark:bg-grid-small-white/[0.02]" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
             
-            <div className="relative text-center mb-8" style={{ transform: 'translateZ(30px)' }}>
+            <div className="relative z-10 text-center mb-12">
               <motion.h3 
-                className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
+                className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                viewport={{ once: true }}
               >
                 How CollaboTree Works
               </motion.h3>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+              <motion.p 
+                className="text-muted-foreground max-w-2xl mx-auto text-lg"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
                 Simple, secure, and efficient - get started in minutes
-              </p>
+              </motion.p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative" style={{ transform: 'translateZ(20px)' }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
               <motion.div 
                 className="text-center group"
-                initial={{ opacity: 0, y: 30, rotateY: -20 }}
-                whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
-                whileHover={{ 
-                  y: -15,
-                  rotateY: 10,
-                  rotateX: 5,
-                  scale: 1.05,
-                  transition: { duration: 0.3 }
-                }}
-                style={{ transformStyle: 'preserve-3d' }}
               >
-                <motion.div 
-                  className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4 relative"
-                  whileHover={{ rotateY: 360, rotateZ: 15, scale: 1.15 }}
-                  transition={{ duration: 0.6 }}
-                  style={{ transformStyle: 'preserve-3d' }}
-                >
-                  <motion.span 
-                    className="text-2xl font-bold text-primary relative z-10"
-                    style={{ transform: 'translateZ(10px)' }}
-                  >
-                    1
-                  </motion.span>
-                  <motion.div 
-                    className="absolute inset-0 bg-primary/30 rounded-full blur-xl"
-                    animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    style={{ transform: 'translateZ(-5px)' }}
-                  />
-                </motion.div>
-                <h4 className="font-bold text-lg mb-2">Browse & Select</h4>
-                <p className="text-muted-foreground text-sm">
+                <div className="relative inline-block mb-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-primary/20">
+                    <span className="text-3xl font-bold text-primary">1</span>
+                  </div>
+                  <div className="absolute -inset-2 bg-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-primary transition-colors">Browse & Select</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
                   Explore verified student services, view portfolios, and read reviews to find the perfect match for your project.
                 </p>
               </motion.div>
               
               <motion.div 
                 className="text-center group"
-                initial={{ opacity: 0, y: 30, rotateY: 0 }}
-                whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
                 viewport={{ once: true }}
-                whileHover={{ 
-                  y: -15,
-                  rotateY: -10,
-                  rotateX: 5,
-                  scale: 1.05,
-                  transition: { duration: 0.3 }
-                }}
-                style={{ transformStyle: 'preserve-3d' }}
               >
-                <motion.div 
-                  className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4 relative"
-                  whileHover={{ rotateY: 360, rotateZ: -15, scale: 1.15 }}
-                  transition={{ duration: 0.6 }}
-                  style={{ transformStyle: 'preserve-3d' }}
-                >
-                  <motion.span 
-                    className="text-2xl font-bold text-secondary relative z-10"
-                    style={{ transform: 'translateZ(10px)' }}
-                  >
-                    2
-                  </motion.span>
-                  <motion.div 
-                    className="absolute inset-0 bg-secondary/30 rounded-full blur-xl"
-                    animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-                    style={{ transform: 'translateZ(-5px)' }}
-                  />
-                </motion.div>
-                <h4 className="font-bold text-lg mb-2">Connect & Collaborate</h4>
-                <p className="text-muted-foreground text-sm">
+                <div className="relative inline-block mb-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center mx-auto shadow-lg shadow-secondary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-secondary/20">
+                    <span className="text-3xl font-bold text-secondary">2</span>
+                  </div>
+                  <div className="absolute -inset-2 bg-secondary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-secondary transition-colors">Connect & Collaborate</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
                   Message directly with the student, discuss requirements, set milestones, and track progress in real-time.
                 </p>
               </motion.div>
               
               <motion.div 
                 className="text-center group"
-                initial={{ opacity: 0, y: 30, rotateY: 20 }}
-                whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
                 viewport={{ once: true }}
-                whileHover={{ 
-                  y: -15,
-                  rotateY: 10,
-                  rotateX: 5,
-                  scale: 1.05,
-                  transition: { duration: 0.3 }
-                }}
-                style={{ transformStyle: 'preserve-3d' }}
               >
-                <motion.div 
-                  className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-4 relative"
-                  whileHover={{ rotateY: 360, rotateZ: 15, scale: 1.15 }}
-                  transition={{ duration: 0.6 }}
-                  style={{ transformStyle: 'preserve-3d' }}
-                >
-                  <motion.span 
-                    className="text-2xl font-bold text-accent relative z-10"
-                    style={{ transform: 'translateZ(10px)' }}
-                  >
-                    3
-                  </motion.span>
-                  <motion.div 
-                    className="absolute inset-0 bg-accent/30 rounded-full blur-xl"
-                    animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
-                    style={{ transform: 'translateZ(-5px)' }}
-                  />
-                </motion.div>
-                <h4 className="font-bold text-lg mb-2">Review & Pay</h4>
-                <p className="text-muted-foreground text-sm">
+                <div className="relative inline-block mb-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mx-auto shadow-lg shadow-accent/20 group-hover:scale-110 transition-transform duration-300 border-2 border-accent/20">
+                    <span className="text-3xl font-bold text-accent">3</span>
+                  </div>
+                  <div className="absolute -inset-2 bg-accent/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-accent transition-colors">Review & Pay</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
                   Review completed work, request revisions if needed, and release payment only when you're completely satisfied.
                 </p>
               </motion.div>
             </div>
+            
+            {/* Connecting Lines for Desktop */}
+            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 -translate-y-1/2 z-0" />
           </motion.div>
         </div>
       </section>
