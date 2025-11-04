@@ -491,21 +491,8 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          {/* Carousel with External Navigation */}
-          <div className="flex items-center gap-6">
-            {/* Previous Arrow - Outside Left */}
-            <Button
-              onClick={prevSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="carousel-prev-button"
-            >
-              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-            
-            {/* Carousel Content */}
-            <div className="flex-1">
+          {/* Carousel Content */}
+          <div>
 
               {/* Carousel Container */}
               <motion.div 
@@ -619,37 +606,6 @@ export default function Landing() {
               </div>
             </motion.div>
             </div>
-            
-            {/* Next Arrow - Outside Right */}
-            <Button
-              onClick={nextSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="carousel-next-button"
-            >
-              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-          </div>
-
-          {/* Carousel Indicators */}
-          <div className="flex justify-center items-center gap-3 mt-12">
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`relative h-3 rounded-full transition-all duration-500 hover:scale-125 ${
-                  index === currentSlide 
-                    ? 'w-10 bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/30' 
-                    : 'w-3 bg-muted-foreground/30 hover:bg-primary/40 hover:shadow-md'
-                }`}
-                data-testid={`carousel-indicator-${index}`}
-              >
-                {index === currentSlide && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" />
-                )}
-              </button>
-            ))}
           </div>
 
           {/* View All Projects Button */}
@@ -693,21 +649,8 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          {/* Carousel with External Navigation */}
-          <div className="flex items-center gap-6">
-            {/* Previous Arrow - Outside Left */}
-            <Button
-              onClick={prevNewProjectSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="new-projects-prev-button"
-            >
-              <ChevronLeft className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-            
-            {/* Carousel Content */}
-            <div className="flex-1">
+          {/* Carousel Content */}
+          <div>
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
                   {[...Array(3)].map((_, index) => (
@@ -827,33 +770,6 @@ export default function Landing() {
                 </div>
               )}
             </div>
-
-            {/* Next Arrow - Outside Right */}
-            <Button
-              onClick={nextNewProjectSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-background/95 backdrop-blur-lg border-border/40 hover:bg-primary/10 hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-2xl rounded-full w-14 h-14 group"
-              data-testid="new-projects-next-button"
-            >
-              <ChevronRight className="h-6 w-6 group-hover:text-primary transition-colors duration-300" />
-            </Button>
-          </div>
-
-          {/* Slide indicators */}
-          <div className="flex justify-center gap-2 mt-8">
-            {Array.from({ length: totalNewProjectSlides }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentNewProjectSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentNewProjectSlide
-                    ? 'bg-primary w-8'
-                    : 'bg-border/50 hover:bg-border'
-                }`}
-                data-testid={`new-projects-indicator-${index}`}
-              />
-            ))}
           </div>
         </div>
       </section>
