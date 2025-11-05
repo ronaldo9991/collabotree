@@ -78,30 +78,34 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
       const response = await api.getContract(contractId!);
       if (response.success) {
         const contractData = response.data;
-        setContract(contractData);
+        
+        // Extract orderId from various possible locations
+        let orderId = contractData.orderId;
+        
+        // If not directly on contract, try from hireRequest.orders
+        if (!orderId && contractData.hireRequest?.orders?.length > 0) {
+          orderId = contractData.hireRequest.orders[0].id;
+        }
+        
+        // If still not found, try fetching from hireRequest endpoint
+        if (!orderId && contractData.hireRequest?.id) {
+          try {
+            const hireRequestResponse = await api.getHireRequest(contractData.hireRequest.id);
+            if (hireRequestResponse.success && hireRequestResponse.data.orders?.length > 0) {
+              orderId = hireRequestResponse.data.orders[0].id;
+            }
+          } catch (error) {
+            console.error('Error fetching hireRequest for orderId:', error);
+          }
+        }
+        
+        // Set contract with orderId if found
+        const contractWithOrderId = orderId ? { ...contractData, orderId } : contractData;
+        setContract(contractWithOrderId);
         
         // For buyers, check if they need to review
-        if (contractData.status === 'COMPLETED' && user?.id === contractData.buyer?.id) {
-          // Try to get orderId from contract or fetch it
-          let orderId = contractData.orderId;
-          
-          if (!orderId && contractData.hireRequest?.id) {
-            // Try to get orderId from hireRequest
-            try {
-              const hireRequestResponse = await api.getHireRequest(contractData.hireRequest.id);
-              if (hireRequestResponse.success && hireRequestResponse.data.orders?.length > 0) {
-                orderId = hireRequestResponse.data.orders[0].id;
-                // Update contract with orderId
-                setContract({ ...contractData, orderId });
-              }
-            } catch (error) {
-              console.error('Error fetching hireRequest for orderId:', error);
-            }
-          }
-          
-          if (orderId) {
-            checkReviewStatus(orderId);
-          }
+        if (contractData.status === 'COMPLETED' && user?.id === contractData.buyer?.id && orderId) {
+          checkReviewStatus(orderId);
         }
       }
     } catch (error) {
@@ -268,32 +272,49 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
     try {
       setProcessing(true);
       
-      // Find the orderId from the contract
+      // Find the orderId from the contract - check multiple locations
       let orderId = contract.orderId;
       
-      if (!orderId) {
-        // Try to get orderId from contract's hireRequest
-        if (contract.hireRequest?.id) {
-          try {
-            const hireRequestResponse = await api.getHireRequest(contract.hireRequest.id);
-            if (hireRequestResponse.success && hireRequestResponse.data.orders?.length > 0) {
-              orderId = hireRequestResponse.data.orders[0].id;
-            }
-          } catch (error) {
-            console.error('Error fetching hireRequest for orderId:', error);
+      // If not directly on contract, try from hireRequest.orders
+      if (!orderId && (contract as any).hireRequest?.orders?.length > 0) {
+        orderId = (contract as any).hireRequest.orders[0].id;
+        // Update contract state with orderId
+        setContract({ ...contract, orderId });
+      }
+      
+      // If still not found, try fetching from hireRequest endpoint
+      if (!orderId && contract.hireRequest?.id) {
+        try {
+          const hireRequestResponse = await api.getHireRequest(contract.hireRequest.id);
+          if (hireRequestResponse.success && hireRequestResponse.data.orders?.length > 0) {
+            orderId = hireRequestResponse.data.orders[0].id;
+            // Update contract state with orderId
+            setContract({ ...contract, orderId });
           }
+        } catch (error) {
+          console.error('Error fetching hireRequest for orderId:', error);
         }
-        
-        // If still no orderId, try fetching contract again
-        if (!orderId && contract.id) {
-          try {
-            const contractResponse = await api.getContract(contract.id);
-            if (contractResponse.success && contractResponse.data.orderId) {
-              orderId = contractResponse.data.orderId;
+      }
+      
+      // If still no orderId, try fetching contract again to get latest data
+      if (!orderId && contract.id) {
+        try {
+          const contractResponse = await api.getContract(contract.id);
+          if (contractResponse.success) {
+            const contractData = contractResponse.data;
+            // Try direct orderId first
+            orderId = contractData.orderId;
+            // If not, try from hireRequest.orders
+            if (!orderId && contractData.hireRequest?.orders?.length > 0) {
+              orderId = contractData.hireRequest.orders[0].id;
             }
-          } catch (error) {
-            console.error('Error fetching contract for orderId:', error);
+            // Update contract state with orderId
+            if (orderId) {
+              setContract({ ...contractData, orderId });
+            }
           }
+        } catch (error) {
+          console.error('Error fetching contract for orderId:', error);
         }
       }
       
@@ -303,6 +324,7 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
           description: "Order ID not found. Cannot submit review. Please refresh the page.",
           variant: "destructive",
         });
+        setProcessing(false);
         return;
       }
 

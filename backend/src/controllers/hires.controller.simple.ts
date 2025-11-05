@@ -197,6 +197,15 @@ export const getHireRequest = async (req: AuthenticatedRequest, res: Response) =
             priceCents: true,
           },
         },
+        orders: {
+          select: {
+            id: true,
+            status: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
     });
 
