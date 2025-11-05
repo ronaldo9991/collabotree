@@ -85,7 +85,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-[#00B2FF]/20 shadow-2xl shadow-[#00B2FF]/10 rounded-2xl">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-[#00B2FF]/20 shadow-2xl shadow-[#00B2FF]/10 rounded-2xl [&>button]:hidden">
         <Command className="rounded-2xl">
           {/* Header with Search Bar and Close Button */}
           <div className="relative border-b border-[#00B2FF]/20 bg-gradient-to-r from-[#00B2FF]/10 via-[#0096C7]/5 to-[#00B2FF]/10">
