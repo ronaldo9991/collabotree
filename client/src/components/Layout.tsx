@@ -91,32 +91,32 @@ export function Layout({ children }: LayoutProps) {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-gradient-to-b from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 backdrop-blur-12 border-l border-primary/20 mobile-sheet-content">
+                <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-gradient-to-b from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 backdrop-blur-12 border-l border-primary/20 mobile-sheet-content p-0" hideCloseButton={true}>
                   <div className="flex flex-col h-full">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-primary/20">
+                    {/* Header with Prominent Close Button */}
+                    <div className="flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-primary/20">
                       <h2 className="text-xl font-bold text-foreground">Menu</h2>
-                      {/* Theme Toggle for Mobile */}
+                      {/* Close Button - Large, prominent, and easy to tap */}
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={toggleTheme}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-all border border-primary/20 mobile-theme-toggle"
-                        data-testid="mobile-theme-toggle"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="h-11 w-11 rounded-full bg-primary/15 hover:bg-primary/25 dark:bg-primary/25 dark:hover:bg-primary/35 border-2 border-primary/30 p-0 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-md hover:shadow-lg mobile-close-button min-w-[44px] min-h-[44px]"
+                        data-testid="mobile-menu-close"
                       >
-                        {theme === "light" ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-primary" />}
-                        <span className="text-sm font-medium">{theme === "light" ? "Dark" : "Light"}</span>
+                        <X className="h-6 w-6 text-primary font-bold" strokeWidth={2.5} />
+                        <span className="sr-only">Close</span>
                       </Button>
                     </div>
                     
                     {/* Navigation */}
-                    <nav className="flex flex-col gap-2 flex-1">
+                    <nav className="flex flex-col gap-2 flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6">
                       {navigation.map((item) => (
                         item.show && (
                           <Link
                             key={item.name}
                             href={item.href}
-                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item"
+                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item min-h-[44px]"
                             onClick={() => setMobileMenuOpen(false)}
                             data-testid={`mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                           >
@@ -126,25 +126,27 @@ export function Layout({ children }: LayoutProps) {
                         )
                       ))}
                       
-                      {/* Separator */}
-                      <div className="border-t border-primary/20 my-6" />
-                      
-                      {/* Demo Dashboards Section */}
-                      <div className="space-y-2">
-                        <div className="text-sm font-semibold text-primary/70 px-4 py-2 uppercase tracking-wide">Demo Dashboards</div>
-                        {dashboardNavigation.map((item) => (
-                          item.show && (
-                            <Link
-                              key={item.name}
-                              href={item.href}
-                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <item.icon className="h-5 w-5 flex-shrink-0 text-primary" />
-                              {item.name}
-                            </Link>
-                          )
-                        ))}
+                      {/* Theme Toggle - Moved to bottom, separate from close button */}
+                      <div className="mt-auto pt-6 border-t border-primary/20">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={toggleTheme}
+                          className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-all border-primary/20 shadow-sm hover:shadow-md mobile-theme-toggle min-h-[52px]"
+                          data-testid="mobile-theme-toggle"
+                        >
+                          {theme === "light" ? (
+                            <>
+                              <Moon className="h-5 w-5 text-primary" />
+                              <span className="text-base font-medium">Switch to Dark Mode</span>
+                            </>
+                          ) : (
+                            <>
+                              <Sun className="h-5 w-5 text-primary" />
+                              <span className="text-base font-medium">Switch to Light Mode</span>
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </nav>
                   </div>
