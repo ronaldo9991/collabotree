@@ -9,15 +9,31 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Footer } from "@/components/Footer";
 import { api } from "@/lib/api";
+import { Network, Moon, Sun, Menu, LogOut, Settings, User, X, Home, ShoppingCart } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/components/ThemeProvider";
 
 export default function Landing() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+  const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentNewProjectSlide, setCurrentNewProjectSlide] = useState(0);
   const [topSelectionProjects, setTopSelectionProjects] = useState<any[]>([]);
   const [newProjects, setNewProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const navigation = [
+    { name: "Home", href: "/", icon: Home, show: true },
+    { name: "About", href: "/about", icon: Users, show: true },
+    { name: "Explore Talent", href: "/marketplace", icon: ShoppingCart, show: true },
+    { name: "How it Works", href: "/how-it-works", icon: FileText, show: true },
+    { name: "Contact", href: "/contact", icon: MessageSquare, show: true },
+  ];
 
   // Fetch projects from backend
   const fetchProjects = async () => {
@@ -213,19 +229,15 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Asymmetric Grid Hero Section - Professional Design */}
-      <section className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] flex items-center overflow-hidden pt-16 sm:pt-20 md:pt-24">
-        {/* Minimal Gradient Background with Subtle Texture */}
+      {/* Enhanced Hero Section with Integrated Navbar */}
+      <section className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] flex flex-col overflow-hidden">
+        {/* Enhanced Gradient Background with Dynamic Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
-          {/* Subtle gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#4AC8FF]/20 via-transparent to-[#0096C7]/20"></div>
-          
-          {/* Minimal animated orbs */}
+          {/* Animated gradient overlay */}
           <motion.div
-            className="absolute top-20 right-10 w-64 h-64 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-20"
+            className="absolute inset-0 bg-gradient-to-tr from-[#4AC8FF]/30 via-transparent to-[#89CFF3]/25"
             animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.2, 0.25, 0.2],
+              opacity: [0.3, 0.5, 0.3],
             }}
             transition={{
               duration: 8,
@@ -233,53 +245,221 @@ export default function Landing() {
               ease: "easeInOut",
             }}
           />
+          
+          {/* Enhanced animated orbs - more dynamic */}
           <motion.div
-            className="absolute bottom-20 left-10 w-80 h-80 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-15"
+            className="absolute top-20 right-10 w-72 h-72 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-25"
             animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.15, 0.2, 0.15],
+              scale: [1, 1.2, 1],
+              x: [0, 30, 0],
+              y: [0, -20, 0],
+              opacity: [0.2, 0.3, 0.2],
             }}
             transition={{
               duration: 10,
               repeat: Infinity,
               ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 left-10 w-96 h-96 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-20"
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, -30, 0],
+              y: [0, 30, 0],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut",
               delay: 2,
             }}
           />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-80 h-80 bg-[#89CFF3] rounded-full mix-blend-multiply filter blur-3xl opacity-15"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{
+              duration: 14,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 4,
+            }}
+          />
           
-          {/* Subtle texture pattern */}
-          <div className="absolute inset-0 bg-grid-white/[0.015] bg-[size:80px_80px]"></div>
+          {/* Enhanced texture pattern */}
+          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]"></div>
           
           {/* Light overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/10 to-black/15"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/8 to-black/15"></div>
         </div>
 
-        {/* Subtle floating elements */}
+        {/* Enhanced floating particles - more dynamic */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(12)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 bg-white/30 rounded-full"
+              className="absolute w-1.5 h-1.5 bg-white/40 rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
               }}
               animate={{
-                y: [0, -30, 0],
-                opacity: [0.2, 0.4, 0.2],
+                y: [0, -40, 0],
+                opacity: [0.2, 0.6, 0.2],
+                scale: [1, 1.5, 1],
               }}
               transition={{
-                duration: 4 + Math.random() * 2,
+                duration: 5 + Math.random() * 3,
                 repeat: Infinity,
-                delay: Math.random() * 2,
+                delay: Math.random() * 3,
                 ease: "easeInOut",
               }}
             />
           ))}
         </div>
 
-        {/* Asymmetric Grid Layout */}
-        <div className="relative z-10 container-unified w-full py-8 sm:py-10 md:py-12">
+        {/* Integrated Navbar - Top Column Inside Hero */}
+        <nav className="relative z-50 w-full pt-6 sm:pt-8 pb-4">
+          <div className="container-unified">
+            {/* Glassmorphic Navigation Bar - Matches Hero Background */}
+            <motion.div
+              className="flex items-center justify-between h-14 sm:h-16 px-6 sm:px-8 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl shadow-[#00B2FF]/20"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              {/* Logo */}
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity group" data-testid="logo">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-white to-[#A0E9FF] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <Network className="h-4 w-4 sm:h-5 sm:w-5 text-[#00B2FF]" />
+                </div>
+                <span className="text-lg sm:text-xl font-bold text-white">CollaboTree</span>
+              </Link>
+
+              {/* Center Navigation - Desktop */}
+              <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+                {navigation.map((item) => {
+                  const isActive = location === item.href || 
+                    (item.href !== "/" && location.startsWith(item.href));
+                  
+                  return item.show && (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`text-sm font-semibold transition-all px-5 py-2 rounded-xl whitespace-nowrap ${
+                        isActive
+                          ? "text-white bg-white/20 backdrop-blur-sm shadow-lg border border-white/30"
+                          : "text-white/80 hover:text-white hover:bg-white/10 border border-transparent"
+                      }`}
+                      data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Right Side Actions */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Theme Toggle */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl text-white hover:bg-white/20 border border-white/20"
+                >
+                  {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                </Button>
+
+                {/* User Menu or Sign In */}
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-9 sm:h-10 px-3 rounded-xl text-white hover:bg-white/20 border border-white/20">
+                        <Avatar className="h-7 w-7 sm:h-8 sm:w-8 mr-2">
+                          <AvatarImage src="" alt={user.name} />
+                          <AvatarFallback className="bg-white/20 text-white text-xs">
+                            {user.name.split(' ').map((n: string) => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="hidden sm:inline text-sm font-medium">{user.name}</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard">Dashboard</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/settings">Settings</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => logout()}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button
+                    asChild
+                    className="bg-white text-[#00B2FF] hover:bg-white/90 h-9 sm:h-10 px-4 sm:px-6 font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
+                  >
+                    <Link href="/signin">Sign In</Link>
+                  </Button>
+                )}
+
+                {/* Mobile Menu */}
+                <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                  <SheetTrigger asChild className="lg:hidden">
+                    <Button variant="ghost" size="sm" className="h-9 w-9 rounded-xl text-white hover:bg-white/20 border border-white/20">
+                      <Menu className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[280px] bg-white/95 backdrop-blur-xl border-l border-white/20">
+                    <div className="flex flex-col h-full">
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-[#00B2FF]">Menu</h2>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="h-10 w-10 rounded-xl"
+                        >
+                          <X className="h-5 w-5" />
+                        </Button>
+                      </div>
+                      <nav className="flex flex-col gap-2">
+                        {navigation.map((item) => (
+                          item.show && (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className="flex items-center gap-3 p-4 rounded-xl hover:bg-[#00B2FF]/10 text-[#023E8A] hover:text-[#00B2FF] transition-all"
+                              onClick={() => setMobileMenuOpen(false)}
+                              data-testid={`mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <item.icon className="h-5 w-5" />
+                              {item.name}
+                            </Link>
+                          )
+                        ))}
+                      </nav>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            </motion.div>
+          </div>
+        </nav>
+
+        {/* Hero Content */}
+        <div className="relative z-10 flex-1 flex items-center container-unified w-full py-8 sm:py-10 md:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 items-start lg:items-center">
             
             {/* Top-Left: Large Headline */}
