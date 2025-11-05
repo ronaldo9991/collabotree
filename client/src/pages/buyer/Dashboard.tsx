@@ -427,11 +427,11 @@ export default function BuyerDashboard() {
                 animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div className="flex items-center justify-between mb-6 max-md:flex-col max-md:items-stretch max-md:gap-4">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold">My Projects</h2>
-                  <p className="text-sm sm:text-base text-muted-foreground">View and manage your accepted projects</p>
-                  <p className="text-xs text-muted-foreground mt-1 hidden sm:block">Debug: {userProjects.length} projects found</p>
+                  <h2 className="text-2xl font-bold max-md:text-xl">My Projects</h2>
+                  <p className="text-muted-foreground max-md:text-sm">View and manage your accepted projects</p>
+                  <p className="text-xs text-muted-foreground mt-1 max-md:hidden">Debug: {userProjects.length} projects found</p>
                 </div>
               </div>
 
@@ -455,25 +455,25 @@ export default function BuyerDashboard() {
                   <div className="space-y-4">
                   {userProjects.map((project) => (
                     <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                        <CardContent className="p-4 sm:p-6">
-                          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                            <div className="flex-1 w-full">
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                              <h3 className="text-base sm:text-lg font-semibold">{project.service?.title || 'Untitled Project'}</h3>
+                        <CardContent className="p-6 max-md:p-4">
+                          <div className="flex items-start justify-between max-md:flex-col max-md:gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-3 max-md:flex-col max-md:items-start max-md:gap-2">
+                              <h3 className="text-lg font-semibold max-md:text-base">{project.service?.title || 'Untitled Project'}</h3>
                               <Badge className={`${getStatusColor(project.status)} border text-xs`}>
                                   <span className="flex items-center gap-1">
                                   {getStatusIcon(project.status)}
-                                  <span className="hidden sm:inline">{project.status}</span>
-                                  <span className="sm:hidden">{project.status.substring(0, 6)}</span>
+                                  <span className="max-md:hidden">{project.status}</span>
+                                  <span className="md:hidden">{project.status.substring(0, 6)}</span>
                                   </span>
                                 </Badge>
                               </div>
                               
-                              <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2">
+                              <p className="text-muted-foreground mb-4 line-clamp-2 max-md:text-sm">
                               {project.service?.description || 'No description available'}
                               </p>
                               
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
+                              <div className="flex items-center gap-6 text-sm text-muted-foreground max-md:flex-col max-md:items-start max-md:gap-3 max-md:text-xs">
                                 <div className="flex items-center gap-2">
                                   <UserIcon className="h-4 w-4" />
                                 <span className="truncate">{project.student?.name || 'Unknown Student'}</span>
@@ -489,7 +489,7 @@ export default function BuyerDashboard() {
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
+                            <div className="flex items-center gap-2 ml-4 max-md:ml-0 max-md:w-full max-md:mt-2">
                             {(project.status === 'PENDING' || project.status === 'PAID' || project.status === 'IN_PROGRESS' || project.status === 'DELIVERED' || project.status === 'ACCEPTED') ? (
                                 <Button
                                   variant="default"
@@ -500,7 +500,7 @@ export default function BuyerDashboard() {
                                   console.log('🚀 Project data:', project);
                                   navigate(`/chat/${chatId}`);
                                 }}
-                                  className="gap-2 bg-primary hover:bg-primary/90 min-h-[44px] w-full sm:w-auto"
+                                  className="gap-2 bg-primary hover:bg-primary/90 max-md:min-h-[44px] max-md:w-full"
                                 >
                                   <MessageCircle className="h-4 w-4" />
                                   Chat
@@ -518,7 +518,7 @@ export default function BuyerDashboard() {
                   </div>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                    <CardContent className="p-6 sm:p-12 text-center">
+                    <CardContent className="p-12 text-center max-md:p-6">
                       <ShoppingCart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Projects Yet</h3>
                     <p className="text-muted-foreground mb-6">You haven't accepted any projects yet. Browse available services to get started!</p>
@@ -538,10 +538,10 @@ export default function BuyerDashboard() {
                 animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div className="flex items-center justify-between mb-6 max-md:flex-col max-md:items-stretch max-md:gap-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold">Messages</h2>
-                  <p className="text-sm sm:text-base text-muted-foreground">Chat with students about your projects</p>
+                    <h2 className="text-2xl font-bold max-md:text-xl">Messages</h2>
+                  <p className="text-muted-foreground max-md:text-sm">Chat with students about your projects</p>
                   </div>
                 </div>
 
@@ -597,7 +597,7 @@ export default function BuyerDashboard() {
                   </div>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                    <CardContent className="p-6 sm:p-12 text-center">
+                    <CardContent className="p-12 text-center max-md:p-6">
                       <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Active Chats</h3>
                     <p className="text-muted-foreground mb-4">You don't have any active chat conversations yet.</p>
@@ -626,7 +626,7 @@ export default function BuyerDashboard() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold">Browse Talent</h2>
+                    <h2 className="text-2xl font-bold max-md:text-xl">Browse Talent</h2>
                     <p className="text-muted-foreground">Find talented students for your projects</p>
                   </div>
                   <Button 
@@ -1016,7 +1016,7 @@ function BuyerContractsSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold">My Contracts</h2>
+          <h2 className="text-2xl font-bold max-md:text-xl">My Contracts</h2>
           <p className="text-muted-foreground">Review and sign contracts to start working with students</p>
         </div>
       </div>
