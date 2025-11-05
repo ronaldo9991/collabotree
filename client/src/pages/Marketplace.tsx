@@ -39,7 +39,14 @@ export default function ExploreTalent() {
   const { user } = useAuth();
   const [location] = useLocation();
   
-  const [search, setSearch] = useState("");
+  // Initialize search from URL on mount
+  const [search, setSearch] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams.get('search') || '';
+    }
+    return '';
+  });
   const [category, setCategory] = useState("all");
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [deliveryDays, setDeliveryDays] = useState("all");
@@ -179,25 +186,52 @@ export default function ExploreTalent() {
     }
   }, [category, priceRange, toast]); // Removed search from dependencies - filter client-side
 
-  // Initialize and sync search from URL
+  // Sync search from URL when location changes (e.g., browser back/forward)
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const searchQuery = searchParams.get('search') || '';
     
-    console.log('==== SEARCH SYNC ====');
+    console.log('==== SEARCH SYNC FROM URL ====');
     console.log('Window location:', window.location.href);
     console.log('URL search param:', searchQuery);
     console.log('Current state:', search);
-    console.log('Are they different?', searchQuery !== search);
     
-    // Always update if URL has search and it's different from current state
+    // Only update if URL has search and it's different from current state
     if (searchQuery !== search) {
       console.log('✅ UPDATING search state to:', searchQuery);
       setSearch(searchQuery);
     } else {
       console.log('⏭️ Skipping update - values match');
     }
-  }, [location, search]);
+  }, [location]); // Removed 'search' from dependencies to prevent infinite loops
+
+  // Update URL when search state changes (two-way sync)
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const currentSearch = searchParams.get('search') || '';
+    const trimmedSearch = search.trim();
+    
+    // Only update URL if search changed and is different from current URL
+    if (trimmedSearch !== currentSearch) {
+      console.log('==== UPDATING URL FROM SEARCH ====');
+      console.log('Current URL search:', currentSearch);
+      console.log('New search value:', trimmedSearch);
+      
+      if (trimmedSearch) {
+        searchParams.set('search', trimmedSearch);
+      } else {
+        searchParams.delete('search');
+      }
+      
+      // Update URL without page reload
+      const newUrl = searchParams.toString() 
+        ? `${window.location.pathname}?${searchParams.toString()}`
+        : window.location.pathname;
+      
+      window.history.replaceState({}, '', newUrl);
+      console.log('✅ Updated URL to:', newUrl);
+    }
+  }, [search]);
 
   // Fetch data when filters change (but NOT when search changes - search is client-side only)
   useEffect(() => {
@@ -255,7 +289,8 @@ export default function ExploreTalent() {
       totalProjects: projects.length,
       searchTerm: searchTerm || '(none)',
       category,
-      priceRange
+      priceRange,
+      deliveryDays
     });
     
     const filtered = projects.filter((project) => {
@@ -263,14 +298,31 @@ export default function ExploreTalent() {
       const price = project.budget || 0;
       const priceMatch = price >= priceRange[0] && price <= priceRange[1];
       
-      // Category filter
+      // Category filter - improved matching logic
       let categoryMatch = true;
       if (category && category !== 'all') {
         const categorySlug = category.toLowerCase();
-        categoryMatch = (project.tags?.some((tag: string) => 
-          tag.toLowerCase().replace(/\s+/g, '-') === categorySlug || 
-          tag.toLowerCase().includes(categorySlug.replace(/-/g, ' '))
-        ) ?? false);
+        categoryMatch = (project.tags?.some((tag: string) => {
+          const tagSlug = tag.toLowerCase().replace(/\s+/g, '-');
+          const tagLower = tag.toLowerCase();
+          const categoryLower = categorySlug.replace(/-/g, ' ');
+          
+          // Multiple matching strategies for better accuracy
+          return tagSlug === categorySlug || 
+                 tagLower.includes(categoryLower) ||
+                 categoryLower.includes(tagLower) ||
+                 tagSlug.includes(categorySlug) ||
+                 categorySlug.includes(tagSlug);
+        }) ?? false);
+      }
+      
+      // Delivery days filter
+      let deliveryMatch = true;
+      if (deliveryDays && deliveryDays !== 'all') {
+        const maxDays = parseInt(deliveryDays);
+        // Calculate estimated delivery based on budget (mock - replace with actual delivery time from API when available)
+        const estimatedDelivery = Math.max(1, Math.floor((project.budget || 0) / 200));
+        deliveryMatch = estimatedDelivery <= maxDays;
       }
       
       // Search filter - instant client-side filtering - search in multiple fields
@@ -299,7 +351,7 @@ export default function ExploreTalent() {
         searchMatch = titleMatch || descMatch || tagsMatch || creatorMatch || emailMatch;
       }
       
-      return priceMatch && categoryMatch && searchMatch;
+      return priceMatch && categoryMatch && searchMatch && deliveryMatch;
     });
     
     console.log(`✅ Filtered ${filtered.length} projects from ${projects.length} total`);
@@ -327,7 +379,7 @@ export default function ExploreTalent() {
     });
     
     return sorted;
-  }, [projects, search, category, priceRange, sortBy]); // Added sortBy to dependencies
+  }, [projects, search, category, priceRange, deliveryDays, sortBy]); // Added deliveryDays and sortBy to dependencies
 
   const containerVariants = {
     hidden: { opacity: 0 },
