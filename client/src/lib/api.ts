@@ -332,6 +332,19 @@ class ApiClient {
     return this.request(`/reviews/users/${userId}${queryString ? `?${queryString}` : ''}`);
   }
 
+  async getServiceReviews(serviceId: string, params?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = searchParams.toString();
+    return this.request(`/reviews/services/${serviceId}${queryString ? `?${queryString}` : ''}`);
+  }
+
   // Notifications endpoints
   async getNotifications(params?: Record<string, any>) {
     const searchParams = new URLSearchParams();

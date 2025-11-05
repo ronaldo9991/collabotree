@@ -14,6 +14,8 @@ export const signContractSchema = z.object({
 export const updateProgressSchema = z.object({
   progressStatus: z.string().min(1, 'Progress status is required'),
   progressNotes: z.string().optional(),
+  markAsCompleted: z.boolean().optional(), // Allow marking as complete while updating progress
+  completionNotes: z.string().optional(), // Completion notes if marking as complete
 });
 
 export const markCompletedSchema = z.object({

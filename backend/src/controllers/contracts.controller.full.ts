@@ -551,7 +551,108 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
       return sendError(res, 'Contract must be active to update progress', 400);
     }
 
-    // Update progress
+    // Check if marking as completed
+    if (validatedData.markAsCompleted) {
+      // Check if payment has been received
+      if (contract.paymentStatus !== 'PAID') {
+        return sendError(res, 'Payment must be received before marking as completed', 400);
+      }
+
+      // Mark as completed and credit student wallet
+      const updatedContract = await prisma.$transaction(async (tx) => {
+        // Update contract
+        const updated = await tx.contract.update({
+          where: { id: contractId },
+          data: {
+            status: 'COMPLETED',
+            progressStatus: 'COMPLETED',
+            progressNotes: validatedData.progressNotes,
+            completionNotes: validatedData.completionNotes,
+          },
+          include: {
+            buyer: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            student: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            hireRequest: {
+              include: {
+                service: {
+                  select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    priceCents: true,
+                  },
+                },
+                orders: {
+                  select: {
+                    id: true,
+                    status: true,
+                  },
+                  take: 1,
+                  orderBy: {
+                    createdAt: 'desc',
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Credit student wallet with their payout (after platform fee)
+        if (contract.studentId && contract.studentPayoutCents) {
+          await tx.walletEntry.create({
+            data: {
+              userId: contract.studentId,
+              amountCents: contract.studentPayoutCents,
+              reason: `Payment for completed contract: ${contract.hireRequest.service.title}`,
+            },
+          });
+        }
+
+        return updated;
+      });
+
+      // Find the related order for review
+      const order = updatedContract.hireRequest.orders?.[0];
+      let orderId = null;
+      
+      if (order) {
+        // Update order status to COMPLETED if not already
+        if (order.status !== 'COMPLETED') {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { status: 'COMPLETED' },
+          });
+        }
+        orderId = order.id;
+      }
+
+      // Create notification for buyer
+      if (contract.buyerId && contract.student?.name) {
+        await createNotification(
+          contract.buyerId,
+          'CONTRACT_COMPLETED',
+          'Contract Completed',
+          `${contract.student.name} has completed the contract for "${contract.hireRequest.service.title}". Please rate your experience.`
+        );
+      }
+
+      console.log('✅ Contract marked as completed via progress update:', contractId);
+      return sendSuccess(res, { ...updatedContract, orderId }, 'Contract marked as completed successfully');
+    }
+
+    // Regular progress update
     const updatedContract = await prisma.contract.update({
       where: { id: contractId },
       data: {
@@ -634,6 +735,16 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
                 title: true,
               },
             },
+            orders: {
+              select: {
+                id: true,
+                status: true,
+              },
+              take: 1,
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
           },
         },
       },
@@ -712,18 +823,33 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
       return updated;
     });
 
+    // Find the related order for review
+    const order = contract.hireRequest.orders?.[0];
+    let orderId = null;
+    
+    if (order) {
+      // Update order status to COMPLETED if not already
+      if (order.status !== 'COMPLETED') {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { status: 'COMPLETED' },
+        });
+      }
+      orderId = order.id;
+    }
+
     // Create notification for buyer
     if (contract.buyerId && contract.student?.name) {
       await createNotification(
         contract.buyerId,
         'CONTRACT_COMPLETED',
         'Contract Completed',
-        `${contract.student.name} has completed the contract for "${contract.hireRequest.service.title}"`
+        `${contract.student.name} has completed the contract for "${contract.hireRequest.service.title}". Please rate your experience.`
       );
     }
 
     console.log('✅ Contract marked as completed:', contractId);
-    return sendSuccess(res, updatedContract, 'Contract marked as completed successfully');
+    return sendSuccess(res, { ...updatedContract, orderId }, 'Contract marked as completed successfully');
   } catch (error) {
     console.error('❌ Error in markCompleted:', error);
     if (error instanceof z.ZodError) {

@@ -3,24 +3,46 @@ import { useRoute, Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, CheckCircle, DollarSign, Calendar, Loader2, Tag, TrendingUp, Users, Sparkles } from "lucide-react";
+import { Clock, CheckCircle, DollarSign, Calendar, Loader2, Tag, TrendingUp, Users, Sparkles, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { Footer } from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { ProjectWithDetails } from "@/types/projects";
 
+interface Review {
+  id: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+  reviewer: {
+    id: string;
+    name: string;
+  };
+  order: {
+    id: string;
+    service: {
+      title: string;
+    };
+  };
+}
+
 export default function ProjectDetail() {
   const [, params] = useRoute("/service/:id");
   const { toast } = useToast();
   const [project, setProject] = useState<ProjectWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
 
   const projectId = params?.id;
 
   useEffect(() => {
     if (projectId) {
       fetchProject();
+      fetchReviews();
     }
   }, [projectId]);
 
@@ -40,6 +62,26 @@ export default function ProjectDetail() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchReviews = async () => {
+    if (!projectId) return;
+
+    try {
+      setReviewsLoading(true);
+      const response = await api.getServiceReviews(projectId, { limit: 10 });
+      if (response.success) {
+        setReviews(response.data?.data || response.data || []);
+        setAverageRating(response.data?.averageRating || 0);
+        setTotalReviews(response.data?.totalReviews || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      // Don't show error toast for reviews, just set empty array
+      setReviews([]);
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -235,6 +277,80 @@ export default function ProjectDetail() {
                 </Card>
               </motion.div>
             )}
+
+            {/* Reviews Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 shadow-xl">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                      <Star className="h-5 w-5 text-primary fill-primary" />
+                      Reviews
+                    </CardTitle>
+                    {averageRating > 0 && (
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                          <span className="text-lg font-bold">{averageRating.toFixed(1)}</span>
+                        </div>
+                        <span className="text-sm text-muted-foreground">({totalReviews})</span>
+                      </div>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {reviewsLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  ) : reviews.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">
+                      No reviews yet. Be the first to review this service!
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {reviews.map((review, index) => (
+                        <motion.div
+                          key={review.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.6 + index * 0.05 }}
+                          className="border-b border-primary/10 pb-4 last:border-0 last:pb-0"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <p className="font-semibold text-foreground">{review.reviewer.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(review.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${
+                                    i < review.rating
+                                      ? 'text-yellow-500 fill-yellow-500'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          {review.comment && (
+                            <p className="text-sm text-muted-foreground mt-2">{review.comment}</p>
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
 
           {/* Sidebar - Project Stats Only */}
@@ -282,7 +398,7 @@ export default function ProjectDetail() {
                       <Users className="h-4 w-4 text-primary" />
                       <span className="text-muted-foreground">Applications</span>
                     </div>
-                    <span className="font-medium">{project.applications?.length || 0}</span>
+                    <span className="font-medium">{(project as any)?._count?.hireRequests || 0}</span>
                   </motion.div>
                   
                   <motion.div

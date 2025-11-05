@@ -148,3 +148,81 @@ export const getReviews = async (req: AuthenticatedRequest, res: Response) => {
     throw error;
   }
 };
+
+// Get reviews for a service (by serviceId - reviews for the student who owns the service)
+export const getServiceReviews = async (req: Request, res: Response) => {
+  try {
+    const { serviceId } = req.params;
+    const pagination = parsePagination(req.query);
+
+    // Get the service to find the owner (student)
+    const service = await prisma.service.findUnique({
+      where: { id: serviceId },
+      select: {
+        ownerId: true,
+      },
+    });
+
+    if (!service) {
+      return sendNotFound(res, 'Service not found');
+    }
+
+    // Get reviews where:
+    // 1. The reviewee is the service owner (student)
+    // 2. The order's serviceId matches the requested service
+    const where = {
+      revieweeId: service.ownerId,
+      order: {
+        serviceId: serviceId,
+      },
+    };
+
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        include: {
+          reviewer: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          order: {
+            select: {
+              id: true,
+              service: {
+                select: {
+                  title: true,
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (pagination.page - 1) * pagination.limit,
+        take: pagination.limit,
+      }),
+      prisma.review.count({ where }),
+    ]);
+
+    // Calculate average rating
+    const averageRating = reviews.length > 0 
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+      : 0;
+
+    const result = createPaginationResult(reviews, pagination, total);
+    
+    return sendSuccess(res, {
+      ...result,
+      averageRating: Math.round(averageRating * 10) / 10,
+      totalReviews: total,
+    });
+  } catch (error) {
+    console.error('❌ Error in getServiceReviews:', error);
+    if (error instanceof z.ZodError) {
+      return sendValidationError(res, error.errors);
+    }
+    return sendError(res, 'Failed to fetch service reviews', 500);
+  }
+};

@@ -931,6 +931,21 @@ function ProjectCard({ project, onHireNow, hasHiredProject }: {
           {project.title}
         </h3>
 
+        {/* Ratings and Reviews */}
+        {(project.averageRating > 0 || project.totalReviews > 0) && (
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+              <span className="text-sm font-semibold text-foreground">
+                {(project.averageRating || 0).toFixed(1)}
+              </span>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              ({project.totalReviews || 0} {(project.totalReviews || 0) === 1 ? 'review' : 'reviews'})
+            </span>
+          </div>
+        )}
+
         {/* Project Description */}
         <p className="text-sm text-muted-foreground mb-4 line-clamp-3 flex-1 min-h-0">
           {project.description.length > 80 ? `${project.description.substring(0, 80)}...` : project.description}

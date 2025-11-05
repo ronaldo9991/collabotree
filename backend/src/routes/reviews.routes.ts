@@ -1,11 +1,14 @@
 import { Router } from 'express';
-import { createReview, getReviews } from '../controllers/reviews.controller.js';
+import { createReview, getReviews, getServiceReviews } from '../controllers/reviews.controller.js';
 import { authenticateToken, requireAuth } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/error.js';
 
 const router = Router();
 
-// All routes require authentication
+// Public route - no authentication required
+router.get('/services/:serviceId', asyncHandler(getServiceReviews));
+
+// All other routes require authentication
 router.use(authenticateToken);
 router.use(requireAuth);
 

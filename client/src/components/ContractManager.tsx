@@ -15,8 +15,11 @@ import {
   Clock, 
   User,
   CreditCard,
-  Loader2
+  Loader2,
+  Star
 } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Contract {
   id: string;
@@ -38,6 +41,7 @@ interface Contract {
   student: { id: string; name: string; email: string };
   service: { id: string; title: string; description: string };
   hireRequest: { id: string };
+  orderId?: string; // Added for review functionality
 }
 
 interface ContractManagerProps {
@@ -51,6 +55,10 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   const [signature, setSignature] = useState('');
   const [progressNotes, setProgressNotes] = useState('');
   const [completionNotes, setCompletionNotes] = useState('');
+  const [markAsCompleted, setMarkAsCompleted] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [hasReviewed, setHasReviewed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const { toast } = useToast();
@@ -70,6 +78,10 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
       const response = await api.getContract(contractId!);
       if (response.success) {
         setContract(response.data);
+        // Check if buyer has already reviewed
+        if (response.data.orderId && user?.id === response.data.buyer?.id) {
+          checkReviewStatus(response.data.orderId);
+        }
       }
     } catch (error) {
       console.error('Error fetching contract:', error);
@@ -83,6 +95,20 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
     }
   };
 
+  const checkReviewStatus = async (orderId: string) => {
+    try {
+      // Check if user has already reviewed this order
+      const response = await api.getUserReviews(user!.id);
+      if (response.success) {
+        const reviews = response.data?.data || response.data || [];
+        const hasReviewedOrder = reviews.some((review: any) => review.order?.id === orderId);
+        setHasReviewed(hasReviewedOrder);
+      }
+    } catch (error) {
+      console.error('Error checking review status:', error);
+    }
+  };
+
   const fetchContractByHireRequest = async () => {
     try {
       setLoading(true);
@@ -92,6 +118,10 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
         const userContract = response.data.find((c: Contract) => c.hireRequest.id === hireRequestId);
         if (userContract) {
           setContract(userContract);
+          // Check if buyer has already reviewed
+          if (userContract.orderId && user?.id === userContract.buyer?.id) {
+            checkReviewStatus(userContract.orderId);
+          }
         }
       }
     } catch (error) {
@@ -162,13 +192,19 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
       const response = await api.updateProgress(contract.id, {
         progressStatus: 'IN_PROGRESS',
         progressNotes: progressNotes.trim(),
+        markAsCompleted: markAsCompleted,
+        completionNotes: markAsCompleted ? completionNotes.trim() : undefined,
       });
       if (response.success) {
-        setContract(response.data);
+        setContract({ ...response.data, orderId: response.data.orderId });
         setProgressNotes('');
+        setCompletionNotes('');
+        setMarkAsCompleted(false);
         toast({
-          title: "Progress Updated",
-          description: "Your progress has been updated successfully.",
+          title: markAsCompleted ? "Contract Completed" : "Progress Updated",
+          description: markAsCompleted 
+            ? "Contract marked as completed. Payment has been released to you."
+            : "Your progress has been updated successfully.",
         });
         onContractUpdate?.();
       }
@@ -184,28 +220,31 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
     }
   };
 
-  const handleMarkCompleted = async () => {
-    if (!contract) return;
+  const handleSubmitReview = async () => {
+    if (!contract || !contract.orderId || rating === 0) return;
 
     try {
       setProcessing(true);
-      const response = await api.markCompleted(contract.id, { 
-        completionNotes: completionNotes.trim() 
+      const response = await api.createReview({
+        orderId: contract.orderId,
+        rating: rating,
+        comment: reviewComment.trim() || undefined,
       });
       if (response.success) {
-        setContract(response.data);
-        setCompletionNotes('');
+        setHasReviewed(true);
+        setRating(0);
+        setReviewComment('');
         toast({
-          title: "Contract Completed",
-          description: "Payment has been released to the student.",
+          title: "Review Submitted",
+          description: "Thank you for your feedback!",
         });
         onContractUpdate?.();
       }
     } catch (error) {
-      console.error('Error marking completed:', error);
+      console.error('Error submitting review:', error);
       toast({
         title: "Error",
-        description: "Failed to mark as completed. Please try again.",
+        description: "Failed to submit review. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -241,7 +280,7 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   const deliverables = Array.isArray(contract.deliverables) 
     ? contract.deliverables 
     : (typeof contract.deliverables === 'string' ? JSON.parse(contract.deliverables || '[]') : []);
-  const userRole = user?.id === contract.buyerId ? 'BUYER' : 'STUDENT';
+  const userRole = user?.id === contract.buyer.id ? 'BUYER' : 'STUDENT';
 
   return (
     <Card className="w-full">
@@ -387,12 +426,31 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
               {contract.status === 'ACTIVE' && (
                 <div>
                   <h4 className="font-semibold mb-2">Update Progress</h4>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Textarea
                       placeholder="Describe your progress..."
                       value={progressNotes}
                       onChange={(e) => setProgressNotes(e.target.value)}
                     />
+                    {contract.paymentStatus === 'PAID' && (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="mark-complete"
+                          checked={markAsCompleted}
+                          onCheckedChange={(checked) => setMarkAsCompleted(checked as boolean)}
+                        />
+                        <Label htmlFor="mark-complete" className="text-sm font-medium cursor-pointer">
+                          Mark project as completed
+                        </Label>
+                      </div>
+                    )}
+                    {markAsCompleted && (
+                      <Textarea
+                        placeholder="Add completion notes (optional)..."
+                        value={completionNotes}
+                        onChange={(e) => setCompletionNotes(e.target.value)}
+                      />
+                    )}
                     <Button 
                       onClick={handleUpdateProgress} 
                       disabled={!progressNotes.trim() || processing}
@@ -403,7 +461,7 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
                       ) : (
                         <CheckCircle className="h-4 w-4 mr-2" />
                       )}
-                      Update Progress
+                      {markAsCompleted ? 'Complete Project' : 'Update Progress'}
                     </Button>
                   </div>
                 </div>
@@ -456,29 +514,67 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
                 </Button>
               )}
 
-              {contract.status === 'ACTIVE' && 
-               contract.progressStatus === 'IN_PROGRESS' && (
+              {contract.status === 'COMPLETED' && 
+               contract.orderId && 
+               !hasReviewed && (
                 <div>
-                  <h4 className="font-semibold mb-2">Mark as Completed</h4>
-                  <div className="space-y-2">
-                    <Textarea
-                      placeholder="Add completion notes (optional)..."
-                      value={completionNotes}
-                      onChange={(e) => setCompletionNotes(e.target.value)}
-                    />
+                  <h4 className="font-semibold mb-3">Rate Your Experience</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="mb-2 block">Rating *</Label>
+                      <div className="flex items-center gap-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setRating(star)}
+                            className="focus:outline-none"
+                          >
+                            <Star
+                              className={`h-8 w-8 transition-colors ${
+                                star <= rating
+                                  ? 'text-yellow-500 fill-yellow-500'
+                                  : 'text-gray-300 hover:text-yellow-400'
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="review-comment">Comment (Optional)</Label>
+                      <Textarea
+                        id="review-comment"
+                        placeholder="Share your experience..."
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        rows={4}
+                      />
+                    </div>
                     <Button 
-                      onClick={handleMarkCompleted} 
-                      disabled={processing}
-                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={handleSubmitReview} 
+                      disabled={rating === 0 || processing}
+                      className="w-full"
                       size="lg"
                     >
                       {processing ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : (
-                        <CheckCircle className="h-4 w-4 mr-2" />
+                        <Star className="h-4 w-4 mr-2" />
                       )}
-                      Mark Completed & Release Payment
+                      Submit Review
                     </Button>
+                  </div>
+                </div>
+              )}
+
+              {hasReviewed && (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold text-green-800 dark:text-green-200">
+                      Thank you for your review!
+                    </span>
                   </div>
                 </div>
               )}

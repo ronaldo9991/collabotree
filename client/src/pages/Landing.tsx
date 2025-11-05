@@ -895,6 +895,21 @@ export default function Landing() {
                       </div>
                     </div>
                     
+                    {/* Ratings and Reviews */}
+                    {((project as any).averageRating > 0 || (project as any).totalReviews > 0) && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <span className="text-sm font-semibold text-foreground">
+                            {((project as any).averageRating || 0).toFixed(1)}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          ({(project as any).totalReviews || 0} {((project as any).totalReviews || 0) === 1 ? 'review' : 'reviews'})
+                        </span>
+                      </div>
+                    )}
+                    
                     {/* Bottom price bar - Always at bottom */}
                     <div className="flex items-center justify-between pt-4 border-t border-border/50">
                       <span className="text-xl font-semibold">{project.price}</span>

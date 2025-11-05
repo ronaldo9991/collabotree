@@ -141,7 +141,36 @@ export const getServices = async (req: Request, res: Response) => {
       console.log('📋 Sample service titles:', services.slice(0, 3).map(s => s.title));
     }
 
-    const result = createPaginationResult(services, pagination, total);
+    // Get ratings for each service
+    const servicesWithRatings = await Promise.all(
+      services.map(async (service) => {
+        // Get reviews for this service (reviews for the student who owns the service)
+        const reviews = await prisma.review.findMany({
+          where: {
+            revieweeId: service.ownerId,
+            order: {
+              serviceId: service.id,
+            },
+          },
+          select: {
+            rating: true,
+          },
+        });
+
+        const totalReviews = reviews.length;
+        const averageRating = totalReviews > 0
+          ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+          : 0;
+
+        return {
+          ...service,
+          averageRating: Math.round(averageRating * 10) / 10,
+          totalReviews,
+        };
+      })
+    );
+
+    const result = createPaginationResult(servicesWithRatings, pagination, total);
     return sendSuccess(res, result);
   } catch (error) {
     console.error('❌ Error in getServices:', error);
