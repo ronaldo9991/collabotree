@@ -135,7 +135,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             </CommandEmpty>
             {filteredCommands.map((group, groupIndex) => (
               <div key={group.group}>
-                <CommandGroup heading={group.group}>
+                <CommandGroup>
                   <div className="px-2 py-1.5">
                     <h3 className="text-xs font-semibold text-[#00B2FF] uppercase tracking-wider mb-1">
                       {group.group}
