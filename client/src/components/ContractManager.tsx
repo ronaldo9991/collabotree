@@ -77,10 +77,31 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
       setLoading(true);
       const response = await api.getContract(contractId!);
       if (response.success) {
-        setContract(response.data);
-        // Check if buyer has already reviewed
-        if (response.data.orderId && user?.id === response.data.buyer?.id) {
-          checkReviewStatus(response.data.orderId);
+        const contractData = response.data;
+        setContract(contractData);
+        
+        // For buyers, check if they need to review
+        if (contractData.status === 'COMPLETED' && user?.id === contractData.buyer?.id) {
+          // Try to get orderId from contract or fetch it
+          let orderId = contractData.orderId;
+          
+          if (!orderId && contractData.hireRequest?.id) {
+            // Try to get orderId from hireRequest
+            try {
+              const hireRequestResponse = await api.getHireRequest(contractData.hireRequest.id);
+              if (hireRequestResponse.success && hireRequestResponse.data.orders?.length > 0) {
+                orderId = hireRequestResponse.data.orders[0].id;
+                // Update contract with orderId
+                setContract({ ...contractData, orderId });
+              }
+            } catch (error) {
+              console.error('Error fetching hireRequest for orderId:', error);
+            }
+          }
+          
+          if (orderId) {
+            checkReviewStatus(orderId);
+          }
         }
       }
     } catch (error) {
@@ -97,8 +118,10 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
 
   const checkReviewStatus = async (orderId: string) => {
     try {
+      if (!orderId || !user) return;
+      
       // Check if user has already reviewed this order
-      const response = await api.getUserReviews(user!.id);
+      const response = await api.getUserReviews(user.id);
       if (response.success) {
         const reviews = response.data?.data || response.data || [];
         const hasReviewedOrder = reviews.some((review: any) => review.order?.id === orderId);
@@ -106,6 +129,8 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
       }
     } catch (error) {
       console.error('Error checking review status:', error);
+      // Don't block UI if review check fails
+      setHasReviewed(false);
     }
   };
 
@@ -185,21 +210,38 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   };
 
   const handleUpdateProgress = async () => {
-    if (!contract || !progressNotes.trim()) return;
+    if (!contract) return;
+    
+    // For regular progress update, we need progress notes
+    if (!markAsCompleted && !progressNotes.trim()) {
+      toast({
+        title: "Error",
+        description: "Please describe your progress.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       setProcessing(true);
       const response = await api.updateProgress(contract.id, {
-        progressStatus: 'IN_PROGRESS',
-        progressNotes: progressNotes.trim(),
+        progressStatus: markAsCompleted ? 'COMPLETED' : 'IN_PROGRESS',
+        progressNotes: markAsCompleted ? (progressNotes.trim() || completionNotes.trim() || 'Project completed') : progressNotes.trim(),
         markAsCompleted: markAsCompleted,
         completionNotes: markAsCompleted ? completionNotes.trim() : undefined,
       });
       if (response.success) {
-        setContract({ ...response.data, orderId: response.data.orderId });
+        const updatedContract = { ...response.data, orderId: response.data.orderId };
+        setContract(updatedContract);
         setProgressNotes('');
         setCompletionNotes('');
         setMarkAsCompleted(false);
+        
+        // If completed and user is buyer, check review status
+        if (markAsCompleted && updatedContract.orderId && user?.id === updatedContract.buyer?.id) {
+          checkReviewStatus(updatedContract.orderId);
+        }
+        
         toast({
           title: markAsCompleted ? "Contract Completed" : "Progress Updated",
           description: markAsCompleted 
@@ -221,15 +263,55 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   };
 
   const handleSubmitReview = async () => {
-    if (!contract || !contract.orderId || rating === 0) return;
+    if (!contract || rating === 0) return;
 
     try {
       setProcessing(true);
+      
+      // Find the orderId from the contract
+      let orderId = contract.orderId;
+      
+      if (!orderId) {
+        // Try to get orderId from contract's hireRequest
+        if (contract.hireRequest?.id) {
+          try {
+            const hireRequestResponse = await api.getHireRequest(contract.hireRequest.id);
+            if (hireRequestResponse.success && hireRequestResponse.data.orders?.length > 0) {
+              orderId = hireRequestResponse.data.orders[0].id;
+            }
+          } catch (error) {
+            console.error('Error fetching hireRequest for orderId:', error);
+          }
+        }
+        
+        // If still no orderId, try fetching contract again
+        if (!orderId && contract.id) {
+          try {
+            const contractResponse = await api.getContract(contract.id);
+            if (contractResponse.success && contractResponse.data.orderId) {
+              orderId = contractResponse.data.orderId;
+            }
+          } catch (error) {
+            console.error('Error fetching contract for orderId:', error);
+          }
+        }
+      }
+      
+      if (!orderId) {
+        toast({
+          title: "Error",
+          description: "Order ID not found. Cannot submit review. Please refresh the page.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const response = await api.createReview({
-        orderId: contract.orderId,
+        orderId: orderId,
         rating: rating,
         comment: reviewComment.trim() || undefined,
       });
+      
       if (response.success) {
         setHasReviewed(true);
         setRating(0);
@@ -240,11 +322,11 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
         });
         onContractUpdate?.();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting review:', error);
       toast({
         title: "Error",
-        description: "Failed to submit review. Please try again.",
+        description: error?.message || "Failed to submit review. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -424,47 +506,62 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
               )}
 
               {contract.status === 'ACTIVE' && (
-                <div>
-                  <h4 className="font-semibold mb-2">Update Progress</h4>
-                  <div className="space-y-3">
-                    <Textarea
-                      placeholder="Describe your progress..."
-                      value={progressNotes}
-                      onChange={(e) => setProgressNotes(e.target.value)}
-                    />
-                    {contract.paymentStatus === 'PAID' && (
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="mark-complete"
-                          checked={markAsCompleted}
-                          onCheckedChange={(checked) => setMarkAsCompleted(checked as boolean)}
-                        />
-                        <Label htmlFor="mark-complete" className="text-sm font-medium cursor-pointer">
-                          Mark project as completed
-                        </Label>
-                      </div>
-                    )}
-                    {markAsCompleted && (
+                <>
+                  <div>
+                    <h4 className="font-semibold mb-2">Update Progress</h4>
+                    <div className="space-y-2">
                       <Textarea
-                        placeholder="Add completion notes (optional)..."
-                        value={completionNotes}
-                        onChange={(e) => setCompletionNotes(e.target.value)}
+                        placeholder="Describe your progress..."
+                        value={progressNotes}
+                        onChange={(e) => setProgressNotes(e.target.value)}
                       />
-                    )}
-                    <Button 
-                      onClick={handleUpdateProgress} 
-                      disabled={!progressNotes.trim() || processing}
-                      className="w-full"
-                    >
-                      {processing ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : (
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                      )}
-                      {markAsCompleted ? 'Complete Project' : 'Update Progress'}
-                    </Button>
+                      <Button 
+                        onClick={handleUpdateProgress} 
+                        disabled={!progressNotes.trim() || processing}
+                        className="w-full"
+                      >
+                        {processing ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                        )}
+                        Update Progress
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                  
+                  {contract.paymentStatus === 'PAID' && (
+                    <div className="border-t pt-4 mt-4">
+                      <h4 className="font-semibold mb-2">Complete Project</h4>
+                      <div className="space-y-2">
+                        <Textarea
+                          placeholder="Add completion notes (optional)..."
+                          value={completionNotes}
+                          onChange={(e) => setCompletionNotes(e.target.value)}
+                        />
+                        <Button 
+                          onClick={async () => {
+                            if (!contract || !progressNotes.trim()) {
+                              // Use a default progress note if empty
+                              setProgressNotes('Project completed');
+                            }
+                            setMarkAsCompleted(true);
+                            await handleUpdateProgress();
+                          }}
+                          disabled={processing}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          {processing ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : (
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                          )}
+                          Project Completed
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -515,7 +612,6 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
               )}
 
               {contract.status === 'COMPLETED' && 
-               contract.orderId && 
                !hasReviewed && (
                 <div>
                   <h4 className="font-semibold mb-3">Rate Your Experience</h4>
