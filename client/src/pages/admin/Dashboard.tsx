@@ -487,32 +487,32 @@ export default function AdminDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="overflow-x-auto mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-              <TabsList className="inline-flex w-full sm:w-auto min-w-full sm:min-w-0 h-auto sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
-                <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden xs:inline">Overview</span>
-                  <span className="xs:hidden">Stats</span>
+            {/* Mobile: Scrollable tabs, Desktop: Grid layout */}
+            <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0">
+              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-full md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
+                <TabsTrigger value="overview" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="max-md:hidden">Overview</span>
+                  <span className="md:hidden">Stats</span>
                 </TabsTrigger>
-                <TabsTrigger value="verification" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <UserCheck className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Verification</span>
-                  <span className="sm:hidden">Verify</span>
+                <TabsTrigger value="verification" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <UserCheck className="h-4 w-4" />
+                  <span className="max-md:hidden">Verification</span>
+                  <span className="md:hidden">Verify</span>
                 </TabsTrigger>
-                <TabsTrigger value="messages" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Messages</span>
-                  <span className="sm:hidden">Chat</span>
+                <TabsTrigger value="messages" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <MessageCircle className="h-4 w-4" />
+                  <span className="max-md:hidden">Messages</span>
+                  <span className="md:hidden">Chat</span>
                 </TabsTrigger>
-                <TabsTrigger value="services" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <Package className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Services</span>
-                  <span className="sm:hidden">Services</span>
+                <TabsTrigger value="services" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Package className="h-4 w-4" />
+                  Services
                 </TabsTrigger>
-                <TabsTrigger value="top-selections" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <Star className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Top Selections</span>
-                  <span className="sm:hidden">Top</span>
+                <TabsTrigger value="top-selections" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Star className="h-4 w-4" />
+                  <span className="max-md:hidden">Top Selections</span>
+                  <span className="md:hidden">Top</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -526,63 +526,63 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-md:gap-4"
                   >
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-              <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8" />
+            <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4 max-md:p-3 max-md:mb-3">
+                <Users className="h-8 w-8 max-md:h-6 max-md:w-6" />
               </div>
-              <CardTitle className="text-base sm:text-xl">Total Users</CardTitle>
+              <CardTitle className="text-xl max-md:text-base">Total Users</CardTitle>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                        <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">{stats.users.total}</div>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+            <CardContent className="max-md:px-4 max-md:pb-4">
+                        <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">{stats.users.total}</div>
+              <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.users.students} Students • {stats.users.buyers} Buyers
               </p>
             </CardContent>
           </Card>
 
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-              <div className="mx-auto p-3 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-3 sm:mb-4">
-                <UserCheck className="h-6 w-6 sm:h-8 sm:w-8" />
+            <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+              <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4 max-md:p-3 max-md:mb-3">
+                <UserCheck className="h-8 w-8 max-md:h-6 max-md:w-6" />
               </div>
-              <CardTitle className="text-base sm:text-xl">Verified Students</CardTitle>
+              <CardTitle className="text-xl max-md:text-base">Verified Students</CardTitle>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                        <div className="text-2xl sm:text-3xl font-bold text-secondary mb-2">{stats.users.verifiedStudents}</div>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+            <CardContent className="max-md:px-4 max-md:pb-4">
+                        <div className="text-3xl font-bold text-secondary mb-2 max-md:text-2xl">{stats.users.verifiedStudents}</div>
+              <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.users.pendingVerifications} pending verification
               </p>
             </CardContent>
           </Card>
 
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-              <div className="mx-auto p-3 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-3 sm:mb-4">
-                <Package className="h-6 w-6 sm:h-8 sm:w-8" />
+            <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+              <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4 max-md:p-3 max-md:mb-3">
+                <Package className="h-8 w-8 max-md:h-6 max-md:w-6" />
               </div>
-                        <CardTitle className="text-base sm:text-xl">Services</CardTitle>
+                        <CardTitle className="text-xl max-md:text-base">Services</CardTitle>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                        <div className="text-2xl sm:text-3xl font-bold text-accent mb-2">{stats.services.total}</div>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+            <CardContent className="max-md:px-4 max-md:pb-4">
+                        <div className="text-3xl font-bold text-accent mb-2 max-md:text-2xl">{stats.services.total}</div>
+              <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.services.active} active • {stats.services.topSelections} top selections
               </p>
             </CardContent>
           </Card>
 
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-              <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
-                <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
+            <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4 max-md:p-3 max-md:mb-3">
+                <DollarSign className="h-8 w-8 max-md:h-6 max-md:w-6" />
               </div>
-              <CardTitle className="text-base sm:text-xl">Revenue</CardTitle>
+              <CardTitle className="text-xl max-md:text-base">Revenue</CardTitle>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                        <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">${Math.round(stats.revenue.total)}</div>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+            <CardContent className="max-md:px-4 max-md:pb-4">
+                        <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">${Math.round(stats.revenue.total)}</div>
+              <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.orders.total} total orders
               </p>
             </CardContent>
@@ -594,48 +594,48 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6 max-md:gap-4"
                   >
                     <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                      <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                        <div className="mx-auto p-3 sm:p-4 rounded-full bg-blue-500/10 text-blue-500 w-fit mb-3 sm:mb-4">
-                          <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+                      <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+                        <div className="mx-auto p-4 rounded-full bg-blue-500/10 text-blue-500 w-fit mb-4 max-md:p-3 max-md:mb-3">
+                          <MessageCircle className="h-8 w-8 max-md:h-6 max-md:w-6" />
                         </div>
-                        <CardTitle className="text-base sm:text-xl">Messages</CardTitle>
+                        <CardTitle className="text-xl max-md:text-base">Messages</CardTitle>
                       </CardHeader>
-                      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                        <div className="text-2xl sm:text-3xl font-bold text-blue-500 mb-2">{stats.messages.total}</div>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                      <CardContent className="max-md:px-4 max-md:pb-4">
+                        <div className="text-3xl font-bold text-blue-500 mb-2 max-md:text-2xl">{stats.messages.total}</div>
+                        <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.messages.recent} this {stats.period}
                         </p>
                       </CardContent>
                     </Card>
 
                     <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                      <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                        <div className="mx-auto p-3 sm:p-4 rounded-full bg-green-500/10 text-green-500 w-fit mb-3 sm:mb-4">
-                          <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+                      <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+                        <div className="mx-auto p-4 rounded-full bg-green-500/10 text-green-500 w-fit mb-4 max-md:p-3 max-md:mb-3">
+                          <CheckCircle className="h-8 w-8 max-md:h-6 max-md:w-6" />
                         </div>
-                        <CardTitle className="text-base sm:text-xl">Hire Requests</CardTitle>
+                        <CardTitle className="text-xl max-md:text-base">Hire Requests</CardTitle>
                       </CardHeader>
-                      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                        <div className="text-2xl sm:text-3xl font-bold text-green-500 mb-2">{stats.hireRequests.total}</div>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                      <CardContent className="max-md:px-4 max-md:pb-4">
+                        <div className="text-3xl font-bold text-green-500 mb-2 max-md:text-2xl">{stats.hireRequests.total}</div>
+                        <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.hireRequests.accepted} accepted
                         </p>
                       </CardContent>
                     </Card>
 
                     <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                      <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                        <div className="mx-auto p-3 sm:p-4 rounded-full bg-purple-500/10 text-purple-500 w-fit mb-3 sm:mb-4">
-                          <Star className="h-6 w-6 sm:h-8 sm:w-8" />
+                      <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+                        <div className="mx-auto p-4 rounded-full bg-purple-500/10 text-purple-500 w-fit mb-4 max-md:p-3 max-md:mb-3">
+                          <Star className="h-8 w-8 max-md:h-6 max-md:w-6" />
                         </div>
-                        <CardTitle className="text-base sm:text-xl">Top Selections</CardTitle>
+                        <CardTitle className="text-xl max-md:text-base">Top Selections</CardTitle>
                       </CardHeader>
-                      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                        <div className="text-2xl sm:text-3xl font-bold text-purple-500 mb-2">{stats.services.topSelections}</div>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+                      <CardContent className="max-md:px-4 max-md:pb-4">
+                        <div className="text-3xl font-bold text-purple-500 mb-2 max-md:text-2xl">{stats.services.topSelections}</div>
+              <p className="text-sm text-muted-foreground max-md:text-xs">
                           Featured services
               </p>
             </CardContent>
@@ -659,22 +659,22 @@ export default function AdminDashboard() {
               >
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center justify-between max-md:flex-col max-md:items-stretch max-md:gap-4">
                     <div>
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                        <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2">
+                        <MessageCircle className="h-5 w-5 text-primary" />
                         All Messages
               </CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Track all conversations between students and buyers</CardDescription>
+                      <CardDescription>Track all conversations between students and buyers</CardDescription>
                     </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                      <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
+                    <div className="flex items-center gap-2 max-md:w-full">
+                      <div className="relative w-64 md:w-80 lg:w-96 max-md:w-full">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                         <Input
                           placeholder="Search messages..."
                           value={messageSearch}
                           onChange={(e) => setMessageSearch(e.target.value)}
-                          className="pl-10 w-full h-10 min-h-[44px] text-base"
+                          className="pl-10 w-full h-10 max-md:min-h-[44px] max-md:text-base"
                         />
                       </div>
                     </div>
@@ -686,7 +686,7 @@ export default function AdminDashboard() {
                       filteredMessages.map((message) => (
                     <div
                           key={message.id}
-                          className="flex items-start gap-3 p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50"
+                          className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50 max-md:p-3"
                     >
                           <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
                       <div className="flex-1">
@@ -710,7 +710,7 @@ export default function AdminDashboard() {
                           variant="outline"
                           onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
                           disabled={loadingConversation}
-                          className="text-xs min-h-[44px] w-full sm:w-auto"
+                          className="text-xs max-md:min-h-[44px] max-md:w-full"
                         >
                           <MessageCircle className="w-3 h-3 mr-1" />
                           {loadingConversation ? "Loading..." : "View Full Conversation"}
@@ -739,22 +739,22 @@ export default function AdminDashboard() {
               >
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center justify-between max-md:flex-col max-md:items-stretch max-md:gap-4">
                     <div>
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                <Package className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-primary" />
                         All Services
               </CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Manage all services on the platform</CardDescription>
+                      <CardDescription>Manage all services on the platform</CardDescription>
                     </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                      <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
+                    <div className="flex items-center gap-2 max-md:w-full">
+                      <div className="relative w-64 md:w-80 lg:w-96 max-md:w-full">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                         <Input
                           placeholder="Search services..."
                           value={serviceSearch}
                           onChange={(e) => setServiceSearch(e.target.value)}
-                          className="pl-10 w-full h-10 min-h-[44px] text-base"
+                          className="pl-10 w-full h-10 max-md:min-h-[44px] max-md:text-base"
                         />
                       </div>
                     </div>
@@ -766,7 +766,7 @@ export default function AdminDashboard() {
                       filteredServices.map((service) => (
                     <div
                           key={service.id}
-                          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50"
+                          className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border/50 max-md:flex-col max-md:items-start max-md:gap-3 max-md:p-3"
                     >
                       <div className="flex-1">
                             <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -794,11 +794,11 @@ export default function AdminDashboard() {
                           )}
                         </div>
                           </div>
-                          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                          <div className="flex gap-2 max-md:flex-col max-md:w-full">
                             <Button
                               size="sm"
                               variant={service.isTopSelection ? "outline" : "default"}
-                              className="min-h-[44px] w-full sm:w-auto"
+                              className="max-md:min-h-[44px] max-md:w-full"
                               onClick={() => handleToggleTopSelection(service.id, !service.isTopSelection)}
                             >
                               {service.isTopSelection ? <StarOff className="h-3 w-3" /> : <Star className="h-3 w-3" />}
@@ -825,12 +825,12 @@ export default function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div className="flex items-center justify-between mb-6 max-md:flex-col max-md:items-stretch max-md:gap-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold">Top Selections Management</h2>
-                    <p className="text-sm sm:text-base text-muted-foreground">Choose which services to feature on the homepage</p>
+                    <h2 className="text-2xl font-bold max-md:text-xl">Top Selections Management</h2>
+                    <p className="text-muted-foreground max-md:text-sm">Choose which services to feature on the homepage</p>
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <div className="flex items-center gap-2 max-md:w-full">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input

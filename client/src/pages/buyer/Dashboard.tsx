@@ -328,32 +328,33 @@ export default function BuyerDashboard() {
 
         {/* Navigation Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="overflow-x-auto mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
-              <TabsList className="inline-flex w-full sm:w-auto min-w-full sm:min-w-0 h-auto sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
-                <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <LayoutDashboard className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden xs:inline">Overview</span>
-                  <span className="xs:hidden">Stats</span>
+            {/* Mobile: Scrollable tabs, Desktop: Grid layout */}
+            <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0">
+              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-full md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
+                <TabsTrigger value="overview" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span className="max-md:hidden">Overview</span>
+                  <span className="md:hidden">Stats</span>
                 </TabsTrigger>
-                <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <Briefcase className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">My Projects</span>
-                  <span className="sm:hidden">Projects</span>
+                <TabsTrigger value="orders" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Briefcase className="h-4 w-4" />
+                  <span className="max-md:hidden">My Projects</span>
+                  <span className="md:hidden">Projects</span>
                 </TabsTrigger>
-                <TabsTrigger value="messages" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Messages</span>
-                  <span className="sm:hidden">Chat</span>
+                <TabsTrigger value="messages" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <MessageCircle className="h-4 w-4" />
+                  <span className="max-md:hidden">Messages</span>
+                  <span className="md:hidden">Chat</span>
                 </TabsTrigger>
-                <TabsTrigger value="browse" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <Users className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Browse Talent</span>
-                  <span className="sm:hidden">Browse</span>
+                <TabsTrigger value="browse" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Users className="h-4 w-4" />
+                  <span className="max-md:hidden">Browse Talent</span>
+                  <span className="md:hidden">Browse</span>
                 </TabsTrigger>
-                <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Contracts</span>
-                  <span className="sm:hidden">Contracts</span>
+                <TabsTrigger value="contracts" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <FileText className="h-4 w-4" />
+                  <span className="max-md:hidden">Contracts</span>
+                  <span className="md:hidden">Contracts</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -364,56 +365,56 @@ export default function BuyerDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-md:gap-4"
               >
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
-                    <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4 max-md:p-3 max-md:mb-3">
+                    <DollarSign className="h-6 w-6 max-md:h-5 max-md:w-5" />
                     </div>
-                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground max-md:text-xs">Total Spent</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                    <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">${stats.totalSpent}</div>
+                  <CardContent className="max-md:px-4 max-md:pb-4">
+                    <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">${stats.totalSpent}</div>
                   <p className="text-xs text-muted-foreground">on completed projects</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-3 sm:mb-4">
-                    <Activity className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+                    <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4 max-md:p-3 max-md:mb-3">
+                    <Activity className="h-6 w-6 max-md:h-5 max-md:w-5" />
                     </div>
-                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Active Projects</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground max-md:text-xs">Active Projects</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                    <div className="text-2xl sm:text-3xl font-bold text-secondary mb-2">{stats.activeOrders}</div>
+                  <CardContent className="max-md:px-4 max-md:pb-4">
+                    <div className="text-3xl font-bold text-secondary mb-2 max-md:text-2xl">{stats.activeOrders}</div>
                   <p className="text-xs text-muted-foreground">in progress</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-3 sm:mb-4">
-                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+                    <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4 max-md:p-3 max-md:mb-3">
+                    <CheckCircle className="h-6 w-6 max-md:h-5 max-md:w-5" />
                     </div>
-                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Completed</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground max-md:text-xs">Completed</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                    <div className="text-2xl sm:text-3xl font-bold text-accent mb-2">{stats.completedProjects}</div>
+                  <CardContent className="max-md:px-4 max-md:pb-4">
+                    <div className="text-3xl font-bold text-accent mb-2 max-md:text-2xl">{stats.completedProjects}</div>
                   <p className="text-xs text-muted-foreground">successfully delivered</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
-                    <Bookmark className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
+                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4 max-md:p-3 max-md:mb-3">
+                    <Bookmark className="h-6 w-6 max-md:h-5 max-md:w-5" />
                     </div>
-                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Saved Services</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground max-md:text-xs">Saved Services</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-                    <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">{stats.savedServices}</div>
+                  <CardContent className="max-md:px-4 max-md:pb-4">
+                    <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">{stats.savedServices}</div>
                   <p className="text-xs text-muted-foreground">for later</p>
                   </CardContent>
                 </Card>
