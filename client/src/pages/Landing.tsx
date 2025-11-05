@@ -208,34 +208,34 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Modern Optimized Hero Section */}
-      <section className="relative min-h-[calc(100vh-6rem)] flex items-center justify-center overflow-hidden pt-8 md:pt-12">
+      {/* Full-Width Hero Section with Floating Search */}
+      <section className="relative min-h-[calc(100vh-6rem)] flex flex-col items-center justify-center overflow-hidden pt-6 sm:pt-8 md:pt-12 lg:pt-16 xl:pt-20">
         {/* Animated Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
-          {/* Animated gradient orbs */}
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-          <div className="absolute top-0 -right-4 w-72 h-72 bg-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+          {/* Animated gradient orbs - Lighter and less prominent */}
+          <div className="absolute top-0 -left-4 w-64 h-64 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute top-0 -right-4 w-64 h-64 bg-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-64 h-64 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
           
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:50px_50px]"></div>
+          {/* Grid pattern overlay - Lighter */}
+          <div className="absolute inset-0 bg-grid-white/[0.03] bg-[size:40px_40px]"></div>
           
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/40"></div>
+          {/* Light overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/30"></div>
         </div>
 
-        {/* Floating particles animation */}
+        {/* Floating particles animation - Reduced count */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(15)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 bg-white/30 rounded-full"
+              className="absolute w-0.5 h-0.5 bg-white/30 rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
               }}
               animate={{
-                y: [0, -30, 0],
+                y: [0, -20, 0],
                 opacity: [0.2, 0.5, 0.2],
               }}
               transition={{
@@ -247,213 +247,188 @@ export default function Landing() {
           ))}
         </div>
 
-        {/* Main Content */}
-        <div className="relative z-10 container-unified w-full pb-16 md:pb-20">
-          <div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              
-              {/* Left Content - Hero Text */}
-              <motion.div
-                className="space-y-8 text-center lg:text-left"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                {/* Main Heading */}
-                <motion.div
-                  className="space-y-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                >
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] text-white">
-                    Hire{" "}
-                    <span className="relative inline-block">
-                      <span className="relative z-10 bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
-                        Elite Talent
-                      </span>
-                      <motion.span
-                        className="absolute inset-0 bg-white/20 blur-2xl"
-                        animate={{
-                          scale: [1, 1.2, 1],
-                          opacity: [0.3, 0.5, 0.3],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                        }}
-                      />
-                    </span>
-                    <br />
-                    From Top Universities
-                  </h1>
-                  
-                  <p className="text-lg sm:text-xl text-white/90 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    Connect directly with verified students offering professional services. 
-                    Quality work, competitive rates, secure payments.
-                  </p>
-                </motion.div>
+        {/* Main Content - Centered Single Column */}
+        <div className="relative z-10 container-unified w-full flex flex-col items-center text-center space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-12 pb-12 sm:pb-16 md:pb-20 lg:pb-24">
+          
+          {/* Headline */}
+          <motion.h1
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-[1.1] text-white max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Hire{" "}
+            <span className="relative inline-block">
+              <span className="relative z-10 bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent">
+                Elite Talent
+              </span>
+              <motion.span
+                className="absolute inset-0 bg-white/20 blur-2xl"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                }}
+              />
+            </span>
+            <br />
+            From Top Universities
+          </motion.h1>
+          
+          {/* Description */}
+          <motion.p
+            className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            Connect directly with verified students offering professional services. 
+            Quality work, competitive rates, secure payments.
+          </motion.p>
 
-                {/* CTA Buttons */}
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                >
-                  <Button
-                    size="lg"
-                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
-                    asChild
-                  >
-                    <Link href="/signin">
-                      <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                      Start Hiring Now
-                    </Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group"
-                    asChild
-                  >
-                    <Link href="/signin">
-                      <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                      Become a Seller
-                    </Link>
-                  </Button>
-                </motion.div>
-
-                {/* Trust Indicators */}
-                <motion.div
-                  className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.6 }}
-                >
-                  <div className="flex items-center gap-2 text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-white" />
-                    <span>Verified Students</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-white/80 text-sm">
-                    <Lock className="w-4 h-4 text-white" />
-                    <span>Secure Payments</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-white/80 text-sm">
-                    <Star className="w-4 h-4 text-white" />
-                    <span>Quality Guaranteed</span>
-                  </div>
-                </motion.div>
-              </motion.div>
-
-              {/* Right Content - Enhanced Search Card */}
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                {/* Glowing background effect */}
-                <div className="absolute inset-0 bg-white/10 rounded-3xl blur-3xl"></div>
-                
-                {/* Main Search Card */}
-                <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20">
-                  {/* Header */}
-                  <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] mb-4">
-                      <Search className="w-7 h-7 text-white" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2">Find Your Perfect Match</h3>
-                    <p className="text-sm text-muted-foreground">Search from hundreds of verified student services</p>
-                  </div>
-
-                  {/* Search Input */}
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-                      <Input
-                        placeholder="Try: Web Design, Logo, Data Analysis..."
-                        className="h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background/50 text-base font-medium transition-all"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSearch();
-                          }
-                        }}
-                      />
-                    </div>
-                    
-                    <Button
-                      size="lg"
-                      className="w-full h-14 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all transform hover:scale-[1.02]"
-                      onClick={handleSearch}
-                    >
-                      <Search className="h-5 w-5 mr-2" />
-                      Search Services
-                    </Button>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-border"></div>
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white dark:bg-slate-900 px-3 text-muted-foreground font-medium">
-                        Popular Categories
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Popular Searches - Enhanced */}
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { term: 'Web Development', icon: Code },
-                      { term: 'UI/UX Design', icon: Palette },
-                      { term: 'Data Analysis', icon: BarChart3 },
-                      { term: 'Content Writing', icon: FileText }
-                    ].map(({ term, icon: Icon }) => (
-                      <Button
-                        key={term}
-                        variant="outline"
-                        className="h-12 justify-start gap-2 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group"
-                        onClick={() => handlePopularSearch(term)}
-                      >
-                        <Icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">{term}</span>
-                      </Button>
-                    ))}
-                  </div>
+          {/* Floating Search Card - Centered */}
+          <motion.div
+            className="relative w-full max-w-2xl mx-auto -translate-y-2"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            {/* Glowing background effect */}
+            <div className="absolute inset-0 bg-white/10 rounded-3xl blur-3xl"></div>
+            
+            {/* Main Search Card */}
+            <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl border border-white/30 hover:-translate-y-1 hover:shadow-3xl transition-all duration-300">
+              {/* Header */}
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] mb-3 sm:mb-4">
+                  <Search className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 </div>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-2">Find Your Perfect Service</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">Search from verified student services across multiple categories</p>
+              </div>
 
-                {/* Floating decorative elements */}
-                <motion.div
-                  className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-[#00B2FF]/30 to-[#4AC8FF]/30 rounded-full blur-2xl"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                  }}
-                />
-                <motion.div
-                  className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-[#4AC8FF]/30 to-[#00B2FF]/30 rounded-full blur-2xl"
-                  animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.5, 0.7, 0.5],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    delay: 1,
-                  }}
-                />
-              </motion.div>
+              {/* Search Input */}
+              <div className="space-y-3 sm:space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground pointer-events-none" />
+                  <Input
+                    placeholder="Search services, skills, or categories..."
+                    className="h-14 sm:h-16 md:h-18 pl-14 sm:pl-16 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background/50 text-base sm:text-lg font-medium transition-all"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                  />
+                </div>
+                
+                <Button
+                  size="lg"
+                  className="w-full h-14 sm:h-16 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all transform hover:scale-[1.02]"
+                  onClick={handleSearch}
+                >
+                  <Search className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
+                  Search Services
+                </Button>
+              </div>
+
+              {/* Divider */}
+              <div className="relative my-4 sm:my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border"></div>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white dark:bg-slate-900 px-3 text-muted-foreground font-medium">
+                    Popular Categories
+                  </span>
+                </div>
+              </div>
+
+              {/* Popular Categories - Enhanced */}
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+                {[
+                  { term: 'Web Development', icon: Code },
+                  { term: 'UI/UX Design', icon: Palette },
+                  { term: 'Data Analysis', icon: BarChart3 },
+                  { term: 'Content Writing', icon: FileText },
+                  { term: 'Mobile Apps', icon: Smartphone },
+                  { term: 'Graphic Design', icon: PaintBucket }
+                ].map(({ term, icon: Icon }, index) => (
+                  <motion.div
+                    key={term}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.8 + (index * 0.1) }}
+                  >
+                    <Button
+                      variant="outline"
+                      className="h-11 sm:h-12 px-4 sm:px-5 justify-start gap-2 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group text-xs sm:text-sm"
+                      onClick={() => handlePopularSearch(term)}
+                    >
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform" />
+                      <span className="text-xs sm:text-sm font-medium">{term}</span>
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.0 }}
+          >
+            <Button
+              size="lg"
+              className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/20 transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group w-full sm:w-auto"
+              asChild
+            >
+              <Link href="/signin">
+                <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                Start Hiring Now
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-14 px-8 text-lg font-bold rounded-xl group w-full sm:w-auto"
+              asChild
+            >
+              <Link href="/signin">
+                <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                Become a Seller
+              </Link>
+            </Button>
+          </motion.div>
+
+          {/* Trust Indicators */}
+          <motion.div
+            className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+          >
+            <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+              <CheckCircle className="w-5 h-5 text-white" />
+              <span>Verified Students</span>
+            </div>
+            <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+              <Lock className="w-5 h-5 text-white" />
+              <span>Secure Payments</span>
+            </div>
+            <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+              <Star className="w-5 h-5 text-white" />
+              <span>Quality Guaranteed</span>
+            </div>
+          </motion.div>
         </div>
 
         {/* Scroll indicator */}
@@ -484,7 +459,7 @@ export default function Landing() {
         
         <div className="container-unified relative z-10">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -504,7 +479,7 @@ export default function Landing() {
             </motion.div>
             
             <motion.h2 
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -514,7 +489,7 @@ export default function Landing() {
             </motion.h2>
             
             <motion.p 
-              className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+              className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -526,7 +501,7 @@ export default function Landing() {
           </motion.div>
 
           {/* Key Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-12 sm:mb-16">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -678,16 +653,16 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 rounded-3xl p-8 md:p-12 border-2 border-primary/10 overflow-hidden"
+            className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 border-2 border-primary/10 overflow-hidden"
           >
             {/* Decorative Background */}
             <div className="absolute inset-0 bg-grid-small-white/[0.02] dark:bg-grid-small-white/[0.02]" />
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
             
-            <div className="relative z-10 text-center mb-12">
+            <div className="relative z-10 text-center mb-8 sm:mb-10 md:mb-12">
               <motion.h3 
-                className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
+                className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -696,7 +671,7 @@ export default function Landing() {
                 How CollaboTree Works
               </motion.h3>
               <motion.p 
-                className="text-muted-foreground max-w-2xl mx-auto text-lg"
+                className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base md:text-lg"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -706,7 +681,7 @@ export default function Landing() {
               </motion.p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative z-10">
               <motion.div 
                 className="text-center group"
                 initial={{ opacity: 0, y: 30 }}
@@ -721,7 +696,7 @@ export default function Landing() {
                   <div className="absolute -inset-2 bg-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-primary transition-colors">Browse & Select</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
                   Explore verified student services, view portfolios, and read reviews to find the perfect match for your project.
                 </p>
               </motion.div>
@@ -740,7 +715,7 @@ export default function Landing() {
                   <div className="absolute -inset-2 bg-secondary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-secondary transition-colors">Connect & Collaborate</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
                   Message directly with the student, discuss requirements, set milestones, and track progress in real-time.
                 </p>
               </motion.div>
@@ -759,7 +734,7 @@ export default function Landing() {
                   <div className="absolute -inset-2 bg-accent/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-accent transition-colors">Review & Pay</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
                   Review completed work, request revisions if needed, and release payment only when you're completely satisfied.
                 </p>
               </motion.div>
@@ -775,14 +750,14 @@ export default function Landing() {
       <section className="section-padding-y bg-background">
         <div className="container-unified">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Top Selection</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">Top Selection</h2>
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Hand-picked by our admin team. These featured projects showcase the highest quality and most exceptional work from our verified student talent.
             </p>
           </motion.div>
@@ -846,7 +821,7 @@ export default function Landing() {
                   aria-label={project.title}
                 >
                   {/* Project Image with Gradient Overlay - 40-45% of card height */}
-                  <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden rounded-t-2xl">
+                  <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-t-2xl">
                     <img 
                       src={project.image} 
                       alt={project.title}
@@ -855,17 +830,17 @@ export default function Landing() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
-                  <CardContent className="p-5 md:p-6 flex-1 flex flex-col">
+                  <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
                     {/* Title */}
-                    <h3 className="font-bold text-xl md:text-xl line-clamp-2 mb-3">{project.title}</h3>
+                    <h3 className="font-bold text-base sm:text-lg md:text-xl line-clamp-2 mb-2 sm:mb-3 break-words overflow-wrap-anywhere">{project.title}</h3>
                     
                     {/* Description - Fixed height for consistency */}
-                    <p className="text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed mb-4 flex-1">
+                    <p className="text-xs sm:text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed mb-3 sm:mb-4 flex-1 break-words overflow-wrap-anywhere">
                       {project.description}
                     </p>
                     
                     {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1.5 mb-4 min-h-[2rem]">
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4 min-h-[2rem]">
                       {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
@@ -889,12 +864,12 @@ export default function Landing() {
                         </Avatar>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1">
-                            <p className="font-medium text-sm truncate">{project.student.name}</p>
+                            <p className="font-medium text-xs sm:text-sm truncate break-words overflow-wrap-anywhere min-w-0">{project.student.name}</p>
                             {project.student.verified && (
                               <CheckCircle className="h-3 w-3 text-primary flex-shrink-0" />
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground truncate">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground truncate break-words overflow-wrap-anywhere min-w-0">
                             {project.student.university}
                           </p>
                         </div>
@@ -963,16 +938,16 @@ export default function Landing() {
       <section className="section-padding-y bg-gradient-to-br from-accent/5 via-primary/5 to-secondary/5">
         <div className="container-unified">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
             <div className="flex items-center justify-center mb-4">
-              <h2 className="text-3xl lg:text-4xl font-bold">New Projects</h2>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">New Projects</h2>
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Fresh opportunities from our talented student community. Discover the latest projects and innovations from verified students worldwide.
             </p>
           </motion.div>
@@ -1012,7 +987,7 @@ export default function Landing() {
                     <div key={index} className="w-full h-full flex">
                       <Card className="rounded-2xl border h-full w-full bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] overflow-hidden flex flex-col">
                         <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-2xl" />
-                        <CardContent className="p-6 flex-1 flex flex-col space-y-3">
+                        <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col space-y-2 sm:space-y-3">
                           <div className="h-4 bg-muted/20 animate-pulse rounded" />
                           <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
                           <div className="flex-1" />
@@ -1048,7 +1023,7 @@ export default function Landing() {
                   aria-label={project.title}
                 >
                   {/* Project Image with Gradient Overlay - 40-45% of card height */}
-                  <div className="relative h-56 sm:h-64 md:h-72 overflow-hidden rounded-t-2xl">
+                  <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-t-2xl">
                     <img 
                       src={project.image} 
                       alt={project.title}
@@ -1057,17 +1032,17 @@ export default function Landing() {
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
                   </div>
                   
-                  <CardContent className="p-5 md:p-6 flex-1 flex flex-col">
+                  <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
                     {/* Title */}
-                    <h3 className="font-bold text-xl md:text-xl line-clamp-2 mb-3">{project.title}</h3>
+                    <h3 className="font-bold text-base sm:text-lg md:text-xl line-clamp-2 mb-2 sm:mb-3 break-words overflow-wrap-anywhere">{project.title}</h3>
                     
                     {/* Description - Fixed height for consistency */}
-                    <p className="text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed mb-4 flex-1">
+                    <p className="text-xs sm:text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed mb-3 sm:mb-4 flex-1 break-words overflow-wrap-anywhere">
                       {project.description}
                     </p>
                     
                     {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1.5 mb-4 min-h-[2rem]">
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4 min-h-[2rem]">
                       {project.tags.slice(0, 3).map((tag: string) => (
                         <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
                           {tag}
@@ -1091,12 +1066,12 @@ export default function Landing() {
                         </Avatar>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1">
-                            <p className="font-medium text-sm truncate">{project.student.name}</p>
+                            <p className="font-medium text-xs sm:text-sm truncate break-words overflow-wrap-anywhere min-w-0">{project.student.name}</p>
                             {project.student.verified && (
                               <CheckCircle className="h-3 w-3 text-primary flex-shrink-0" />
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground truncate">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground truncate break-words overflow-wrap-anywhere min-w-0">
                             {project.student.university}
                           </p>
                         </div>
@@ -1144,22 +1119,22 @@ export default function Landing() {
       <section className="section-padding-y bg-muted/5 overflow-hidden">
         <div className="container-unified">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
               Why Choose CollaboTree
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               A simple platform where verified university students offer their skills and services to buyers who need quality work done.
             </p>
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto"
             initial="hidden"
             whileInView="visible"
             variants={containerVariants}
@@ -1236,10 +1211,10 @@ export default function Landing() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">
               Ready to Begin?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto">
               Join thousands of professionals and students who are already creating exceptional projects together.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
