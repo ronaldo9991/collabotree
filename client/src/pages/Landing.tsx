@@ -405,7 +405,7 @@ export default function Landing() {
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                       <Input
                         placeholder="Search services, skills, or categories..."
-                        className="h-12 sm:h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background/50 text-sm sm:text-base font-medium transition-all"
+                        className="h-12 sm:h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-white/90 dark:bg-white/95 text-black dark:text-black text-sm sm:text-base font-medium transition-all placeholder:text-gray-500 dark:placeholder:text-gray-500"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => {
