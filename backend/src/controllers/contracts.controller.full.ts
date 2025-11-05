@@ -197,6 +197,16 @@ export const getContract = async (req: AuthenticatedRequest, res: Response) => {
                 priceCents: true,
               },
             },
+            orders: {
+              select: {
+                id: true,
+                status: true,
+              },
+              take: 1,
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
           },
         },
         signatures: {
@@ -228,7 +238,13 @@ export const getContract = async (req: AuthenticatedRequest, res: Response) => {
       ...parsedTerms,
     };
 
-    return sendSuccess(res, contractWithParsedTerms);
+    // Extract orderId from hireRequest.orders for review functionality
+    const orderId = contractWithParsedTerms.hireRequest?.orders?.[0]?.id || null;
+
+    return sendSuccess(res, {
+      ...contractWithParsedTerms,
+      orderId, // Include orderId for frontend review submission
+    });
   } catch (error) {
     console.error('❌ Error in getContract:', error);
     return sendError(res, 'Failed to fetch contract', 500);
