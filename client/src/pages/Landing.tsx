@@ -13,7 +13,6 @@ import { api } from "@/lib/api";
 export default function Landing() {
   const [, setLocation] = useLocation();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentNewProjectSlide, setCurrentNewProjectSlide] = useState(0);
   const [topSelectionProjects, setTopSelectionProjects] = useState<any[]>([]);
   const [newProjects, setNewProjects] = useState<any[]>([]);
@@ -154,17 +153,6 @@ export default function Landing() {
     setLocation(url);
   };
 
-  // Mouse tracking for 3D effects
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      setMousePosition({ x, y });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   // Auto-slide functionality removed - user wants manual control only
 
@@ -221,40 +209,19 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* 3D Interactive Hero Section - World Class Design */}
-      <section 
-        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-        style={{ perspective: '1000px' }}
-      >
-        {/* 3D Gradient Background with Depth */}
+      {/* Asymmetric Grid Hero Section - Professional Design */}
+      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 sm:pt-24 md:pt-28">
+        {/* Minimal Gradient Background with Subtle Texture */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
-          {/* 3D gradient layers */}
-          <div 
-            className="absolute inset-0 bg-gradient-to-tr from-[#4AC8FF]/40 via-transparent to-[#0096C7]/40"
-            style={{
-              transform: `translateZ(20px) rotateX(${mousePosition.y * 5}deg) rotateY(${mousePosition.x * 5}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          ></div>
-          <div 
-            className="absolute inset-0 bg-gradient-to-bl from-transparent via-[#00B2FF]/30 to-[#023E8A]/40"
-            style={{
-              transform: `translateZ(40px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          ></div>
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#4AC8FF]/20 via-transparent to-[#0096C7]/20"></div>
           
-          {/* 3D Animated gradient orbs */}
+          {/* Minimal animated orbs */}
           <motion.div
-            className="absolute top-0 -left-20 w-96 h-96 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
-            style={{
-              transform: `translateZ(60px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
+            className="absolute top-20 right-10 w-64 h-64 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-20"
             animate={{
-              x: [0, 50, 0],
-              y: [0, 30, 0],
-              scale: [1, 1.2, 1],
+              scale: [1, 1.1, 1],
+              opacity: [0.2, 0.25, 0.2],
             }}
             transition={{
               duration: 8,
@@ -263,15 +230,10 @@ export default function Landing() {
             }}
           />
           <motion.div
-            className="absolute top-0 -right-20 w-96 h-96 bg-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
-            style={{
-              transform: `translateZ(80px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
+            className="absolute bottom-20 left-10 w-80 h-80 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-15"
             animate={{
-              x: [0, -50, 0],
-              y: [0, 40, 0],
-              scale: [1, 1.3, 1],
+              scale: [1, 1.15, 1],
+              opacity: [0.15, 0.2, 0.15],
             }}
             transition={{
               duration: 10,
@@ -280,59 +242,30 @@ export default function Landing() {
               delay: 2,
             }}
           />
-          <motion.div
-            className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-25"
-            style={{
-              transform: `translateZ(100px) rotateX(${mousePosition.y * 1.5}deg) rotateY(${mousePosition.x * 1.5}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-            animate={{
-              x: [0, 30, -30, 0],
-              y: [0, -40, 20, 0],
-              scale: [1, 1.1, 0.9, 1],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 4,
-            }}
-          />
           
-          {/* 3D Grid pattern */}
-          <div 
-            className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]"
-            style={{
-              transform: `translateZ(10px) rotateX(${mousePosition.y * 1}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          ></div>
+          {/* Subtle texture pattern */}
+          <div className="absolute inset-0 bg-grid-white/[0.015] bg-[size:80px_80px]"></div>
           
-          {/* 3D Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/15 to-black/25"></div>
+          {/* Light overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/10 to-black/15"></div>
         </div>
 
-        {/* 3D Floating Particles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ perspective: '1000px' }}>
-          {[...Array(30)].map((_, i) => (
+        {/* Subtle floating elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(12)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1.5 h-1.5 bg-white/50 rounded-full"
+              className="absolute w-1 h-1 bg-white/30 rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                transform: `translateZ(${Math.random() * 200}px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
-                transformStyle: 'preserve-3d',
               }}
               animate={{
-                y: [0, -50, 0],
-                x: [0, Math.random() * 30 - 15, 0],
-                opacity: [0.3, 0.7, 0.3],
-                scale: [1, 2, 1],
-                rotateZ: [0, 360],
+                y: [0, -30, 0],
+                opacity: [0.2, 0.4, 0.2],
               }}
               transition={{
-                duration: 5 + Math.random() * 3,
+                duration: 4 + Math.random() * 2,
                 repeat: Infinity,
                 delay: Math.random() * 2,
                 ease: "easeInOut",
@@ -341,54 +274,28 @@ export default function Landing() {
           ))}
         </div>
 
-        {/* 3D Floating Content Layers */}
-        <div 
-          className="relative z-10 container-unified w-full flex flex-col items-center text-center space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16 pb-16 sm:pb-20 md:pb-24 lg:pb-32"
-          style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
-        >
-          
-          {/* Layer 1: 3D Headline with Text Effect */}
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
-            style={{
-              transform: `translateZ(50px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[140px] font-black leading-[0.95] text-white max-w-6xl mx-auto tracking-tight">
-              <motion.span
-                className="block"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-                style={{
-                  textShadow: `
-                    ${mousePosition.x * 2}px ${mousePosition.y * 2}px 0 rgba(255,255,255,0.1),
-                    ${mousePosition.x * 4}px ${mousePosition.y * 4}px 0 rgba(255,255,255,0.05),
-                    0 0 40px rgba(0,178,255,0.3)
-                  `,
-                }}
-              >
+        {/* Asymmetric Grid Layout */}
+        <div className="relative z-10 container-unified w-full py-12 sm:py-16 md:py-20 lg:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-start lg:items-center min-h-[calc(100vh-8rem)]">
+            
+            {/* Top-Left: Large Headline */}
+            <motion.div
+              className="space-y-6 sm:space-y-8"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] text-white">
                 Hire{" "}
                 <span className="relative inline-block">
-                  <span 
-                    className="relative z-10 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent"
-                    style={{
-                      transform: `translateZ(20px) rotateY(${mousePosition.x * 5}deg)`,
-                      transformStyle: 'preserve-3d',
-                      display: 'inline-block',
-                    }}
-                  >
+                  <span className="relative z-10 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent">
                     Elite Talent
                   </span>
                   <motion.span
-                    className="absolute inset-0 bg-white/30 blur-3xl -z-10"
+                    className="absolute inset-0 bg-white/20 blur-2xl -z-10"
                     animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.4, 0.7, 0.4],
+                      scale: [1, 1.2, 1],
+                      opacity: [0.3, 0.5, 0.3],
                     }}
                     transition={{
                       duration: 3,
@@ -397,106 +304,89 @@ export default function Landing() {
                     }}
                   />
                 </span>
-              </motion.span>
-              <motion.span
-                className="block mt-2 sm:mt-4"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.7 }}
-                style={{
-                  transform: `translateZ(30px) rotateX(${mousePosition.y * 2}deg)`,
-                  transformStyle: 'preserve-3d',
-                }}
-              >
+                <br />
                 From Top Universities
-              </motion.span>
-            </h1>
-          </motion.div>
-          
-          {/* Layer 2: 3D Description */}
-          <motion.p
-            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 max-w-3xl mx-auto leading-relaxed font-light"
-            initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1, delay: 0.9, ease: "easeOut" }}
-            style={{
-              transform: `translateZ(40px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            Connect directly with verified students offering professional services.
-            <br className="hidden sm:block" />
-            <span className="text-white/80">Quality work, competitive rates, secure payments.</span>
-          </motion.p>
-
-          {/* Layer 3: 3D Interactive Search Card */}
-          <motion.div
-            className="relative w-full max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 40, scale: 0.9, filter: "blur(15px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
-            style={{
-              transform: `translateZ(60px) rotateX(${mousePosition.y * 4}deg) rotateY(${mousePosition.x * 4}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {/* 3D Glowing background effect */}
-            <div 
-              className="absolute inset-0 bg-white/20 rounded-3xl blur-3xl -z-10"
-              style={{
-                transform: `translateZ(-20px) rotateX(${mousePosition.y * 2}deg)`,
-                transformStyle: 'preserve-3d',
-              }}
-            ></div>
-            
-            {/* 3D Main Search Card - Tilts on mouse movement */}
-            <motion.div 
-              className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 md:p-12 shadow-2xl border border-white/40 transition-all duration-300"
-              style={{
-                transform: `translateZ(0px) rotateX(${mousePosition.y * 5}deg) rotateY(${mousePosition.x * 5}deg)`,
-                transformStyle: 'preserve-3d',
-                boxShadow: `
-                  ${mousePosition.x * 10}px ${mousePosition.y * 10}px 40px rgba(0,0,0,0.3),
-                  0 0 60px rgba(0,178,255,0.2)
-                `,
-              }}
-              whileHover={{
-                scale: 1.02,
-                z: 20,
-                transition: { duration: 0.3 },
-              }}
-            >
-              {/* Search Input - Extra Large */}
-              <div className="space-y-4 sm:space-y-5">
-                <div className="relative">
-                  <Search className="absolute left-5 sm:left-6 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-7 sm:h-7 text-muted-foreground pointer-events-none" />
-                  <Input
-                    placeholder="Search services, skills, or categories..."
-                    className="h-16 sm:h-20 md:h-24 pl-16 sm:pl-20 pr-6 rounded-2xl border-2 border-[#00B2FF]/30 focus:border-[#00B2FF] bg-background/60 text-lg sm:text-xl md:text-2xl font-medium transition-all shadow-lg"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSearch();
-                      }
-                    }}
-                  />
-                </div>
-                
-                <Button
-                  size="lg"
-                  className="w-full h-16 sm:h-20 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-2xl font-bold text-lg sm:text-xl md:text-2xl shadow-xl hover:shadow-2xl hover:shadow-[#00B2FF]/40 transition-all transform hover:scale-[1.02]"
-                  onClick={handleSearch}
+              </h1>
+              
+              {/* Bottom-Left: Description and CTAs */}
+              <div className="space-y-6 sm:space-y-8 pt-4">
+                <motion.p
+                  className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
                 >
-                  <Search className="h-6 w-6 sm:h-7 sm:w-7 mr-3" />
-                  Search Services
-                </Button>
-              </div>
+                  Connect directly with verified students offering professional services. Quality work, competitive rates, secure payments.
+                </motion.p>
+                
+                <motion.div
+                  className="flex flex-col sm:flex-row gap-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                  <Button
+                    size="lg"
+                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-bold rounded-xl group"
+                    asChild
+                  >
+                    <Link href="/signin">
+                      <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Start Hiring Now
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-bold rounded-xl group"
+                    asChild
+                  >
+                    <Link href="/signin">
+                      <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Become a Seller
+                    </Link>
+                  </Button>
+                </motion.div>
 
-              {/* 3D Floating Category Cards */}
-              <div className="mt-6 sm:mt-8">
-                <p className="text-xs sm:text-sm text-muted-foreground mb-4 text-center uppercase tracking-wider">Popular Categories</p>
-                <div className="flex flex-wrap justify-center gap-3 sm:gap-4" style={{ perspective: '1000px' }}>
+                {/* Trust Indicators */}
+                <motion.div
+                  className="flex flex-wrap gap-6 sm:gap-8 pt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                >
+                  <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                    <span>Verified Students</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+                    <Lock className="w-5 h-5 text-white" />
+                    <span>Secure Payments</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+                    <Star className="w-5 h-5 text-white" />
+                    <span>Quality Guaranteed</span>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Right Column: Top-Right Categories + Bottom-Right Search */}
+            <motion.div
+              className="space-y-6 sm:space-y-8"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              {/* Top-Right: Floating Category Chips Grid */}
+              <motion.div
+                className="space-y-4"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                <p className="text-sm sm:text-base text-white/90 font-medium mb-3">Popular Categories</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                   {[
                     { term: 'Web Development', icon: Code },
                     { term: 'UI/UX Design', icon: Palette },
@@ -507,115 +397,75 @@ export default function Landing() {
                   ].map(({ term, icon: Icon }, index) => (
                     <motion.div
                       key={term}
-                      initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.5, delay: 1.3 + (index * 0.1), ease: "easeOut" }}
-                      style={{
-                        transform: `translateZ(${index * 10}px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
-                        transformStyle: 'preserve-3d',
-                      }}
-                      whileHover={{
-                        scale: 1.1,
-                        rotateY: mousePosition.x * 10,
-                        rotateX: mousePosition.y * 10,
-                        z: 20,
-                        transition: { duration: 0.3 },
-                      }}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: 0.7 + (index * 0.1) }}
                     >
                       <Button
                         variant="outline"
-                        className="h-12 sm:h-14 px-5 sm:px-6 justify-start gap-2.5 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group text-sm sm:text-base font-medium rounded-xl"
+                        className="w-full h-auto min-h-[60px] sm:min-h-[70px] flex flex-col items-center justify-center gap-2 p-3 sm:p-4 hover:bg-white/10 hover:border-white/50 text-white transition-all group bg-white/5 backdrop-blur-sm rounded-xl"
                         onClick={() => handlePopularSearch(term)}
-                        style={{
-                          transformStyle: 'preserve-3d',
-                        }}
                       >
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
-                        <span>{term}</span>
+                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform text-[#00B2FF]" />
+                        <span className="text-xs sm:text-sm font-medium text-center leading-tight">{term}</span>
                       </Button>
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
+
+              {/* Bottom-Right: Prominent Search Card */}
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
+              >
+                {/* Glowing background effect */}
+                <div className="absolute inset-0 bg-white/10 rounded-2xl blur-2xl -z-10"></div>
+                
+                {/* Search Card */}
+                <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/30 hover:shadow-[0_20px_40px_rgba(0,178,255,0.2)] transition-all duration-300">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] flex items-center justify-center">
+                        <Search className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Find Your Perfect Service</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Search from verified student services</p>
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                      <Input
+                        placeholder="Search services, skills, or categories..."
+                        className="h-12 sm:h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-background/50 text-sm sm:text-base font-medium transition-all"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSearch();
+                          }
+                        }}
+                      />
+                    </div>
+                    
+                    <Button
+                      size="lg"
+                      className="w-full h-12 sm:h-14 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-xl font-bold text-sm sm:text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all transform hover:scale-[1.02]"
+                      onClick={handleSearch}
+                    >
+                      <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                      Search Services
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-
-          {/* Layer 4: 3D CTA Buttons */}
-          <motion.div
-            className="flex flex-col sm:flex-row gap-5 sm:gap-6 justify-center items-center max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
-            style={{
-              transform: `translateZ(50px) rotateX(${mousePosition.y * 2}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            <Button
-              size="lg"
-              className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-2xl hover:shadow-white/30 transition-all duration-300 hover:scale-110 h-16 sm:h-18 px-10 sm:px-12 text-xl sm:text-2xl font-bold rounded-2xl group w-full sm:w-auto"
-              asChild
-            >
-              <Link href="/signin">
-                <Users className="mr-3 h-6 w-6 sm:h-7 sm:w-7 group-hover:scale-110 transition-transform" />
-                Start Hiring Now
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-white/50 bg-white/10 backdrop-blur-xl hover:bg-white/20 hover:border-white/70 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-110 h-16 sm:h-18 px-10 sm:px-12 text-xl sm:text-2xl font-bold rounded-2xl group w-full sm:w-auto"
-              asChild
-            >
-              <Link href="/signin">
-                <GraduationCap className="mr-3 h-6 w-6 sm:h-7 sm:w-7 group-hover:scale-110 transition-transform" />
-                Become a Seller
-              </Link>
-            </Button>
-          </motion.div>
-
-          {/* Layer 5: 3D Trust Indicators */}
-          <motion.div
-            className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-16"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.7, ease: "easeOut" }}
-            style={{
-              transform: `translateZ(40px) rotateX(${mousePosition.y * 1.5}deg)`,
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            <div className="flex items-center gap-3 text-white/90 text-base sm:text-lg font-medium">
-              <CheckCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-              <span>Verified Students</span>
-            </div>
-            <div className="flex items-center gap-3 text-white/90 text-base sm:text-lg font-medium">
-              <Lock className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-              <span>Secure Payments</span>
-            </div>
-            <div className="flex items-center gap-3 text-white/90 text-base sm:text-lg font-medium">
-              <Star className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-              <span>Quality Guaranteed</span>
-            </div>
-          </motion.div>
+          </div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1 }}
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="flex flex-col items-center gap-2 text-white/60"
-          >
-            <span className="text-xs font-medium">Scroll to explore</span>
-            <ChevronRight className="w-5 h-5 rotate-90" />
-          </motion.div>
-        </motion.div>
       </section>
 
       {/* About CollaboTree Section */}
