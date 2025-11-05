@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { CommandPalette } from "./CommandPalette";
 import { useTheme } from "./ThemeProvider";
 import { useAuth } from "@/contexts/AuthContext";
-import { Network, Search, Moon, Sun, Home, ShoppingCart, FileText, Users, Menu, LogOut, Settings, User, MessageSquare } from "lucide-react";
+import { Network, Search, Moon, Sun, Home, ShoppingCart, FileText, Users, Menu, LogOut, Settings, User, MessageSquare, X } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
