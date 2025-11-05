@@ -13,6 +13,7 @@ import { api } from "@/lib/api";
 export default function Landing() {
   const [, setLocation] = useLocation();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentNewProjectSlide, setCurrentNewProjectSlide] = useState(0);
   const [topSelectionProjects, setTopSelectionProjects] = useState<any[]>([]);
   const [newProjects, setNewProjects] = useState<any[]>([]);
@@ -153,6 +154,18 @@ export default function Landing() {
     setLocation(url);
   };
 
+  // Mouse tracking for 3D effects
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   // Auto-slide functionality removed - user wants manual control only
 
   const features = [
@@ -208,17 +221,36 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen">
-      {/* Cinematic Hero Section - World Class Design */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Animated Gradient Mesh Background with Depth */}
+      {/* 3D Interactive Hero Section - World Class Design */}
+      <section 
+        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+        style={{ perspective: '1000px' }}
+      >
+        {/* 3D Gradient Background with Depth */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
-          {/* Multiple gradient layers for depth */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#4AC8FF]/40 via-transparent to-[#0096C7]/40"></div>
-          <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-[#00B2FF]/30 to-[#023E8A]/40"></div>
+          {/* 3D gradient layers */}
+          <div 
+            className="absolute inset-0 bg-gradient-to-tr from-[#4AC8FF]/40 via-transparent to-[#0096C7]/40"
+            style={{
+              transform: `translateZ(20px) rotateX(${mousePosition.y * 5}deg) rotateY(${mousePosition.x * 5}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
+          ></div>
+          <div 
+            className="absolute inset-0 bg-gradient-to-bl from-transparent via-[#00B2FF]/30 to-[#023E8A]/40"
+            style={{
+              transform: `translateZ(40px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
+          ></div>
           
-          {/* Animated gradient mesh orbs - More dynamic */}
+          {/* 3D Animated gradient orbs */}
           <motion.div
             className="absolute top-0 -left-20 w-96 h-96 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
+            style={{
+              transform: `translateZ(60px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
             animate={{
               x: [0, 50, 0],
               y: [0, 30, 0],
@@ -232,6 +264,10 @@ export default function Landing() {
           />
           <motion.div
             className="absolute top-0 -right-20 w-96 h-96 bg-[#00B2FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
+            style={{
+              transform: `translateZ(80px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
             animate={{
               x: [0, -50, 0],
               y: [0, 40, 0],
@@ -246,6 +282,10 @@ export default function Landing() {
           />
           <motion.div
             className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-25"
+            style={{
+              transform: `translateZ(100px) rotateX(${mousePosition.y * 1.5}deg) rotateY(${mousePosition.x * 1.5}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
             animate={{
               x: [0, 30, -30, 0],
               y: [0, -40, 20, 0],
@@ -259,31 +299,40 @@ export default function Landing() {
             }}
           />
           
-          {/* Subtle grid pattern */}
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]"></div>
+          {/* 3D Grid pattern */}
+          <div 
+            className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]"
+            style={{
+              transform: `translateZ(10px) rotateX(${mousePosition.y * 1}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
+          ></div>
           
-          {/* Cinematic overlay for depth */}
+          {/* 3D Overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/15 to-black/25"></div>
         </div>
 
-        {/* Subtle Particle Effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(25)].map((_, i) => (
+        {/* 3D Floating Particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ perspective: '1000px' }}>
+          {[...Array(30)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 bg-white/40 rounded-full"
+              className="absolute w-1.5 h-1.5 bg-white/50 rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
+                transform: `translateZ(${Math.random() * 200}px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
+                transformStyle: 'preserve-3d',
               }}
               animate={{
-                y: [0, -40, 0],
-                x: [0, Math.random() * 20 - 10, 0],
-                opacity: [0.2, 0.6, 0.2],
-                scale: [1, 1.5, 1],
+                y: [0, -50, 0],
+                x: [0, Math.random() * 30 - 15, 0],
+                opacity: [0.3, 0.7, 0.3],
+                scale: [1, 2, 1],
+                rotateZ: [0, 360],
               }}
               transition={{
-                duration: 4 + Math.random() * 3,
+                duration: 5 + Math.random() * 3,
                 repeat: Infinity,
                 delay: Math.random() * 2,
                 ease: "easeInOut",
@@ -292,15 +341,22 @@ export default function Landing() {
           ))}
         </div>
 
-        {/* Floating Content Layers with Parallax */}
-        <div className="relative z-10 container-unified w-full flex flex-col items-center text-center space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16 pb-16 sm:pb-20 md:pb-24 lg:pb-32">
+        {/* 3D Floating Content Layers */}
+        <div 
+          className="relative z-10 container-unified w-full flex flex-col items-center text-center space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16 pb-16 sm:pb-20 md:pb-24 lg:pb-32"
+          style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
+        >
           
-          {/* Layer 1: Massive Headline with Letter Spacing */}
+          {/* Layer 1: 3D Headline with Text Effect */}
           <motion.div
             className="relative"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+            style={{
+              transform: `translateZ(50px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
           >
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[140px] font-black leading-[0.95] text-white max-w-6xl mx-auto tracking-tight">
               <motion.span
@@ -308,10 +364,24 @@ export default function Landing() {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
+                style={{
+                  textShadow: `
+                    ${mousePosition.x * 2}px ${mousePosition.y * 2}px 0 rgba(255,255,255,0.1),
+                    ${mousePosition.x * 4}px ${mousePosition.y * 4}px 0 rgba(255,255,255,0.05),
+                    0 0 40px rgba(0,178,255,0.3)
+                  `,
+                }}
               >
                 Hire{" "}
                 <span className="relative inline-block">
-                  <span className="relative z-10 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent">
+                  <span 
+                    className="relative z-10 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent"
+                    style={{
+                      transform: `translateZ(20px) rotateY(${mousePosition.x * 5}deg)`,
+                      transformStyle: 'preserve-3d',
+                      display: 'inline-block',
+                    }}
+                  >
                     Elite Talent
                   </span>
                   <motion.span
@@ -333,36 +403,69 @@ export default function Landing() {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
+                style={{
+                  transform: `translateZ(30px) rotateX(${mousePosition.y * 2}deg)`,
+                  transformStyle: 'preserve-3d',
+                }}
               >
                 From Top Universities
               </motion.span>
             </h1>
           </motion.div>
           
-          {/* Layer 2: Description with Blur Effect */}
+          {/* Layer 2: 3D Description */}
           <motion.p
             className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 max-w-3xl mx-auto leading-relaxed font-light"
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 0.9, ease: "easeOut" }}
+            style={{
+              transform: `translateZ(40px) rotateX(${mousePosition.y * 2}deg) rotateY(${mousePosition.x * 2}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
           >
             Connect directly with verified students offering professional services.
             <br className="hidden sm:block" />
             <span className="text-white/80">Quality work, competitive rates, secure payments.</span>
           </motion.p>
 
-          {/* Layer 3: Large Prominent Search Bar */}
+          {/* Layer 3: 3D Interactive Search Card */}
           <motion.div
             className="relative w-full max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 40, scale: 0.9, filter: "blur(15px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 1.1, ease: "easeOut" }}
+            style={{
+              transform: `translateZ(60px) rotateX(${mousePosition.y * 4}deg) rotateY(${mousePosition.x * 4}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
           >
-            {/* Glowing background effect */}
-            <div className="absolute inset-0 bg-white/20 rounded-3xl blur-3xl -z-10"></div>
+            {/* 3D Glowing background effect */}
+            <div 
+              className="absolute inset-0 bg-white/20 rounded-3xl blur-3xl -z-10"
+              style={{
+                transform: `translateZ(-20px) rotateX(${mousePosition.y * 2}deg)`,
+                transformStyle: 'preserve-3d',
+              }}
+            ></div>
             
-            {/* Main Search Card - Large and Prominent */}
-            <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 md:p-12 shadow-2xl border border-white/40 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(0,178,255,0.3)] transition-all duration-500">
+            {/* 3D Main Search Card - Tilts on mouse movement */}
+            <motion.div 
+              className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 md:p-12 shadow-2xl border border-white/40 transition-all duration-300"
+              style={{
+                transform: `translateZ(0px) rotateX(${mousePosition.y * 5}deg) rotateY(${mousePosition.x * 5}deg)`,
+                transformStyle: 'preserve-3d',
+                boxShadow: `
+                  ${mousePosition.x * 10}px ${mousePosition.y * 10}px 40px rgba(0,0,0,0.3),
+                  0 0 60px rgba(0,178,255,0.2)
+                `,
+              }}
+              whileHover={{
+                scale: 1.02,
+                z: 20,
+                transition: { duration: 0.3 },
+              }}
+            >
               {/* Search Input - Extra Large */}
               <div className="space-y-4 sm:space-y-5">
                 <div className="relative">
@@ -390,10 +493,10 @@ export default function Landing() {
                 </Button>
               </div>
 
-              {/* Popular Categories - Enhanced Layout */}
+              {/* 3D Floating Category Cards */}
               <div className="mt-6 sm:mt-8">
                 <p className="text-xs sm:text-sm text-muted-foreground mb-4 text-center uppercase tracking-wider">Popular Categories</p>
-                <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+                <div className="flex flex-wrap justify-center gap-3 sm:gap-4" style={{ perspective: '1000px' }}>
                   {[
                     { term: 'Web Development', icon: Code },
                     { term: 'UI/UX Design', icon: Palette },
@@ -407,11 +510,25 @@ export default function Landing() {
                       initial={{ opacity: 0, y: 20, scale: 0.8 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ duration: 0.5, delay: 1.3 + (index * 0.1), ease: "easeOut" }}
+                      style={{
+                        transform: `translateZ(${index * 10}px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
+                        transformStyle: 'preserve-3d',
+                      }}
+                      whileHover={{
+                        scale: 1.1,
+                        rotateY: mousePosition.x * 10,
+                        rotateX: mousePosition.y * 10,
+                        z: 20,
+                        transition: { duration: 0.3 },
+                      }}
                     >
                       <Button
                         variant="outline"
                         className="h-12 sm:h-14 px-5 sm:px-6 justify-start gap-2.5 hover:bg-[#00B2FF]/10 hover:border-[#00B2FF] hover:text-[#00B2FF] transition-all group text-sm sm:text-base font-medium rounded-xl"
                         onClick={() => handlePopularSearch(term)}
+                        style={{
+                          transformStyle: 'preserve-3d',
+                        }}
                       >
                         <Icon className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
                         <span>{term}</span>
@@ -420,15 +537,19 @@ export default function Landing() {
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
-          {/* Layer 4: CTA Buttons */}
+          {/* Layer 4: 3D CTA Buttons */}
           <motion.div
             className="flex flex-col sm:flex-row gap-5 sm:gap-6 justify-center items-center max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
+            style={{
+              transform: `translateZ(50px) rotateX(${mousePosition.y * 2}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
           >
             <Button
               size="lg"
@@ -453,12 +574,16 @@ export default function Landing() {
             </Button>
           </motion.div>
 
-          {/* Layer 5: Trust Indicators */}
+          {/* Layer 5: 3D Trust Indicators */}
           <motion.div
             className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-16"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.7, ease: "easeOut" }}
+            style={{
+              transform: `translateZ(40px) rotateX(${mousePosition.y * 1.5}deg)`,
+              transformStyle: 'preserve-3d',
+            }}
           >
             <div className="flex items-center gap-3 text-white/90 text-base sm:text-lg font-medium">
               <CheckCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
