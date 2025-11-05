@@ -328,28 +328,35 @@ export default function BuyerDashboard() {
 
         {/* Navigation Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
-            <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <LayoutDashboard className="h-4 w-4" />
-              Overview
-              </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Briefcase className="h-4 w-4" />
-              My Projects
-              </TabsTrigger>
-            <TabsTrigger value="messages" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <MessageCircle className="h-4 w-4" />
-              Messages
-              </TabsTrigger>
-            <TabsTrigger value="browse" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Users className="h-4 w-4" />
-              Browse Talent
-              </TabsTrigger>
-            <TabsTrigger value="contracts" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <FileText className="h-4 w-4" />
-              Contracts
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <TabsList className="inline-flex w-full sm:w-auto min-w-full sm:min-w-0 h-auto sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
+                <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <LayoutDashboard className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden xs:inline">Overview</span>
+                  <span className="xs:hidden">Stats</span>
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Briefcase className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">My Projects</span>
+                  <span className="sm:hidden">Projects</span>
+                </TabsTrigger>
+                <TabsTrigger value="messages" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Messages</span>
+                  <span className="sm:hidden">Chat</span>
+                </TabsTrigger>
+                <TabsTrigger value="browse" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Browse Talent</span>
+                  <span className="sm:hidden">Browse</span>
+                </TabsTrigger>
+                <TabsTrigger value="contracts" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Contracts</span>
+                  <span className="sm:hidden">Contracts</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="overview" className="space-y-8">
               {/* Key Stats */}
@@ -357,56 +364,56 @@ export default function BuyerDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
               >
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                    <DollarSign className="h-6 w-6" />
+                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
+                    <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Spent</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">${stats.totalSpent}</div>
+                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">${stats.totalSpent}</div>
                   <p className="text-xs text-muted-foreground">on completed projects</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
-                    <Activity className="h-6 w-6" />
+                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-3 sm:mb-4">
+                    <Activity className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Active Projects</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Active Projects</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary mb-2">{stats.activeOrders}</div>
+                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    <div className="text-2xl sm:text-3xl font-bold text-secondary mb-2">{stats.activeOrders}</div>
                   <p className="text-xs text-muted-foreground">in progress</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
-                    <CheckCircle className="h-6 w-6" />
+                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-3 sm:mb-4">
+                    <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Completed</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-accent mb-2">{stats.completedProjects}</div>
+                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    <div className="text-2xl sm:text-3xl font-bold text-accent mb-2">{stats.completedProjects}</div>
                   <p className="text-xs text-muted-foreground">successfully delivered</p>
                   </CardContent>
                 </Card>
 
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                    <Bookmark className="h-6 w-6" />
+                  <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                    <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
+                    <Bookmark className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Saved Services</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Saved Services</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">{stats.savedServices}</div>
+                  <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">{stats.savedServices}</div>
                   <p className="text-xs text-muted-foreground">for later</p>
                   </CardContent>
                 </Card>
@@ -419,11 +426,11 @@ export default function BuyerDashboard() {
                 animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               >
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold">My Projects</h2>
-                  <p className="text-muted-foreground">View and manage your accepted projects</p>
-                  <p className="text-xs text-muted-foreground mt-1">Debug: {userProjects.length} projects found</p>
+                  <h2 className="text-xl sm:text-2xl font-bold">My Projects</h2>
+                  <p className="text-sm sm:text-base text-muted-foreground">View and manage your accepted projects</p>
+                  <p className="text-xs text-muted-foreground mt-1 hidden sm:block">Debug: {userProjects.length} projects found</p>
                 </div>
               </div>
 
@@ -447,27 +454,28 @@ export default function BuyerDashboard() {
                   <div className="space-y-4">
                   {userProjects.map((project) => (
                     <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-3">
-                              <h3 className="text-lg font-semibold">{project.service?.title || 'Untitled Project'}</h3>
-                              <Badge className={`${getStatusColor(project.status)} border`}>
+                        <CardContent className="p-4 sm:p-6">
+                          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                            <div className="flex-1 w-full">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                              <h3 className="text-base sm:text-lg font-semibold">{project.service?.title || 'Untitled Project'}</h3>
+                              <Badge className={`${getStatusColor(project.status)} border text-xs`}>
                                   <span className="flex items-center gap-1">
                                   {getStatusIcon(project.status)}
-                                  {project.status}
+                                  <span className="hidden sm:inline">{project.status}</span>
+                                  <span className="sm:hidden">{project.status.substring(0, 6)}</span>
                                   </span>
                                 </Badge>
                               </div>
                               
-                              <p className="text-muted-foreground mb-4 line-clamp-2">
+                              <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2">
                               {project.service?.description || 'No description available'}
                               </p>
                               
-                              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                   <UserIcon className="h-4 w-4" />
-                                {project.student?.name || 'Unknown Student'}
+                                <span className="truncate">{project.student?.name || 'Unknown Student'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <DollarSign className="h-4 w-4" />
@@ -480,7 +488,7 @@ export default function BuyerDashboard() {
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-2 ml-4">
+                            <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
                             {(project.status === 'PENDING' || project.status === 'PAID' || project.status === 'IN_PROGRESS' || project.status === 'DELIVERED' || project.status === 'ACCEPTED') ? (
                                 <Button
                                   variant="default"
@@ -491,7 +499,7 @@ export default function BuyerDashboard() {
                                   console.log('🚀 Project data:', project);
                                   navigate(`/chat/${chatId}`);
                                 }}
-                                  className="gap-2 bg-primary hover:bg-primary/90"
+                                  className="gap-2 bg-primary hover:bg-primary/90 min-h-[44px] w-full sm:w-auto"
                                 >
                                   <MessageCircle className="h-4 w-4" />
                                   Chat
@@ -509,7 +517,7 @@ export default function BuyerDashboard() {
                   </div>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                    <CardContent className="p-12 text-center">
+                    <CardContent className="p-6 sm:p-12 text-center">
                       <ShoppingCart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Projects Yet</h3>
                     <p className="text-muted-foreground mb-6">You haven't accepted any projects yet. Browse available services to get started!</p>
@@ -529,10 +537,10 @@ export default function BuyerDashboard() {
                 animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               >
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold">Messages</h2>
-                  <p className="text-muted-foreground">Chat with students about your projects</p>
+                    <h2 className="text-xl sm:text-2xl font-bold">Messages</h2>
+                  <p className="text-sm sm:text-base text-muted-foreground">Chat with students about your projects</p>
                   </div>
                 </div>
 
@@ -554,17 +562,17 @@ export default function BuyerDashboard() {
                     .filter(project => ['PENDING', 'PAID', 'IN_PROGRESS', 'DELIVERED', 'ACCEPTED'].includes(project.status))
                     .map((project) => (
                       <Card key={project.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                          <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4">
-                              <Avatar className="h-12 w-12 border border-border/30">
-                                <AvatarFallback className="bg-primary/10 text-primary">
+                          <CardContent className="p-4 sm:p-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                              <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                              <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border/30 flex-shrink-0">
+                                <AvatarFallback className="bg-primary/10 text-primary text-sm sm:text-base">
                                   {project.student?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                                   </AvatarFallback>
                                 </Avatar>
-                                <div>
-                                <h3 className="font-semibold">{project.student?.name || 'Unknown Student'}</h3>
-                                <p className="text-sm text-muted-foreground">{project.service?.title || 'Project'}</p>
+                                <div className="min-w-0 flex-1">
+                                <h3 className="font-semibold text-sm sm:text-base truncate">{project.student?.name || 'Unknown Student'}</h3>
+                                <p className="text-xs sm:text-sm text-muted-foreground truncate">{project.service?.title || 'Project'}</p>
                                 </div>
                               </div>
                               <Button
@@ -576,7 +584,7 @@ export default function BuyerDashboard() {
                                 console.log('🚀 Messages tab - Project data:', project);
                                 navigate(`/chat/${chatId}`);
                               }}
-                                className="gap-2 bg-primary hover:bg-primary/90"
+                                className="gap-2 bg-primary hover:bg-primary/90 min-h-[44px] w-full sm:w-auto"
                               >
                                 <MessageCircle className="h-4 w-4" />
                               Chat
@@ -588,7 +596,7 @@ export default function BuyerDashboard() {
                   </div>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                    <CardContent className="p-12 text-center">
+                    <CardContent className="p-6 sm:p-12 text-center">
                       <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Active Chats</h3>
                     <p className="text-muted-foreground mb-4">You don't have any active chat conversations yet.</p>
@@ -617,7 +625,7 @@ export default function BuyerDashboard() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold">Browse Talent</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold">Browse Talent</h2>
                     <p className="text-muted-foreground">Find talented students for your projects</p>
                   </div>
                   <Button 
@@ -1007,7 +1015,7 @@ function BuyerContractsSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">My Contracts</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">My Contracts</h2>
           <p className="text-muted-foreground">Review and sign contracts to start working with students</p>
         </div>
       </div>

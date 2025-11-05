@@ -487,28 +487,35 @@ export default function AdminDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
-              <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <BarChart3 className="h-4 w-4" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="verification" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <UserCheck className="h-4 w-4" />
-                Verification
-              </TabsTrigger>
-              <TabsTrigger value="messages" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <MessageCircle className="h-4 w-4" />
-                Messages
-              </TabsTrigger>
-              <TabsTrigger value="services" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Package className="h-4 w-4" />
-                Services
-              </TabsTrigger>
-              <TabsTrigger value="top-selections" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Star className="h-4 w-4" />
-                Top Selections
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <TabsList className="inline-flex w-full sm:w-auto min-w-full sm:min-w-0 h-auto sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
+                <TabsTrigger value="overview" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden xs:inline">Overview</span>
+                  <span className="xs:hidden">Stats</span>
+                </TabsTrigger>
+                <TabsTrigger value="verification" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <UserCheck className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Verification</span>
+                  <span className="sm:hidden">Verify</span>
+                </TabsTrigger>
+                <TabsTrigger value="messages" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Messages</span>
+                  <span className="sm:hidden">Chat</span>
+                </TabsTrigger>
+                <TabsTrigger value="services" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Package className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Services</span>
+                  <span className="sm:hidden">Services</span>
+                </TabsTrigger>
+                <TabsTrigger value="top-selections" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Star className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Top Selections</span>
+                  <span className="sm:hidden">Top</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-8">
@@ -519,63 +526,63 @@ export default function AdminDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
                   >
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                <Users className="h-8 w-8" />
+            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
+                <Users className="h-6 w-6 sm:h-8 sm:w-8" />
               </div>
-              <CardTitle className="text-xl">Total Users</CardTitle>
+              <CardTitle className="text-base sm:text-xl">Total Users</CardTitle>
             </CardHeader>
-            <CardContent>
-                        <div className="text-3xl font-bold text-primary mb-2">{stats.users.total}</div>
-              <p className="text-sm text-muted-foreground">
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">{stats.users.total}</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                           {stats.users.students} Students • {stats.users.buyers} Buyers
               </p>
             </CardContent>
           </Card>
 
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
-                <UserCheck className="h-8 w-8" />
+            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="mx-auto p-3 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-3 sm:mb-4">
+                <UserCheck className="h-6 w-6 sm:h-8 sm:w-8" />
               </div>
-              <CardTitle className="text-xl">Verified Students</CardTitle>
+              <CardTitle className="text-base sm:text-xl">Verified Students</CardTitle>
             </CardHeader>
-            <CardContent>
-                        <div className="text-3xl font-bold text-secondary mb-2">{stats.users.verifiedStudents}</div>
-              <p className="text-sm text-muted-foreground">
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-2xl sm:text-3xl font-bold text-secondary mb-2">{stats.users.verifiedStudents}</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                           {stats.users.pendingVerifications} pending verification
               </p>
             </CardContent>
           </Card>
 
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
-                <Package className="h-8 w-8" />
+            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="mx-auto p-3 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-3 sm:mb-4">
+                <Package className="h-6 w-6 sm:h-8 sm:w-8" />
               </div>
-                        <CardTitle className="text-xl">Services</CardTitle>
+                        <CardTitle className="text-base sm:text-xl">Services</CardTitle>
             </CardHeader>
-            <CardContent>
-                        <div className="text-3xl font-bold text-accent mb-2">{stats.services.total}</div>
-              <p className="text-sm text-muted-foreground">
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-2xl sm:text-3xl font-bold text-accent mb-2">{stats.services.total}</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                           {stats.services.active} active • {stats.services.topSelections} top selections
               </p>
             </CardContent>
           </Card>
 
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-            <CardHeader className="pb-4">
-              <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                <DollarSign className="h-8 w-8" />
+            <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="mx-auto p-3 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-3 sm:mb-4">
+                <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
               </div>
-              <CardTitle className="text-xl">Revenue</CardTitle>
+              <CardTitle className="text-base sm:text-xl">Revenue</CardTitle>
             </CardHeader>
-            <CardContent>
-                        <div className="text-3xl font-bold text-primary mb-2">${Math.round(stats.revenue.total)}</div>
-              <p className="text-sm text-muted-foreground">
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-2xl sm:text-3xl font-bold text-primary mb-2">${Math.round(stats.revenue.total)}</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                           {stats.orders.total} total orders
               </p>
             </CardContent>
@@ -587,48 +594,48 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
                   >
                     <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                      <CardHeader className="pb-4">
-                        <div className="mx-auto p-4 rounded-full bg-blue-500/10 text-blue-500 w-fit mb-4">
-                          <MessageCircle className="h-8 w-8" />
+                      <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                        <div className="mx-auto p-3 sm:p-4 rounded-full bg-blue-500/10 text-blue-500 w-fit mb-3 sm:mb-4">
+                          <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
-                        <CardTitle className="text-xl">Messages</CardTitle>
+                        <CardTitle className="text-base sm:text-xl">Messages</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <div className="text-3xl font-bold text-blue-500 mb-2">{stats.messages.total}</div>
-                        <p className="text-sm text-muted-foreground">
+                      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-2xl sm:text-3xl font-bold text-blue-500 mb-2">{stats.messages.total}</div>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {stats.messages.recent} this {stats.period}
                         </p>
                       </CardContent>
                     </Card>
 
                     <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                      <CardHeader className="pb-4">
-                        <div className="mx-auto p-4 rounded-full bg-green-500/10 text-green-500 w-fit mb-4">
-                          <CheckCircle className="h-8 w-8" />
+                      <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                        <div className="mx-auto p-3 sm:p-4 rounded-full bg-green-500/10 text-green-500 w-fit mb-3 sm:mb-4">
+                          <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
-                        <CardTitle className="text-xl">Hire Requests</CardTitle>
+                        <CardTitle className="text-base sm:text-xl">Hire Requests</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <div className="text-3xl font-bold text-green-500 mb-2">{stats.hireRequests.total}</div>
-                        <p className="text-sm text-muted-foreground">
+                      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-2xl sm:text-3xl font-bold text-green-500 mb-2">{stats.hireRequests.total}</div>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {stats.hireRequests.accepted} accepted
                         </p>
                       </CardContent>
                     </Card>
 
                     <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center">
-                      <CardHeader className="pb-4">
-                        <div className="mx-auto p-4 rounded-full bg-purple-500/10 text-purple-500 w-fit mb-4">
-                          <Star className="h-8 w-8" />
+                      <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
+                        <div className="mx-auto p-3 sm:p-4 rounded-full bg-purple-500/10 text-purple-500 w-fit mb-3 sm:mb-4">
+                          <Star className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
-                        <CardTitle className="text-xl">Top Selections</CardTitle>
+                        <CardTitle className="text-base sm:text-xl">Top Selections</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <div className="text-3xl font-bold text-purple-500 mb-2">{stats.services.topSelections}</div>
-              <p className="text-sm text-muted-foreground">
+                      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+                        <div className="text-2xl sm:text-3xl font-bold text-purple-500 mb-2">{stats.services.topSelections}</div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                           Featured services
               </p>
             </CardContent>
@@ -652,22 +659,22 @@ export default function AdminDashboard() {
               >
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-              <CardTitle className="flex items-center gap-2">
-                        <MessageCircle className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                        <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                         All Messages
               </CardTitle>
-                      <CardDescription>Track all conversations between students and buyers</CardDescription>
+                      <CardDescription className="text-xs sm:text-sm">Track all conversations between students and buyers</CardDescription>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                         <Input
                           placeholder="Search messages..."
                           value={messageSearch}
                           onChange={(e) => setMessageSearch(e.target.value)}
-                          className="pl-10 w-full h-10"
+                          className="pl-10 w-full h-10 min-h-[44px] text-base"
                         />
                       </div>
                     </div>
@@ -679,31 +686,31 @@ export default function AdminDashboard() {
                       filteredMessages.map((message) => (
                     <div
                           key={message.id}
-                          className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50"
+                          className="flex items-start gap-3 p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50"
                     >
                           <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
                       <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
                               <Badge variant={message.sender.role === 'STUDENT' ? 'default' : 'secondary'} className="text-xs">
                                 {message.sender.role}
                           </Badge>
-                              <span className="font-medium text-sm">{message.sender.name}</span>
-                              <span className="text-xs text-muted-foreground">
+                              <span className="font-medium text-xs sm:text-sm truncate">{message.sender.name}</span>
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">
                                 {new Date(message.createdAt).toLocaleString()}
                               </span>
                             </div>
                             <p className="text-sm mb-2">{message.body}</p>
-                            <div className="text-xs text-muted-foreground mb-3">
-                              <p><strong>Service:</strong> {message.room.hireRequest.service.title}</p>
-                              <p><strong>Buyer:</strong> {message.room.hireRequest.buyer.name}</p>
-                              <p><strong>Student:</strong> {message.room.hireRequest.student.name}</p>
+                            <div className="text-xs text-muted-foreground mb-3 space-y-1">
+                              <p className="truncate"><strong>Service:</strong> {message.room.hireRequest.service.title}</p>
+                              <p className="truncate"><strong>Buyer:</strong> {message.room.hireRequest.buyer.name}</p>
+                              <p className="truncate"><strong>Student:</strong> {message.room.hireRequest.student.name}</p>
                         </div>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
                           disabled={loadingConversation}
-                          className="text-xs"
+                          className="text-xs min-h-[44px] w-full sm:w-auto"
                         >
                           <MessageCircle className="w-3 h-3 mr-1" />
                           {loadingConversation ? "Loading..." : "View Full Conversation"}
@@ -732,22 +739,22 @@ export default function AdminDashboard() {
               >
           <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
             <CardHeader>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <Package className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                         All Services
               </CardTitle>
-                      <CardDescription>Manage all services on the platform</CardDescription>
+                      <CardDescription className="text-xs sm:text-sm">Manage all services on the platform</CardDescription>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <div className="relative w-full sm:w-64 md:w-80 lg:w-96">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                         <Input
                           placeholder="Search services..."
                           value={serviceSearch}
                           onChange={(e) => setServiceSearch(e.target.value)}
-                          className="pl-10 w-full h-10"
+                          className="pl-10 w-full h-10 min-h-[44px] text-base"
                         />
                       </div>
                     </div>
@@ -759,38 +766,39 @@ export default function AdminDashboard() {
                       filteredServices.map((service) => (
                     <div
                           key={service.id}
-                          className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border/50"
+                          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50"
                     >
                       <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-medium">{service.title}</h3>
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <h3 className="font-medium text-sm sm:text-base truncate">{service.title}</h3>
                               {service.isTopSelection && (
-                                <Badge variant="default" className="text-xs">
+                                <Badge variant="default" className="text-xs whitespace-nowrap">
                                   <Star className="h-3 w-3 mr-1" />
                                   Top Selection
                                 </Badge>
                               )}
-                              <Badge variant={service.isActive ? 'default' : 'secondary'} className="text-xs">
+                              <Badge variant={service.isActive ? 'default' : 'secondary'} className="text-xs whitespace-nowrap">
                                 {service.isActive ? 'Active' : 'Inactive'}
                               </Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{service.description}</p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                              <span><strong>Owner:</strong> {service.owner.name}</span>
-                              <span><strong>Price:</strong> ${service.priceCents / 100}</span>
-                              <span><strong>University:</strong> {service.owner.university || 'N/A'}</span>
+                            <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">{service.description}</p>
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
+                              <span className="truncate"><strong>Owner:</strong> {service.owner.name}</span>
+                              <span className="whitespace-nowrap"><strong>Price:</strong> ${service.priceCents / 100}</span>
+                              <span className="truncate"><strong>University:</strong> {service.owner.university || 'N/A'}</span>
                               {service.owner.isVerified && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs whitespace-nowrap">
                                   <CheckCircle className="h-3 w-3 mr-1" />
                                   Verified
                           </Badge>
                           )}
                         </div>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             <Button
                               size="sm"
                               variant={service.isTopSelection ? "outline" : "default"}
+                              className="min-h-[44px] w-full sm:w-auto"
                               onClick={() => handleToggleTopSelection(service.id, !service.isTopSelection)}
                             >
                               {service.isTopSelection ? <StarOff className="h-3 w-3" /> : <Star className="h-3 w-3" />}

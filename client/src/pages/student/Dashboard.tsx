@@ -510,43 +510,45 @@ export default function StudentDashboard() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 mb-6 sm:mb-8 h-12 sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1">
-              <TabsTrigger 
-                value="overview" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
-              >
-                <span className="hidden sm:inline">Overview</span>
-                <span className="sm:hidden">Stats</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="orders" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
-              >
-                <span className="hidden sm:inline">Buyer Requests</span>
-                <span className="sm:hidden">Orders</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="messages" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
-              >
-                <span className="hidden sm:inline">Messages</span>
-                <span className="sm:hidden">Chat</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="services" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
-              >
-                <span className="hidden sm:inline">My Services</span>
-                <span className="sm:hidden">Services</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="contracts" 
-                className="text-xs sm:text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg h-full flex items-center justify-center"
-              >
-                <span className="hidden sm:inline">Contracts</span>
-                <span className="sm:hidden">Contracts</span>
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+              <TabsList className="inline-flex w-full sm:w-auto min-w-full sm:min-w-0 h-auto sm:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
+                <TabsTrigger 
+                  value="overview" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                >
+                  <span className="hidden xs:inline">Overview</span>
+                  <span className="xs:hidden">Stats</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="orders" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                >
+                  <span className="hidden sm:inline">Buyer Requests</span>
+                  <span className="sm:hidden">Orders</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="messages" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                >
+                  <span className="hidden sm:inline">Messages</span>
+                  <span className="sm:hidden">Chat</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="services" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                >
+                  <span className="hidden sm:inline">My Services</span>
+                  <span className="sm:hidden">Services</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="contracts" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium px-3 sm:px-4 py-2.5 sm:py-3 min-h-[44px] data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                >
+                  <span className="hidden sm:inline">Contracts</span>
+                  <span className="sm:hidden">Contracts</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-8">
@@ -564,83 +566,83 @@ export default function StudentDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6"
+                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6"
               >
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="projects-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                      <Package className="h-8 w-8" />
+                  <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-2 sm:mb-4">
+                      <Package className="h-5 w-5 sm:h-8 sm:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Projects</CardTitle>
+                    <CardTitle className="text-sm sm:text-xl">Projects</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">{stats.totalProjects}</div>
-                    <p className="text-sm text-muted-foreground">Total projects</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-3xl font-bold text-primary mb-1 sm:mb-2">{stats.totalProjects}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Total projects</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="accepted-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
-                      <TrendingUp className="h-8 w-8" />
+                  <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-2 sm:mb-4">
+                      <TrendingUp className="h-5 w-5 sm:h-8 sm:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Accepted</CardTitle>
+                    <CardTitle className="text-sm sm:text-xl">Accepted</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary mb-2">{stats.acceptedApplications}</div>
-                    <p className="text-sm text-muted-foreground">Accepted applications</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-3xl font-bold text-secondary mb-1 sm:mb-2">{stats.acceptedApplications}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Accepted applications</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="earnings-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
-                      <DollarSign className="h-8 w-8" />
+                  <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-2 sm:mb-4">
+                      <DollarSign className="h-5 w-5 sm:h-8 sm:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Earnings</CardTitle>
+                    <CardTitle className="text-sm sm:text-xl">Earnings</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-accent mb-2">${stats.totalEarnings}</div>
-                    <p className="text-sm text-muted-foreground">Total earnings</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-3xl font-bold text-accent mb-1 sm:mb-2">${stats.totalEarnings}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Total earnings</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="pending-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-primary/10 text-primary w-fit mb-4">
-                      <Clock className="h-8 w-8" />
+                  <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-primary/10 text-primary w-fit mb-2 sm:mb-4">
+                      <Clock className="h-5 w-5 sm:h-8 sm:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Pending</CardTitle>
+                    <CardTitle className="text-sm sm:text-xl">Pending</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary mb-2">{stats.pendingApplications}</div>
-                    <p className="text-sm text-muted-foreground">Pending applications</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-3xl font-bold text-primary mb-1 sm:mb-2">{stats.pendingApplications}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Pending applications</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="pending-orders-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-4">
-                      <MessageCircle className="h-8 w-8" />
+                  <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-secondary/10 text-secondary w-fit mb-2 sm:mb-4">
+                      <MessageCircle className="h-5 w-5 sm:h-8 sm:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Buyer Requests</CardTitle>
+                    <CardTitle className="text-sm sm:text-xl">Buyer Requests</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary mb-2">{stats.pendingOrders}</div>
-                    <p className="text-sm text-muted-foreground">Pending orders</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-3xl font-bold text-secondary mb-1 sm:mb-2">{stats.pendingOrders}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Pending orders</p>
                   </CardContent>
                 </Card>
 
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center" data-testid="order-value-stat">
-                  <CardHeader className="pb-4">
-                    <div className="mx-auto p-4 rounded-full bg-accent/10 text-accent w-fit mb-4">
-                      <Star className="h-8 w-8" />
+                  <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+                    <div className="mx-auto p-2 sm:p-4 rounded-full bg-accent/10 text-accent w-fit mb-2 sm:mb-4">
+                      <Star className="h-5 w-5 sm:h-8 sm:w-8" />
                     </div>
-                    <CardTitle className="text-xl">Order Value</CardTitle>
+                    <CardTitle className="text-sm sm:text-xl">Order Value</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-accent mb-2">${stats.totalOrderValue}</div>
-                    <p className="text-sm text-muted-foreground">From orders</p>
+                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+                    <div className="text-xl sm:text-3xl font-bold text-accent mb-1 sm:mb-2">${stats.totalOrderValue}</div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">From orders</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -650,7 +652,7 @@ export default function StudentDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+                className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8"
               >
                 <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
                   <CardHeader>
@@ -666,7 +668,7 @@ export default function StudentDashboard() {
                         applications.slice(0, 4).map((application, index) => (
                           <div
                             key={application.id}
-                            className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
+                            className="flex items-start gap-3 p-3 sm:p-4 rounded-lg bg-muted/30"
                             data-testid={`activity-${index}`}
                           >
                             <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
@@ -699,9 +701,9 @@ export default function StudentDashboard() {
                     </CardTitle>
                     <CardDescription>Manage your services and profile</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-2 sm:space-y-3 p-4 sm:p-6">
                     <Button 
-                      className="w-full justify-start gap-2" 
+                      className="w-full justify-start gap-2 min-h-[44px] text-sm sm:text-base" 
                       variant="outline" 
                       data-testid="create-service-button"
                       onClick={() => navigate("/dashboard/student/services/new")}
@@ -710,7 +712,7 @@ export default function StudentDashboard() {
                       Create New Service
                     </Button>
                     <Button 
-                      className="w-full justify-start gap-2" 
+                      className="w-full justify-start gap-2 min-h-[44px] text-sm sm:text-base" 
                       variant="outline" 
                       data-testid="view-orders-button"
                       onClick={() => setActiveTab("orders")}
@@ -719,7 +721,7 @@ export default function StudentDashboard() {
                       View Buyer Requests
                     </Button>
                     <Button 
-                      className="w-full justify-start gap-2" 
+                      className="w-full justify-start gap-2 min-h-[44px] text-sm sm:text-base" 
                       variant="outline" 
                       data-testid="check-messages-button"
                       onClick={() => setActiveTab("messages")}
@@ -728,7 +730,7 @@ export default function StudentDashboard() {
                       Check Messages
                     </Button>
                     <Button 
-                      className="w-full justify-start gap-2" 
+                      className="w-full justify-start gap-2 min-h-[44px] text-sm sm:text-base" 
                       variant="outline" 
                       data-testid="settings-button"
                       onClick={() => navigate("/dashboard/student/settings")}
@@ -750,7 +752,7 @@ export default function StudentDashboard() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold">Buyer Requests</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold">Buyer Requests</h2>
                     <p className="text-muted-foreground">Orders from buyers requesting your services</p>
                   </div>
                 </div>
@@ -758,29 +760,29 @@ export default function StudentDashboard() {
                 {/* Hire Requests Section */}
                 {applications.length > 0 && (
                   <div className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4">Hire Requests ({applications.length})</h3>
+                    <h3 className="text-base sm:text-lg font-semibold mb-4">Hire Requests ({applications.length})</h3>
                     <div className="space-y-4">
                       {applications.map((application) => (
                         <Card key={application.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-3">
-                                  <h3 className="text-lg font-semibold">{application.service?.title || 'Service Request'}</h3>
-                                  <Badge className={
+                          <CardContent className="p-4 sm:p-6">
+                            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                              <div className="flex-1 w-full">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                                  <h3 className="text-base sm:text-lg font-semibold">{application.service?.title || 'Service Request'}</h3>
+                                  <Badge className={`text-xs ${
                                     application.status === 'ACCEPTED' 
                                       ? 'bg-green-100 text-green-800 border-green-200'
                                       : application.status === 'REJECTED'
                                       ? 'bg-red-100 text-red-800 border-red-200'
                                       : 'bg-yellow-100 text-yellow-800 border-yellow-200'
-                                  }>
+                                  }`}>
                                     <span className="flex items-center gap-1">
                                       {application.status === 'ACCEPTED' ? (
-                                        <CheckCircle className="h-4 w-4" />
+                                        <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                                       ) : application.status === 'REJECTED' ? (
-                                        <XCircle className="h-4 w-4" />
+                                        <XCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                                       ) : (
-                                        <Clock className="h-4 w-4" />
+                                        <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                                       )}
                                       {application.status === 'ACCEPTED' ? 'Accepted' : 
                                        application.status === 'REJECTED' ? 'Rejected' : 'Pending'}
@@ -788,14 +790,14 @@ export default function StudentDashboard() {
                                   </Badge>
                                 </div>
                                 
-                                <p className="text-muted-foreground mb-4 line-clamp-2">
+                                <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2">
                                   {application.message || 'No message provided'}
                                 </p>
                                 
-                                <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
                                   <div className="flex items-center gap-2">
                                     <UserIcon className="h-4 w-4" />
-                                    <span>Buyer: {application.buyer?.name || 'Unknown'}</span>
+                                    <span className="truncate">Buyer: {application.buyer?.name || 'Unknown'}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <DollarSign className="h-4 w-4" />
@@ -854,31 +856,32 @@ export default function StudentDashboard() {
                 {/* Orders Section */}
                 {orders.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Active Orders ({orders.length})</h3>
+                    <h3 className="text-base sm:text-lg font-semibold mb-4">Active Orders ({orders.length})</h3>
                     <div className="space-y-4">
                       {orders.map((order) => (
                         <Card key={order.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                          <CardContent className="p-6">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-3">
-                                  <h3 className="text-lg font-semibold">{order.project?.title || 'Untitled Project'}</h3>
-                                  <Badge className={`${getStatusColor(order.status)} border`}>
+                          <CardContent className="p-4 sm:p-6">
+                            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                              <div className="flex-1 w-full">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                                  <h3 className="text-base sm:text-lg font-semibold">{order.project?.title || 'Untitled Project'}</h3>
+                                  <Badge className={`${getStatusColor(order.status)} border text-xs`}>
                                     <span className="flex items-center gap-1">
                                       {getStatusIcon(order.status)}
-                                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                      <span className="hidden sm:inline">{order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                                      <span className="sm:hidden">{order.status.substring(0, 6)}</span>
                                     </span>
                                   </Badge>
                                 </div>
                               
-                                <p className="text-muted-foreground mb-4 line-clamp-2">
+                                <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-2">
                                   {order.project?.description || 'No description available'}
                                 </p>
                               
-                                <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
                                   <div className="flex items-center gap-2">
                                     <UserIcon className="h-4 w-4" />
-                                    <span>Buyer: {order.buyer?.full_name || 'Unknown'}</span>
+                                    <span className="truncate">Buyer: {order.buyer?.full_name || 'Unknown'}</span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <DollarSign className="h-4 w-4" />
@@ -891,14 +894,14 @@ export default function StudentDashboard() {
                                 </div>
                               </div>
                             
-                              <div className="flex items-center gap-2 ml-4">
+                              <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
                                 {order.status === 'pending' && (
                                   <>
                                     <Button
                                       size="sm"
                                       variant="outline"
                                       onClick={() => handleAcceptOrder(order.id)}
-                                      className="gap-2"
+                                      className="gap-2 min-h-[44px] w-full sm:w-auto"
                                     >
                                       <CheckCircle className="h-4 w-4" />
                                       Accept
@@ -907,7 +910,7 @@ export default function StudentDashboard() {
                                       size="sm"
                                       variant="outline"
                                       onClick={() => handleRejectOrder(order.id)}
-                                      className="gap-2"
+                                      className="gap-2 min-h-[44px] w-full sm:w-auto"
                                     >
                                       <X className="h-4 w-4" />
                                       Reject
@@ -919,7 +922,7 @@ export default function StudentDashboard() {
                                     size="sm"
                                     variant="outline"
                                     onClick={() => handleStartWork(order.id)}
-                                    className="gap-2"
+                                    className="gap-2 min-h-[44px] w-full sm:w-auto"
                                   >
                                     <Play className="h-4 w-4" />
                                     Start Work
@@ -930,7 +933,7 @@ export default function StudentDashboard() {
                                     size="sm"
                                     variant="outline"
                                     onClick={() => navigate(`/chat/${order.id}`)}
-                                    className="gap-2"
+                                    className="gap-2 min-h-[44px] w-full sm:w-auto"
                                   >
                                     <MessageCircle className="h-4 w-4" />
                                     Chat
@@ -948,7 +951,7 @@ export default function StudentDashboard() {
                 {/* Empty State */}
                 {applications.length === 0 && orders.length === 0 && (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                    <CardContent className="p-12 text-center">
+                    <CardContent className="p-6 sm:p-12 text-center">
                       <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                       <h3 className="text-xl font-semibold mb-2">No buyer requests yet</h3>
                       <p className="text-muted-foreground mb-6">Hire requests and orders will appear here when buyers want to work with you.</p>
@@ -971,7 +974,7 @@ export default function StudentDashboard() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold">Messages</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold">Messages</h2>
                     <p className="text-muted-foreground">Chat with buyers about your orders</p>
                   </div>
                 </div>
@@ -982,7 +985,7 @@ export default function StudentDashboard() {
                       .filter(app => app.status === 'ACCEPTED')
                       .map((application) => (
                         <Card key={application.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                          <CardContent className="p-6">
+                          <CardContent className="p-4 sm:p-6">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-4">
                                 <Avatar className="h-12 w-12">
@@ -1010,7 +1013,7 @@ export default function StudentDashboard() {
                   </div>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                    <CardContent className="p-12 text-center">
+                    <CardContent className="p-6 sm:p-12 text-center">
                       <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                       <h3 className="text-xl font-semibold mb-2">No active conversations</h3>
                       <p className="text-muted-foreground mb-6">You'll see your chat conversations here once you have accepted orders.</p>
@@ -1033,7 +1036,7 @@ export default function StudentDashboard() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold">My Services</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold">My Services</h2>
                     <p className="text-muted-foreground">Manage your service offerings</p>
                   </div>
                   <Button onClick={() => navigate("/dashboard/student/services/new")} className="gap-2">
@@ -1161,7 +1164,7 @@ export default function StudentDashboard() {
                   </div>
                 ) : (
                   <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                    <CardContent className="p-12 text-center">
+                    <CardContent className="p-6 sm:p-12 text-center">
                       <Briefcase className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                       <h3 className="text-xl font-semibold mb-2">No services created yet</h3>
                       <p className="text-muted-foreground mb-6">Create your first service to start attracting buyers and building your freelance business.</p>
@@ -1224,7 +1227,7 @@ function ContractsSection() {
   if (loading) {
     return (
       <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <span className="ml-2">Loading contracts...</span>
@@ -1238,7 +1241,7 @@ function ContractsSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">My Contracts</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">My Contracts</h2>
           <p className="text-muted-foreground">Manage your active contracts and agreements</p>
         </div>
       </div>
@@ -1372,7 +1375,7 @@ function StudentVerification() {
   if (loading) {
     return (
       <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin" />
           </div>
