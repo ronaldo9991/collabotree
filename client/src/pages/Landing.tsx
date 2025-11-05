@@ -328,8 +328,8 @@ export default function Landing() {
           ))}
         </div>
 
-        {/* Integrated Navbar - Top Column Inside Hero (Original Design) */}
-        <nav className="relative z-50 w-full pt-6 sm:pt-8 pb-4">
+        {/* Integrated Navbar - Top Column Inside Hero (Fixed like other pages) */}
+        <nav className="fixed top-0 left-0 right-0 z-50 pt-4">
           <div className="container-unified">
             {/* Original Pill-shaped Navigation Container */}
             <div className="flex items-center justify-between h-14 px-6 rounded-full border-2 border-primary/40 dark:border-primary/60 bg-card/95 dark:bg-card/90 backdrop-blur-md shadow-lg shadow-primary/5 dark:shadow-primary/10">
@@ -617,7 +617,7 @@ export default function Landing() {
         </nav>
 
         {/* Hero Content */}
-        <div className="relative z-10 flex-1 flex items-center container-unified w-full py-8 sm:py-10 md:py-12">
+        <div className="relative z-10 flex-1 flex items-center container-unified w-full pt-24 pb-8 sm:pt-28 sm:pb-10 md:pt-32 md:pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 items-start lg:items-center">
             
             {/* Top-Left: Large Headline */}
