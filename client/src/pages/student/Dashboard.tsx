@@ -761,7 +761,7 @@ export default function StudentDashboard() {
                 {/* Hire Requests Section */}
                 {applications.length > 0 && (
                   <div className="mb-8">
-                    <h3 className="text-base sm:text-lg font-semibold mb-4">Hire Requests ({applications.length})</h3>
+                    <h3 className="text-lg font-semibold mb-4 max-md:text-base">Hire Requests ({applications.length})</h3>
                     <div className="space-y-4">
                       {applications.map((application) => (
                         <Card key={application.id} className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
