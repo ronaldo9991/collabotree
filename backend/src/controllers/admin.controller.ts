@@ -350,7 +350,36 @@ export const getPublicTopSelectionServices = async (req: any, res: Response) => 
       orderBy: { createdAt: 'desc' },
     });
 
-    return sendSuccess(res, services);
+    // Get ratings for each service
+    const servicesWithRatings = await Promise.all(
+      services.map(async (service) => {
+        // Get reviews for this service (reviews for the student who owns the service)
+        const reviews = await prisma.review.findMany({
+          where: {
+            revieweeId: service.ownerId,
+            order: {
+              serviceId: service.id,
+            },
+          },
+          select: {
+            rating: true,
+          },
+        });
+
+        const totalReviews = reviews.length;
+        const averageRating = totalReviews > 0
+          ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+          : 0;
+
+        return {
+          ...service,
+          averageRating: Math.round(averageRating * 10) / 10,
+          totalReviews,
+        };
+      })
+    );
+
+    return sendSuccess(res, servicesWithRatings);
   } catch (error) {
     throw error;
   }

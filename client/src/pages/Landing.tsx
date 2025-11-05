@@ -49,7 +49,9 @@ export default function Landing() {
           category: 'Service',
           icon: Code,
           tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : [],
-          image: service.coverImage || null
+          image: service.coverImage || null,
+          averageRating: service.averageRating || 0,
+          totalReviews: service.totalReviews || 0
         }));
 
         setTopSelectionProjects(mappedTopSelectionProjects);
@@ -81,7 +83,9 @@ export default function Landing() {
           icon: Code,
           tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : [],
           image: service.coverImage || null,
-          createdAt: service.createdAt
+          createdAt: service.createdAt,
+          averageRating: service.averageRating || 0,
+          totalReviews: service.totalReviews || 0
         }));
 
         console.log('🎯 Mapped new projects:', mappedNewProjects);

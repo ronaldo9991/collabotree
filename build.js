@@ -88,9 +88,9 @@ function buildProject() {
       throw new Error('Prisma client generation failed');
     }
 
-    // Step 6: Build backend
-    log('\nStep 6: Building backend...', colors.blue);
-    if (!runCommand('npm run build', join(process.cwd(), 'backend'))) {
+    // Step 6: Build backend TypeScript only (frontend already built in Step 3)
+    log('\nStep 6: Building backend TypeScript...', colors.blue);
+    if (!runCommand('npm run build:ts', join(process.cwd(), 'backend'))) {
       throw new Error('Backend build failed');
     }
 
