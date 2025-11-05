@@ -329,8 +329,8 @@ export default function BuyerDashboard() {
         {/* Navigation Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Mobile: Scrollable tabs, Desktop: Grid layout */}
-            <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0">
-              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-full md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
+            <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-max md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1 flex-nowrap">
                 <TabsTrigger value="overview" className="flex items-center gap-2 text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="max-md:hidden">Overview</span>
@@ -459,7 +459,7 @@ export default function BuyerDashboard() {
                           <div className="flex items-start justify-between max-md:flex-col max-md:gap-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-3 max-md:flex-col max-md:items-start max-md:gap-2">
-                              <h3 className="text-lg font-semibold max-md:text-base">{project.service?.title || 'Untitled Project'}</h3>
+                              <h3 className="text-lg font-semibold max-md:text-base break-words overflow-wrap-anywhere min-w-0">{project.service?.title || 'Untitled Project'}</h3>
                               <Badge className={`${getStatusColor(project.status)} border text-xs`}>
                                   <span className="flex items-center gap-1">
                                   {getStatusIcon(project.status)}
@@ -469,7 +469,7 @@ export default function BuyerDashboard() {
                                 </Badge>
                               </div>
                               
-                              <p className="text-muted-foreground mb-4 line-clamp-2 max-md:text-sm">
+                              <p className="text-muted-foreground mb-4 line-clamp-2 max-md:text-sm break-words overflow-wrap-anywhere">
                               {project.service?.description || 'No description available'}
                               </p>
                               
@@ -572,8 +572,8 @@ export default function BuyerDashboard() {
                                   </AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0 flex-1">
-                                <h3 className="font-semibold text-sm sm:text-base truncate">{project.student?.name || 'Unknown Student'}</h3>
-                                <p className="text-xs sm:text-sm text-muted-foreground truncate">{project.service?.title || 'Project'}</p>
+                                <h3 className="font-semibold text-sm sm:text-base break-words overflow-wrap-anywhere min-w-0 line-clamp-1">{project.student?.name || 'Unknown Student'}</h3>
+                                <p className="text-xs sm:text-sm text-muted-foreground break-words overflow-wrap-anywhere line-clamp-2">{project.service?.title || 'Project'}</p>
                                 </div>
                               </div>
                               <Button

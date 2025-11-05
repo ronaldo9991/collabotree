@@ -156,6 +156,20 @@
     body {
       font-size: clamp(0.875rem, 2vw, 1rem);
       line-height: 1.5;
+      overflow-x: hidden;
+    }
+    
+    /* Better text wrapping for mobile */
+    * {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    /* Optimize long text */
+    p, span, div, h1, h2, h3, h4, h5, h6 {
+      hyphens: auto;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
     }
     
     /* Enhanced mobile dark mode readability */
@@ -454,6 +468,15 @@
     animation: shimmer 2s linear infinite;
   }
 
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+  
   /* Custom scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;

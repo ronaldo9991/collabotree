@@ -511,8 +511,8 @@ export default function StudentDashboard() {
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Mobile: Scrollable tabs, Desktop: Grid layout */}
-            <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0">
-              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-full md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1">
+            <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-max md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1 flex-nowrap">
                 <TabsTrigger 
                   value="overview" 
                   className="flex items-center gap-2 text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
@@ -769,7 +769,7 @@ export default function StudentDashboard() {
                             <div className="flex items-start justify-between max-md:flex-col max-md:gap-4">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-3 max-md:flex-col max-md:items-start max-md:gap-2">
-                                  <h3 className="text-lg font-semibold max-md:text-base">{application.service?.title || 'Service Request'}</h3>
+                                  <h3 className="text-lg font-semibold max-md:text-base break-words overflow-wrap-anywhere min-w-0">{application.service?.title || 'Service Request'}</h3>
                                   <Badge className={`text-xs ${
                                     application.status === 'ACCEPTED' 
                                       ? 'bg-green-100 text-green-800 border-green-200'
@@ -791,7 +791,7 @@ export default function StudentDashboard() {
                                   </Badge>
                                 </div>
                                 
-                                <p className="text-muted-foreground mb-4 line-clamp-2 max-md:text-sm">
+                                <p className="text-muted-foreground mb-4 line-clamp-2 max-md:text-sm break-words overflow-wrap-anywhere">
                                   {application.message || 'No message provided'}
                                 </p>
                                 
@@ -865,7 +865,7 @@ export default function StudentDashboard() {
                             <div className="flex items-start justify-between max-md:flex-col max-md:gap-4">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-3 max-md:flex-col max-md:items-start max-md:gap-2">
-                                  <h3 className="text-lg font-semibold max-md:text-base">{order.project?.title || 'Untitled Project'}</h3>
+                                  <h3 className="text-lg font-semibold max-md:text-base break-words overflow-wrap-anywhere min-w-0">{order.project?.title || 'Untitled Project'}</h3>
                                   <Badge className={`${getStatusColor(order.status)} border text-xs`}>
                                     <span className="flex items-center gap-1">
                                       {getStatusIcon(order.status)}
@@ -875,7 +875,7 @@ export default function StudentDashboard() {
                                   </Badge>
                                 </div>
                               
-                                <p className="text-muted-foreground mb-4 line-clamp-2 max-md:text-sm">
+                                <p className="text-muted-foreground mb-4 line-clamp-2 max-md:text-sm break-words overflow-wrap-anywhere">
                                   {order.project?.description || 'No description available'}
                                 </p>
                               
@@ -995,8 +995,8 @@ export default function StudentDashboard() {
                                   </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <h3 className="font-semibold">{application.buyer?.name || 'Unknown Buyer'}</h3>
-                                  <p className="text-sm text-muted-foreground">{application.service?.title || 'Untitled Service'}</p>
+                                  <h3 className="font-semibold break-words overflow-wrap-anywhere min-w-0">{application.buyer?.name || 'Unknown Buyer'}</h3>
+                                  <p className="text-sm text-muted-foreground break-words overflow-wrap-anywhere line-clamp-2">{application.service?.title || 'Untitled Service'}</p>
                                   <p className="text-xs text-muted-foreground">${((application as any).priceCents / 100).toFixed(0)} • {formatDate((application as any).createdAt)}</p>
                                 </div>
                               </div>
@@ -1035,14 +1035,15 @@ export default function StudentDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6 max-md:flex-col max-md:items-stretch max-md:gap-4">
                   <div>
                     <h2 className="text-2xl font-bold max-md:text-xl">My Services</h2>
-                    <p className="text-muted-foreground">Manage your service offerings</p>
+                    <p className="text-muted-foreground max-md:text-sm">Manage your service offerings</p>
                   </div>
-                  <Button onClick={() => navigate("/dashboard/student/services/new")} className="gap-2">
+                  <Button onClick={() => navigate("/dashboard/student/services/new")} className="gap-2 max-md:min-h-[44px] max-md:w-full max-md:text-sm">
                     <Plus className="h-4 w-4" />
-                    Create Service
+                    <span className="max-md:hidden">Create Service</span>
+                    <span className="md:hidden">Create</span>
                   </Button>
                 </div>
 
@@ -1080,22 +1081,22 @@ export default function StudentDashboard() {
                               </div>
                             )}
                             
-                            <div className="p-6">
+                            <div className="p-6 max-md:p-4">
                               {/* Service Title & Status */}
-                              <div className="flex items-start justify-between mb-3">
-                                <h3 className="font-semibold text-lg line-clamp-2 flex-1 pr-2">
+                              <div className="flex items-start justify-between mb-3 gap-2 max-md:flex-col max-md:items-start max-md:gap-2">
+                                <h3 className="font-semibold text-lg line-clamp-2 flex-1 pr-2 break-words overflow-wrap-anywhere min-w-0">
                                   {service.title}
                                 </h3>
                                 <Badge 
                                   variant={service.status === 'open' ? 'default' : 'secondary'}
-                                  className="flex-shrink-0"
+                                  className="flex-shrink-0 max-md:self-start"
                                 >
                                   {service.status === 'open' ? 'Active' : service.status}
                                 </Badge>
                               </div>
                               
                               {/* Service Description */}
-                              <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
+                              <p className="text-muted-foreground text-sm line-clamp-3 mb-4 break-words overflow-wrap-anywhere hyphens-auto">
                                 {service.description || 'No description provided'}
                               </p>
                               
