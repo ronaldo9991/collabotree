@@ -65,7 +65,8 @@ export default function ServiceEdit() {
       }
 
       try {
-        const serviceData = await api.getProject(id);
+        const response = await api.getProject(id);
+        const serviceData = response?.data || response;
         
         if (!serviceData) {
           toast({
@@ -77,8 +78,9 @@ export default function ServiceEdit() {
           return;
         }
 
-        // Check if user owns this service
-        if (serviceData.created_by !== user.id) {
+        // Check if user owns this service - use ownerId or owner.id
+        const ownerId = serviceData.ownerId || serviceData.owner?.id;
+        if (ownerId !== user.id) {
           toast({
             title: "Access Denied",
             description: "You can only edit your own services.",
@@ -90,14 +92,14 @@ export default function ServiceEdit() {
 
         setService(serviceData);
         
-        // Convert budget from dollars to cents for the form
-        const budgetInCents = serviceData.budget ? serviceData.budget * 100 : 5000;
+        // Convert priceCents from service (backend uses priceCents, not budget)
+        const priceInCents = serviceData.priceCents || 5000;
         
         form.reset({
           title: serviceData.title || "",
           description: serviceData.description || "",
-          pricingCents: budgetInCents,
-          deliveryDays: 7, // Default since this isn't stored in projects table
+          pricingCents: priceInCents,
+          deliveryDays: 7, // Default since this isn't stored
           tags: serviceData.tags || [],
           revisionNote: "",
         });
@@ -152,16 +154,16 @@ export default function ServiceEdit() {
     }
 
     try {
-      // Update the project/service
+      // Update the service - use correct API method and data structure
       const updateData = {
         title: data.title,
         description: data.description,
-        budget: data.pricingCents / 100, // Convert cents back to dollars
-        tags: data.tags,
-        // Add cover_url if we had image editing capability
+        priceCents: data.pricingCents, // Backend expects priceCents, not budget
+        coverImage: service.coverImage || service.cover_url, // Preserve cover image
+        tags: data.tags, // Include tags if backend supports it
       };
 
-      await api.updateProject(service.id, updateData);
+      await api.updateService(service.id, updateData);
       
       toast({
         title: "Service Updated!",
