@@ -47,7 +47,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 pt-4">
+      <nav className={`fixed top-0 left-0 right-0 z-50 pt-4 ${location === "/" ? "bg-transparent" : ""}`}>
         {/* Navbar wrapper - padding matches container-unified minus pill padding */}
         <div className="max-w-[95%] xl:max-w-[1600px] mx-auto px-6 md:px-8 xl:px-10">
           {/* Pill-shaped Navigation Container */}

@@ -210,7 +210,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen">
       {/* Asymmetric Grid Hero Section - Professional Design */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 sm:pt-24 md:pt-28">
+      <section className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] flex items-center overflow-hidden pt-16 sm:pt-20 md:pt-24">
         {/* Minimal Gradient Background with Subtle Texture */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
           {/* Subtle gradient overlay */}
@@ -275,39 +275,39 @@ export default function Landing() {
         </div>
 
         {/* Asymmetric Grid Layout */}
-        <div className="relative z-10 container-unified w-full py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-start lg:items-center min-h-[calc(100vh-8rem)]">
+        <div className="relative z-10 container-unified w-full py-8 sm:py-10 md:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 items-start lg:items-center">
             
             {/* Top-Left: Large Headline */}
-            <motion.div
+              <motion.div
               className="space-y-6 sm:space-y-8"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] text-white">
-                Hire{" "}
-                <span className="relative inline-block">
+                    Hire{" "}
+                    <span className="relative inline-block">
                   <span className="relative z-10 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent">
-                    Elite Talent
-                  </span>
-                  <motion.span
+                        Elite Talent
+                      </span>
+                      <motion.span
                     className="absolute inset-0 bg-white/20 blur-2xl -z-10"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.3, 0.5, 0.3],
-                    }}
-                    transition={{
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{
                       duration: 3,
-                      repeat: Infinity,
+                          repeat: Infinity,
                       ease: "easeInOut",
-                    }}
-                  />
-                </span>
-                <br />
-                From Top Universities
-              </h1>
-              
+                        }}
+                      />
+                    </span>
+                    <br />
+                    From Top Universities
+                  </h1>
+                  
               {/* Bottom-Left: Description and CTAs */}
               <div className="space-y-6 sm:space-y-8 pt-4">
                 <motion.p
@@ -369,57 +369,21 @@ export default function Landing() {
                   </div>
                 </motion.div>
               </div>
-            </motion.div>
+              </motion.div>
 
-            {/* Right Column: Top-Right Categories + Bottom-Right Search */}
+            {/* Right Column: Top-Right Search + Bottom-Right Categories */}
             <motion.div
               className="space-y-6 sm:space-y-8"
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              {/* Top-Right: Floating Category Chips Grid */}
+              {/* Top-Right: Prominent Search Card */}
               <motion.div
-                className="space-y-4"
+                className="relative"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
-              >
-                <p className="text-sm sm:text-base text-white/90 font-medium mb-3">Popular Categories</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                  {[
-                    { term: 'Web Development', icon: Code },
-                    { term: 'UI/UX Design', icon: Palette },
-                    { term: 'Data Analysis', icon: BarChart3 },
-                    { term: 'Content Writing', icon: FileText },
-                    { term: 'Mobile Apps', icon: Smartphone },
-                    { term: 'Graphic Design', icon: PaintBucket }
-                  ].map(({ term, icon: Icon }, index) => (
-                    <motion.div
-                      key={term}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: 0.7 + (index * 0.1) }}
-                    >
-                      <Button
-                        variant="outline"
-                        className="w-full h-auto min-h-[60px] sm:min-h-[70px] flex flex-col items-center justify-center gap-2 p-3 sm:p-4 hover:bg-white/10 hover:border-white/50 text-white transition-all group bg-white/5 backdrop-blur-sm rounded-xl"
-                        onClick={() => handlePopularSearch(term)}
-                      >
-                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform text-[#00B2FF]" />
-                        <span className="text-xs sm:text-sm font-medium text-center leading-tight">{term}</span>
-                      </Button>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Bottom-Right: Prominent Search Card */}
-              <motion.div
-                className="relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.9 }}
               >
                 {/* Glowing background effect */}
                 <div className="absolute inset-0 bg-white/10 rounded-2xl blur-2xl -z-10"></div>
@@ -430,12 +394,12 @@ export default function Landing() {
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] flex items-center justify-center">
                         <Search className="w-5 h-5 text-white" />
-                      </div>
+                    </div>
                       <div>
                         <h3 className="text-lg sm:text-xl font-bold text-foreground">Find Your Perfect Service</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground">Search from verified student services</p>
                       </div>
-                    </div>
+                  </div>
 
                     <div className="relative">
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
@@ -461,10 +425,46 @@ export default function Landing() {
                       Search Services
                     </Button>
                   </div>
-                </div>
+                    </div>
+              </motion.div>
+
+              {/* Bottom-Right: Floating Category Chips Grid */}
+              <motion.div
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
+              >
+                <p className="text-sm sm:text-base text-white/90 font-medium mb-3">Popular Categories</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                    {[
+                      { term: 'Web Development', icon: Code },
+                      { term: 'UI/UX Design', icon: Palette },
+                      { term: 'Data Analysis', icon: BarChart3 },
+                    { term: 'Content Writing', icon: FileText },
+                    { term: 'Mobile Apps', icon: Smartphone },
+                    { term: 'Graphic Design', icon: PaintBucket }
+                  ].map(({ term, icon: Icon }, index) => (
+                    <motion.div
+                        key={term}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: 1.1 + (index * 0.1) }}
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full h-auto min-h-[60px] sm:min-h-[70px] flex flex-col items-center justify-center gap-2 p-3 sm:p-4 hover:bg-white/10 hover:border-white/50 text-white transition-all group bg-white/5 backdrop-blur-sm rounded-xl"
+                        onClick={() => handlePopularSearch(term)}
+                      >
+                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform text-[#00B2FF]" />
+                        <span className="text-xs sm:text-sm font-medium text-center leading-tight">{term}</span>
+                      </Button>
+                    </motion.div>
+                    ))}
+                  </div>
               </motion.div>
             </motion.div>
-          </div>
+                </div>
         </div>
       </section>
 
@@ -477,14 +477,14 @@ export default function Landing() {
         </div>
         
         <div className="container-unified relative z-10">
-          <motion.div
+                <motion.div
             className="text-center mb-8 sm:mb-12 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <motion.div
+                <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
@@ -495,7 +495,7 @@ export default function Landing() {
                 <Sparkles className="w-4 h-4 mr-2" />
                 About CollaboTree
               </Badge>
-            </motion.div>
+              </motion.div>
             
             <motion.h2 
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight"
@@ -533,9 +533,9 @@ export default function Landing() {
                   <div className="relative mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-primary/10">
                       <UserCheck className="w-8 h-8 text-primary" />
-                    </div>
+            </div>
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary/30 rounded-full blur-sm group-hover:bg-primary/50 transition-colors" />
-                  </div>
+          </div>
                   <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">University-Verified Students</h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
                     Every student on our platform is verified through their university credentials. We ensure authentic talent 
@@ -557,7 +557,7 @@ export default function Landing() {
                   <div className="relative mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-secondary/10">
                       <Shield className="w-8 h-8 text-secondary" />
-                    </div>
+        </div>
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-secondary/30 rounded-full blur-sm group-hover:bg-secondary/50 transition-colors" />
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-secondary transition-colors">Secure & Protected Transactions</h3>
@@ -569,7 +569,7 @@ export default function Landing() {
               </Card>
             </motion.div>
 
-            <motion.div
+        <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -593,7 +593,7 @@ export default function Landing() {
               </Card>
             </motion.div>
 
-            <motion.div
+          <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -615,7 +615,7 @@ export default function Landing() {
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
+          </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -639,7 +639,7 @@ export default function Landing() {
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
+        </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -793,13 +793,13 @@ export default function Landing() {
             >
               <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
             </Button>
-
+            
             {/* Carousel Content */}
-            <motion.div 
-              className="w-full"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              <motion.div 
+                className="w-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
@@ -812,8 +812,8 @@ export default function Landing() {
                   nextSlide();
                 }
               }}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
                 {topSelectionProjects.length === 0 ? (
                   <div className="col-span-full text-center py-12">
                     <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -917,7 +917,7 @@ export default function Landing() {
                 )}
               </div>
             </motion.div>
-
+            
             {/* Next Arrow */}
             <Button
               onClick={nextSlide}
@@ -983,7 +983,7 @@ export default function Landing() {
             >
               <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
             </Button>
-
+            
             {/* Projects Grid */}
             <motion.div
               className="w-full"
