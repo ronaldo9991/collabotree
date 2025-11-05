@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import { sendSuccess, sendCreated, sendError, sendValidationError, sendNotFound, sendConflict } from '../utils/responses.js';
@@ -150,10 +150,10 @@ export const getReviews = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 // Get reviews for a service (by serviceId - reviews for the student who owns the service)
-export const getServiceReviews = async (req: Request, res: Response) => {
+export const getServiceReviews = async (req: Request<{ serviceId: string }>, res: Response) => {
   try {
-    const { serviceId } = req.params;
-    const pagination = parsePagination(req.query);
+    const { serviceId } = req.params as { serviceId: string };
+    const pagination = parsePagination(req.query as any);
 
     // Get the service to find the owner (student)
     const service = await prisma.service.findUnique({
