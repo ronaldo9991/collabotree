@@ -126,6 +126,86 @@ export function Layout({ children }: LayoutProps) {
                         )
                       ))}
                       
+                      {/* User Section - Only show when logged in */}
+                      {user && (
+                        <div className="pt-4 border-t border-primary/20 space-y-3">
+                          {/* User Profile Card */}
+                          <div className="flex items-center gap-3 p-4 rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/20">
+                            <Avatar className="h-12 w-12 border-2 border-primary/30 flex-shrink-0">
+                              <AvatarImage src="" alt={user.name} />
+                              <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                                {user.name.split(' ').map((n: string) => n[0]).join('')}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-base font-semibold text-foreground truncate">{user.name}</p>
+                              <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                            </div>
+                          </div>
+                          
+                          {/* Dashboard Link */}
+                          <Link
+                            href="/dashboard"
+                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item min-h-[44px]"
+                            onClick={() => setMobileMenuOpen(false)}
+                            data-testid="mobile-nav-dashboard"
+                          >
+                            <User className="h-5 w-5 flex-shrink-0 text-primary" />
+                            <span>Dashboard</span>
+                          </Link>
+                          
+                          {/* Settings Link */}
+                          <Link
+                            href={
+                              user.role === 'STUDENT' ? '/dashboard/student/settings' :
+                              user.role === 'BUYER' ? '/dashboard/buyer/settings' :
+                              user.role === 'ADMIN' ? '/dashboard/admin/settings' :
+                              '/profile'
+                            }
+                            className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item min-h-[44px]"
+                            onClick={() => setMobileMenuOpen(false)}
+                            data-testid="mobile-nav-settings"
+                          >
+                            <Settings className="h-5 w-5 flex-shrink-0 text-primary" />
+                            <span>Settings</span>
+                          </Link>
+                          
+                          {/* Sign Out Button */}
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={() => {
+                              logout();
+                              setMobileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-destructive/10 hover:bg-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 transition-all border-destructive/20 shadow-sm hover:shadow-md mobile-sign-out-button min-h-[52px]"
+                            data-testid="mobile-sign-out-button"
+                          >
+                            <LogOut className="h-5 w-5 text-destructive" />
+                            <span className="text-base font-medium text-destructive">Sign Out</span>
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {/* Sign In Button - Only show when NOT logged in */}
+                      {!user && (
+                        <div className="pt-4 border-t border-primary/20">
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-all border-primary/20 shadow-sm hover:shadow-md mobile-sign-in-button min-h-[52px]"
+                            asChild
+                            onClick={() => setMobileMenuOpen(false)}
+                            data-testid="mobile-sign-in-button"
+                          >
+                            <Link href="/signin">
+                              <User className="h-5 w-5 text-primary" />
+                              <span className="text-base font-medium">Sign In</span>
+                            </Link>
+                          </Button>
+                        </div>
+                      )}
+                      
                       {/* Theme Toggle - Moved to bottom, separate from close button */}
                       <div className="mt-auto pt-6 border-t border-primary/20">
                         <Button
