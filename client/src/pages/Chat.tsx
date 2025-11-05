@@ -695,12 +695,12 @@ export default function Chat() {
             )}
 
             {/* Messages Area */}
-            <CardContent className="flex-1 flex flex-col p-0">
-              <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 bg-muted/10 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-2 sm:space-y-3 md:space-y-4 bg-muted/10 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch', maxHeight: 'calc(100vh - 280px)' }}>
                 {messages.length === 0 ? (
-                  <div className="text-center py-12">
-                    <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
+                  <div className="text-center py-12 sm:py-16">
+                    <MessageCircle className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground text-sm sm:text-base">No messages yet. Start the conversation!</p>
                   </div>
                 ) : (
                   messages.map((message) => (
@@ -709,21 +709,21 @@ export default function Chat() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className={`flex ${message.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${message.senderId === user?.id ? 'justify-end' : 'justify-start'} w-full`}
                     >
-                      <div className={`flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[75%] ${message.senderId === user?.id ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 border border-primary/20">
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                      <div className={`flex gap-2 sm:gap-3 md:gap-4 max-w-[85%] sm:max-w-[70%] md:max-w-[65%] lg:max-w-[60%] ${message.senderId === user?.id ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <Avatar className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 flex-shrink-0 border border-primary/20 shadow-sm">
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm font-medium">
                             {message.sender?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                           </AvatarFallback>
                         </Avatar>
-                        <div className={`rounded-lg px-3 sm:px-4 py-2 shadow-sm max-w-full min-w-0 ${
+                        <div className={`rounded-lg px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 shadow-sm max-w-full min-w-0 ${
                           message.senderId === user?.id
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-card text-card-foreground border border-border/50'
                         }`}>
-                          <p className="text-sm break-words overflow-wrap-anywhere hyphens-auto max-md:text-xs leading-relaxed">{message.body}</p>
-                          <p className={`text-xs mt-1.5 whitespace-nowrap ${
+                          <p className="text-sm sm:text-base break-words overflow-wrap-anywhere hyphens-auto leading-relaxed max-md:text-xs">{message.body}</p>
+                          <p className={`text-xs sm:text-[11px] mt-1.5 sm:mt-2 whitespace-nowrap ${
                             message.senderId === user?.id
                               ? 'text-primary-foreground/70'
                               : 'text-muted-foreground'
@@ -735,29 +735,29 @@ export default function Chat() {
                     </motion.div>
                   ))
                 )}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-1" />
               </div>
 
               {/* Message Input */}
-              <div className="border-t border-border/50 p-3 sm:p-4 bg-card/30">
-                <div className="flex gap-2 max-md:gap-1.5">
+              <div className="border-t border-border/50 p-3 sm:p-4 md:p-5 bg-card/30">
+                <div className="flex gap-2 sm:gap-3 max-md:gap-1.5">
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
                     disabled={sending}
-                    className="flex-1 bg-background border-border/50 placeholder-muted-foreground focus:border-primary max-md:text-base max-md:min-h-[44px]"
+                    className="flex-1 bg-background border-border/50 placeholder-muted-foreground focus:border-primary text-sm sm:text-base max-md:min-h-[44px] sm:min-h-[48px] md:min-h-[52px]"
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim() || sending}
-                    className="gap-2 max-md:min-h-[44px] max-md:px-3"
+                    className="gap-2 max-md:min-h-[44px] sm:min-h-[48px] md:min-h-[52px] max-md:px-3 sm:px-4 md:px-5"
                   >
                     {sending ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-primary-foreground"></div>
                     ) : (
-                      <Send className="h-4 w-4" />
+                      <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                     )}
                   </Button>
                 </div>
