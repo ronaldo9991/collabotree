@@ -572,74 +572,78 @@ export default function Chat() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container mx-auto px-4 py-6 max-w-6xl">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 h-[calc(100vh-3rem)] flex flex-col shadow-2xl">
+          <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 h-[calc(100vh-120px)] sm:h-[calc(100vh-140px)] md:h-[calc(100vh-160px)] lg:h-[calc(100vh-180px)] flex flex-col shadow-2xl">
             {/* Chat Header */}
-            <CardHeader className="border-b border-primary/20 bg-card/30">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <CardHeader className="border-b border-primary/20 bg-card/30 pb-3 sm:pb-4 px-3 sm:px-4 md:px-6">
+              <div className="flex items-center justify-between gap-2 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate("/dashboard")}
-                    className="gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    className="gap-1 sm:gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 max-md:h-9 max-md:w-9 max-md:p-0 flex-shrink-0"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
+                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="max-md:hidden">Back</span>
                   </Button>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-primary/20">
-                      <AvatarFallback className="bg-primary/10 text-primary">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <Avatar className="h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11 border border-primary/20 flex-shrink-0">
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm font-medium">
                         {otherUser?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <h2 className="text-lg font-semibold text-foreground">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-base sm:text-lg md:text-xl font-semibold text-foreground truncate">
                         {otherUser?.name || 'Unknown User'}
                       </h2>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
                         {hireRequest.service?.title || 'Service Chat'}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                    <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <span className="text-[10px] sm:text-xs text-muted-foreground max-md:hidden">
                       {connected ? 'Connected' : 'Disconnected'}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
+                <div className="flex items-center gap-2 mt-2 sm:mt-0 flex-wrap">
+                  <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20 text-xs">
                     <CheckCircle className="h-3 w-3" />
                     Accepted
                   </Badge>
                   {contract ? (
-                    <Badge variant="outline" className="gap-1">
+                    <Badge variant="outline" className="gap-1 text-xs">
                       <FileText className="h-3 w-3" />
-                      {contract.status === 'DRAFT' ? 'Draft' : 
+                      <span className="max-md:hidden">{contract.status === 'DRAFT' ? 'Draft' : 
                        contract.status === 'ACTIVE' ? 'Active' : 
-                       contract.status === 'COMPLETED' ? 'Completed' : contract.status}
+                       contract.status === 'COMPLETED' ? 'Completed' : contract.status}</span>
+                      <span className="md:hidden">{contract.status === 'DRAFT' ? 'D' : 
+                       contract.status === 'ACTIVE' ? 'A' : 
+                       contract.status === 'COMPLETED' ? 'C' : contract.status[0]}</span>
                     </Badge>
                   ) : (
                     user?.id === hireRequest?.studentId && (
                       <Button
                         size="sm"
                         onClick={() => setShowContractModal(true)}
-                        className="gap-2"
+                        className="gap-1 sm:gap-2 max-md:text-xs max-md:px-2 max-md:py-1.5"
                         disabled={creatingContract}
                       >
                         {creatingContract ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                          <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-current"></div>
                         ) : (
-                          <PenTool className="h-4 w-4" />
+                          <PenTool className="h-3 w-3 sm:h-4 sm:w-4" />
                         )}
-                        Create Contract
+                        <span className="max-md:hidden">Create Contract</span>
+                        <span className="md:hidden">Contract</span>
                       </Button>
                     )
                   )}
