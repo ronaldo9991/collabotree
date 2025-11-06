@@ -125,12 +125,28 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
     try {
       if (!orderId || !user) return;
       
-      // Check if user has already reviewed this order
-      const response = await api.getUserReviews(user.id);
-      if (response.success) {
-        const reviews = response.data?.data || response.data || [];
-        const hasReviewedOrder = reviews.some((review: any) => review.order?.id === orderId);
-        setHasReviewed(hasReviewedOrder);
+      // Check if user has already reviewed this order by fetching the order directly
+      try {
+        const orderResponse = await api.getOrder(orderId);
+        if (orderResponse.success && orderResponse.data) {
+          const order = orderResponse.data;
+          // Check if current user has already reviewed this order
+          const userReview = order.reviews?.find((review: any) => review.reviewer?.id === user.id);
+          setHasReviewed(!!userReview);
+        } else {
+          setHasReviewed(false);
+        }
+      } catch (error) {
+        console.error('Error fetching order for review check:', error);
+        // Fallback: check user reviews
+        const response = await api.getUserReviews(user.id);
+        if (response.success) {
+          const reviews = response.data?.data || response.data || [];
+          const hasReviewedOrder = reviews.some((review: any) => review.order?.id === orderId);
+          setHasReviewed(hasReviewedOrder);
+        } else {
+          setHasReviewed(false);
+        }
       }
     } catch (error) {
       console.error('Error checking review status:', error);
@@ -351,6 +367,47 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
         return;
       }
 
+      // Verify order exists and is completed before submitting
+      try {
+        const orderResponse = await api.getOrder(orderId);
+        if (!orderResponse.success || !orderResponse.data) {
+          toast({
+            title: "Error",
+            description: "Order not found. Cannot submit review.",
+            variant: "destructive",
+          });
+          setProcessing(false);
+          return;
+        }
+        
+        const order = orderResponse.data;
+        if (order.status !== 'COMPLETED') {
+          toast({
+            title: "Error",
+            description: `Order status is ${order.status}. Reviews can only be submitted for completed orders.`,
+            variant: "destructive",
+          });
+          setProcessing(false);
+          return;
+        }
+        
+        // Check if already reviewed
+        const existingReview = order.reviews?.find((review: any) => review.reviewer?.id === user?.id);
+        if (existingReview) {
+          setHasReviewed(true);
+          toast({
+            title: "Already Reviewed",
+            description: "You have already submitted a review for this order.",
+            variant: "default",
+          });
+          setProcessing(false);
+          return;
+        }
+      } catch (orderError) {
+        console.error('Error verifying order:', orderError);
+        // Continue with review submission attempt
+      }
+
       const response = await api.createReview({
         orderId: orderId,
         rating: rating,
@@ -366,12 +423,22 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
           description: "Thank you for your feedback!",
         });
         onContractUpdate?.();
+      } else {
+        // Handle API error response
+        const errorMessage = response.error || response.message || "Failed to submit review. Please try again.";
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        console.error('Review submission failed:', response);
       }
     } catch (error: any) {
       console.error('Error submitting review:', error);
+      const errorMessage = error?.message || error?.error || "Failed to submit review. Please try again.";
       toast({
         title: "Error",
-        description: error?.message || "Failed to submit review. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

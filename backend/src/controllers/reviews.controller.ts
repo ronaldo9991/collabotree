@@ -14,9 +14,9 @@ export const createReview = async (req: AuthenticatedRequest, res: Response) => 
     const validatedData = createReviewSchema.parse(req.body);
 
     // Check if user can review this order
-    const canReview = await canReviewOrder(req.user!.id, validatedData.orderId);
-    if (!canReview) {
-      return sendError(res, 'Cannot review this order', 403);
+    const reviewCheck = await canReviewOrder(req.user!.id, validatedData.orderId);
+    if (!reviewCheck.canReview) {
+      return sendError(res, reviewCheck.reason || 'Cannot review this order', 403);
     }
 
     // Get order details
@@ -85,10 +85,11 @@ export const createReview = async (req: AuthenticatedRequest, res: Response) => 
 
     return sendCreated(res, review, 'Review created successfully');
   } catch (error) {
+    console.error('❌ Error in createReview:', error);
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
     }
-    throw error;
+    return sendError(res, 'Failed to create review', 500);
   }
 };
 

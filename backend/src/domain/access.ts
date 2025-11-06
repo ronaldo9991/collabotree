@@ -45,7 +45,7 @@ export const canCreateOrderForService = async (buyerId: string, serviceId: strin
   return !existingOrder; // Can create if no existing order
 };
 
-export const canReviewOrder = async (userId: string, orderId: string): Promise<boolean> => {
+export const canReviewOrder = async (userId: string, orderId: string): Promise<{ canReview: boolean; reason?: string }> => {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     select: { 
@@ -59,18 +59,26 @@ export const canReviewOrder = async (userId: string, orderId: string): Promise<b
     }
   });
   
-  if (!order) return false;
+  if (!order) {
+    return { canReview: false, reason: 'Order not found' };
+  }
   
   // Can only review completed orders
-  if (order.status !== 'COMPLETED') return false;
+  if (order.status !== 'COMPLETED') {
+    return { canReview: false, reason: `Order status is ${order.status}. Only completed orders can be reviewed.` };
+  }
   
   // Can only review if you're a participant
-  if (order.buyerId !== userId && order.studentId !== userId) return false;
+  if (order.buyerId !== userId && order.studentId !== userId) {
+    return { canReview: false, reason: 'You are not a participant in this order' };
+  }
   
   // Can only review once per order
-  if (order.reviews.length > 0) return false;
+  if (order.reviews.length > 0) {
+    return { canReview: false, reason: 'You have already submitted a review for this order' };
+  }
   
-  return true;
+  return { canReview: true };
 };
 
 export const canCreateDispute = async (userId: string, orderId: string): Promise<boolean> => {
