@@ -16,7 +16,8 @@ import {
   User,
   CreditCard,
   Loader2,
-  Star
+  Star,
+  Download
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -266,6 +267,28 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
     }
   };
 
+  const handleDownloadPDF = async () => {
+    if (!contract) return;
+
+    try {
+      setProcessing(true);
+      await api.downloadContractPDF(contract.id);
+      toast({
+        title: "PDF Downloaded",
+        description: "Contract PDF has been downloaded successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error downloading PDF:', error);
+      toast({
+        title: "Error",
+        description: error?.message || "Failed to download PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const handleSubmitReview = async () => {
     if (!contract || rating === 0) return;
 
@@ -394,9 +417,23 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
             <FileText className="h-5 w-5" />
             {contract.title}
           </div>
-          <Badge variant={contract.status === 'COMPLETED' ? 'default' : 'secondary'}>
-            {contract.status}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={contract.status === 'COMPLETED' ? 'default' : 'secondary'}>
+              {contract.status}
+            </Badge>
+            {contract.status === 'COMPLETED' && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleDownloadPDF}
+                disabled={processing}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download PDF
+              </Button>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">

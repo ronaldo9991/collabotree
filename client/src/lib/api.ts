@@ -271,6 +271,57 @@ class ApiClient {
     return this.request(`/contracts/${contractId}`);
   }
 
+  async downloadContractPDF(contractId: string): Promise<void> {
+    const url = `${this.baseURL}/contracts/${contractId}/pdf`;
+    
+    // Get auth token
+    let authToken = null;
+    try {
+      const tokens = localStorage.getItem('auth_tokens');
+      if (tokens) {
+        const parsedTokens = JSON.parse(tokens);
+        authToken = parsedTokens.accessToken;
+      }
+    } catch (error) {
+      console.error('Error parsing auth tokens:', error);
+    }
+
+    const headers: HeadersInit = {};
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download PDF');
+    }
+
+    // Get filename from Content-Disposition header or use default
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = `CollaboTree_Contract_${contractId}.pdf`;
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+      if (filenameMatch) {
+        filename = filenameMatch[1];
+      }
+    }
+
+    // Create blob and download
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  }
+
   async getUserContracts(params?: Record<string, any>) {
     const searchParams = new URLSearchParams();
     if (params) {

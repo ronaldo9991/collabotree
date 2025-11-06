@@ -10,6 +10,7 @@ import {
   markCompletedSchema 
 } from '../validations/contract.js';
 import { createNotification, createNotificationForUsers } from '../domain/notifications.js';
+import { generateContractPDF } from '../utils/pdfGenerator.js';
 
 // Create a new contract (Student only)
 export const createContract = async (req: AuthenticatedRequest, res: Response) => {
@@ -1062,6 +1063,114 @@ export const getUserContracts = async (req: AuthenticatedRequest, res: Response)
   } catch (error) {
     console.error('❌ Error in getUserContracts:', error);
     return sendError(res, 'Failed to fetch contracts', 500);
+  }
+};
+
+// Download contract as PDF (Buyer and Student only, for completed contracts)
+export const downloadContractPDF = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { contractId } = req.params;
+    const userId = req.user!.id;
+    const userRole = req.user!.role;
+
+    console.log('🔍 downloadContractPDF called for ID:', contractId, 'user:', userId);
+
+    const contract = await prisma.contract.findUnique({
+      where: { id: contractId },
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        student: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        hireRequest: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                priceCents: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!contract) {
+      return sendNotFound(res, 'Contract not found');
+    }
+
+    // Check if user has access to this contract
+    if (contract.buyerId !== userId && contract.studentId !== userId && userRole !== 'ADMIN') {
+      return sendError(res, 'Access denied', 403);
+    }
+
+    // Only allow PDF download for completed contracts
+    if (contract.status !== 'COMPLETED') {
+      return sendError(res, 'PDF can only be downloaded for completed contracts', 400);
+    }
+
+    // Parse contract terms
+    const parsedTerms = JSON.parse(contract.terms);
+
+    // Prepare contract data for PDF
+    const contractData = {
+      id: contract.id,
+      title: contract.title || contract.hireRequest.service.title,
+      buyer: contract.buyer ? {
+        name: contract.buyer.name,
+        email: contract.buyer.email,
+      } : undefined,
+      student: contract.student ? {
+        name: contract.student.name,
+        email: contract.student.email,
+      } : undefined,
+      createdAt: contract.createdAt,
+      paidAt: contract.paidAt,
+      updatedAt: contract.updatedAt,
+      status: contract.status,
+      paymentStatus: contract.paymentStatus,
+      progressStatus: contract.progressStatus,
+      priceCents: parsedTerms.priceCents || contract.hireRequest.service.priceCents,
+      platformFeeCents: contract.platformFeeCents || parsedTerms.platformFeeCents,
+      studentPayoutCents: contract.studentPayoutCents || parsedTerms.studentPayoutCents,
+      deliverables: parsedTerms.deliverables ? (Array.isArray(parsedTerms.deliverables) ? parsedTerms.deliverables : [parsedTerms.deliverables]) : undefined,
+      timeline: parsedTerms.timeline,
+      completionNotes: contract.completionNotes,
+      progressNotes: contract.progressNotes,
+      service: {
+        title: contract.hireRequest.service.title,
+        description: contract.hireRequest.service.description || undefined,
+      },
+    };
+
+    // Generate PDF
+    const pdfBuffer = await generateContractPDF(contractData);
+
+    // Set response headers
+    const fileName = `CollaboTree_Contract_${contract.id}_${new Date().toISOString().split('T')[0]}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.setHeader('Content-Length', pdfBuffer.length.toString());
+
+    // Send PDF
+    res.send(pdfBuffer);
+
+    console.log('✅ PDF generated and sent successfully for contract:', contractId);
+  } catch (error) {
+    console.error('❌ Error in downloadContractPDF:', error);
+    return sendError(res, 'Failed to generate PDF', 500);
   }
 };
 
