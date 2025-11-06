@@ -57,6 +57,17 @@ export default function ExploreTalent() {
     { value: "all", label: "All Categories" }
   ]);
 
+  // Listen for review submission events to refresh data
+  useEffect(() => {
+    const handleReviewSubmitted = () => {
+      console.log('🔄 Review submitted, refreshing project data...');
+      fetchData(true); // Refresh in background
+    };
+
+    window.addEventListener('reviewSubmitted', handleReviewSubmitted);
+    return () => window.removeEventListener('reviewSubmitted', handleReviewSubmitted);
+  }, [fetchData]);
+
   // Fetch data function - only fetch on mount or when non-search filters change
   const fetchData = useCallback(async (isBackground = false) => {
     try {
@@ -136,9 +147,9 @@ export default function ExploreTalent() {
           idCardUrl: service.owner?.idCardUrl,
           verifiedAt: service.owner?.verifiedAt
         },
-        rating: 4.5 + Math.random() * 0.5, // Mock rating for now
-        totalReviews: Math.floor(Math.random() * 20) + 1, // Mock reviews
-        orders: Math.floor(Math.random() * 10) + 1 // Mock orders
+        rating: service.averageRating || 0,
+        totalReviews: service.totalReviews || 0,
+        orders: service._count?.orders || 0
       }));
       
       console.log('Mapped projects:', mappedProjects.length);

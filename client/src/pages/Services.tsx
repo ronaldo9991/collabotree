@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -85,49 +85,61 @@ export default function Services() {
   };
 
   // Fetch real services from database
+  const fetchServices = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch open projects from the database
+      const projects = await api.getPublicServices({});
+      
+      // Extract services data from API response
+      const servicesData = (projects as any)?.data?.data || (projects as any)?.data || projects || [];
+      
+      // Convert services to display format
+      const servicesFormatted: Service[] = servicesData.map((service: any) => ({
+        id: service.id,
+        title: service.title,
+        description: service.description || 'No description available',
+        price: service.priceCents ? service.priceCents / 100 : 0,
+        rating: service.averageRating || 0,
+        reviews: service.totalReviews || 0,
+        deliveryTime: `${Math.max(1, Math.floor((service.priceCents || 0) / 20000))} days`,
+        seller: {
+          name: service.owner?.name || 'Student',
+          rating: service.averageRating || 0
+        },
+        tags: service.owner?.skills ? JSON.parse(service.owner.skills) : ['General']
+      }));
+      
+      setServices(servicesFormatted);
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load services. Please try again.",
+        variant: "destructive",
+      });
+      setServices([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  // Listen for review submission events to refresh services
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch open projects from the database
-        const projects = await api.getPublicServices({});
-        
-        // Extract services data from API response
-        const servicesData = (projects as any)?.data?.data || (projects as any)?.data || projects || [];
-        
-        // Convert services to display format
-        const servicesFormatted: Service[] = servicesData.map((service: any) => ({
-          id: service.id,
-          title: service.title,
-          description: service.description || 'No description available',
-          price: service.priceCents ? service.priceCents / 100 : 0,
-          rating: 4.5 + Math.random() * 0.5, // Random rating between 4.5-5.0
-          reviews: Math.floor(Math.random() * 50) + 5, // Random reviews 5-55
-          deliveryTime: `${Math.max(1, Math.floor((service.priceCents || 0) / 20000))} days`,
-          seller: {
-            name: service.owner?.name || 'Student',
-            rating: 4.5 + Math.random() * 0.5
-          },
-          tags: service.owner?.skills ? JSON.parse(service.owner.skills) : ['General']
-        }));
-        
-        setServices(servicesFormatted);
-      } catch (error) {
-        console.error('Error fetching services:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load services. Please try again.",
-          variant: "destructive",
-        });
-        setServices([]);
-      } finally {
-        setLoading(false);
-      }
+    const handleReviewSubmitted = () => {
+      console.log('🔄 Review submitted, refreshing services...');
+      fetchServices(); // Refresh services
     };
 
+    window.addEventListener('reviewSubmitted', handleReviewSubmitted);
+    return () => window.removeEventListener('reviewSubmitted', handleReviewSubmitted);
+  }, [fetchServices]);
+
+  // Fetch services on mount
+  useEffect(() => {
     fetchServices();
-  }, [toast]);
+  }, [fetchServices]);
 
   const filteredServices = services.filter(service =>
     service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

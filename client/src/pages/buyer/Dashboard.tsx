@@ -95,6 +95,47 @@ export default function BuyerDashboard() {
   };
 
   // Fetch buyer dashboard data
+  // Listen for review submission events to refresh services
+  useEffect(() => {
+    const handleReviewSubmitted = () => {
+      console.log('🔄 Review submitted, refreshing services...');
+      // Refresh services data
+      const refreshServices = async () => {
+        try {
+          const servicesResponse = await api.getPublicServices();
+          const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];
+          const mappedServices = servicesData.map((service: any) => ({
+            id: service.id,
+            title: service.title,
+            description: service.description,
+            budget: service.priceCents / 100,
+            cover_url: service.coverImage,
+            created_at: service.createdAt,
+            created_by: service.ownerId,
+            tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
+            creator: {
+              full_name: service.owner?.name || 'Student',
+              role: 'student',
+              isVerified: service.owner?.isVerified || false,
+              idCardUrl: service.owner?.idCardUrl,
+              verifiedAt: service.owner?.verifiedAt
+            },
+            rating: service.averageRating || 0,
+            totalReviews: service.totalReviews || 0,
+            orders: service._count?.orders || 0
+          }));
+          setBrowseServices(mappedServices);
+        } catch (error) {
+          console.error('Error refreshing services:', error);
+        }
+      };
+      refreshServices();
+    };
+
+    window.addEventListener('reviewSubmitted', handleReviewSubmitted);
+    return () => window.removeEventListener('reviewSubmitted', handleReviewSubmitted);
+  }, []);
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       if (!user) {
@@ -216,9 +257,9 @@ export default function BuyerDashboard() {
               idCardUrl: service.owner?.idCardUrl,
               verifiedAt: service.owner?.verifiedAt
             },
-            rating: 4.5 + Math.random() * 0.5,
-            totalReviews: Math.floor(Math.random() * 20) + 1,
-            orders: Math.floor(Math.random() * 10) + 1
+            rating: service.averageRating || 0,
+            totalReviews: service.totalReviews || 0,
+            orders: service._count?.orders || 0
           }));
 
           console.log('🎯 Mapped services for display:', mappedServices);

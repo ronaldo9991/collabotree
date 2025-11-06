@@ -423,6 +423,11 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
           description: "Thank you for your feedback!",
         });
         onContractUpdate?.();
+        
+        // Dispatch custom event to refresh project cards across the app
+        window.dispatchEvent(new CustomEvent('reviewSubmitted', {
+          detail: { serviceId: contract.service?.id, orderId: orderId }
+        }));
       } else {
         // Handle API error response
         const errorMessage = response.error || response.message || "Failed to submit review. Please try again.";
