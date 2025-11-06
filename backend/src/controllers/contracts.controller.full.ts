@@ -97,49 +97,78 @@ export const createContract = async (req: AuthenticatedRequest, res: Response) =
       createdAt: new Date().toISOString(),
     });
 
-    // Create the contract
-    const contract = await prisma.contract.create({
-      data: {
-        hireRequestId: validatedData.hireRequestId,
-        buyerId: hireRequest.buyerId,
-        studentId: hireRequest.studentId,
-        serviceId: hireRequest.serviceId,
-        title: hireRequest.service.title,
-        terms: terms,
-        status: 'DRAFT',
-        paymentStatus: 'PENDING',
-        progressStatus: 'NOT_STARTED',
-        platformFeeCents: platformFeeCents,
-        studentPayoutCents: studentPayoutCents,
-      },
-      include: {
-        buyer: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
+    // Create the contract and order in a transaction
+    const contract = await prisma.$transaction(async (tx) => {
+      // Check if order already exists for this hire request
+      let order = await tx.order.findFirst({
+        where: {
+          buyerId: hireRequest.buyerId,
+          studentId: hireRequest.studentId,
+          serviceId: hireRequest.serviceId,
         },
-        student: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+      });
+
+      // Create order if it doesn't exist
+      if (!order) {
+        order = await tx.order.create({
+          data: {
+            buyerId: hireRequest.buyerId,
+            studentId: hireRequest.studentId,
+            serviceId: hireRequest.serviceId,
+            hireRequestId: hireRequest.id,
+            priceCents: priceCents,
+            status: 'PENDING', // Order starts as PENDING until payment is processed
           },
+        });
+      }
+
+      // Create the contract with orderId
+      const newContract = await tx.contract.create({
+        data: {
+          hireRequestId: validatedData.hireRequestId,
+          buyerId: hireRequest.buyerId,
+          studentId: hireRequest.studentId,
+          serviceId: hireRequest.serviceId,
+          orderId: order.id, // Link order to contract
+          title: hireRequest.service.title,
+          terms: terms,
+          status: 'DRAFT',
+          paymentStatus: 'PENDING',
+          progressStatus: 'NOT_STARTED',
+          platformFeeCents: platformFeeCents,
+          studentPayoutCents: studentPayoutCents,
         },
-        hireRequest: {
-          include: {
-            service: {
-              select: {
-                id: true,
-                title: true,
-                description: true,
-                priceCents: true,
+        include: {
+          buyer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          student: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          hireRequest: {
+            include: {
+              service: {
+                select: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  priceCents: true,
+                },
               },
             },
           },
         },
-      },
+      });
+
+      return newContract;
     });
 
     // Create notification for buyer
@@ -197,16 +226,6 @@ export const getContract = async (req: AuthenticatedRequest, res: Response) => {
                 priceCents: true,
               },
             },
-            orders: {
-              select: {
-                id: true,
-                status: true,
-              },
-              take: 1,
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
           },
         },
         signatures: {
@@ -238,12 +257,35 @@ export const getContract = async (req: AuthenticatedRequest, res: Response) => {
       ...parsedTerms,
     };
 
-    // Extract orderId from hireRequest.orders for review functionality
-    const orderId = contractWithParsedTerms.hireRequest?.orders?.[0]?.id || null;
+    // Use orderId directly from contract (created when contract is created)
+    // If orderId is missing, try to find order by contract details (fallback for old contracts)
+    let orderId = contract.orderId;
+    
+    if (!orderId && contract.buyerId && contract.studentId && contract.serviceId) {
+      try {
+        const order = await prisma.order.findFirst({
+          where: {
+            buyerId: contract.buyerId,
+            studentId: contract.studentId,
+            serviceId: contract.serviceId,
+          },
+        });
+        if (order) {
+          orderId = order.id;
+          // Update contract with orderId for future requests
+          await prisma.contract.update({
+            where: { id: contractId },
+            data: { orderId: order.id },
+          });
+        }
+      } catch (error) {
+        console.error('Error finding order for contract:', error);
+      }
+    }
 
     return sendSuccess(res, {
       ...contractWithParsedTerms,
-      orderId, // Include orderId for frontend review submission
+      orderId: orderId || null, // Include orderId for frontend review submission
     });
   } catch (error) {
     console.error('❌ Error in getContract:', error);
@@ -469,15 +511,60 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
       return sendError(res, 'Contract has already been paid', 400);
     }
 
-    // Process payment and create order
+    // Process payment and update order status
     const updatedContract = await prisma.$transaction(async (tx) => {
-      // Update contract payment status
+      // Get serviceId from contract or hireRequest
+      const serviceId = contract.serviceId || contract.hireRequest.service.id;
+      
+      // Get or create order for this contract
+      let order = null;
+      
+      // First, try to use existing orderId from contract
+      if (contract.orderId) {
+        order = await tx.order.findUnique({
+          where: { id: contract.orderId },
+        });
+      }
+      
+      // If no order found, try to find by contract details
+      if (!order) {
+        order = await tx.order.findFirst({
+          where: {
+            buyerId: contract.buyerId!,
+            studentId: contract.studentId!,
+            serviceId: serviceId,
+          },
+        });
+      }
+      
+      // Create order if it still doesn't exist (fallback for old contracts)
+      if (!order) {
+        order = await tx.order.create({
+          data: {
+            buyerId: contract.buyerId!,
+            studentId: contract.studentId!,
+            serviceId: serviceId,
+            hireRequestId: contract.hireRequestId,
+            priceCents: contract.hireRequest.service.priceCents,
+            status: 'PAID',
+          },
+        });
+      } else {
+        // Update existing order status to PAID
+        order = await tx.order.update({
+          where: { id: order.id },
+          data: { status: 'PAID' },
+        });
+      }
+
+      // Update contract payment status and ensure orderId is set
       const updated = await tx.contract.update({
         where: { id: contractId },
         data: {
           paymentStatus: 'PAID',
           paidAt: new Date(),
           progressStatus: 'IN_PROGRESS',
+          orderId: order.id, // Ensure orderId is set
         },
         include: {
           buyer: {
@@ -507,38 +594,6 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
             },
           },
         },
-      });
-
-      // Get serviceId from contract or hireRequest
-      const serviceId = contract.serviceId || contract.hireRequest.service.id;
-      
-      // Check if order already exists for this contract
-      let order = await tx.order.findFirst({
-        where: {
-          buyerId: contract.buyerId!,
-          studentId: contract.studentId!,
-          serviceId: serviceId,
-        },
-      });
-
-      // Create order if it doesn't exist
-      if (!order) {
-        order = await tx.order.create({
-          data: {
-            buyerId: contract.buyerId!,
-            studentId: contract.studentId!,
-            serviceId: serviceId,
-            hireRequestId: contract.hireRequestId,
-            priceCents: contract.hireRequest.service.priceCents,
-            status: 'PAID',
-          },
-        });
-      }
-
-      // Link order to contract
-      await tx.contract.update({
-        where: { id: contractId },
-        data: { orderId: order.id },
       });
 
       return { ...updated, orderId: order.id };
@@ -615,7 +670,55 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
 
       // Mark as completed and credit student wallet
       const updatedContract = await prisma.$transaction(async (tx) => {
-        // Update contract
+        // Get or create order for this contract
+        let order = null;
+        let orderId = contract.orderId;
+        
+        // Try to get order from contract's orderId
+        if (orderId) {
+          order = await tx.order.findUnique({
+            where: { id: orderId },
+          });
+        }
+        
+        // If no order found, try to find by contract details
+        if (!order) {
+          const serviceId = contract.serviceId || contract.hireRequest.service.id;
+          order = await tx.order.findFirst({
+            where: {
+              buyerId: contract.buyerId!,
+              studentId: contract.studentId!,
+              serviceId: serviceId,
+            },
+          });
+          if (order) {
+            orderId = order.id;
+          }
+        }
+        
+        // Create order if it still doesn't exist (fallback for old contracts)
+        if (!order) {
+          const serviceId = contract.serviceId || contract.hireRequest.service.id;
+          order = await tx.order.create({
+            data: {
+              buyerId: contract.buyerId!,
+              studentId: contract.studentId!,
+              serviceId: serviceId,
+              hireRequestId: contract.hireRequestId,
+              priceCents: contract.hireRequest.service.priceCents,
+              status: 'COMPLETED',
+            },
+          });
+          orderId = order.id;
+        } else {
+          // Update existing order status to COMPLETED
+          await tx.order.update({
+            where: { id: order.id },
+            data: { status: 'COMPLETED' },
+          });
+        }
+
+        // Update contract with completion status and ensure orderId is set
         const updated = await tx.contract.update({
           where: { id: contractId },
           data: {
@@ -623,6 +726,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
             progressStatus: 'COMPLETED',
             progressNotes: validatedData.progressNotes,
             completionNotes: validatedData.completionNotes,
+            orderId: orderId, // Ensure orderId is set
           },
           include: {
             buyer: {
@@ -649,16 +753,6 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
                     priceCents: true,
                   },
                 },
-                orders: {
-                  select: {
-                    id: true,
-                    status: true,
-                  },
-                  take: 1,
-                  orderBy: {
-                    createdAt: 'desc',
-                  },
-                },
               },
             },
           },
@@ -675,23 +769,8 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
           });
         }
 
-        return updated;
+        return { ...updated, orderId: orderId };
       });
-
-      // Find the related order for review
-      const order = updatedContract.hireRequest.orders?.[0];
-      let orderId = null;
-      
-      if (order) {
-        // Update order status to COMPLETED if not already
-        if (order.status !== 'COMPLETED') {
-          await prisma.order.update({
-            where: { id: order.id },
-            data: { status: 'COMPLETED' },
-          });
-        }
-        orderId = order.id;
-      }
 
       // Create notification for buyer
       if (contract.buyerId && contract.student?.name) {
@@ -704,7 +783,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
       }
 
       console.log('✅ Contract marked as completed via progress update:', contractId);
-      return sendSuccess(res, { ...updatedContract, orderId }, 'Contract marked as completed successfully');
+      return sendSuccess(res, updatedContract, 'Contract marked as completed successfully');
     }
 
     // Regular progress update
