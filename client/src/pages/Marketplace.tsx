@@ -109,31 +109,43 @@ export default function ExploreTalent() {
       // Handle API response format - same as landing page
       let projectsData: any[] = [];
       if (projectsResponse && typeof projectsResponse === 'object') {
-        // Handle response with success property
-        if ('success' in projectsResponse && projectsResponse.success && 'data' in projectsResponse) {
-          const responseData = projectsResponse.data;
-          if (responseData && typeof responseData === 'object') {
-            // Check for paginated response structure
-            if ('data' in responseData && Array.isArray(responseData.data)) {
-              projectsData = responseData.data as any[];
-            } else if (Array.isArray(responseData)) {
-              projectsData = responseData as any[];
+        // Handle response with success property (standard API response)
+        if ('success' in projectsResponse && projectsResponse.success) {
+          if ('data' in projectsResponse && projectsResponse.data) {
+            const responseData = projectsResponse.data;
+            if (responseData && typeof responseData === 'object') {
+              // Check for paginated response structure: { data: [...], pagination: {...} }
+              if ('data' in responseData && Array.isArray(responseData.data)) {
+                projectsData = responseData.data as any[];
+              } else if (Array.isArray(responseData)) {
+                // Direct array in data property
+                projectsData = responseData as any[];
+              }
             }
           }
         } else if ('data' in projectsResponse && projectsResponse.data) {
-          // Handle direct data property
+          // Handle direct data property (no success wrapper)
           if (typeof projectsResponse.data === 'object' && 'data' in projectsResponse.data) {
-            projectsData = projectsResponse.data.data as any[];
+            // Nested data structure
+            if (Array.isArray(projectsResponse.data.data)) {
+              projectsData = projectsResponse.data.data as any[];
+            }
           } else if (Array.isArray(projectsResponse.data)) {
             projectsData = projectsResponse.data as any[];
           }
         }
       } else if (Array.isArray(projectsResponse)) {
+        // Direct array response
         projectsData = projectsResponse;
       }
       
       console.log('Extracted projects data:', projectsData);
       console.log('Number of services found:', projectsData.length);
+      
+      // If no data extracted, log the full response for debugging
+      if (projectsData.length === 0 && projectsResponse) {
+        console.warn('⚠️ No projects data extracted. Full response:', JSON.stringify(projectsResponse, null, 2));
+      }
       
       // Map API data to frontend format - same as landing page
       const mappedProjects: ProjectCardData[] = projectsData.map((service: any) => ({
