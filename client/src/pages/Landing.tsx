@@ -129,6 +129,17 @@ export default function Landing() {
     fetchProjects();
   }, []);
 
+  // Listen for review submission events to refresh project data
+  useEffect(() => {
+    const handleReviewSubmitted = () => {
+      console.log('🔄 Review submitted, refreshing landing page projects...');
+      fetchProjects(); // Refresh projects to show updated ratings
+    };
+
+    window.addEventListener('reviewSubmitted', handleReviewSubmitted);
+    return () => window.removeEventListener('reviewSubmitted', handleReviewSubmitted);
+  }, []);
+
   // Scroll detection for navbar hide/show
   useEffect(() => {
     const handleScroll = () => {
