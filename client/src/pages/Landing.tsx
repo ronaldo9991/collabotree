@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { Footer } from "@/components/Footer";
 import { api } from "@/lib/api";
@@ -22,6 +22,8 @@ export default function Landing() {
   const { theme, setTheme } = useTheme();
   const [commandOpen, setCommandOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const lastScrollY = useRef(0);
   
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -125,6 +127,32 @@ export default function Landing() {
   // Fetch projects on component mount
   useEffect(() => {
     fetchProjects();
+  }, []);
+
+  // Scroll detection for navbar hide/show
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show navbar when at top of page
+      if (currentScrollY < 10) {
+        setIsNavbarVisible(true);
+      } else {
+        // Hide when scrolling down, show when scrolling up
+        if (currentScrollY > lastScrollY.current) {
+          // Scrolling down
+          setIsNavbarVisible(false);
+        } else {
+          // Scrolling up
+          setIsNavbarVisible(true);
+        }
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const projectsPerSlide = 3;
@@ -329,7 +357,9 @@ export default function Landing() {
         </div>
 
         {/* Integrated Navbar - Top Column Inside Hero (Fixed like other pages) */}
-        <nav className="fixed top-0 left-0 right-0 z-50 pt-4">
+        <nav className={`fixed top-0 left-0 right-0 z-50 pt-4 transition-transform duration-300 ease-in-out ${
+          isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
           <div className="container-unified">
             {/* Original Pill-shaped Navigation Container */}
             <div className="flex items-center justify-between h-14 px-6 rounded-full border-2 border-primary/40 dark:border-primary/60 bg-card/95 dark:bg-card/90 backdrop-blur-md shadow-lg shadow-primary/5 dark:shadow-primary/10">
