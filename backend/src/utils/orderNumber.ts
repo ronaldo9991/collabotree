@@ -33,23 +33,23 @@ export async function generateOrderNumber(tx?: PrismaClient): Promise<string> {
   const fallbackNumber = (timestamp % 9000 + 1000).toString();
   
   // Double-check fallback
-  const existing = await client.order.findUnique({
+  const existingFallback = await client.order.findUnique({
     where: { orderNumber: fallbackNumber },
     select: { id: true },
   });
 
-  if (!existing) {
+  if (!existingFallback) {
     return fallbackNumber;
   }
 
   // Last resort: sequential check
   for (let i = 1000; i <= 9999; i++) {
     const sequentialNumber = i.toString();
-    const existing = await client.order.findUnique({
+    const existingSeq = await client.order.findUnique({
       where: { orderNumber: sequentialNumber },
       select: { id: true },
     });
-    if (!existing) {
+    if (!existingSeq) {
       return sequentialNumber;
     }
   }
