@@ -105,32 +105,42 @@ export const getPublicServices = async (req: Request, res: Response) => {
       console.log('📋 Sample service titles:', services.slice(0, 3).map(s => s.title));
     }
 
-    // Get ratings for each service
+    // Get ratings for each service - always calculate even if 0
     const servicesWithRatings = await Promise.all(
       services.map(async (service) => {
-        // Get reviews for this service (reviews for the student who owns the service)
-        const reviews = await prisma.review.findMany({
-          where: {
-            revieweeId: service.ownerId,
-            order: {
-              serviceId: service.id,
+        try {
+          // Get reviews for this service (reviews for the student who owns the service)
+          const reviews = await prisma.review.findMany({
+            where: {
+              revieweeId: service.ownerId,
+              order: {
+                serviceId: service.id,
+              },
             },
-          },
-          select: {
-            rating: true,
-          },
-        });
+            select: {
+              rating: true,
+            },
+          });
 
-        const totalReviews = reviews.length;
-        const averageRating = totalReviews > 0
-          ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
-          : 0;
+          const totalReviews = reviews.length;
+          const averageRating = totalReviews > 0
+            ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+            : 0;
 
-        return {
-          ...service,
-          averageRating: Math.round(averageRating * 10) / 10,
-          totalReviews,
-        };
+          return {
+            ...service,
+            averageRating: Math.round(averageRating * 10) / 10, // Always return a number
+            totalReviews, // Always return a number
+          };
+        } catch (error) {
+          console.error(`Error calculating ratings for service ${service.id}:`, error);
+          // Return service with default ratings if calculation fails
+          return {
+            ...service,
+            averageRating: 0,
+            totalReviews: 0,
+          };
+        }
       })
     );
 
