@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,8 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const lastScrollY = useRef(0);
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const [location] = useLocation();
@@ -40,16 +42,47 @@ export function Layout({ children }: LayoutProps) {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
+  // Scroll detection for navbar hide/show
+  useEffect(() => {
+    if (isLandingPage) return; // Don't apply scroll behavior on landing page
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show navbar when at top of page
+      if (currentScrollY < 10) {
+        setIsNavbarVisible(true);
+      } else {
+        // Hide when scrolling down, show when scrolling up
+        if (currentScrollY > lastScrollY.current) {
+          // Scrolling down
+          setIsNavbarVisible(false);
+        } else {
+          // Scrolling up
+          setIsNavbarVisible(true);
+        }
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLandingPage]);
+
   // Scroll to top on route change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsNavbarVisible(true); // Reset navbar visibility on route change
   }, [location]);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation - Hidden on landing page since it's in hero */}
       {!isLandingPage && (
-        <nav className={`fixed top-0 left-0 right-0 z-50 pt-4`}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 pt-4 transition-transform duration-300 ease-in-out ${
+          isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}>
         {/* Navbar wrapper - padding matches container-unified minus pill padding */}
         <div className="max-w-[95%] xl:max-w-[1600px] mx-auto px-6 md:px-8 xl:px-10">
           {/* Pill-shaped Navigation Container */}
