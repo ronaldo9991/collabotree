@@ -148,33 +148,56 @@ export default function ExploreTalent() {
       }
       
       // Map API data to frontend format - same as landing page
-      const mappedProjects: ProjectCardData[] = projectsData.map((service: any) => ({
-        id: service.id,
-        title: service.title,
-        description: service.description,
-        budget: service.priceCents / 100, // Convert cents to dollars
-        cover_url: service.coverImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80', // Same fallback as landing page
-        created_at: service.createdAt,
-        updated_at: service.updatedAt || service.createdAt,
-        created_by: service.ownerId,
-        createdAt: service.createdAt,
-        updatedAt: service.updatedAt || service.createdAt,
-        ownerId: service.ownerId,
-        tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
-        creator: {
-          id: service.ownerId || '',
-          name: service.owner?.name || 'Student',
-          email: service.owner?.email || '',
-          role: 'student',
-          full_name: service.owner?.name || 'Student',
-          isVerified: service.owner?.isVerified || false,
-          idCardUrl: service.owner?.idCardUrl,
-          verifiedAt: service.owner?.verifiedAt
-        },
-        rating: service.averageRating || 0,
-        totalReviews: service.totalReviews || 0,
-        orders: service._count?.orders || 0
-      }));
+      const mappedProjects: ProjectCardData[] = projectsData
+        .filter((service: any) => service && service.id) // Filter out invalid services
+        .map((service: any) => {
+          try {
+            // Safely parse tags
+            let tags = ['General'];
+            if (service.owner?.skills) {
+              try {
+                const parsed = typeof service.owner.skills === 'string' 
+                  ? JSON.parse(service.owner.skills) 
+                  : service.owner.skills;
+                tags = Array.isArray(parsed) && parsed.length > 0 ? parsed : ['General'];
+              } catch {
+                tags = ['General'];
+              }
+            }
+
+            return {
+              id: service.id,
+              title: service.title || 'Untitled Service',
+              description: service.description || '',
+              budget: service.priceCents ? service.priceCents / 100 : 0,
+              cover_url: service.coverImage || 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+              created_at: service.createdAt,
+              updated_at: service.updatedAt || service.createdAt,
+              created_by: service.ownerId,
+              createdAt: service.createdAt,
+              updatedAt: service.updatedAt || service.createdAt,
+              ownerId: service.ownerId,
+              tags: tags,
+              creator: {
+                id: service.ownerId || '',
+                name: service.owner?.name || 'Student',
+                email: service.owner?.email || '',
+                role: 'student',
+                full_name: service.owner?.name || 'Student',
+                isVerified: service.owner?.isVerified || false,
+                idCardUrl: service.owner?.idCardUrl,
+                verifiedAt: service.owner?.verifiedAt
+              },
+              rating: typeof service.averageRating === 'number' ? service.averageRating : 0,
+              totalReviews: typeof service.totalReviews === 'number' ? service.totalReviews : 0,
+              orders: service._count?.orders || 0
+            };
+          } catch (error) {
+            console.error('Error mapping service:', service.id, error);
+            return null;
+          }
+        })
+        .filter((project: any) => project !== null) as ProjectCardData[]; // Remove any failed mappings
       
       console.log('Mapped projects:', mappedProjects.length);
       console.log('First few project titles:', mappedProjects.slice(0, 3).map(p => p.title));
