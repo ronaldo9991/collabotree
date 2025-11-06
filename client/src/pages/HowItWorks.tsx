@@ -175,18 +175,28 @@ export default function HowItWorks() {
                             </p>
                           </div>
                           <ul className={`space-y-2 text-xs sm:text-sm ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                            {timelineStep.details.map((detail, detailIndex) => (
-                              <motion.li 
-                                key={detailIndex} 
-                                initial={{ opacity: 0, x: index % 2 === 0 ? 10 : -10 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3, delay: detailIndex * 0.1 }}
-                                className={`flex items-center gap-2 ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}
-                              >
-                                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
-                                <span>{detail}</span>
-                              </motion.li>
-                            ))}
+                            {timelineStep.details.map((detail, detailIndex) => {
+                              // Steps that need ticks on the right: 01, 03, 05, 07
+                              const stepsWithRightTicks = ["01", "03", "05", "07"];
+                              const shouldTickOnRight = stepsWithRightTicks.includes(timelineStep.step);
+                              
+                              return (
+                                <motion.li 
+                                  key={detailIndex} 
+                                  initial={{ opacity: 0, x: index % 2 === 0 ? 10 : -10 }}
+                                  whileInView={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: detailIndex * 0.1 }}
+                                  className={`flex items-center gap-2 ${
+                                    shouldTickOnRight 
+                                      ? 'flex-row-reverse' 
+                                      : index % 2 === 0 ? 'justify-end' : 'justify-start'
+                                  }`}
+                                >
+                                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                                  <span>{detail}</span>
+                                </motion.li>
+                              );
+                            })}
                           </ul>
                         </CardContent>
                       </Card>
