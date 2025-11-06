@@ -1,12 +1,18 @@
 import { prisma } from '../db/prisma.js';
 import type { PrismaClient } from '@prisma/client';
 
+// Type for Prisma transaction client (subset of PrismaClient)
+type PrismaTransactionClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
+
 /**
  * Generate a unique 4-digit order number
  * Format: 1000-9999
  * @param tx Optional transaction client - if provided, uses transaction client for uniqueness check
  */
-export async function generateOrderNumber(tx?: PrismaClient): Promise<string> {
+export async function generateOrderNumber(tx?: PrismaTransactionClient | PrismaClient): Promise<string> {
   const client = tx || prisma;
   let attempts = 0;
   const maxAttempts = 100;
