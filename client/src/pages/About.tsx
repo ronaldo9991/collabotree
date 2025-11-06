@@ -208,7 +208,7 @@ export default function About() {
                         <BookOpen className="w-4 h-4 mr-2" />
                         Our Story
                       </Badge>
-                      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" data-testid="section-story">
+                      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight pb-1" data-testid="section-story">
                         The CollaboTree Story
                       </h2>
                     </motion.div>
