@@ -11,6 +11,7 @@ import {
 } from '../validations/contract.js';
 import { createNotification, createNotificationForUsers } from '../domain/notifications.js';
 import { generateContractPDF } from '../utils/pdfGenerator.js';
+import { generateOrderNumber } from '../utils/orderNumber.js';
 
 // Create a new contract (Student only)
 export const createContract = async (req: AuthenticatedRequest, res: Response) => {
@@ -111,8 +112,10 @@ export const createContract = async (req: AuthenticatedRequest, res: Response) =
 
       // Create order if it doesn't exist
       if (!order) {
+        const orderNumber = await generateOrderNumber(tx);
         order = await tx.order.create({
           data: {
+            orderNumber: orderNumber,
             buyerId: hireRequest.buyerId,
             studentId: hireRequest.studentId,
             serviceId: hireRequest.serviceId,
@@ -130,7 +133,7 @@ export const createContract = async (req: AuthenticatedRequest, res: Response) =
           buyerId: hireRequest.buyerId,
           studentId: hireRequest.studentId,
           serviceId: hireRequest.serviceId,
-          orderId: order.id, // Link order to contract
+          orderId: order.id, // Link order to contract - ALWAYS set this
           title: hireRequest.service.title,
           terms: terms,
           status: 'DRAFT',
@@ -169,7 +172,7 @@ export const createContract = async (req: AuthenticatedRequest, res: Response) =
         },
       });
 
-      return newContract;
+      return { contract: newContract, orderId: order.id };
     });
 
     // Create notification for buyer
@@ -180,8 +183,8 @@ export const createContract = async (req: AuthenticatedRequest, res: Response) =
       `${hireRequest.student.name} has created a contract for "${hireRequest.service.title}"`
     );
 
-    console.log('✅ Contract created successfully:', contract.id);
-    return sendCreated(res, contract, 'Contract created successfully');
+    console.log('✅ Contract created successfully:', contract.contract.id, 'with orderId:', contract.orderId);
+    return sendCreated(res, { ...contract.contract, orderId: contract.orderId }, 'Contract created successfully');
   } catch (error) {
     console.error('❌ Error in createContract:', error);
     if (error instanceof z.ZodError) {
@@ -284,10 +287,22 @@ export const getContract = async (req: AuthenticatedRequest, res: Response) => {
       }
     }
 
-    return sendSuccess(res, {
+    // Always ensure orderId is included in response
+    const responseData = {
       ...contractWithParsedTerms,
-      orderId: orderId || null, // Include orderId for frontend review submission
-    });
+      orderId: orderId || contract.orderId || null, // Include orderId for frontend review submission
+    };
+
+    // Log if orderId is missing for debugging
+    if (!responseData.orderId) {
+      console.warn('⚠️ Contract', contractId, 'has no orderId. Contract details:', {
+        buyerId: contract.buyerId,
+        studentId: contract.studentId,
+        serviceId: contract.serviceId,
+      });
+    }
+
+    return sendSuccess(res, responseData);
   } catch (error) {
     console.error('❌ Error in getContract:', error);
     return sendError(res, 'Failed to fetch contract', 500);
@@ -540,8 +555,10 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
       
       // Create order if it still doesn't exist (fallback for old contracts)
       if (!order) {
+        const orderNumber = await generateOrderNumber(tx);
         order = await tx.order.create({
           data: {
+            orderNumber: orderNumber,
             buyerId: contract.buyerId!,
             studentId: contract.studentId!,
             serviceId: serviceId,
@@ -702,8 +719,10 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
         // Create order if it still doesn't exist (fallback for old contracts)
         if (!order) {
           const serviceId = contract.serviceId || contract.hireRequest.service.id;
+          const orderNumber = await generateOrderNumber(tx);
           order = await tx.order.create({
             data: {
+              orderNumber: orderNumber,
               buyerId: contract.buyerId!,
               studentId: contract.studentId!,
               serviceId: serviceId,

@@ -6,6 +6,7 @@ import { createOrderSchema, updateOrderStatusSchema, getOrderSchema, getOrdersSc
 import { AuthenticatedRequest } from '../types/express.js';
 import { parsePagination, createPaginationResult } from '../utils/pagination.js';
 import { createNotification, createNotificationForUsers } from '../domain/notifications.js';
+import { generateOrderNumber } from '../utils/orderNumber.js';
 // NotificationType removed - using string literals
 
 export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
@@ -81,9 +82,11 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
         throw new Error('Buyer has already purchased this service');
       }
 
-      // Create the order
+      // Generate order number and create the order
+      const orderNumber = await generateOrderNumber(tx);
       return tx.order.create({
         data: {
+          orderNumber: orderNumber,
           buyerId: hireRequest.buyerId,
           studentId: hireRequest.studentId,
           serviceId: hireRequest.service.id,

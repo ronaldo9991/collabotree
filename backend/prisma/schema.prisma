@@ -181,6 +181,7 @@ model MessageRead {
 
 model Order {
   id            String      @id @default(cuid())
+  orderNumber   String      @unique // 4-digit order number
   buyerId       String
   studentId     String
   serviceId     String
