@@ -640,7 +640,9 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
           include: {
             service: {
               select: {
+                id: true,
                 title: true,
+                priceCents: true,
               },
             },
           },
