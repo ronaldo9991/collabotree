@@ -7,16 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Footer } from "@/components/Footer";
 import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
   Send, 
   MessageSquare, 
-  Users, 
   Globe,
-  CheckCircle,
-  AlertCircle
+  CheckCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -30,41 +24,6 @@ export default function Contact() {
     type: "general"
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const contactInfo = [
-    {
-      icon: Mail,
-      title: "Email Us",
-      description: "Send us an email anytime",
-      value: "hello@collabotree.com",
-      href: "mailto:hello@collabotree.com",
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: Phone,
-      title: "Call Us",
-      description: "Mon-Fri from 9am to 6pm",
-      value: "+1 (555) 123-4567",
-      href: "tel:+15551234567",
-      color: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: MapPin,
-      title: "Visit Us",
-      description: "Come say hello at our office",
-      value: "San Francisco, CA",
-      href: "#",
-      color: "from-purple-500 to-pink-500"
-    },
-    {
-      icon: Clock,
-      title: "Response Time",
-      description: "We typically respond within",
-      value: "24 hours",
-      href: "#",
-      color: "from-orange-500 to-red-500"
-    }
-  ];
 
   const inquiryTypes = [
     { value: "general", label: "General Inquiry" },
@@ -103,25 +62,6 @@ export default function Contact() {
     setIsSubmitting(false);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
-
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -149,51 +89,10 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Contact Information Cards */}
-      <section className="section-padding-y">
-        <div className="container-unified">
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {contactInfo.map((info, index) => (
-              <motion.div key={info.title} variants={itemVariants}>
-                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 hover:shadow-xl transition-all duration-300 group cursor-pointer h-full">
-                  <CardContent className="p-6 text-center">
-                    <motion.div
-                      className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${info.color} flex items-center justify-center mx-auto mb-4`}
-                      whileHover={{ 
-                        scale: 1.1,
-                        rotate: 5,
-                        transition: { duration: 0.3 }
-                      }}
-                    >
-                      <info.icon className="w-8 h-8 text-white" />
-                    </motion.div>
-                    
-                    <h3 className="text-lg font-semibold mb-2">{info.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">{info.description}</p>
-                    <a 
-                      href={info.href}
-                      className="text-primary hover:text-primary/80 font-medium transition-colors"
-                    >
-                      {info.value}
-                    </a>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* Contact Form Section */}
       <section className="section-padding-y bg-muted/20">
         <div className="container-unified">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-start">
             {/* Form */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -331,33 +230,33 @@ export default function Contact() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="space-y-8"
+              className="space-y-6 md:space-y-8"
             >
               {/* Why Contact Us */}
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-primary" />
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                     Why Contact Us?
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
+                <CardContent className="pt-0">
+                  <ul className="space-y-4 md:space-y-5">
+                    <li className="flex items-start gap-3 md:gap-4">
                       <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Quick response time - usually within 24 hours</span>
+                      <span className="text-sm md:text-base text-muted-foreground leading-relaxed">Quick response time - usually within 24 hours</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-3 md:gap-4">
                       <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Dedicated support team ready to assist you</span>
+                      <span className="text-sm md:text-base text-muted-foreground leading-relaxed">Dedicated support team ready to assist you</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-3 md:gap-4">
                       <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Expert guidance on platform features and best practices</span>
+                      <span className="text-sm md:text-base text-muted-foreground leading-relaxed">Expert guidance on platform features and best practices</span>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-3 md:gap-4">
                       <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground">Partnership opportunities for universities and organizations</span>
+                      <span className="text-sm md:text-base text-muted-foreground leading-relaxed">Partnership opportunities for universities and organizations</span>
                     </li>
                   </ul>
                 </CardContent>
@@ -365,31 +264,31 @@ export default function Contact() {
 
               {/* Quick Links */}
               <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-primary" />
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                    <Globe className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                     Quick Links
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
+                <CardContent className="pt-0">
+                  <ul className="space-y-3 md:space-y-4">
                     <li>
-                      <a href="/marketplace" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
+                      <a href="/marketplace" className="text-sm md:text-base text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
                         Browse Services →
                       </a>
                     </li>
                     <li>
-                      <a href="/how-it-works" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
+                      <a href="/how-it-works" className="text-sm md:text-base text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
                         How It Works →
                       </a>
                     </li>
                     <li>
-                      <a href="/about" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
+                      <a href="/about" className="text-sm md:text-base text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
                         About Us →
                       </a>
                     </li>
                     <li>
-                      <a href="/dashboard/student" className="text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
+                      <a href="/dashboard/student" className="text-sm md:text-base text-primary hover:text-primary/80 transition-colors flex items-center gap-2">
                         Student Dashboard →
                       </a>
                     </li>
