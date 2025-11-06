@@ -257,9 +257,9 @@ export default function About() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.2 }}
-                            className="bg-gradient-to-br from-secondary/10 to-accent/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
                           >
-                            <Shield className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-secondary mx-auto mb-2 md:mb-3" />
+                            <Shield className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
                             <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Quality Assured</h3>
                             <p className="text-xs sm:text-sm text-muted-foreground">Premium service standards</p>
                           </motion.div>
@@ -268,9 +268,9 @@ export default function About() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.4 }}
-                            className="bg-gradient-to-br from-accent/10 to-primary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
                           >
-                            <Zap className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-accent mx-auto mb-2 md:mb-3" />
+                            <Zap className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
                             <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Real-time Collaboration</h3>
                             <p className="text-xs sm:text-sm text-muted-foreground">Seamless communication</p>
                           </motion.div>
@@ -330,7 +330,7 @@ export default function About() {
             initial={{ opacity: 0, y: 50 }}
             animate={missionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-center mb-20"
+            className="text-center mb-12 md:mb-16"
           >
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -341,7 +341,7 @@ export default function About() {
                 <Target className="w-4 h-4 mr-2" />
                 Our Foundation
               </Badge>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight">
                 Mission, Vision & Values
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
@@ -361,7 +361,7 @@ export default function About() {
             />
             
             {/* Mission Cards with Unique Shapes */}
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 items-stretch">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 items-stretch max-w-7xl mx-auto">
               {missionData.map((item, index) => (
                 <motion.div
                   key={index}
@@ -387,7 +387,7 @@ export default function About() {
                     delay: 0.3 + index * 0.3,
                     ease: "easeOut"
                   }}
-                  className="group relative"
+                  className="group relative h-full"
                 >
                   {/* Unique Shape Background */}
                   <motion.div
@@ -405,7 +405,7 @@ export default function About() {
                   
                   {/* Morphing Shape Container */}
                   <motion.div
-                    className={`relative p-8 rounded-3xl bg-card/80 backdrop-blur-12 border border-border/30 overflow-hidden`}
+                    className={`relative p-6 md:p-8 rounded-3xl bg-card/80 backdrop-blur-12 border border-border/30 overflow-hidden h-full flex flex-col`}
                     whileHover={{ 
                       scale: 1.05,
                       rotateY: 5,
@@ -437,7 +437,7 @@ export default function About() {
                     
                     {/* Icon with 3D Effect */}
                     <motion.div
-                      className={`relative z-10 w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center shadow-2xl`}
+                      className={`relative z-10 w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 md:mb-6 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center shadow-2xl`}
                       whileHover={{ 
                         rotateY: 180,
                         scale: 1.1
@@ -458,20 +458,20 @@ export default function About() {
                           ease: "linear"
                         }}
                       >
-                        <item.icon className="h-10 w-10" />
+                        <item.icon className="h-8 w-8 md:h-10 md:w-10" />
                       </motion.div>
                     </motion.div>
                     
                     {/* Content */}
-                    <div className="relative z-10 text-center">
+                    <div className="relative z-10 text-center flex-1 flex flex-col">
                       <motion.h3 
-                        className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                        className="text-xl md:text-2xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
                         whileHover={{ scale: 1.05 }}
                       >
                         {item.title}
                       </motion.h3>
                       <motion.p 
-                        className="text-muted-foreground leading-relaxed"
+                        className="text-sm md:text-base text-muted-foreground leading-relaxed flex-1"
                         initial={{ opacity: 0 }}
                         animate={missionInView ? { opacity: 1 } : { opacity: 0 }}
                         transition={{ duration: 0.8, delay: 0.8 + index * 0.2 }}
@@ -589,7 +589,7 @@ export default function About() {
                       <Sparkles className="w-4 h-4 mr-2" />
                       Ready to Start?
                     </Badge>
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-tight pb-1">
                       Join Our Community
                     </h2>
                     <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
