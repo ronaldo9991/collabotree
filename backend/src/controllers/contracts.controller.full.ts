@@ -440,7 +440,9 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
           include: {
             service: {
               select: {
+                id: true,
                 title: true,
+                priceCents: true,
               },
             },
           },
@@ -467,42 +469,79 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
       return sendError(res, 'Contract has already been paid', 400);
     }
 
-    // Process payment
-    const updatedContract = await prisma.contract.update({
-      where: { id: contractId },
-      data: {
-        paymentStatus: 'PAID',
-        paidAt: new Date(),
-        progressStatus: 'IN_PROGRESS',
-      },
-      include: {
-        buyer: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
+    // Process payment and create order
+    const updatedContract = await prisma.$transaction(async (tx) => {
+      // Update contract payment status
+      const updated = await tx.contract.update({
+        where: { id: contractId },
+        data: {
+          paymentStatus: 'PAID',
+          paidAt: new Date(),
+          progressStatus: 'IN_PROGRESS',
         },
-        student: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+        include: {
+          buyer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
           },
-        },
-        hireRequest: {
-          include: {
-            service: {
-              select: {
-                id: true,
-                title: true,
-                description: true,
-                priceCents: true,
+          student: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          hireRequest: {
+            include: {
+              service: {
+                select: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  priceCents: true,
+                },
               },
             },
           },
         },
-      },
+      });
+
+      // Get serviceId from contract or hireRequest
+      const serviceId = contract.serviceId || contract.hireRequest.service.id;
+      
+      // Check if order already exists for this contract
+      let order = await tx.order.findFirst({
+        where: {
+          buyerId: contract.buyerId!,
+          studentId: contract.studentId!,
+          serviceId: serviceId,
+        },
+      });
+
+      // Create order if it doesn't exist
+      if (!order) {
+        order = await tx.order.create({
+          data: {
+            buyerId: contract.buyerId!,
+            studentId: contract.studentId!,
+            serviceId: serviceId,
+            hireRequestId: contract.hireRequestId,
+            priceCents: contract.hireRequest.service.priceCents,
+            status: 'PAID',
+          },
+        });
+      }
+
+      // Link order to contract
+      await tx.contract.update({
+        where: { id: contractId },
+        data: { orderId: order.id },
+      });
+
+      return { ...updated, orderId: order.id };
     });
 
     // Create notification for student
