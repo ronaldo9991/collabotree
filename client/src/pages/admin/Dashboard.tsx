@@ -488,26 +488,26 @@ export default function AdminDashboard() {
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Mobile: Scrollable tabs, Desktop: Grid layout */}
-            <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-max md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1 flex-nowrap md:flex-wrap md:overflow-visible">
-                <TabsTrigger value="overview" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <BarChart3 className="h-4 w-4" />
+            <div className="overflow-visible mb-6 md:mb-8">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 w-full h-auto bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-2 sm:p-3 gap-2 md:gap-1">
+                <TabsTrigger value="overview" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Overview</span>
                 </TabsTrigger>
-                <TabsTrigger value="verification" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <UserCheck className="h-4 w-4" />
+                <TabsTrigger value="verification" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Verification</span>
                 </TabsTrigger>
-                <TabsTrigger value="messages" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <MessageCircle className="h-4 w-4" />
+                <TabsTrigger value="messages" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Messages</span>
                 </TabsTrigger>
-                <TabsTrigger value="services" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <Package className="h-4 w-4" />
+                <TabsTrigger value="services" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Package className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   Services
                 </TabsTrigger>
-                <TabsTrigger value="top-selections" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
-                  <Star className="h-4 w-4" />
+                <TabsTrigger value="top-selections" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <Star className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Top Selections</span>
                 </TabsTrigger>
               </TabsList>

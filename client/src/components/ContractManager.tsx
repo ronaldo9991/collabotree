@@ -484,22 +484,24 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <CardTitle className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-sm sm:text-base">
             <FileText className="h-5 w-5" />
             {contract.title}
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={contract.status === 'COMPLETED' ? 'default' : 'secondary'}>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Badge
+              variant={contract.status === 'COMPLETED' ? 'default' : 'secondary'}
+              className="text-[10px] sm:text-xs px-2 py-1 rounded-full uppercase tracking-wide"
+            >
               {contract.status}
             </Badge>
             {contract.status === 'COMPLETED' && (
               <Button
-                size="sm"
                 variant="outline"
                 onClick={handleDownloadPDF}
                 disabled={processing}
-                className="gap-2"
+                className="gap-2 h-9 sm:h-10 px-3 sm:px-4 text-[11px] sm:text-sm"
               >
                 <Download className="h-4 w-4" />
                 Download PDF
