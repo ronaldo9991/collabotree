@@ -575,6 +575,40 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
         });
       }
 
+      // Determine escrow holder (admin account)
+      let escrowHolderId = contract.escrowHolderId;
+      if (escrowHolderId) {
+        const existingHolder = await tx.user.findUnique({ where: { id: escrowHolderId } });
+        if (!existingHolder) {
+          escrowHolderId = undefined;
+        }
+      }
+
+      if (!escrowHolderId) {
+        const firstAdmin = await tx.user.findFirst({
+          where: { role: 'ADMIN' },
+          orderBy: { createdAt: 'asc' },
+        });
+        escrowHolderId = firstAdmin?.id;
+      }
+
+      let totalAmountCents = contract.hireRequest.service.priceCents || 0;
+      if (!totalAmountCents) {
+        const payout = contract.studentPayoutCents || 0;
+        const fee = contract.platformFeeCents || 0;
+        totalAmountCents = payout + fee;
+      }
+
+      if (escrowHolderId && totalAmountCents > 0) {
+        await tx.walletEntry.create({
+          data: {
+            userId: escrowHolderId,
+            amountCents: totalAmountCents,
+            reason: `Escrow funds received for contract: ${contract.hireRequest.service.title}`,
+          },
+        });
+      }
+
       // Update contract payment status and ensure orderId is set
       const updated = await tx.contract.update({
         where: { id: contractId },
@@ -583,6 +617,9 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
           paidAt: new Date(),
           progressStatus: 'IN_PROGRESS',
           orderId: order.id, // Ensure orderId is set
+          payoutStatus: 'AWAITING_COMPLETION',
+          escrowedAt: new Date(),
+          escrowHolderId: escrowHolderId,
         },
         include: {
           buyer: {
@@ -609,6 +646,22 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
                   priceCents: true,
                 },
               },
+            },
+          },
+          escrowHolder: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              status: true,
+              priceCents: true,
+              createdAt: true,
             },
           },
         },
@@ -688,7 +741,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
         return sendError(res, 'Payment must be received before marking as completed', 400);
       }
 
-      // Mark as completed and credit student wallet
+      // Mark as completed and prepare for admin payout release
       const updatedContract = await prisma.$transaction(async (tx) => {
         // Get or create order for this contract
         let order = null;
@@ -749,6 +802,7 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
             progressNotes: validatedData.progressNotes,
             completionNotes: validatedData.completionNotes,
             orderId: orderId, // Ensure orderId is set
+            payoutStatus: 'READY_FOR_RELEASE',
           },
           include: {
             buyer: {
@@ -777,22 +831,40 @@ export const updateProgress = async (req: AuthenticatedRequest, res: Response) =
                 },
               },
             },
+            order: {
+              select: {
+                id: true,
+                orderNumber: true,
+                status: true,
+                priceCents: true,
+                createdAt: true,
+              },
+            },
+            escrowHolder: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
           },
         });
 
-        // Credit student wallet with their payout (after platform fee)
-        if (contract.studentId && contract.studentPayoutCents) {
-          await tx.walletEntry.create({
-            data: {
-              userId: contract.studentId,
-              amountCents: contract.studentPayoutCents,
-              reason: `Payment for completed contract: ${contract.hireRequest.service.title}`,
-            },
-          });
-        }
-
         return { ...updated, orderId: orderId };
       });
+
+      // Notify platform admins that payout needs approval
+      const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+      await Promise.all(
+        admins.map((admin) =>
+          createNotification(
+            admin.id,
+            'CONTRACT_COMPLETED',
+            'Payout Ready for Release',
+            `${contract.student?.name || 'A student'} marked the contract "${contract.hireRequest.service.title}" as completed. Release the payout when ready.`
+          )
+        )
+      );
 
       // Create notification for buyer
       if (contract.buyerId && contract.student?.name) {
@@ -925,15 +997,15 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
       return sendError(res, 'Payment must be received before marking as completed', 400);
     }
 
-    // Mark as completed and credit student wallet
+    // Mark as completed and prepare for admin payout release
     const updatedContract = await prisma.$transaction(async (tx) => {
-      // Update contract
       const updated = await tx.contract.update({
         where: { id: contractId },
         data: {
           status: 'COMPLETED',
           progressStatus: 'COMPLETED',
           completionNotes: validatedData.completionNotes,
+          payoutStatus: 'READY_FOR_RELEASE',
         },
         include: {
           buyer: {
@@ -962,19 +1034,24 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
               },
             },
           },
+          escrowHolder: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              status: true,
+              priceCents: true,
+              createdAt: true,
+            },
+          },
         },
       });
-
-      // Credit student wallet with their payout (after platform fee)
-      if (contract.studentId && contract.studentPayoutCents) {
-        await tx.walletEntry.create({
-          data: {
-            userId: contract.studentId,
-            amountCents: contract.studentPayoutCents,
-            reason: `Payment for completed contract: ${contract.hireRequest.service.title}`,
-          },
-        });
-      }
 
       return updated;
     });
@@ -994,6 +1071,19 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
       orderId = order.id;
     }
 
+    // Notify platform admins that payout needs approval
+    const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+    await Promise.all(
+      admins.map((admin) =>
+        createNotification(
+          admin.id,
+          'CONTRACT_COMPLETED',
+          'Payout Ready for Release',
+          `${contract.student?.name || 'A student'} marked the contract "${contract.hireRequest.service.title}" as completed. Release the payout when ready.`
+        )
+      )
+    );
+
     // Create notification for buyer
     if (contract.buyerId && contract.student?.name) {
       await createNotification(
@@ -1012,6 +1102,210 @@ export const markCompleted = async (req: AuthenticatedRequest, res: Response) =>
       return sendValidationError(res, error.errors);
     }
     return sendError(res, 'Failed to mark contract as completed', 500);
+  }
+};
+
+export const releaseContractPayout = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user || req.user.role !== 'ADMIN') {
+      return sendError(res, 'Access denied. Admin role required to release payouts.', 403);
+    }
+
+    const { contractId } = req.params;
+
+    const contract = await prisma.contract.findUnique({
+      where: { id: contractId },
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        student: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        hireRequest: {
+          include: {
+            service: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                priceCents: true,
+              },
+            },
+            orders: {
+              select: {
+                id: true,
+                status: true,
+              },
+              take: 1,
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
+          },
+        },
+        escrowHolder: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (!contract) {
+      return sendNotFound(res, 'Contract not found');
+    }
+
+    if (contract.paymentStatus !== 'PAID') {
+      return sendError(res, 'Payment has not been recorded for this contract yet.', 400);
+    }
+
+    if (contract.payoutStatus === 'RELEASED') {
+      return sendError(res, 'Payout has already been released for this contract.', 400);
+    }
+
+    if (contract.payoutStatus !== 'READY_FOR_RELEASE') {
+      return sendError(res, 'Contract is not ready for payout release yet.', 400);
+    }
+
+    if (!contract.studentId || !contract.studentPayoutCents) {
+      return sendError(res, 'Contract payout configuration is incomplete.', 400);
+    }
+
+    const releasingAdminId = req.user.id;
+
+    const updatedContract = await prisma.$transaction(async (tx) => {
+      let escrowHolderId = contract.escrowHolderId;
+
+      if (escrowHolderId) {
+        const existing = await tx.user.findUnique({ where: { id: escrowHolderId } });
+        if (!existing) {
+          escrowHolderId = undefined;
+        }
+      }
+
+      if (!escrowHolderId) {
+        escrowHolderId = releasingAdminId;
+      }
+
+      if (escrowHolderId) {
+        await tx.walletEntry.create({
+          data: {
+            userId: escrowHolderId,
+            amountCents: -contract.studentPayoutCents,
+            reason: `Escrow release to student for contract: ${contract.hireRequest.service.title}`,
+          },
+        });
+      }
+
+      await tx.walletEntry.create({
+        data: {
+          userId: contract.studentId,
+          amountCents: contract.studentPayoutCents,
+          reason: `Payout released for contract: ${contract.hireRequest.service.title}`,
+        },
+      });
+
+      const updated = await tx.contract.update({
+        where: { id: contractId },
+        data: {
+          payoutStatus: 'RELEASED',
+          releasedAt: new Date(),
+          paymentStatus: 'RELEASED',
+          escrowHolderId,
+        },
+        include: {
+          buyer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          student: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          hireRequest: {
+            include: {
+              service: {
+                select: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  priceCents: true,
+                },
+              },
+            },
+          },
+          escrowHolder: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              status: true,
+              priceCents: true,
+              createdAt: true,
+            },
+          },
+        },
+      });
+
+      return updated;
+    });
+
+    const order = contract.hireRequest.orders?.[0];
+    if (order && order.status !== 'COMPLETED') {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { status: 'COMPLETED' },
+      });
+    }
+
+    const payoutAmountCents = contract.studentPayoutCents ?? 0;
+    const payoutFormatted = `$${(payoutAmountCents / 100).toFixed(2)}`;
+
+    if (contract.studentId) {
+      await createNotification(
+        contract.studentId,
+        'PAYMENT_RECEIVED',
+        'Payout Released',
+        `The admin has released your payout for "${contract.hireRequest.service.title}". Amount: ${payoutFormatted}.`
+      );
+    }
+
+    if (contract.buyerId) {
+      await createNotification(
+        contract.buyerId,
+        'PAYMENT_RECEIVED',
+        'Payout Released to Student',
+        `Payment for "${contract.hireRequest.service.title}" has been released to ${contract.student?.name || 'the student'}.`
+      );
+    }
+
+    return sendSuccess(res, updatedContract, 'Payout released successfully');
+  } catch (error) {
+    console.error('❌ Error in releaseContractPayout:', error);
+    return sendError(res, 'Failed to release payout', 500);
   }
 };
 
@@ -1052,6 +1346,15 @@ export const getUserContracts = async (req: AuthenticatedRequest, res: Response)
             email: true,
           },
         },
+        order: {
+          select: {
+            id: true,
+            orderNumber: true,
+            status: true,
+            priceCents: true,
+            createdAt: true,
+          },
+        },
         hireRequest: {
           include: {
             service: {
@@ -1062,6 +1365,24 @@ export const getUserContracts = async (req: AuthenticatedRequest, res: Response)
                 priceCents: true,
               },
             },
+            orders: {
+              select: {
+                id: true,
+                status: true,
+                createdAt: true,
+              },
+              take: 1,
+              orderBy: {
+                createdAt: 'desc',
+              },
+            },
+          },
+        },
+        escrowHolder: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
           },
         },
       },

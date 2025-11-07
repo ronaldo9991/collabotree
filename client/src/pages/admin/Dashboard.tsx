@@ -30,7 +30,8 @@ import {
   Filter,
   Calendar,
   Clock,
-  X
+  X,
+  HandCoins
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -186,15 +187,52 @@ export default function AdminDashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [topSelectionServices, setTopSelectionServices] = useState<Service[]>([]);
+  const [contracts, setContracts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [contractsLoading, setContractsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [messageSearch, setMessageSearch] = useState("");
   const [serviceSearch, setServiceSearch] = useState("");
+  const [contractSearch, setContractSearch] = useState("");
   const [conversationModalOpen, setConversationModalOpen] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState<ConversationData | null>(null);
+  const [selectedContract, setSelectedContract] = useState<any | null>(null);
+  const [contractModalOpen, setContractModalOpen] = useState(false);
+  const [contractDetailsLoading, setContractDetailsLoading] = useState(false);
   const [loadingConversation, setLoadingConversation] = useState(false);
+  const [releasingContractId, setReleasingContractId] = useState<string | null>(null);
+  const [deactivatingServiceId, setDeactivatingServiceId] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [pendingVerifications, setPendingVerifications] = useState<any[]>([]);
+
+  const formatCurrency = (value?: number | null) => {
+    if (value === null || value === undefined) {
+      return "$0.00";
+    }
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    }).format(value / 100);
+  };
+
+  const formatDateTime = (value?: string | null) => {
+    if (!value) return '—';
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(value));
+  };
+
+  const toTitleCase = (value?: string | null) => {
+    if (!value) return '—';
+    return value
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   useEffect(() => {
     console.log('Admin dashboard - Current user:', user);
@@ -260,6 +298,28 @@ export default function AdminDashboard() {
       if (servicesResponse.success && servicesResponse.data) {
         const responseData = servicesResponse.data as any;
         setServices(responseData.services || []);
+      }
+
+      // Fetch contracts for oversight
+      try {
+        setContractsLoading(true);
+        console.log('Fetching contracts...');
+        const contractsResponse = await api.getUserContracts();
+        console.log('Contracts response:', contractsResponse);
+        if (contractsResponse.success && Array.isArray(contractsResponse.data)) {
+          setContracts(contractsResponse.data as any[]);
+        } else if (contractsResponse.success && (contractsResponse.data as any)?.data) {
+          setContracts((contractsResponse.data as any).data);
+        }
+      } catch (contractsError) {
+        console.error('Error fetching contracts:', contractsError);
+        toast({
+          title: "Error",
+          description: "Failed to load contracts for review.",
+          variant: "destructive",
+        });
+      } finally {
+        setContractsLoading(false);
       }
 
       // Fetch top selection services
@@ -383,6 +443,101 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeactivateService = async (serviceId: string) => {
+    try {
+      setDeactivatingServiceId(serviceId);
+      const response = await api.deactivateService(serviceId);
+      if (response.success) {
+        toast({
+          title: "Service Deactivated",
+          description: "The service is no longer visible to buyers.",
+        });
+        setServices(prev =>
+          prev.map(service =>
+            service.id === serviceId
+              ? { ...service, isActive: false, isTopSelection: false }
+              : service
+          )
+        );
+        setTopSelectionServices(prev => prev.filter(service => service.id !== serviceId));
+        setStats(prev =>
+          prev
+            ? {
+                ...prev,
+                services: {
+                  ...prev.services,
+                  active: Math.max(0, prev.services.active - 1),
+                },
+              }
+            : prev
+        );
+      } else {
+        throw new Error(response.error || 'Failed to deactivate service');
+      }
+    } catch (error) {
+      console.error('Error deactivating service:', error);
+      toast({
+        title: "Error",
+        description: "Failed to deactivate service. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeactivatingServiceId(null);
+    }
+  };
+
+  const handleViewContract = async (contractId: string) => {
+    try {
+      setContractDetailsLoading(true);
+      const response = await api.getContract(contractId);
+      if (response.success && response.data) {
+        setSelectedContract(response.data);
+        setContractModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error fetching contract details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load contract details.",
+        variant: "destructive",
+      });
+    } finally {
+      setContractDetailsLoading(false);
+    }
+  };
+
+  const handleReleasePayout = async (contractId: string) => {
+    try {
+      setReleasingContractId(contractId);
+      const response = await api.releaseContractPayout(contractId);
+      if (response.success && response.data) {
+        setContracts(prev =>
+          prev.map(contract =>
+            contract.id === contractId ? response.data : contract
+          )
+        );
+        if (selectedContract?.id === contractId) {
+          setSelectedContract(response.data);
+        }
+        toast({
+          title: "Payout Released",
+          description: "Funds have been released to the student successfully.",
+        });
+      } else {
+        throw new Error(response.error || 'Failed to release payout');
+      }
+    } catch (error) {
+      console.error('Error releasing payout:', error);
+      toast({
+        title: "Error",
+        description: "Failed to release payout. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setReleasingContractId(null);
+    }
+  };
+
   const filteredMessages = messages.filter(message => 
     message.body.toLowerCase().includes(messageSearch.toLowerCase()) ||
     message.sender.name.toLowerCase().includes(messageSearch.toLowerCase()) ||
@@ -393,6 +548,26 @@ export default function AdminDashboard() {
     service.title.toLowerCase().includes(serviceSearch.toLowerCase()) ||
     service.owner.name.toLowerCase().includes(serviceSearch.toLowerCase())
   );
+
+  const filteredContracts = contracts.filter(contract => {
+    if (!contractSearch.trim()) return true;
+    const query = contractSearch.toLowerCase();
+    const serviceTitle = contract?.hireRequest?.service?.title?.toLowerCase() || '';
+    const buyerName = contract?.buyer?.name?.toLowerCase() || '';
+    const studentName = contract?.student?.name?.toLowerCase() || '';
+    const orderNumber = contract?.order?.orderNumber?.toLowerCase() || '';
+    const paymentStatus = contract?.paymentStatus?.toLowerCase() || '';
+    const payoutStatus = contract?.payoutStatus?.toLowerCase() || '';
+
+    return (
+      serviceTitle.includes(query) ||
+      buyerName.includes(query) ||
+      studentName.includes(query) ||
+      orderNumber.includes(query) ||
+      paymentStatus.includes(query) ||
+      payoutStatus.includes(query)
+    );
+  });
 
   if (!user || user.role !== 'ADMIN') {
     return (
@@ -476,7 +651,7 @@ export default function AdminDashboard() {
             Welcome back, {user?.name || 'Admin'}!
           </h1>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-            Manage the platform, monitor messages, and control top selections 
+            Manage the platform, monitor messages, control top selections, and oversee escrow payouts.
           </p>
         </motion.div>
 
@@ -489,7 +664,7 @@ export default function AdminDashboard() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Mobile: Scrollable tabs, Desktop: Grid layout */}
             <div className="overflow-visible mb-6 md:mb-8">
-              <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 w-full h-auto bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-2 sm:p-3 gap-2 md:gap-1">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 w-full h-auto bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-2 sm:p-3 gap-2 md:gap-1">
                 <TabsTrigger value="overview" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
                   <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Overview</span>
@@ -505,6 +680,10 @@ export default function AdminDashboard() {
                 <TabsTrigger value="services" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
                   <Package className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   Services
+                </TabsTrigger>
+                <TabsTrigger value="contracts" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
+                  <HandCoins className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
+                  <span>Contracts</span>
                 </TabsTrigger>
                 <TabsTrigger value="top-selections" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap">
                   <Star className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
@@ -780,7 +959,7 @@ export default function AdminDashboard() {
                             <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2 break-words overflow-wrap-anywhere">{service.description}</p>
                             <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
                               <span className="truncate"><strong>Owner:</strong> {service.owner.name}</span>
-                              <span className="whitespace-nowrap"><strong>Price:</strong> ${service.priceCents / 100}</span>
+                              <span className="whitespace-nowrap"><strong>Price:</strong> {formatCurrency(service.priceCents)}</span>
                               <span className="truncate"><strong>University:</strong> {service.owner.university || 'N/A'}</span>
                               {service.owner.isVerified && (
                           <Badge variant="outline" className="text-xs whitespace-nowrap">
@@ -799,6 +978,19 @@ export default function AdminDashboard() {
                             >
                               {service.isTopSelection ? <StarOff className="h-3 w-3" /> : <Star className="h-3 w-3" />}
                             </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="max-md:min-h-[44px] max-md:w-full"
+                              disabled={!service.isActive || deactivatingServiceId === service.id}
+                              onClick={() => handleDeactivateService(service.id)}
+                            >
+                              {deactivatingServiceId === service.id ? (
+                                <> <Loader2 className="h-3 w-3 animate-spin mr-2" /> Disabling... </>
+                              ) : (
+                                <> <XCircle className="h-3 w-3 mr-2" /> Deactivate </>
+                              )}
+                            </Button>
                       </div>
                     </div>
                   ))
@@ -812,6 +1004,133 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </motion.div>
+            </TabsContent>
+
+            {/* Contracts Tab */}
+            <TabsContent value="contracts" className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+                  <CardHeader>
+                    <div className="flex items-center justify-between max-md:flex-col max-md:items-stretch max-md:gap-4">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <HandCoins className="h-5 w-5 text-primary" />
+                          Escrow & Payouts
+                        </CardTitle>
+                        <CardDescription>Track contracts, escrowed funds, and release payouts with a single click</CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2 max-md:w-full">
+                        <div className="relative w-64 md:w-80 lg:w-96 max-md:w-full">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                          <Input
+                            placeholder="Search contracts, buyers, students..."
+                            value={contractSearch}
+                            onChange={(e) => setContractSearch(e.target.value)}
+                            className="pl-10 w-full h-10 max-md:min-h-[44px] max-md:text-base"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {contractsLoading ? (
+                      <div className="py-12 flex flex-col items-center justify-center text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin mb-3" />
+                        <p>Loading contracts...</p>
+                      </div>
+                    ) : filteredContracts.length > 0 ? (
+                      <div className="space-y-4">
+                        {filteredContracts.map((contract: any) => {
+                          const canRelease = contract.paymentStatus === 'PAID' && contract.payoutStatus === 'READY_FOR_RELEASE';
+                          const isReleased = contract.payoutStatus === 'RELEASED';
+                          const serviceTitle = contract?.hireRequest?.service?.title || contract?.title || 'Untitled Contract';
+                          const orderNumber = contract?.order?.orderNumber || contract?.orderId || 'Pending';
+                          return (
+                            <div
+                              key={contract.id}
+                              className="p-4 rounded-lg bg-muted/30 border border-border/50"
+                            >
+                              <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                                <div className="space-y-1">
+                                  <h3 className="font-semibold text-sm sm:text-base break-words overflow-wrap-anywhere">{serviceTitle}</h3>
+                                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                                    <Badge variant="outline">{toTitleCase(contract.status)}</Badge>
+                                    <Badge variant={contract.paymentStatus === 'RELEASED' ? 'default' : 'secondary'}>
+                                      Payment: {toTitleCase(contract.paymentStatus)}
+                                    </Badge>
+                                    <Badge variant={canRelease ? 'default' : isReleased ? 'default' : 'secondary'}>
+                                      Payout: {toTitleCase(contract.payoutStatus)}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                <div className="text-xs text-muted-foreground text-right space-y-1 min-w-[160px]">
+                                  <div><strong>Order:</strong> {orderNumber}</div>
+                                  <div><strong>Created:</strong> {formatDateTime(contract.createdAt)}</div>
+                                  {contract.releasedAt && (
+                                    <div><strong>Released:</strong> {formatDateTime(contract.releasedAt)}</div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground mb-4">
+                                <div><strong>Buyer:</strong> {contract.buyer?.name || 'N/A'}</div>
+                                <div><strong>Student:</strong> {contract.student?.name || 'N/A'}</div>
+                                <div><strong>Service Price:</strong> {formatCurrency(contract?.hireRequest?.service?.priceCents)}</div>
+                                <div><strong>Student Payout:</strong> {formatCurrency(contract.studentPayoutCents)}</div>
+                                <div><strong>Platform Fee:</strong> {formatCurrency(contract.platformFeeCents)}</div>
+                                <div><strong>Escrow Holder:</strong> {contract.escrowHolder?.name || 'Unassigned'}</div>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2 justify-end">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="max-md:min-h-[44px]"
+                                  onClick={() => handleViewContract(contract.id)}
+                                  disabled={contractDetailsLoading && selectedContract?.id === contract.id}
+                                >
+                                  {contractDetailsLoading && selectedContract?.id === contract.id ? (
+                                    <> <Loader2 className="h-3 w-3 animate-spin mr-2" /> Loading... </>
+                                  ) : (
+                                    <> <FileText className="h-3 w-3 mr-2" /> View Details </>
+                                  )}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant={canRelease ? 'default' : 'outline'}
+                                  className="max-md:min-h-[44px]"
+                                  disabled={!canRelease || releasingContractId === contract.id}
+                                  onClick={() => handleReleasePayout(contract.id)}
+                                >
+                                  {releasingContractId === contract.id ? (
+                                    <> <Loader2 className="h-3 w-3 animate-spin mr-2" /> Releasing... </>
+                                  ) : isReleased ? (
+                                    <> <CheckCircle className="h-3 w-3 mr-2" /> Released </>
+                                  ) : canRelease ? (
+                                    <> Release Payout </>
+                                  ) : (
+                                    <> Awaiting Completion </>
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="py-12 text-center text-muted-foreground">
+                        <HandCoins className="h-12 w-12 mx-auto mb-4" />
+                        <p>No contracts found</p>
+                        <p className="text-sm">Contracts will appear here once buyers engage students.</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
             </TabsContent>
 
             {/* Top Selections Tab */}
@@ -1075,6 +1394,122 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={contractModalOpen} onOpenChange={setContractModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <HandCoins className="h-5 w-5 text-primary" />
+              Contract Overview
+            </DialogTitle>
+            <DialogDescription>
+              Detailed breakdown of the agreement, payment milestones, and payout readiness.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedContract ? (
+            <div className="space-y-5">
+              <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <h3 className="text-lg font-semibold mb-2">{selectedContract?.hireRequest?.service?.title || selectedContract.title || 'Untitled Contract'}</h3>
+                <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
+                  {selectedContract?.hireRequest?.service?.description || selectedContract.description || 'No description provided.'}
+                </p>
+                <div className="grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
+                  <div><strong>Status:</strong> {toTitleCase(selectedContract.status)}</div>
+                  <div><strong>Payment:</strong> {toTitleCase(selectedContract.paymentStatus)}</div>
+                  <div><strong>Payout:</strong> {toTitleCase(selectedContract.payoutStatus)}</div>
+                  <div><strong>Order:</strong> {selectedContract.order?.orderNumber || selectedContract.orderId || 'Pending'}</div>
+                  <div><strong>Escrowed:</strong> {formatDateTime(selectedContract.escrowedAt)}</div>
+                  <div><strong>Paid:</strong> {formatDateTime(selectedContract.paidAt)}</div>
+                  <div><strong>Released:</strong> {formatDateTime(selectedContract.releasedAt)}</div>
+                  <div><strong>Escrow Holder:</strong> {selectedContract.escrowHolder?.name || 'Unassigned'}</div>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Card className="bg-card/60 border border-border/40">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Buyer</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm text-muted-foreground">
+                    <div><strong>Name:</strong> {selectedContract.buyer?.name || 'Unknown'}</div>
+                    <div><strong>Email:</strong> {selectedContract.buyer?.email || 'N/A'}</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-card/60 border border-border/40">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Student</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm text-muted-foreground">
+                    <div><strong>Name:</strong> {selectedContract.student?.name || 'Unknown'}</div>
+                    <div><strong>Email:</strong> {selectedContract.student?.email || 'N/A'}</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="bg-card/60 border border-border/40">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Financial Breakdown</CardTitle>
+                </CardHeader>
+                <CardContent className="grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
+                  <div><strong>Service Price:</strong> {formatCurrency(selectedContract?.hireRequest?.service?.priceCents)}</div>
+                  <div><strong>Student Payout:</strong> {formatCurrency(selectedContract.studentPayoutCents)}</div>
+                  <div><strong>Platform Commission:</strong> {formatCurrency(selectedContract.platformFeeCents)}</div>
+                  <div><strong>Order Status:</strong> {toTitleCase(selectedContract.order?.status)}</div>
+                </CardContent>
+              </Card>
+
+              {selectedContract?.deliverables && (
+                <Card className="bg-card/60 border border-border/40">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Deliverables</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm text-muted-foreground space-y-2">
+                    {Array.isArray(selectedContract.deliverables)
+                      ? (
+                        <ul className="list-disc pl-5 space-y-1">
+                          {selectedContract.deliverables.map((item: string, index: number) => (
+                            <li key={index}>{item}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>{selectedContract.deliverables}</p>
+                      )}
+                  </CardContent>
+                </Card>
+              )}
+
+              <div className="flex flex-wrap gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setContractModalOpen(false)}
+                  className="max-md:min-h-[44px]"
+                >
+                  Close
+                </Button>
+                {selectedContract.paymentStatus === 'PAID' && selectedContract.payoutStatus === 'READY_FOR_RELEASE' && (
+                  <Button
+                    onClick={() => handleReleasePayout(selectedContract.id)}
+                    disabled={releasingContractId === selectedContract.id}
+                    className="max-md:min-h-[44px]"
+                  >
+                    {releasingContractId === selectedContract.id ? (
+                      <> <Loader2 className="h-3 w-3 animate-spin mr-2" /> Releasing... </>
+                    ) : (
+                      <> Release Payout </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="py-8 text-center text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin mx-auto mb-3" />
+              <p>Loading contract details...</p>
             </div>
           )}
         </DialogContent>

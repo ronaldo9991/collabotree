@@ -4,6 +4,7 @@ import { prisma } from '../db/prisma.js';
 import { sendSuccess, sendError, sendValidationError, sendNotFound } from '../utils/responses.js';
 import { AuthenticatedRequest } from '../types/express.js';
 import { createCursorPaginationResult } from '../utils/pagination.js';
+import { createNotification } from '../domain/notifications.js';
 
 // Schema for getting all messages (admin only)
 const getAllMessagesSchema = z.object({
@@ -557,5 +558,73 @@ export const getAllServices = async (req: AuthenticatedRequest, res: Response) =
     });
   } catch (error) {
     throw error;
+  }
+};
+
+export const deactivateService = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user || req.user.role !== 'ADMIN') {
+      return sendError(res, 'Access denied. Admin role required.', 403);
+    }
+
+    const { serviceId } = req.params as { serviceId?: string };
+
+    if (!serviceId) {
+      return sendValidationError(res, [{ message: 'Service ID is required', path: ['serviceId'] }]);
+    }
+
+    const service = await prisma.service.findUnique({
+      where: { id: serviceId },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            university: true,
+          },
+        },
+      },
+    });
+
+    if (!service) {
+      return sendNotFound(res, 'Service not found');
+    }
+
+    if (!service.isActive) {
+      return sendError(res, 'Service is already inactive', 400);
+    }
+
+    const updatedService = await prisma.service.update({
+      where: { id: serviceId },
+      data: {
+        isActive: false,
+        isTopSelection: false,
+      },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            university: true,
+          },
+        },
+      },
+    });
+
+    if (updatedService.owner) {
+      await createNotification(
+        updatedService.owner.id,
+        'SERVICE_DEACTIVATED',
+        'Service Removed by Admin',
+        `Your service "${updatedService.title}" has been deactivated by the platform admin. Please contact support for more details.`
+      );
+    }
+
+    return sendSuccess(res, updatedService, 'Service deactivated successfully');
+  } catch (error) {
+    console.error('❌ Error in deactivateService:', error);
+    return sendError(res, 'Failed to deactivate service', 500);
   }
 };

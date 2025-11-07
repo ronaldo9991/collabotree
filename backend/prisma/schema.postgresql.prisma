@@ -50,6 +50,7 @@ enum NotificationType {
   REVIEW_RECEIVED
   DISPUTE_RAISED
   DISPUTE_RESOLVED
+  SERVICE_DEACTIVATED
 }
 
 model User {

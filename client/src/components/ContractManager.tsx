@@ -34,6 +34,7 @@ interface Contract {
   isSignedByBuyer: boolean;
   isSignedByStudent: boolean;
   paymentStatus: string;
+  payoutStatus?: string;
   progressStatus: string;
   deliverables: string[] | string; // Can be array or JSON string
   progressNotes?: string;
@@ -43,6 +44,10 @@ interface Contract {
   service: { id: string; title: string; description: string };
   hireRequest: { id: string };
   orderId?: string; // Added for review functionality
+  order?: { id: string; orderNumber?: string; status?: string; priceCents?: number };
+  escrowedAt?: string;
+  releasedAt?: string;
+  escrowHolder?: { id: string; name: string; email: string } | null;
 }
 
 interface ContractManagerProps {
@@ -64,6 +69,29 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
   const [processing, setProcessing] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
+
+  const formatCurrency = (value?: number | null) => {
+    if (value === undefined || value === null) return '$0.00';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value / 100);
+  };
+
+  const formatStatus = (value?: string | null) => {
+    if (!value) return 'Not ready';
+    return value
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const formatDateTime = (value?: string | null) => {
+    if (!value) return null;
+    return new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(value));
+  };
 
   useEffect(() => {
     if (contractId) {
@@ -266,7 +294,7 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
         toast({
           title: markAsCompleted ? "Contract Completed" : "Progress Updated",
           description: markAsCompleted 
-            ? "Contract marked as completed. Payment has been released to you."
+            ? "Contract marked as completed. The admin will review and release your payout shortly."
             : "Your progress has been updated successfully.",
         });
         onContractUpdate?.();
@@ -517,7 +545,7 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-primary" />
               <span className="font-semibold">Total Price:</span>
-              <span>${(contract.priceCents / 100).toFixed(2)}</span>
+              <span>{formatCurrency(contract.priceCents)}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
@@ -528,11 +556,11 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="font-semibold">Platform Fee (10%):</span>
-              <span>${(contract.platformFeeCents / 100).toFixed(2)}</span>
+              <span>{formatCurrency(contract.platformFeeCents)}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold">Student Payout:</span>
-              <span>${(contract.studentPayoutCents / 100).toFixed(2)}</span>
+              <span>{formatCurrency(contract.studentPayoutCents)}</span>
             </div>
           </div>
         </div>
@@ -594,11 +622,27 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
 
         {/* Payment Status */}
         <div>
-          <h4 className="font-semibold mb-2">Payment Status</h4>
-          <Badge variant={contract.paymentStatus === 'PAID' ? 'default' : 'secondary'}>
-            <CreditCard className="h-3 w-3 mr-1" />
-            {contract.paymentStatus}
-          </Badge>
+          <h4 className="font-semibold mb-2">Payment & Payout</h4>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant={['PAID', 'RELEASED'].includes(contract.paymentStatus) ? 'default' : 'secondary'}>
+              <CreditCard className="h-3 w-3 mr-1" />
+              Payment: {formatStatus(contract.paymentStatus)}
+            </Badge>
+            <Badge variant={contract.payoutStatus === 'RELEASED' ? 'default' : 'secondary'}>
+              <DollarSign className="h-3 w-3 mr-1" />
+              Payout: {formatStatus(contract.payoutStatus)}
+            </Badge>
+          </div>
+          {contract.paymentStatus === 'PAID' && contract.payoutStatus !== 'RELEASED' && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Funds are secured in platform escrow. The admin will review the completion and release the payout shortly.
+            </p>
+          )}
+          {contract.payoutStatus === 'RELEASED' && formatDateTime(contract.releasedAt) && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Payout released on {formatDateTime(contract.releasedAt)}.
+            </p>
+          )}
         </div>
 
         {/* Progress */}
@@ -674,10 +718,6 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
                         />
                         <Button 
                           onClick={async () => {
-                            if (!contract || !progressNotes.trim()) {
-                              // Use a default progress note if empty
-                              setProgressNotes('Project completed');
-                            }
                             setMarkAsCompleted(true);
                             await handleUpdateProgress();
                           }}
@@ -740,7 +780,7 @@ export function ContractManager({ contractId, hireRequestId, onContractUpdate }:
                   ) : (
                     <CreditCard className="h-4 w-4 mr-2" />
                   )}
-                  Pay ${(contract.priceCents / 100).toFixed(2)} (Escrow)
+                  Pay {formatCurrency(contract.priceCents)} (Escrow)
                 </Button>
               )}
 

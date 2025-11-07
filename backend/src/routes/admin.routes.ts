@@ -7,6 +7,7 @@ import {
   getTopSelectionServices,
   getAllServices,
   getServiceConversation,
+  deactivateService,
 } from '../controllers/admin.controller.js';
 
 const router = Router();
@@ -25,6 +26,7 @@ router.get('/messages', getAllMessages);
 router.get('/services/top-selections', getTopSelectionServices);
 router.get('/services', getAllServices);
 router.patch('/services/top-selection', updateTopSelection);
+router.delete('/services/:serviceId', deactivateService);
 
 // Conversation management
 router.get('/services/:serviceId/conversation', getServiceConversation);

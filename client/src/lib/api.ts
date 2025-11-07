@@ -528,6 +528,18 @@ class ApiClient {
     });
   }
 
+  async deactivateService(serviceId: string) {
+    return this.request(`/admin/services/${serviceId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async releaseContractPayout(contractId: string) {
+    return this.request(`/contracts/${contractId}/release`, {
+      method: 'POST',
+    });
+  }
+
   // Get full conversation for a service
   async getServiceConversation(serviceId: string) {
     return this.request(`/admin/services/${serviceId}/conversation`);
