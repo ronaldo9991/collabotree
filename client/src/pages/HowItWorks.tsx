@@ -24,6 +24,7 @@ import {
   ArrowRight,
   GraduationCap
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const timelineSteps = [
   {
@@ -96,6 +97,9 @@ const timelineSteps = [
 
 
 export default function HowItWorks() {
+  const { isAuthenticated } = useAuth();
+  const hireTalentHref = isAuthenticated ? "/marketplace" : "/signin";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -117,12 +121,29 @@ export default function HowItWorks() {
               A comprehensive platform connecting verified university students with global buyers 
               through secure, professional project collaboration.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
-              <Button size="lg" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base" data-testid="hire-talent-btn">
-                <Link href="/api/login">Hire Talent</Link>
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full max-w-2xl mx-auto">
+              <Button
+                size="lg"
+                asChild
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl"
+                data-testid="hire-talent-btn"
+              >
+                <Link href={hireTalentHref} className="flex items-center justify-center gap-3">
+                  Hire Talent
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base" data-testid="explore-talent-btn">
-                <Link href="/marketplace">Explore Talent</Link>
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="w-full sm:w-auto px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300 rounded-2xl"
+                data-testid="explore-talent-btn"
+              >
+                <Link href="/marketplace" className="flex items-center justify-center gap-3">
+                  Explore Talent
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
               </Button>
             </div>
           </motion.div>
