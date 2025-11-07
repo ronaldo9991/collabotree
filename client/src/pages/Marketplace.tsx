@@ -843,11 +843,11 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="mt-auto pt-4 border-t border-border/40 flex gap-3">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 min-w-[96px] justify-center items-center px-3 text-xs sm:text-sm"
+            className="flex-1 min-w-[120px] justify-center items-center h-11 sm:h-12 rounded-xl px-4 text-sm font-semibold"
             asChild
             data-testid={`view-project-${project.id}`}
             onClick={(e) => {
@@ -860,7 +860,7 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
           </Button>
           <Button
             size="sm"
-            className="flex-1 min-w-[96px] justify-center items-center px-3 text-xs sm:text-sm"
+            className="flex-1 min-w-[120px] justify-center items-center h-11 sm:h-12 rounded-xl px-4 text-sm font-semibold"
             data-testid={`hire-now-${project.id}`}
             onClick={(e) => {
               e.preventDefault();
