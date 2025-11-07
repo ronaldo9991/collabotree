@@ -502,8 +502,8 @@ export default function ExploreTalent() {
         {/* Main Content Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar - Left Side */}
-          <div className="w-full lg:w-80 flex-shrink-0 order-2 lg:order-1">
-            <Card className="glass-card bg-card/80 backdrop-blur-md border-2 border-border/50 shadow-xl sticky top-6">
+          <div className="w-full lg:w-80 flex-shrink-0 order-2 lg:order-1 mb-8 lg:mb-0">
+            <Card className="glass-card bg-card/80 backdrop-blur-md border-2 border-border/50 shadow-xl sticky top-4 max-lg:static">
               <CardHeader className="pb-4 border-b border-border/30">
                 <CardTitle className="text-lg font-bold flex items-center gap-2">
                   <Filter className="h-5 w-5 text-primary" />
@@ -513,7 +513,7 @@ export default function ExploreTalent() {
                   Refine your search to find the perfect talent
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6 space-y-6">
+              <CardContent className="p-4 sm:p-6 space-y-5 sm:space-y-6">
                 {/* Search - Prominent */}
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-foreground">
@@ -648,7 +648,7 @@ export default function ExploreTalent() {
           {/* Results Section */}
           <div className="flex-1 min-w-0 order-1 lg:order-2 lg:pl-4">
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 items-stretch"
             initial="hidden"
             animate="visible"
             variants={containerVariants}

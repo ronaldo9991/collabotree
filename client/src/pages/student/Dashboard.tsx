@@ -512,41 +512,36 @@ export default function StudentDashboard() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Mobile: Scrollable tabs, Desktop: Grid layout */}
             <div className="overflow-x-auto md:overflow-visible mb-6 md:mb-8 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-max md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1 flex-nowrap">
+              <TabsList className="inline-flex md:grid md:w-full md:grid-cols-5 w-full min-w-max md:min-w-0 h-auto md:h-14 bg-card/50 backdrop-blur-12 border-2 border-primary/30 rounded-xl shadow-lg p-1 gap-1 flex-nowrap md:flex-wrap md:overflow-visible">
                 <TabsTrigger 
                   value="overview" 
-                  className="flex items-center gap-2 text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                  className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
-                  <span className="max-md:hidden">Overview</span>
-                  <span className="md:hidden">Stats</span>
+                  <span>Overview</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="orders" 
-                  className="flex items-center gap-2 text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                  className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
-                  <span className="max-md:hidden">Buyer Requests</span>
-                  <span className="md:hidden">Orders</span>
+                  <span>Buyer Requests</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="messages" 
-                  className="flex items-center gap-2 text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                  className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
-                  <span className="max-md:hidden">Messages</span>
-                  <span className="md:hidden">Chat</span>
+                  <span>Messages</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="services" 
-                  className="flex items-center gap-2 text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                  className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
-                  <span className="max-md:hidden">My Services</span>
-                  <span className="md:hidden">Services</span>
+                  <span>My Services</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="contracts" 
-                  className="flex items-center gap-2 text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
+                  className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-3 md:px-4 py-2.5 md:py-3 min-h-[48px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
-                  <span className="max-md:hidden">Contracts</span>
-                  <span className="md:hidden">Contracts</span>
+                  <span>Contracts</span>
                 </TabsTrigger>
               </TabsList>
             </div>
