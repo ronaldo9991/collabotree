@@ -1370,34 +1370,31 @@ export default function Landing() {
           </motion.div>
 
           {/* Carousel with Navigation */}
-          <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-6">
-            <div className="flex w-full lg:w-auto justify-center gap-3 lg:flex-col">
-              {/* Previous Arrow */}
-              <Button
-                onClick={prevNewProjectSlide}
-                variant="outline"
-                size="icon"
-                className="bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 sm:w-14 sm:h-14 group"
-                data-testid="new-projects-prev-button"
-              >
-                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 text-white group-hover:scale-110 transition-transform duration-300" />
-              </Button>
+          <div className="relative w-full">
+            {/* Desktop arrows */}
+            <Button
+              onClick={prevNewProjectSlide}
+              variant="outline"
+              size="icon"
+              className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 sm:w-14 sm:h-14 group"
+              data-testid="new-projects-prev-button-desktop"
+            >
+              <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 text-white group-hover:scale-110 transition-transform duration-300" />
+            </Button>
 
-              {/* Next Arrow */}
-              <Button
-                onClick={nextNewProjectSlide}
-                variant="outline"
-                size="icon"
-                className="bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 sm:w-14 sm:h-14 group"
-                data-testid="new-projects-next-button"
-              >
-                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-white group-hover:scale-110 transition-transform duration-300" />
-              </Button>
-            </div>
-            
+            <Button
+              onClick={nextNewProjectSlide}
+              variant="outline"
+              size="icon"
+              className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 sm:w-14 sm:h-14 group"
+              data-testid="new-projects-next-button-desktop"
+            >
+              <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-white group-hover:scale-110 transition-transform duration-300" />
+            </Button>
+
             {/* Projects Grid */}
             <motion.div
-              className="w-full"
+              className="w-full sm:px-16"
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
@@ -1440,122 +1437,130 @@ export default function Landing() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:grid-gap-unified items-stretch">
                   {getCurrentNewProjects().map((project, index) => (
-              <motion.div 
-                key={project.id} 
-                variants={itemVariants}
-                className="w-full h-full flex"
-                data-testid={`new-project-${project.id}`}
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <Card 
-                  className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] overflow-hidden flex flex-col group border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80"
-                  aria-label={project.title}
-                >
-                  {/* Project Image with Gradient Overlay - 40-45% of card height */}
-                  <div className="relative h-40 sm:h-48 md:h-64 lg:h-72 overflow-hidden rounded-t-2xl">
-                    <img 
-                      src={project.image} 
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
-                  </div>
-                  
-                  <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
-                    {/* Title */}
-                    <h3 className="font-bold text-base sm:text-lg md:text-xl line-clamp-2 mb-2 sm:mb-3 break-words overflow-wrap-anywhere">{project.title}</h3>
-                    
-                    {/* Description - Fixed height for consistency */}
-                    <p className="text-xs sm:text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed mb-3 sm:mb-4 flex-1 break-words overflow-wrap-anywhere">
-                      {project.description}
-                    </p>
-                    
-                    {/* Tags - Fixed spacing */}
-                    <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4 min-h-[2rem]">
-                      {project.tags.slice(0, 3).map((tag: string) => (
-                        <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {project.tags.length > 3 && (
-                        <Badge variant="outline" className="rounded-full text-xs px-2 py-1">
-                          +{project.tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {/* Author row - Consistent spacing */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <Avatar className="h-8 w-8 flex-shrink-0">
-                          <AvatarImage src={project.student.avatar} alt={project.student.name} />
-                          <AvatarFallback className="text-xs">
-                            {project.student.name.split(' ').map((n: string) => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1">
-                            <p className="font-medium text-xs sm:text-sm truncate break-words overflow-wrap-anywhere min-w-0">{project.student.name}</p>
-                            {project.student.verified && (
-                              <CheckCircle className="h-3 w-3 text-primary flex-shrink-0" />
+                    <motion.div
+                      key={project.id}
+                      variants={itemVariants}
+                      className="w-full h-full flex"
+                      data-testid={`new-project-${project.id}`}
+                      whileHover={{ scale: 1.02, y: -5 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    >
+                      <Card
+                        className="rounded-2xl border h-full w-full hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] dark:bg-gradient-to-r dark:from-[#02122E] dark:via-[#02122E] dark:to-[#02122E] overflow-hidden flex flex-col group border-[#00B2FF]/25 hover:border-[#4AC8FF]/35 dark:border-[#02122E]/60 dark:hover:border-[#02122E]/80"
+                        aria-label={project.title}
+                      >
+                        <div className="relative h-40 sm:h-48 md:h-64 lg:h-72 overflow-hidden rounded-t-2xl">
+                          <img
+                            src={project.image}
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#00B2FF]/25 via-[#4AC8FF]/20 to-[#8FE5FF]/25 group-hover:from-[#00B2FF]/35 group-hover:via-[#4AC8FF]/30 group-hover:to-[#8FE5FF]/35 dark:bg-[#02122E]/40 dark:group-hover:bg-[#02122E]/60 dark:bg-gradient-to-r dark:from-[#02122E]/40 dark:via-[#02122E]/40 dark:to-[#02122E]/40 dark:group-hover:from-[#02122E]/60 dark:group-hover:via-[#02122E]/60 dark:group-hover:to-[#02122E]/60 transition-all duration-200" />
+                        </div>
+
+                        <CardContent className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col">
+                          <h3 className="font-bold text-base sm:text-lg md:text-xl line-clamp-2 mb-2 sm:mb-3 break-words overflow-wrap-anywhere">
+                            {project.title}
+                          </h3>
+
+                          <p className="text-xs sm:text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed mb-3 sm:mb-4 flex-1 break-words overflow-wrap-anywhere">
+                            {project.description}
+                          </p>
+
+                          <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4 min-h-[2rem]">
+                            {project.tags.slice(0, 3).map((tag: string) => (
+                              <Badge key={tag} variant="outline" className="rounded-full text-xs px-2 py-1">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {project.tags.length > 3 && (
+                              <Badge variant="outline" className="rounded-full text-xs px-2 py-1">
+                                +{project.tags.length - 3}
+                              </Badge>
                             )}
                           </div>
-                          <p className="text-[10px] sm:text-xs text-muted-foreground truncate break-words overflow-wrap-anywhere min-w-0">
-                            {project.student.university}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Ratings and Reviews */}
-                    {((project as any).averageRating > 0 || (project as any).totalReviews > 0) && (
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <span className="text-sm font-semibold text-foreground">
-                            {((project as any).averageRating || 0).toFixed(1)}
-                          </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          ({(project as any).totalReviews || 0} {((project as any).totalReviews || 0) === 1 ? 'review' : 'reviews'})
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Bottom price bar - Always at bottom */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                      <span className="text-xl font-semibold">{project.price}</span>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        asChild
-                        data-testid={`view-new-project-${project.id}`}
-                      >
-                        <Link href={`/service/${project.id}`}>
-                          View Details
-                        </Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-                ))}
+
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <Avatar className="h-8 w-8 flex-shrink-0">
+                                <AvatarImage src={project.student.avatar} alt={project.student.name} />
+                                <AvatarFallback className="text-xs">
+                                  {project.student.name.split(' ').map((n: string) => n[0]).join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1">
+                                  <p className="font-medium text-xs sm:text-sm truncate break-words overflow-wrap-anywhere min-w-0">
+                                    {project.student.name}
+                                  </p>
+                                  {project.student.verified && (
+                                    <CheckCircle className="h-3 w-3 text-primary flex-shrink-0" />
+                                  )}
+                                </div>
+                                <p className="text-[10px] sm:text-xs text-muted-foreground truncate break-words overflow-wrap-anywhere min-w-0">
+                                  {project.student.university}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {((project as any).averageRating > 0 || (project as any).totalReviews > 0) && (
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="flex items-center gap-1">
+                                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                <span className="text-sm font-semibold text-foreground">
+                                  {((project as any).averageRating || 0).toFixed(1)}
+                                </span>
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                ({(project as any).totalReviews || 0} {((project as any).totalReviews || 0) === 1 ? 'review' : 'reviews'})
+                              </span>
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                            <span className="text-xl font-semibold">{project.price}</span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                              asChild
+                              data-testid={`view-new-project-${project.id}`}
+                            >
+                              <Link href={`/service/${project.id}`}>
+                                View Details
+                              </Link>
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
                 </div>
               )}
             </motion.div>
 
-            {/* Next Arrow */}
-            <Button
-              onClick={nextNewProjectSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-lg rounded-full w-14 h-14 group"
-              data-testid="new-projects-next-button"
-            >
-              <ChevronRight className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
-            </Button>
+            {/* Mobile arrows */}
+            <div className="flex sm:hidden justify-center gap-3 mt-5">
+              <Button
+                onClick={prevNewProjectSlide}
+                variant="outline"
+                size="icon"
+                className="bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 group"
+                data-testid="new-projects-prev-button"
+              >
+                <ChevronLeft className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-300" />
+              </Button>
+              <Button
+                onClick={nextNewProjectSlide}
+                variant="outline"
+                size="icon"
+                className="bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 group"
+                data-testid="new-projects-next-button"
+              >
+                <ChevronRight className="h-5 w-5 text-white group-hover:scale-110 transition-transform duration-300" />
+              </Button>
+            </div>
           </div>
         </div>
       </section>
