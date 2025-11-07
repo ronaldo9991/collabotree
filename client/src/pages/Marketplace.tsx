@@ -844,23 +844,23 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
-            className="flex-1 min-w-[100px] text-center justify-center items-center px-1"
-            asChild 
+            className="flex-1 min-w-[96px] justify-center items-center px-3 text-xs sm:text-sm"
+            asChild
             data-testid={`view-project-${project.id}`}
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <Link href={`/service/${project.id}`} className="w-full text-center text-xs whitespace-nowrap">
+            <Link href={`/service/${project.id}`} className="w-full text-center">
               View Details
             </Link>
           </Button>
-          <Button 
+          <Button
             size="sm"
-            className="flex-1 min-w-[80px] text-center justify-center items-center px-1"
+            className="flex-1 min-w-[96px] justify-center items-center px-3 text-xs sm:text-sm"
             data-testid={`hire-now-${project.id}`}
             onClick={(e) => {
               e.preventDefault();
@@ -868,7 +868,7 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
               handleHireNow(project);
             }}
           >
-            <span className="text-xs whitespace-nowrap">Hire Now</span>
+            <span className="whitespace-nowrap">Hire Now</span>
           </Button>
         </div>
       </CardContent>
