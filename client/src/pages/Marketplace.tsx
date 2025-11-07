@@ -165,6 +165,11 @@ export default function ExploreTalent() {
               }
             }
 
+            const averageRatingRaw = service.averageRating ?? service.rating ?? 0;
+            const averageRating = Number(averageRatingRaw) ? Math.round(Number(averageRatingRaw) * 10) / 10 : 0;
+            const totalReviewsRaw = service.totalReviews ?? service.reviews ?? 0;
+            const totalReviews = Number(totalReviewsRaw) ? Number(totalReviewsRaw) : 0;
+
             return {
               id: service.id,
               title: service.title || 'Untitled Service',
@@ -188,8 +193,9 @@ export default function ExploreTalent() {
                 idCardUrl: service.owner?.idCardUrl,
                 verifiedAt: service.owner?.verifiedAt
               },
-              rating: typeof service.averageRating === 'number' ? service.averageRating : 0,
-              totalReviews: typeof service.totalReviews === 'number' ? service.totalReviews : 0,
+              averageRating,
+              rating: averageRating,
+              totalReviews,
               orders: service._count?.orders || 0
             };
           } catch (error) {
@@ -701,6 +707,20 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
+
+  const averageRating = (() => {
+    if (typeof project.averageRating === 'number') return project.averageRating;
+    if (typeof project.averageRating === 'string') return parseFloat(project.averageRating) || 0;
+    if (typeof project.rating === 'number') return project.rating;
+    if (typeof project.rating === 'string') return parseFloat(project.rating) || 0;
+    return 0;
+  })();
+
+  const totalReviews = (() => {
+    if (typeof project.totalReviews === 'number') return project.totalReviews;
+    if (typeof project.totalReviews === 'string') return parseInt(project.totalReviews, 10) || 0;
+    return 0;
+  })();
   
   // Get category icon based on tags or use default
   const getIconForProject = (tags: string[] | null | undefined) => {
@@ -818,16 +838,16 @@ function ProjectCard({ project }: { project: ProjectCardData }) {
         </Link>
 
         {/* Ratings and Reviews */}
-        {((project as any).averageRating > 0 || (project as any).totalReviews > 0) && (
+        {(averageRating > 0 || totalReviews > 0) && (
           <div className="flex items-center gap-2 mb-3">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
               <span className="text-sm font-semibold text-foreground">
-                {((project as any).averageRating || 0).toFixed(1)}
+                {averageRating.toFixed(1)}
               </span>
             </div>
             <span className="text-xs text-muted-foreground">
-              ({(project as any).totalReviews || 0} {((project as any).totalReviews || 0) === 1 ? 'review' : 'reviews'})
+              ({totalReviews} {totalReviews === 1 ? 'review' : 'reviews'})
             </span>
           </div>
         )}

@@ -32,6 +32,7 @@ export interface ProjectWithDetails {
   coverImage?: string;
   creator?: User;
   owner?: User;
+  averageRating?: number;
   rating?: number;
   totalReviews?: number;
   orders?: number;

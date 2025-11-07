@@ -104,26 +104,34 @@ export default function BuyerDashboard() {
         try {
           const servicesResponse = await api.getPublicServices();
           const servicesData = (servicesResponse as any)?.data?.data || (servicesResponse as any)?.data || servicesResponse || [];
-          const mappedServices = servicesData.map((service: any) => ({
-            id: service.id,
-            title: service.title,
-            description: service.description,
-            budget: service.priceCents / 100,
-            cover_url: service.coverImage,
-            created_at: service.createdAt,
-            created_by: service.ownerId,
-            tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
-            creator: {
-              full_name: service.owner?.name || 'Student',
-              role: 'student',
-              isVerified: service.owner?.isVerified || false,
-              idCardUrl: service.owner?.idCardUrl,
-              verifiedAt: service.owner?.verifiedAt
-            },
-            rating: service.averageRating || 0,
-            totalReviews: service.totalReviews || 0,
-            orders: service._count?.orders || 0
-          }));
+          const mappedServices = servicesData.map((service: any) => {
+            const averageRatingRaw = service.averageRating ?? service.rating ?? 0;
+            const averageRating = Number(averageRatingRaw) ? Math.round(Number(averageRatingRaw) * 10) / 10 : 0;
+            const totalReviewsRaw = service.totalReviews ?? service.reviews ?? 0;
+            const totalReviews = Number(totalReviewsRaw) ? Number(totalReviewsRaw) : 0;
+
+            return {
+              id: service.id,
+              title: service.title,
+              description: service.description,
+              budget: service.priceCents / 100,
+              cover_url: service.coverImage,
+              created_at: service.createdAt,
+              created_by: service.ownerId,
+              tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
+              creator: {
+                full_name: service.owner?.name || 'Student',
+                role: 'student',
+                isVerified: service.owner?.isVerified || false,
+                idCardUrl: service.owner?.idCardUrl,
+                verifiedAt: service.owner?.verifiedAt,
+              },
+              averageRating,
+              rating: averageRating,
+              totalReviews,
+              orders: service._count?.orders || 0,
+            };
+          });
           setBrowseServices(mappedServices);
         } catch (error) {
           console.error('Error refreshing services:', error);
@@ -241,26 +249,34 @@ export default function BuyerDashboard() {
           console.log('📊 Number of services found:', servicesData.length);
           
           // Map services to project format for display
-          const mappedServices = servicesData.map((service: any) => ({
-            id: service.id,
-            title: service.title,
-            description: service.description,
-            budget: service.priceCents / 100,
-            cover_url: service.coverImage, // Map coverImage to cover_url
-            created_at: service.createdAt,
-            created_by: service.ownerId,
-            tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
-            creator: {
-              full_name: service.owner?.name || 'Student',
-              role: 'student',
-              isVerified: service.owner?.isVerified || false,
-              idCardUrl: service.owner?.idCardUrl,
-              verifiedAt: service.owner?.verifiedAt
-            },
-            rating: service.averageRating || 0,
-            totalReviews: service.totalReviews || 0,
-            orders: service._count?.orders || 0
-          }));
+          const mappedServices = servicesData.map((service: any) => {
+            const averageRatingRaw = service.averageRating ?? service.rating ?? 0;
+            const averageRating = Number(averageRatingRaw) ? Math.round(Number(averageRatingRaw) * 10) / 10 : 0;
+            const totalReviewsRaw = service.totalReviews ?? service.reviews ?? 0;
+            const totalReviews = Number(totalReviewsRaw) ? Number(totalReviewsRaw) : 0;
+
+            return {
+              id: service.id,
+              title: service.title,
+              description: service.description,
+              budget: service.priceCents / 100,
+              cover_url: service.coverImage, // Map coverImage to cover_url
+              created_at: service.createdAt,
+              created_by: service.ownerId,
+              tags: service.owner?.skills && service.owner.skills !== "[]" ? JSON.parse(service.owner.skills) : ['General'],
+              creator: {
+                full_name: service.owner?.name || 'Student',
+                role: 'student',
+                isVerified: service.owner?.isVerified || false,
+                idCardUrl: service.owner?.idCardUrl,
+                verifiedAt: service.owner?.verifiedAt,
+              },
+              averageRating,
+              rating: averageRating,
+              totalReviews,
+              orders: service._count?.orders || 0,
+            };
+          });
 
           console.log('🎯 Mapped services for display:', mappedServices);
           setBrowseServices(mappedServices);
