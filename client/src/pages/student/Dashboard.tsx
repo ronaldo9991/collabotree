@@ -36,7 +36,8 @@ import {
   Play,
   Upload,
   Shield,
-  CheckCircle2
+  CheckCircle2,
+  LayoutDashboard
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -517,30 +518,35 @@ export default function StudentDashboard() {
                   value="overview" 
                   className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
+                  <LayoutDashboard className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Overview</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="orders" 
                   className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
+                  <Briefcase className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Buyer Requests</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="messages" 
                   className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Messages</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="services" 
                   className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
+                  <Package className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>My Services</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="contracts" 
                   className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 text-[11px] sm:text-xs md:text-sm font-medium px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 min-h-[44px] md:min-h-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-200 rounded-lg whitespace-nowrap"
                 >
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 md:h-4 md:w-4" />
                   <span>Contracts</span>
                 </TabsTrigger>
               </TabsList>
