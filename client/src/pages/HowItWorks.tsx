@@ -252,12 +252,29 @@ export default function HowItWorks() {
                   Join thousands of verified students and global buyers creating successful 
                   project partnerships on CollaboTree.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
-                  <Button size="lg" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base bg-gradient-to-r from-primary to-secondary" data-testid="join-as-student">
-                    <Link href="/api/login">Join as Student</Link>
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full max-w-2xl mx-auto">
+                  <Button
+                    size="lg"
+                    asChild
+                    className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl"
+                    data-testid="join-as-student"
+                  >
+                    <Link href="/signin" className="flex items-center justify-center gap-3">
+                      Join as Student
+                      <ArrowRight className="w-5 h-5" />
+                    </Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild className="w-full sm:w-auto min-h-[44px] sm:min-h-[48px] text-sm sm:text-base" data-testid="hire-talent-cta">
-                    <Link href="/marketplace">Hire Talent</Link>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    asChild
+                    className="w-full sm:w-auto px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300 rounded-2xl"
+                    data-testid="hire-talent-cta"
+                  >
+                    <Link href="/marketplace" className="flex items-center justify-center gap-3">
+                      Hire Talent
+                      <ArrowRight className="w-5 h-5" />
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
