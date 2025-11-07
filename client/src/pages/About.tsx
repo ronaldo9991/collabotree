@@ -132,22 +132,32 @@ export default function About() {
             </motion.p>
 
             <motion.div
-              className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
               animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.8, delay: 1.2 }}
             >
-              <Button size="lg" asChild className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                <Link href="/api/login">
-                  <Users className="w-5 h-5 mr-2" />
+              <Button
+                size="lg"
+                asChild
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl"
+              >
+                <Link href="/signin" className="flex items-center justify-center gap-3">
+                  <Users className="w-5 h-5" />
                   Join as Student
+                  <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="px-8 py-4 text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300">
-                <Link href="/marketplace">
-                  <TrendingUp className="w-5 h-5 mr-2" />
+              <Button
+                size="lg"
+                variant="outline"
+                asChild
+                className="w-full sm:w-auto px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold border-2 hover:bg-primary/10 transition-all duration-300 rounded-2xl"
+              >
+                <Link href="/marketplace" className="flex items-center justify-center gap-3">
+                  <TrendingUp className="w-5 h-5" />
                   Hire Talent
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
             </motion.div>
