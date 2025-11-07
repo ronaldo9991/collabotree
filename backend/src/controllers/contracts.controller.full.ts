@@ -576,11 +576,11 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
       }
 
       // Determine escrow holder (admin account)
-      let escrowHolderId = contract.escrowHolderId;
+      let escrowHolderId: string | null = contract.escrowHolderId ?? null;
       if (escrowHolderId) {
         const existingHolder = await tx.user.findUnique({ where: { id: escrowHolderId } });
         if (!existingHolder) {
-          escrowHolderId = undefined;
+          escrowHolderId = null;
         }
       }
 
@@ -589,7 +589,7 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
           where: { role: 'ADMIN' },
           orderBy: { createdAt: 'asc' },
         });
-        escrowHolderId = firstAdmin?.id;
+        escrowHolderId = firstAdmin?.id ?? null;
       }
 
       let totalAmountCents = contract.hireRequest.service.priceCents || 0;
@@ -619,7 +619,7 @@ export const processPayment = async (req: AuthenticatedRequest, res: Response) =
           orderId: order.id, // Ensure orderId is set
           payoutStatus: 'AWAITING_COMPLETION',
           escrowedAt: new Date(),
-          escrowHolderId: escrowHolderId,
+          escrowHolderId,
         },
         include: {
           buyer: {
@@ -1178,19 +1178,22 @@ export const releaseContractPayout = async (req: AuthenticatedRequest, res: Resp
       return sendError(res, 'Contract is not ready for payout release yet.', 400);
     }
 
-    if (!contract.studentId || !contract.studentPayoutCents) {
+    if (!contract.studentId || contract.studentPayoutCents == null) {
       return sendError(res, 'Contract payout configuration is incomplete.', 400);
     }
+
+    const studentId = contract.studentId;
+    const studentPayoutCents = contract.studentPayoutCents;
 
     const releasingAdminId = req.user.id;
 
     const updatedContract = await prisma.$transaction(async (tx) => {
-      let escrowHolderId = contract.escrowHolderId;
+      let escrowHolderId: string | null = contract.escrowHolderId ?? null;
 
       if (escrowHolderId) {
         const existing = await tx.user.findUnique({ where: { id: escrowHolderId } });
         if (!existing) {
-          escrowHolderId = undefined;
+          escrowHolderId = null;
         }
       }
 
@@ -1202,7 +1205,7 @@ export const releaseContractPayout = async (req: AuthenticatedRequest, res: Resp
         await tx.walletEntry.create({
           data: {
             userId: escrowHolderId,
-            amountCents: -contract.studentPayoutCents,
+            amountCents: -studentPayoutCents,
             reason: `Escrow release to student for contract: ${contract.hireRequest.service.title}`,
           },
         });
@@ -1210,8 +1213,8 @@ export const releaseContractPayout = async (req: AuthenticatedRequest, res: Resp
 
       await tx.walletEntry.create({
         data: {
-          userId: contract.studentId,
-          amountCents: contract.studentPayoutCents,
+          userId: studentId,
+          amountCents: studentPayoutCents,
           reason: `Payout released for contract: ${contract.hireRequest.service.title}`,
         },
       });
@@ -1281,12 +1284,12 @@ export const releaseContractPayout = async (req: AuthenticatedRequest, res: Resp
       });
     }
 
-    const payoutAmountCents = contract.studentPayoutCents ?? 0;
+    const payoutAmountCents = studentPayoutCents;
     const payoutFormatted = `$${(payoutAmountCents / 100).toFixed(2)}`;
 
-    if (contract.studentId) {
+    if (studentId) {
       await createNotification(
-        contract.studentId,
+        studentId,
         'PAYMENT_RECEIVED',
         'Payout Released',
         `The admin has released your payout for "${contract.hireRequest.service.title}". Amount: ${payoutFormatted}.`
