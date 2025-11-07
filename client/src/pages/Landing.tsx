@@ -1370,17 +1370,30 @@ export default function Landing() {
           </motion.div>
 
           {/* Carousel with Navigation */}
-          <div className="flex items-center gap-6">
-            {/* Previous Arrow */}
-            <Button
-              onClick={prevNewProjectSlide}
-              variant="outline"
-              size="icon"
-              className="flex-shrink-0 bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl hover:scale-110 transition-all duration-500 shadow-lg rounded-full w-14 h-14 group"
-              data-testid="new-projects-prev-button"
-            >
-              <ChevronLeft className="h-6 w-6 text-white group-hover:scale-110 transition-transform duration-300" />
-            </Button>
+          <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-6">
+            <div className="flex w-full lg:w-auto justify-center gap-3 lg:flex-col">
+              {/* Previous Arrow */}
+              <Button
+                onClick={prevNewProjectSlide}
+                variant="outline"
+                size="icon"
+                className="bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 sm:w-14 sm:h-14 group"
+                data-testid="new-projects-prev-button"
+              >
+                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 text-white group-hover:scale-110 transition-transform duration-300" />
+              </Button>
+
+              {/* Next Arrow */}
+              <Button
+                onClick={nextNewProjectSlide}
+                variant="outline"
+                size="icon"
+                className="bg-primary/90 dark:bg-primary/80 border-2 border-primary/30 dark:border-primary/40 hover:bg-primary hover:border-primary/50 hover:shadow-xl transition-all duration-500 shadow-lg rounded-full w-12 h-12 sm:w-14 sm:h-14 group"
+                data-testid="new-projects-next-button"
+              >
+                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-white group-hover:scale-110 transition-transform duration-300" />
+              </Button>
+            </div>
             
             {/* Projects Grid */}
             <motion.div
@@ -1399,7 +1412,7 @@ export default function Landing() {
               }}
             >
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:grid-gap-unified items-stretch">
                   {[...Array(3)].map((_, index) => (
                     <div key={index} className="w-full h-full flex">
                       <Card className="rounded-2xl border h-full w-full bg-gradient-to-r from-[#00B2FF]/20 via-[#4AC8FF]/25 to-[#8FE5FF]/20 dark:bg-[#02122E] overflow-hidden flex flex-col">
@@ -1425,7 +1438,7 @@ export default function Landing() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-gap-unified items-stretch">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:grid-gap-unified items-stretch">
                   {getCurrentNewProjects().map((project, index) => (
               <motion.div 
                 key={project.id} 
@@ -1440,7 +1453,7 @@ export default function Landing() {
                   aria-label={project.title}
                 >
                   {/* Project Image with Gradient Overlay - 40-45% of card height */}
-                  <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-t-2xl">
+                  <div className="relative h-40 sm:h-48 md:h-64 lg:h-72 overflow-hidden rounded-t-2xl">
                     <img 
                       src={project.image} 
                       alt={project.title}
