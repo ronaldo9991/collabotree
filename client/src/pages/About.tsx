@@ -223,12 +223,12 @@ export default function About() {
                       </h2>
                     </motion.div>
                     
-                    <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center">
+                    <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
                       <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={storyInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="space-y-4 md:space-y-6 text-muted-foreground leading-relaxed"
+                        className="space-y-4 sm:space-y-6 text-muted-foreground leading-relaxed text-center md:text-left max-w-xl mx-auto md:mx-0"
                       >
                         <p className="text-sm sm:text-base md:text-lg">
                           CollaboTree was born from a simple observation: university students possess incredible 
@@ -249,51 +249,51 @@ export default function About() {
                         initial={{ opacity: 0, x: 50 }}
                         animate={storyInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
                         transition={{ duration: 0.8, delay: 0.8 }}
-                        className="relative"
+                        className="relative max-w-3xl mx-auto md:mx-0 w-full"
                       >
-                        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.0 }}
-                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-4 sm:p-4 md:p-6 rounded-2xl flex flex-col items-center text-center sm:text-left sm:items-start"
                           >
-                            <Users className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
-                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Verified Students</h3>
-                            <p className="text-xs sm:text-sm text-muted-foreground">University-verified talent</p>
+                            <Users className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2 text-foreground">Verified Students</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left max-w-[220px]">University-verified talent</p>
                           </motion.div>
                           
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.2 }}
-                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-4 sm:p-4 md:p-6 rounded-2xl flex flex-col items-center text-center sm:text-left sm:items-start"
                           >
-                            <Shield className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
-                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Quality Assured</h3>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Premium service standards</p>
+                            <Shield className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2 text-foreground">Quality Assured</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left max-w-[220px]">Premium service standards</p>
                           </motion.div>
                           
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.4 }}
-                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-secondary/10 p-4 sm:p-4 md:p-6 rounded-2xl flex flex-col items-center text-center sm:text-left sm:items-start"
                           >
-                            <Zap className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
-                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Real-time Collaboration</h3>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Seamless communication</p>
+                            <Zap className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2 text-foreground">Real-time Collaboration</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left max-w-[220px]">Seamless communication</p>
                           </motion.div>
                           
                           <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={storyInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.6, delay: 1.6 }}
-                            className="bg-gradient-to-br from-primary/10 to-accent/10 p-3 sm:p-4 md:p-6 rounded-xl md:rounded-2xl text-center"
+                            className="bg-gradient-to-br from-primary/10 to-accent/10 p-4 sm:p-4 md:p-6 rounded-2xl flex flex-col items-center text-center sm:text-left sm:items-start"
                           >
-                            <Star className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mx-auto mb-2 md:mb-3" />
-                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2">Career Launchpad</h3>
-                            <p className="text-xs sm:text-sm text-muted-foreground">Professional growth</p>
+                            <Star className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary mb-2 md:mb-3" />
+                            <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-1 md:mb-2 text-foreground">Career Launchpad</h3>
+                            <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left max-w-[220px]">Professional growth</p>
                           </motion.div>
                         </div>
                       </motion.div>
