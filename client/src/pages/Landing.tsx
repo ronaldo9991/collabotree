@@ -1147,35 +1147,35 @@ export default function Landing() {
               <div className="pointer-events-none hidden md:flex absolute inset-x-0 top-1/2 -translate-y-1/2 z-10">
                 <div className="flex w-full justify-between px-12 lg:px-20 xl:px-24">
                   <motion.div
-                    initial={{ opacity: 0, x: -12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, x: -14 }}
+                    whileInView={{ opacity: 0.8, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: 0.35 }}
-                    animate={{ x: [0, 10, 0] }}
-                    className="flex items-center gap-3"
+                    transition={{ duration: 0.45, delay: 0.35, ease: 'easeOut' }}
+                    animate={{ x: [0, 8, 0] }}
+                    className="relative flex-1 flex items-center pt-10"
                   >
                     <motion.span
-                      className="h-1 w-14 bg-gradient-to-r from-transparent via-primary/60 to-primary rounded-full shadow-[0_0_15px_rgba(59,130,246,0.45)]"
-                      animate={{ opacity: [0.35, 0.85, 0.35] }}
-                      transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute left-1/4 right-1/4 top-0 h-[1.5px] bg-gradient-to-r from-primary/15 via-primary/70 to-primary shadow-[0_0_12px_rgba(59,130,246,0.4)] rounded-full"
+                      animate={{ opacity: [0.3, 0.8, 0.3] }}
+                      transition={{ duration: 1.9, repeat: Infinity, ease: 'easeInOut' }}
                     />
-                    <ArrowRight className="h-8 w-8 text-primary drop-shadow-[0_0_12px_rgba(59,130,246,0.55)]" />
+                    <ArrowRight className="absolute right-1/4 top-[-10px] h-6 w-6 text-primary drop-shadow-[0_0_10px_rgba(59,130,246,0.45)]" />
                   </motion.div>
 
                   <motion.div
-                    initial={{ opacity: 0, x: -12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, x: -14 }}
+                    whileInView={{ opacity: 0.8, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: 0.55 }}
-                    animate={{ x: [0, 10, 0] }}
-                    className="flex items-center gap-3"
+                    transition={{ duration: 0.45, delay: 0.55, ease: 'easeOut' }}
+                    animate={{ x: [0, 8, 0] }}
+                    className="relative flex-1 flex items-center pt-10"
                   >
                     <motion.span
-                      className="h-1 w-14 bg-gradient-to-r from-transparent via-secondary/60 to-secondary rounded-full shadow-[0_0_15px_rgba(236,72,153,0.45)]"
-                      animate={{ opacity: [0.35, 0.85, 0.35] }}
-                      transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+                      className="absolute left-1/4 right-1/4 top-0 h-[1.5px] bg-gradient-to-r from-secondary/15 via-secondary/70 to-secondary shadow-[0_0_12px_rgba(236,72,153,0.4)] rounded-full"
+                      animate={{ opacity: [0.3, 0.8, 0.3] }}
+                      transition={{ duration: 1.9, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
                     />
-                    <ArrowRight className="h-8 w-8 text-secondary drop-shadow-[0_0_12px_rgba(236,72,153,0.55)]" />
+                    <ArrowRight className="absolute right-1/4 top-[-10px] h-6 w-6 text-secondary drop-shadow-[0_0_10px_rgba(236,72,153,0.45)]" />
                   </motion.div>
                 </div>
               </div>
