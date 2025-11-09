@@ -1083,63 +1083,102 @@ export default function Landing() {
               </motion.p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative z-10">
-              <motion.div 
-                className="text-center group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <div className="relative inline-block mb-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-primary/20">
-                    <span className="text-3xl font-bold text-primary">1</span>
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative z-20">
+                <motion.div 
+                  className="text-center group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="relative inline-block mb-6">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-primary/20">
+                      <span className="text-3xl font-bold text-primary">1</span>
+                    </div>
+                    <div className="absolute -inset-2 bg-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                  <div className="absolute -inset-2 bg-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-primary transition-colors">Browse & Select</h4>
-                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
-                  Explore verified student services, view portfolios, and read reviews to find the perfect match for your project.
-                </p>
-              </motion.div>
-              
-              <motion.div 
-                className="text-center group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <div className="relative inline-block mb-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center mx-auto shadow-lg shadow-secondary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-secondary/20">
-                    <span className="text-3xl font-bold text-secondary">2</span>
+                  <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-primary transition-colors">Browse & Select</h4>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
+                    Explore verified student services, view portfolios, and read reviews to find the perfect match for your project.
+                  </p>
+                </motion.div>
+                
+                <motion.div 
+                  className="text-center group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="relative inline-block mb-6">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center mx-auto shadow-lg shadow-secondary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-secondary/20">
+                      <span className="text-3xl font-bold text-secondary">2</span>
+                    </div>
+                    <div className="absolute -inset-2 bg-secondary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                  <div className="absolute -inset-2 bg-secondary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-secondary transition-colors">Connect & Collaborate</h4>
-                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
-                  Message directly with the student, discuss requirements, set milestones, and track progress in real-time.
-                </p>
-              </motion.div>
-              
-              <motion.div 
-                className="text-center group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <div className="relative inline-block mb-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mx-auto shadow-lg shadow-accent/20 group-hover:scale-110 transition-transform duration-300 border-2 border-accent/20">
-                    <span className="text-3xl font-bold text-accent">3</span>
+                  <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-secondary transition-colors">Connect & Collaborate</h4>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
+                    Message directly with the student, discuss requirements, set milestones, and track progress in real-time.
+                  </p>
+                </motion.div>
+                
+                <motion.div 
+                  className="text-center group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="relative inline-block mb-6">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mx-auto shadow-lg shadow-accent/20 group-hover:scale-110 transition-transform duration-300 border-2 border-accent/20">
+                      <span className="text-3xl font-bold text-accent">3</span>
+                    </div>
+                    <div className="absolute -inset-2 bg-accent/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
-                  <div className="absolute -inset-2 bg-accent/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-accent transition-colors">Review & Pay</h4>
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
+                    Review completed work, request revisions if needed, and release payment only when you're completely satisfied.
+                  </p>
+                </motion.div>
+              </div>
+
+              {/* Animated Arrow Indicators */}
+              <div className="pointer-events-none hidden md:flex absolute inset-x-0 top-1/2 -translate-y-1/2 z-10">
+                <div className="flex w-full justify-between px-12 lg:px-20 xl:px-24">
+                  <motion.div
+                    initial={{ opacity: 0, x: -12 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.35 }}
+                    animate={{ x: [0, 10, 0] }}
+                    className="flex items-center gap-3"
+                  >
+                    <motion.span
+                      className="h-1 w-14 bg-gradient-to-r from-transparent via-primary/60 to-primary rounded-full shadow-[0_0_15px_rgba(59,130,246,0.45)]"
+                      animate={{ opacity: [0.35, 0.85, 0.35] }}
+                      transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                    <ArrowRight className="h-8 w-8 text-primary drop-shadow-[0_0_12px_rgba(59,130,246,0.55)]" />
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: -12 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.55 }}
+                    animate={{ x: [0, 10, 0] }}
+                    className="flex items-center gap-3"
+                  >
+                    <motion.span
+                      className="h-1 w-14 bg-gradient-to-r from-transparent via-secondary/60 to-secondary rounded-full shadow-[0_0_15px_rgba(236,72,153,0.45)]"
+                      animate={{ opacity: [0.35, 0.85, 0.35] }}
+                      transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+                    />
+                    <ArrowRight className="h-8 w-8 text-secondary drop-shadow-[0_0_12px_rgba(236,72,153,0.55)]" />
+                  </motion.div>
                 </div>
-                <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-accent transition-colors">Review & Pay</h4>
-                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
-                  Review completed work, request revisions if needed, and release payment only when you're completely satisfied.
-                </p>
-              </motion.div>
+              </div>
             </div>
             
             {/* Connecting Lines for Desktop */}
