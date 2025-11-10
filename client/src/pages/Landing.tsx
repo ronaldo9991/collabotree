@@ -1143,23 +1143,6 @@ export default function Landing() {
                 </motion.div>
               </div>
 
-              {/* Animated Arrow Indicator between steps 2 and 3 */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: 0.45, ease: "easeOut" }}
-                className="hidden md:block absolute left-1/2 bottom-[58px] w-[240px] translate-x-16 z-10"
-              >
-                <div className="relative h-[2px]">
-                  <motion.span
-                    className="absolute inset-y-0 left-0 right-6 bg-gradient-to-r from-transparent via-primary/70 to-primary rounded-full shadow-[0_0_12px_rgba(59,130,246,0.45)]"
-                    animate={{ opacity: [0.3, 0.85, 0.3] }}
-                    transition={{ duration: 1.9, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                  <ArrowRight className="absolute -right-1 -top-3 h-6 w-6 text-primary drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]" />
-                </div>
-              </motion.div>
             </div>
             
             {/* Connecting Lines for Desktop */}
