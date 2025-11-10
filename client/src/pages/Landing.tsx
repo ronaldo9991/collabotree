@@ -1144,22 +1144,24 @@ export default function Landing() {
               </div>
 
               {/* Animated Arrow Indicators */}
-              <div className="pointer-events-none hidden md:flex absolute inset-x-0 top-[60%] -translate-y-1/2 z-10">
-                <div className="flex w-full items-center justify-center gap-12 px-16 lg:px-24">
+              <div className="pointer-events-none hidden md:flex absolute inset-x-0 top-[58%] -translate-y-1/2 z-10">
+                <div className="flex w-full items-center justify-center gap-8">
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.45, delay: 0.35, ease: 'easeOut' }}
                     animate={{ x: [0, 12, 0] }}
-                    className="relative w-[28%] max-w-[280px] flex items-center"
+                    className="relative w-[220px] flex items-center"
                   >
                     <motion.span
-                      className="absolute left-0 right-8 h-[2px] bg-gradient-to-r from-transparent via-primary/80 to-primary rounded-full"
+                      className="absolute left-0 right-7 h-[2px] bg-gradient-to-r from-transparent via-primary/70 to-primary rounded-full"
                       animate={{ opacity: [0.3, 0.8, 0.3] }}
                       transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
                     />
-                    <ArrowRight className="absolute -right-1 h-7 w-7 text-primary drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]" />
+                    <div className="absolute -right-2 flex items-center justify-center">
+                      <ArrowRight className="h-6 w-6 text-primary drop-shadow-[0_0_10px_rgba(59,130,246,0.45)]" />
+                    </div>
                   </motion.div>
 
                   <motion.div
@@ -1168,14 +1170,16 @@ export default function Landing() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.45, delay: 0.55, ease: 'easeOut' }}
                     animate={{ x: [0, 12, 0] }}
-                    className="relative w-[28%] max-w-[280px] flex items-center"
+                    className="relative w-[220px] flex items-center"
                   >
                     <motion.span
-                      className="absolute left-0 right-8 h-[2px] bg-gradient-to-r from-transparent via-primary/80 to-primary rounded-full"
+                      className="absolute left-0 right-7 h-[2px] bg-gradient-to-r from-transparent via-primary/70 to-primary rounded-full"
                       animate={{ opacity: [0.3, 0.8, 0.3] }}
                       transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.45 }}
                     />
-                    <ArrowRight className="absolute -right-1 h-7 w-7 text-primary drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]" />
+                    <div className="absolute -right-2 flex items-center justify-center">
+                      <ArrowRight className="h-6 w-6 text-primary drop-shadow-[0_0_10px_rgba(59,130,246,0.45)]" />
+                    </div>
                   </motion.div>
                 </div>
               </div>
