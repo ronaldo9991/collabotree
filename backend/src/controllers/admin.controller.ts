@@ -122,7 +122,16 @@ export const getAllMessages = async (req: AuthenticatedRequest, res: Response) =
     const hasMore = messages.length > limit;
     const result = hasMore ? messages.slice(0, limit) : messages;
 
-    return sendSuccess(res, createCursorPaginationResult(result, limit));
+    return sendSuccess(res, {
+      data: result,
+      pagination: {
+        page: 1,
+        limit,
+        hasNext: hasMore,
+        hasPrev: !!validatedData.cursor,
+        cursor: hasMore ? result[result.length - 1]?.id : undefined,
+      },
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
@@ -239,6 +248,7 @@ export const getAdminStats = async (req: AuthenticatedRequest, res: Response) =>
       totalOrders,
       completedOrders,
       totalRevenue,
+      totalPlatformProfit,
       pendingVerifications,
       topSelectionServices,
     ] = await Promise.all([
@@ -307,7 +317,12 @@ export const getAdminStats = async (req: AuthenticatedRequest, res: Response) =>
         orderBy: { createdAt: 'desc' },
         take: 10,
       }),
-    ]);
+    ] as const);
+
+    const totalRevenueCents = totalRevenue._sum.priceCents ?? 0;
+    const totalPlatformProfitCents = totalPlatformProfit._sum.platformFeeCents ?? 0;
+    const totalRevenueAmount = totalRevenueCents / 100;
+    const totalPlatformProfitAmount = totalPlatformProfitCents / 100;
 
     const stats = {
       users: {
@@ -335,10 +350,8 @@ export const getAdminStats = async (req: AuthenticatedRequest, res: Response) =>
         completed: completedOrders,
       },
       revenue: {
-        total: totalRevenue._sum.priceCents ? totalRevenue._sum.priceCents / 100 : 0,
-        profit: totalPlatformProfit._sum.platformFeeCents
-          ? totalPlatformProfit._sum.platformFeeCents / 100
-          : 0,
+        total: totalRevenueAmount,
+        profit: totalPlatformProfitAmount,
       },
       topSelectionServices,
       period: validatedData.period,
