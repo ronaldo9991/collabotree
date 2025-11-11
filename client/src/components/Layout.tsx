@@ -23,6 +23,10 @@ export function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth();
   const [location] = useLocation();
   const isLandingPage = location === "/";
+  const shouldConstrainWidth =
+    !isLandingPage &&
+    !location.startsWith("/dashboard") &&
+    !location.startsWith("/chat");
 
   const navigation = [
     { name: "Home", href: "/", icon: Home, show: true },
@@ -372,8 +376,19 @@ export function Layout({ children }: LayoutProps) {
       )}
 
       {/* Main Content */}
-      <main className={isLandingPage ? "" : "pt-24"}>
-        {children}
+      <main
+        className={[
+          isLandingPage ? "" : "pt-24",
+          shouldConstrainWidth ? "px-6 sm:px-8 lg:px-10" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {shouldConstrainWidth ? (
+          <div className="mx-auto w-full max-w-6xl">{children}</div>
+        ) : (
+          children
+        )}
       </main>
 
       {/* Command Palette */}
