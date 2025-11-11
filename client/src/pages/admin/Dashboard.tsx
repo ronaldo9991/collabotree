@@ -32,7 +32,8 @@ import {
   Clock,
   X,
   HandCoins,
-  Briefcase
+  Briefcase,
+  GraduationCap
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
