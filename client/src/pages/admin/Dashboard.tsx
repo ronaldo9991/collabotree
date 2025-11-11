@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -545,6 +545,73 @@ export default function AdminDashboard() {
     message.room.hireRequest.service.title.toLowerCase().includes(messageSearch.toLowerCase())
   );
 
+  const conversationThreads = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        id: string;
+        serviceId: string;
+        serviceTitle: string;
+        studentName: string;
+        studentEmail: string;
+        buyerName: string;
+        buyerEmail: string;
+        messages: Message[];
+        latestMessage?: Message;
+        lastMessageAt?: string;
+      }
+    >();
+
+    messages.forEach((message) => {
+      const hireRequest = message.room.hireRequest;
+      if (!hireRequest?.service) return;
+
+      const threadId = hireRequest.id;
+      if (!map.has(threadId)) {
+        map.set(threadId, {
+          id: threadId,
+          serviceId: hireRequest.service.id,
+          serviceTitle: hireRequest.service.title,
+          studentName: hireRequest.student.name,
+          studentEmail: hireRequest.student.email,
+          buyerName: hireRequest.buyer.name,
+          buyerEmail: hireRequest.buyer.email,
+          messages: [],
+        });
+      }
+
+      const thread = map.get(threadId)!;
+      thread.messages.push(message);
+
+      if (
+        !thread.latestMessage ||
+        new Date(message.createdAt) > new Date(thread.lastMessageAt || 0)
+      ) {
+        thread.latestMessage = message;
+        thread.lastMessageAt = message.createdAt;
+      }
+    });
+
+    return Array.from(map.values()).sort(
+      (a, b) =>
+        new Date(b.lastMessageAt || 0).getTime() -
+        new Date(a.lastMessageAt || 0).getTime()
+    );
+  }, [messages]);
+
+  const filteredConversationThreads = useMemo(() => {
+    const query = messageSearch.toLowerCase();
+    if (!query) return conversationThreads;
+
+    return conversationThreads.filter((thread) => {
+      return (
+        thread.serviceTitle.toLowerCase().includes(query) ||
+        thread.studentName.toLowerCase().includes(query) ||
+        thread.buyerName.toLowerCase().includes(query)
+      );
+    });
+  }, [conversationThreads, messageSearch]);
+
   const filteredServices = services.filter(service =>
     service.title.toLowerCase().includes(serviceSearch.toLowerCase()) ||
     service.owner.name.toLowerCase().includes(serviceSearch.toLowerCase())
@@ -772,12 +839,12 @@ export default function AdminDashboard() {
               <CardTitle className="text-xl max-md:text-base">Revenue</CardTitle>
             </CardHeader>
             <CardContent className="max-md:px-4 max-md:pb-4">
-                        <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">{formatCurrency(stats.revenue.total * 100)}</div>
+                        <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">{formatCurrency(stats.revenue.total)}</div>
               <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.orders.total} total orders
               </p>
               <p className="text-xs text-muted-foreground mt-2">
-                Profit (platform fees): {formatCurrency(stats.revenue.profit * 100)}
+                Profit (platform fees): {formatCurrency(stats.revenue.profit)}
               </p>
             </CardContent>
           </Card>
@@ -875,52 +942,186 @@ export default function AdminDashboard() {
                   </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                    {filteredMessages.length > 0 ? (
-                      filteredMessages.map((message) => (
+              {filteredMessages.length > 0 ? (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                  {filteredMessages.map((message) => (
                     <div
-                          key={message.id}
-                          className="flex items-start gap-3 p-4 rounded-lg bg-muted/30 border border-border/50 max-md:p-3"
+                      key={message.id}
+                      className="p-4 rounded-2xl bg-gradient-to-br from-primary/5 via-background to-card border border-primary/10 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col gap-3"
                     >
-                          <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                      <div className="flex-1">
-                            <div className="flex flex-wrap items-center gap-2 mb-2">
-                              <Badge variant={message.sender.role === 'STUDENT' ? 'default' : 'secondary'} className="text-xs">
-                                {message.sender.role}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-col gap-1">
+                          <Badge
+                            variant={
+                              message.sender.role === "STUDENT"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className="text-[10px] uppercase tracking-wide w-fit"
+                          >
+                            {message.sender.role}
                           </Badge>
-                              <span className="font-medium text-xs sm:text-sm truncate">{message.sender.name}</span>
-                              <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                {new Date(message.createdAt).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="text-sm mb-2">{message.body}</p>
-                            <div className="text-xs text-muted-foreground mb-3 space-y-1">
-                              <p className="truncate"><strong>Service:</strong> {message.room.hireRequest.service.title}</p>
-                              <p className="truncate"><strong>Buyer:</strong> {message.room.hireRequest.buyer.name}</p>
-                              <p className="truncate"><strong>Student:</strong> {message.room.hireRequest.student.name}</p>
+                          <span className="font-medium text-sm sm:text-base leading-tight">
+                            {message.sender.name}
+                          </span>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
-                          disabled={loadingConversation}
-                          className="text-xs max-md:min-h-[44px] max-md:w-full"
-                        >
-                          <MessageCircle className="w-3 h-3 mr-1" />
-                          {loadingConversation ? "Loading..." : "View Full Conversation"}
-                        </Button>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                          {new Date(message.createdAt).toLocaleString()}
+                        </span>
                       </div>
+
+                      <p className="text-sm text-foreground/90 leading-relaxed line-clamp-4">
+                        {message.body}
+                      </p>
+
+                      <div className="text-xs text-muted-foreground space-y-1 bg-muted/30 rounded-xl p-3">
+                        <p className="truncate">
+                          <strong>Service:</strong>{" "}
+                          {message.room.hireRequest.service.title}
+                        </p>
+                        <p className="truncate">
+                          <strong>Buyer:</strong> {message.room.hireRequest.buyer.name}
+                        </p>
+                        <p className="truncate">
+                          <strong>Student:</strong>{" "}
+                          {message.room.hireRequest.student.name}
+                        </p>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
+                        disabled={loadingConversation}
+                        className="text-xs max-md:min-h-[44px] max-md:w-full mt-auto"
+                      >
+                        <MessageCircle className="w-3 h-3 mr-1" />
+                        {loadingConversation ? "Loading..." : "View Full Conversation"}
+                      </Button>
                     </div>
-                  ))
-                ) : (
-                      <div className="text-center text-muted-foreground py-8">
-                        <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p>No messages found</p>
-                  </div>
-                )}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-muted-foreground py-8">
+                  <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p>No messages found</p>
+                </div>
+              )}
             </CardContent>
           </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <Card className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20">
+                  <CardHeader>
+                    <div className="flex items-center justify-between max-md:flex-col max-md:items-stretch max-md:gap-4">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Users className="h-5 w-5 text-primary" />
+                          Conversation Threads
+                        </CardTitle>
+                        <CardDescription>
+                          Student–buyer threads grouped by service with latest updates
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline" className="max-md:self-start">
+                        {filteredConversationThreads.length} active thread
+                        {filteredConversationThreads.length === 1 ? "" : "s"}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {filteredConversationThreads.length > 0 ? (
+                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                        {filteredConversationThreads.map((thread) => (
+                          <div
+                            key={thread.id}
+                            className="p-4 rounded-2xl bg-muted/30 border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col gap-3"
+                          >
+                            <div className="space-y-1">
+                              <h3 className="text-sm sm:text-base font-semibold leading-tight line-clamp-2">
+                                {thread.serviceTitle}
+                              </h3>
+                              <div className="text-xs text-muted-foreground space-y-1">
+                                <p className="truncate">
+                                  <strong>Student:</strong> {thread.studentName}
+                                  {thread.studentEmail && (
+                                    <span className="text-muted-foreground/70">
+                                      {" "}
+                                      ({thread.studentEmail})
+                                    </span>
+                                  )}
+                                </p>
+                                <p className="truncate">
+                                  <strong>Buyer:</strong> {thread.buyerName}
+                                  {thread.buyerEmail && (
+                                    <span className="text-muted-foreground/70">
+                                      {" "}
+                                      ({thread.buyerEmail})
+                                    </span>
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <Badge variant="secondary" className="shrink-0">
+                                {thread.messages.length} message
+                                {thread.messages.length === 1 ? "" : "s"}
+                              </Badge>
+                              <span>
+                                {thread.lastMessageAt
+                                  ? new Date(thread.lastMessageAt).toLocaleString()
+                                  : "—"}
+                              </span>
+                            </div>
+
+                            {thread.latestMessage && (
+                              <div className="p-3 rounded-xl bg-card border border-border/40 space-y-2">
+                                <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                                  <span className="font-medium truncate">
+                                    {thread.latestMessage.sender.name}
+                                  </span>
+                                  <span className="whitespace-nowrap">
+                                    {new Date(thread.latestMessage.createdAt).toLocaleTimeString()}
+                                  </span>
+                                </div>
+                                <p className="text-sm line-clamp-3">
+                                  {thread.latestMessage.body}
+                                </p>
+                              </div>
+                            )}
+
+                            <div className="flex flex-wrap gap-2 justify-end mt-auto">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="max-md:min-h-[44px] max-md:w-full"
+                                onClick={() => handleViewConversation(thread.serviceId)}
+                                disabled={loadingConversation}
+                              >
+                                <MessageCircle className="w-3 h-3 mr-1" />
+                                View Conversation
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center text-muted-foreground py-8">
+                        <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p>No conversation threads found</p>
+                        <p className="text-sm">
+                          Threads appear once students and buyers exchange messages.
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </motion.div>
             </TabsContent>
 
