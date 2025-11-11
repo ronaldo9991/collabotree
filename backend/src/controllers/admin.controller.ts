@@ -3,12 +3,13 @@ import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import { sendSuccess, sendError, sendValidationError, sendNotFound } from '../utils/responses.js';
 import { AuthenticatedRequest } from '../types/express.js';
-import { createCursorPaginationResult } from '../utils/pagination.js';
 import { createNotification } from '../domain/notifications.js';
 
 const getAllUsersSchema = z.object({
   search: z.string().optional(),
   role: z.enum(['STUDENT', 'BUYER', 'ADMIN']).optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().optional(),
 });
 
 // Schema for getting all messages (admin only)
@@ -151,6 +152,7 @@ export const getAllUsers = async (req: AuthenticatedRequest, res: Response) => {
       ];
     }
 
+    const limit = Math.min(100, Math.max(1, validatedQuery.limit ?? 25));
     const users = await prisma.user.findMany({
       where: whereClause,
       select: {
@@ -163,9 +165,27 @@ export const getAllUsers = async (req: AuthenticatedRequest, res: Response) => {
       orderBy: {
         createdAt: 'desc',
       },
+      take: limit + 1,
+      ...(validatedQuery.cursor && {
+        cursor: { id: validatedQuery.cursor },
+        skip: 1,
+      }),
     });
 
-    return sendSuccess(res, users);
+    const hasMore = users.length > limit;
+    const result = hasMore ? users.slice(0, limit) : users;
+    const nextCursor = hasMore ? result[result.length - 1].id : undefined;
+
+    return sendSuccess(res, {
+      data: result,
+      pagination: {
+        page: 1,
+        limit,
+        hasNext: hasMore,
+        hasPrev: !!validatedQuery.cursor,
+        cursor: nextCursor,
+      },
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);
@@ -254,6 +274,15 @@ export const getAdminStats = async (req: AuthenticatedRequest, res: Response) =>
         _sum: { priceCents: true },
       }),
       
+      // Platform profit calculation
+      prisma.contract.aggregate({
+        where: {
+          payoutStatus: 'RELEASED',
+          platformFeeCents: { not: null },
+        },
+        _sum: { platformFeeCents: true },
+      }),
+      
       // Verification stats
       prisma.user.count({ 
         where: { 
@@ -307,6 +336,9 @@ export const getAdminStats = async (req: AuthenticatedRequest, res: Response) =>
       },
       revenue: {
         total: totalRevenue._sum.priceCents ? totalRevenue._sum.priceCents / 100 : 0,
+        profit: totalPlatformProfit._sum.platformFeeCents
+          ? totalPlatformProfit._sum.platformFeeCents / 100
+          : 0,
       },
       topSelectionServices,
       period: validatedData.period,

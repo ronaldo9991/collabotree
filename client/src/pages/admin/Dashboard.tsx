@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, KeyboardEvent } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,9 +31,7 @@ import {
   Calendar,
   Clock,
   X,
-  HandCoins,
-  Briefcase,
-  GraduationCap
+  HandCoins
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -67,6 +65,7 @@ interface AdminStats {
   };
   revenue: {
     total: number;
+    profit: number;
   };
   topSelectionServices: Service[];
   period: string;
@@ -91,14 +90,6 @@ interface Service {
     hireRequests: number;
     orders: number;
   };
-}
-
-interface AdminUser {
-  id: string;
-  name: string | null;
-  email: string;
-  role: "STUDENT" | "BUYER" | "ADMIN";
-  createdAt: string;
 }
 
 interface ConversationData {
@@ -214,10 +205,6 @@ export default function AdminDashboard() {
   const [deactivatingServiceId, setDeactivatingServiceId] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [pendingVerifications, setPendingVerifications] = useState<any[]>([]);
-  const [usersModalOpen, setUsersModalOpen] = useState(false);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [userSearch, setUserSearch] = useState("");
 
   const formatCurrency = (value?: number | null) => {
     if (value === null || value === undefined) {
@@ -369,38 +356,6 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
       setLastUpdated(new Date());
-    }
-  };
-
-  const handleOpenUsersModal = async () => {
-    setUsersModalOpen(true);
-    if (users.length > 0) {
-      return;
-    }
-    setUsersLoading(true);
-    try {
-      const response = await api.getAllUsers();
-      if (response.success && Array.isArray(response.data)) {
-        setUsers(response.data as AdminUser[]);
-      } else {
-        throw new Error(response.error || 'Failed to load users');
-      }
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load user list. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setUsersLoading(false);
-    }
-  };
-
-  const handleUsersCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleOpenUsersModal();
     }
   };
 
@@ -615,31 +570,6 @@ export default function AdminDashboard() {
     );
   });
 
-  const filteredUsers = useMemo(() => {
-    if (!userSearch.trim()) {
-      return users;
-    }
-    const query = userSearch.toLowerCase();
-    return users.filter((user) => {
-      const name = user.name || '';
-      return (
-        name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query) ||
-        user.role.toLowerCase().includes(query)
-      );
-    });
-  }, [users, userSearch]);
-
-  const studentUsers = useMemo(
-    () => filteredUsers.filter((user) => user.role === 'STUDENT'),
-    [filteredUsers]
-  );
-
-  const buyerUsers = useMemo(
-    () => filteredUsers.filter((user) => user.role === 'BUYER'),
-    [filteredUsers]
-  );
-
   if (!user || user.role !== 'ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -777,8 +707,13 @@ export default function AdminDashboard() {
           <Card
             role="button"
             tabIndex={0}
-            onClick={handleOpenUsersModal}
-            onKeyDown={handleUsersCardKeyDown}
+            onClick={() => navigate('/dashboard/admin/users')}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigate('/dashboard/admin/users');
+              }
+            }}
             className="glass-card bg-card/50 backdrop-blur-12 border border-primary/20 text-center cursor-pointer transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
           >
             <CardHeader className="pb-4 max-md:pb-3 max-md:px-4 max-md:pt-4">
@@ -837,9 +772,12 @@ export default function AdminDashboard() {
               <CardTitle className="text-xl max-md:text-base">Revenue</CardTitle>
             </CardHeader>
             <CardContent className="max-md:px-4 max-md:pb-4">
-                        <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">${Math.round(stats.revenue.total)}</div>
+                        <div className="text-3xl font-bold text-primary mb-2 max-md:text-2xl">{formatCurrency(stats.revenue.total * 100)}</div>
               <p className="text-sm text-muted-foreground max-md:text-xs">
                           {stats.orders.total} total orders
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Profit (platform fees): {formatCurrency(stats.revenue.profit * 100)}
               </p>
             </CardContent>
           </Card>
@@ -1384,112 +1322,6 @@ export default function AdminDashboard() {
           </Tabs>
         </motion.div>
       </div>
-
-      <Dialog open={usersModalOpen} onOpenChange={setUsersModalOpen}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
-              Platform Users
-            </DialogTitle>
-            <DialogDescription>
-              View and filter all registered buyers and students.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-sm text-muted-foreground">
-                Showing {filteredUsers.length} of {users.length} users
-              </div>
-              <div className="relative w-full sm:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={userSearch}
-                  onChange={(event) => setUserSearch(event.target.value)}
-                  placeholder="Search by name, email, or role..."
-                  className="pl-9"
-                />
-              </div>
-            </div>
-
-            {usersLoading ? (
-              <div className="py-12 flex flex-col items-center justify-center text-muted-foreground">
-                <Loader2 className="h-6 w-6 animate-spin mb-3" />
-                <p>Loading users...</p>
-              </div>
-            ) : users.length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground">
-                <Users className="h-10 w-10 mx-auto mb-4" />
-                <p>No users found.</p>
-                <p className="text-sm">Users will appear here once they register on the platform.</p>
-              </div>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-border/40 bg-card/60 p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <GraduationCap className="h-4 w-4 text-primary" />
-                      <h3 className="font-semibold text-sm">Students</h3>
-                    </div>
-                    <Badge variant="outline">{studentUsers.length}</Badge>
-                  </div>
-                  {studentUsers.length > 0 ? (
-                    <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                      {studentUsers.map((student) => (
-                        <div
-                          key={student.id}
-                          className="p-3 rounded-lg border border-border/30 bg-background/60 shadow-sm"
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <p className="font-medium text-sm">{student.name || 'Unnamed Student'}</p>
-                            <Badge variant="default" className="text-[11px]">Student</Badge>
-                          </div>
-                          <p className="text-xs text-muted-foreground break-words">{student.email}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Joined {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(student.createdAt))}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No students match your filters.</p>
-                  )}
-                </div>
-                <div className="rounded-xl border border-border/40 bg-card/60 p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-primary" />
-                      <h3 className="font-semibold text-sm">Buyers</h3>
-                    </div>
-                    <Badge variant="outline">{buyerUsers.length}</Badge>
-                  </div>
-                  {buyerUsers.length > 0 ? (
-                    <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                      {buyerUsers.map((buyer) => (
-                        <div
-                          key={buyer.id}
-                          className="p-3 rounded-lg border border-border/30 bg-background/60 shadow-sm"
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <p className="font-medium text-sm">{buyer.name || 'Unnamed Buyer'}</p>
-                            <Badge variant="secondary" className="text-[11px]">Buyer</Badge>
-                          </div>
-                          <p className="text-xs text-muted-foreground break-words">{buyer.email}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Joined {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(buyer.createdAt))}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No buyers match your filters.</p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Conversation Modal */}
       <Dialog open={conversationModalOpen} onOpenChange={setConversationModalOpen}>

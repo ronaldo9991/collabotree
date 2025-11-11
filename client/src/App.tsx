@@ -26,6 +26,7 @@ import Chat from "@/pages/Chat";
 // import TestChat from "@/pages/TestChat";
 import BuyerSettings from "@/pages/buyer/Settings";
 import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminUsers from "@/pages/admin/Users";
 import AdminSettings from "@/pages/admin/Settings";
 import AdminSignIn from "@/pages/AdminSignIn";
 import TestLogin from "@/pages/TestLogin";
@@ -58,6 +59,7 @@ function Router() {
         {/* <Route path="/test-chat" component={TestChat} /> */}
       <Route path="/dashboard/buyer/settings" component={BuyerSettings} />
       <Route path="/dashboard/admin" component={AdminDashboard} />
+      <Route path="/dashboard/admin/users" component={AdminUsers} />
       <Route path="/dashboard/admin/settings" component={AdminSettings} />
 
       {/* Fallback to 404 */}
