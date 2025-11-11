@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -202,6 +202,8 @@ export default function AdminDashboard() {
   const [contractDetailsLoading, setContractDetailsLoading] = useState(false);
   const [loadingConversation, setLoadingConversation] = useState(false);
   const [releasingContractId, setReleasingContractId] = useState<string | null>(null);
+  const conversationThreadsRef = useRef<HTMLDivElement | null>(null);
+
   const [deactivatingServiceId, setDeactivatingServiceId] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [pendingVerifications, setPendingVerifications] = useState<any[]>([]);
@@ -938,6 +940,19 @@ export default function AdminDashboard() {
                           className="pl-10 w-full h-10 max-md:min-h-[44px] max-md:text-base"
                         />
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="max-md:w-full max-md:min-h-[44px]"
+                        onClick={() =>
+                          conversationThreadsRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          })
+                        }
+                      >
+                        Conversation Threads
+                      </Button>
                     </div>
                   </div>
             </CardHeader>
@@ -1012,6 +1027,7 @@ export default function AdminDashboard() {
               </motion.div>
 
               <motion.div
+                ref={conversationThreadsRef}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
