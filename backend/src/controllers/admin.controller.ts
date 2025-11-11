@@ -6,6 +6,11 @@ import { AuthenticatedRequest } from '../types/express.js';
 import { createCursorPaginationResult } from '../utils/pagination.js';
 import { createNotification } from '../domain/notifications.js';
 
+const getAllUsersSchema = z.object({
+  search: z.string().optional(),
+  role: z.enum(['STUDENT', 'BUYER', 'ADMIN']).optional(),
+});
+
 // Schema for getting all messages (admin only)
 const getAllMessagesSchema = z.object({
   cursor: z.string().optional(),
@@ -117,6 +122,50 @@ export const getAllMessages = async (req: AuthenticatedRequest, res: Response) =
     const result = hasMore ? messages.slice(0, limit) : messages;
 
     return sendSuccess(res, createCursorPaginationResult(result, limit));
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return sendValidationError(res, error.errors);
+    }
+    throw error;
+  }
+};
+
+export const getAllUsers = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user || req.user.role !== 'ADMIN') {
+      return sendError(res, 'Access denied. Admin role required.', 403);
+    }
+
+    const validatedQuery = getAllUsersSchema.parse(req.query);
+    const whereClause: any = {};
+
+    if (validatedQuery.role) {
+      whereClause.role = validatedQuery.role;
+    }
+
+    if (validatedQuery.search) {
+      const searchTerm = validatedQuery.search.trim().toLowerCase();
+      whereClause.OR = [
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { email: { contains: searchTerm, mode: 'insensitive' } },
+      ];
+    }
+
+    const users = await prisma.user.findMany({
+      where: whereClause,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return sendSuccess(res, users);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return sendValidationError(res, error.errors);

@@ -489,6 +489,19 @@ class ApiClient {
     return this.request(`/admin/services${queryString ? `?${queryString}` : ''}`);
   }
 
+  async getAllUsers(params?: Record<string, any>) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = searchParams.toString();
+    return this.request(`/admin/users${queryString ? `?${queryString}` : ''}`);
+  }
+
   // Public version for homepage (no authentication required)
   async getPublicTopSelectionServices() {
     return this.request('/public/top-selections');

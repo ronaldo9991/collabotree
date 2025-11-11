@@ -8,6 +8,7 @@ import {
   getAllServices,
   getServiceConversation,
   deactivateService,
+  getAllUsers,
 } from '../controllers/admin.controller.js';
 
 const router = Router();
@@ -21,6 +22,9 @@ router.get('/stats', getAdminStats);
 
 // Message management
 router.get('/messages', getAllMessages);
+
+// Users management
+router.get('/users', getAllUsers);
 
 // Top selection management
 router.get('/services/top-selections', getTopSelectionServices);
