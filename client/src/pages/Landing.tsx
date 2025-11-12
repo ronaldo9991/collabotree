@@ -21,12 +21,6 @@ export default function Landing() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const heroStats = [
-    { label: "Verified Students", value: "2,430+" },
-    { label: "Projects Delivered", value: "9,800+" },
-    { label: "Avg. Match Time", value: "<48 hrs" },
-  ];
-
   const aiPrompts = [
     "Redesign our SaaS dashboard",
     "Build an AI study assistant",
@@ -34,32 +28,60 @@ export default function Landing() {
     "Produce a pitch deck",
   ];
 
-  const networkNodes = [
-    { id: "uiux", label: "UI/UX Designers", x: "14%", y: "20%", xPercent: 14, yPercent: 20, delay: 0 },
-    { id: "fullstack", label: "Full-Stack Engineers", x: "72%", y: "24%", xPercent: 72, yPercent: 24, delay: 0.6 },
-    { id: "datasci", label: "Data Scientists", x: "28%", y: "50%", xPercent: 28, yPercent: 50, delay: 0.4 },
-    { id: "product", label: "Product Strategists", x: "82%", y: "56%", xPercent: 82, yPercent: 56, delay: 0.9 },
-    { id: "content", label: "Content Experts", x: "10%", y: "68%", xPercent: 10, yPercent: 68, delay: 0.2 },
-    { id: "aiops", label: "AI Operations", x: "48%", y: "16%", xPercent: 48, yPercent: 16, delay: 0.5 },
-    { id: "mobile", label: "Mobile Engineers", x: "58%", y: "72%", xPercent: 58, yPercent: 72, delay: 0.7 },
+  const workflowSteps = [
+    {
+      id: "describe",
+      title: "Describe Need",
+      summary: "Outline your scope, goals, and non-negotiables with our AI brief assistant.",
+      tip: "Typical response time: 3 minutes",
+      icon: MessageSquare,
+      accent: "from-primary/20 via-primary/10 to-primary/0",
+    },
+    {
+      id: "ai-shortlist",
+      title: "AI Shortlist",
+      summary: "CollaboTree scans verified talent to assemble your top 5 matches automatically.",
+      tip: "Matches ranked by skills, availability, and price fit",
+      icon: Sparkles,
+      accent: "from-secondary/20 via-secondary/10 to-secondary/0",
+    },
+    {
+      id: "chat-align",
+      title: "Chat & Align",
+      summary: "Launch real-time threads, share briefs, and confirm milestones in one secure inbox.",
+      tip: "Average first reply under 1 hour",
+      icon: MessageCircle,
+      accent: "from-accent/25 via-accent/10 to-accent/0",
+    },
+    {
+      id: "secure-payment",
+      title: "Secure Payment",
+      summary: "Escrow protects both sides until milestones are approved and work is delivered.",
+      tip: "Automated milestone release workflows",
+      icon: CreditCard,
+      accent: "from-primary/25 via-primary/10 to-primary/0",
+    },
+    {
+      id: "review",
+      title: "Deliverable Review",
+      summary: "Track revisions, leave feedback, and publish testimonials to spotlight student success.",
+      tip: "Post-project ratings keep the talent pool sharp",
+      icon: CheckSquare,
+      accent: "from-primary/20 via-secondary/10 to-accent/0",
+    },
   ];
 
-  const constellationLinks: Array<[string, string]> = [
-    ["uiux", "datasci"],
-    ["datasci", "product"],
-    ["product", "fullstack"],
-    ["fullstack", "aiops"],
-    ["aiops", "uiux"],
-    ["aiops", "mobile"],
-    ["content", "uiux"],
-    ["content", "mobile"],
+  const workflowMetrics = [
+    { label: "Avg. Match Time", value: "<48 hrs" },
+    { label: "Verified Universities", value: "190+" },
+    { label: "Successful Deliverables", value: "9.8k+" },
   ];
 
-  const aiFlightControls = [
-    { label: "Timeline: < 4 weeks", query: "timeline under 4 weeks" },
-    { label: "Budget: Under $1k", query: "projects under $1000" },
-    { label: "Collab Mode: Async", query: "async collaboration talent" },
-    { label: "Team Size: Solo", query: "solo student expert" },
+  const defaultShortlistCategories = [
+    "UI/UX Design",
+    "Automation",
+    "AI Assistants",
+    "Pitch Decks",
   ];
 
   // Fetch projects from backend
@@ -284,297 +306,275 @@ export default function Landing() {
       })
     : [];
 
+  const shortlistCategories = (() => {
+    if (!normalizedQuery) {
+      return defaultShortlistCategories;
+    }
+
+    const categories = new Set<string>(defaultShortlistCategories);
+    if (/\b(ai|ml|machine learning|assistant)\b/.test(normalizedQuery)) {
+      categories.add("AI & Machine Learning");
+    }
+    if (/\b(app|mobile|ios|android)\b/.test(normalizedQuery)) {
+      categories.add("Mobile UX");
+    }
+    if (/\b(data|analytics|dashboard|viz)\b/.test(normalizedQuery)) {
+      categories.add("Data Visualization");
+    }
+    if (/\bbrand|marketing|content\b/.test(normalizedQuery)) {
+      categories.add("Brand Storytelling");
+    }
+    if (/\bweb|frontend|fullstack\b/.test(normalizedQuery)) {
+      categories.add("Full-Stack Builds");
+    }
+
+    if (searchMatches.length > 0) {
+      searchMatches[0].tags?.slice(0, 2).forEach((tag: string) => {
+        if (tag) {
+          categories.add(tag);
+        }
+      });
+    }
+
+    return Array.from(categories).slice(0, 5);
+  })();
+
 
   return (
     <div className="min-h-screen">
-      {/* Predictive Talent Constellation Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/15 to-accent/10 text-foreground py-16 md:py-20">
-        <div className="absolute inset-0">
-          <div className="absolute -top-40 -left-32 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute bottom-[-160px] right-[-120px] h-[420px] w-[420px] rounded-full bg-secondary/25 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.6),_transparent_60%)] opacity-50" />
-          <div className="absolute inset-0 bg-grid-small-white/[0.12] mix-blend-overlay pointer-events-none" />
-        </div>
+      {/* Interactive Workflow Timeline Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/15 to-accent/10 text-foreground py-14 md:py-18">
         <div className="absolute inset-0 pointer-events-none">
-          <svg
-            viewBox="0 0 100 100"
-            className="absolute inset-0 h-full w-full"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-          >
-            {constellationLinks.map(([from, to]) => {
-              const start = networkNodes.find((node) => node.id === from);
-              const end = networkNodes.find((node) => node.id === to);
-              if (!start || !end) return null;
-              return (
-                <line
-                  key={`${from}-${to}`}
-                  x1={start.xPercent}
-                  y1={start.yPercent}
-                  x2={end.xPercent}
-                  y2={end.yPercent}
-                  stroke="rgba(0, 169, 255, 0.3)"
-                  strokeWidth="0.4"
-                  strokeLinecap="round"
-                />
-                  );
-                })}
-          </svg>
-          {networkNodes.map((node) => (
-            <motion.div
-              key={node.id}
-              className="absolute flex flex-col items-center"
-              style={{ left: node.x, top: node.y }}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 0.9, scale: 1, y: [0, -6, 0] }}
-              transition={{ duration: 6, delay: node.delay, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <div className="rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-xs sm:text-sm font-semibold text-primary backdrop-blur-sm shadow-lg shadow-primary/20">
-                {node.label}
-                      </div>
-            </motion.div>
-          ))}
-                              </div>
+          <div className="absolute -top-32 -left-32 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
+          <div className="absolute bottom-[-140px] right-[-100px] h-[360px] w-[360px] rounded-full bg-secondary/25 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.7),_transparent_65%)] opacity-60" />
+          <div className="absolute inset-0 bg-grid-small-white/[0.08] mix-blend-overlay" />
+        </div>
+
         <div className="relative z-10 container-unified">
-          <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start gap-12 xl:gap-16">
-            <motion.div
-              className="w-full lg:max-w-xl space-y-6"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <Badge className="bg-primary/15 text-primary border border-primary/30 px-4 py-2 uppercase font-semibold tracking-wide w-max">
-                Predictive Talent Constellation
-              </Badge>
-              <div className="space-y-4">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight text-foreground">
-                  Pinpoint the ideal student partners in seconds
-                </h1>
-                <p className="text-base sm:text-lg md:text-xl text-foreground/70">
-                  CollaboTree’s AI scouts your constellation of verified talent—mapping skills, availability, and price fit so you can deploy the perfect team instantly.
-                </p>
-                          </div>
+          <div className="mx-auto max-w-6xl rounded-[32px] border border-primary/15 bg-white/80 px-6 sm:px-8 py-8 md:py-10 shadow-[0px_40px_90px_-45px_rgba(0,169,255,0.6)] backdrop-blur-2xl">
+            <div className="flex flex-col gap-8 lg:flex-row lg:gap-10">
               <motion.div
-                className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
+                className="w-full lg:w-5/12 space-y-5"
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7 }}
               >
-                {heroStats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="rounded-2xl border border-primary/20 bg-white/70 px-5 py-4 shadow-sm backdrop-blur-md"
-                  >
-                    <p className="text-2xl font-bold text-primary">{stat.value}</p>
-                    <p className="text-xs uppercase tracking-wide text-foreground/60">{stat.label}</p>
-                        </div>
-                ))}
-              </motion.div>
-              <motion.div
-                className="rounded-[28px] border border-primary/25 bg-white/80 shadow-xl backdrop-blur-xl p-5 space-y-5"
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-white px-4 py-3 shadow-inner">
-                  <Search className="h-5 w-5 text-primary" />
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSearch();
-                      }
-                    }}
-                    placeholder='Ask AI: "Prototype a fintech dashboard with UI/UX support"'
-                    className="h-12 flex-1 border-0 bg-transparent px-0 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                <Button
-                    type="button"
-                    size="sm"
-                    onClick={handleSearch}
-                    className="h-10 px-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold shadow-md"
-                  >
-                    Launch Query
-                  </Button>
-              </div>
-                <div className="flex flex-wrap gap-2">
-                  {aiFlightControls.map((control) => (
-                    <button
-                      key={control.label}
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery(control.query);
-                      }}
-                      className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs sm:text-sm font-medium text-primary hover:bg-primary/20 transition"
-                    >
-                      {control.label}
-                    </button>
-                  ))}
-                  {aiPrompts.map((prompt) => (
-                    <button
-                      key={prompt}
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery(prompt);
-                        handlePopularSearch(prompt);
-                      }}
-                      className="rounded-full border border-accent/40 bg-accent/20 px-3 py-1 text-xs sm:text-sm font-medium text-foreground/80 hover:bg-accent/40 transition"
-                    >
-                      {prompt}
-                    </button>
-                  ))}
-                </div>
-                {normalizedQuery && (
-                <motion.div
-                    className="rounded-2xl border border-primary/15 bg-primary/5 p-4 text-left shadow-lg"
-                    initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    <div className="flex items-center justify-between gap-3 mb-3">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                        Live constellation match preview
-                      </p>
-                      <span className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
-                        <Sparkles className="h-3 w-3" />
-                        AI Confidence 82%
-                      </span>
-                    </div>
-                    <div className="space-y-2">
-                      {searchMatches.length > 0 ? (
-                        searchMatches.map((project) => (
-                          <div
-                            key={project.id}
-                            className="flex items-center justify-between gap-3 rounded-xl border border-primary/20 bg-white px-3 py-2 shadow-sm"
-                          >
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-foreground line-clamp-1">
-                                {project.title}
-                              </p>
-                              <p className="text-xs text-foreground/60 line-clamp-1">
-                                {project.student?.name || project.student?.full_name || "Verified student"}
-                              </p>
-                  </div>
-                            <span className="text-sm font-semibold text-primary whitespace-nowrap">
-                              {project.price ?? `$${Math.round(project.budget ?? 0)}`}
-                            </span>
-                  </div>
-                        ))
-                      ) : (
-                        <p className="text-sm text-foreground/70">
-                          No direct matches yet. Refine your request or tap a flight control to guide the AI.
-                        </p>
-                      )}
-                  </div>
-                </motion.div>
-                )}
-              </motion.div>
-            </motion.div>
-            <motion.div
-              className="w-full lg:flex-1"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-              <div className="relative rounded-[32px] border border-primary/20 bg-white/75 shadow-[0px_40px_90px_-40px_rgba(0,169,255,0.65)] backdrop-blur-2xl px-6 sm:px-8 py-8 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 opacity-80" />
-                <div className="absolute -top-12 right-6 h-24 w-24 rounded-full bg-primary/30 blur-2xl" />
-                <div className="relative z-10 space-y-6">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-xs uppercase tracking-wide text-primary font-semibold">
-                        AI Signal Monitor
-                      </p>
-                      <h3 className="text-2xl font-bold text-foreground">Student-Buyer Harmony</h3>
-                    </div>
-                    <Badge className="bg-white text-primary border border-primary/30 px-3 py-1">
-                      Live Sync
+                <div className="rounded-3xl border border-primary/20 bg-white/90 p-4 sm:p-5 shadow-md backdrop-blur-lg space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-primary/10 text-primary border-primary/20 px-3 py-1 uppercase tracking-wide">
+                      Start with AI
                     </Badge>
+                    <span className="text-xs font-medium text-foreground/50">
+                      Timeline brief assistant
+                    </span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {sampleProjects.length > 0 ? (
-                      sampleProjects.map((project, index) => (
-              <motion.div
-                          key={project.id ?? index}
-                          className="relative rounded-2xl border border-primary/20 bg-white/80 p-4 shadow-md"
-                          initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: index * 0.1 }}
-                        >
-                          <div className="absolute -top-6 -right-4 h-16 w-16 rounded-full bg-primary/20 blur-xl" />
-                          <div className="relative z-10 flex flex-col gap-3">
-                            <div className="flex items-center gap-2">
-                              <Avatar className="h-9 w-9">
-                                <AvatarImage src={project.student.avatar} alt={project.student.name} />
-                                <AvatarFallback className="text-xs">
-                                  {project.student.name
-                                    ?.split(" ")
-                                    .map((n: string) => n[0])
-                                    .join("")}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="min-w-0">
-                                <p className="text-sm font-semibold text-foreground line-clamp-1">
-                                  {project.student.name}
-                                </p>
-                                <p className="text-xs text-foreground/60 line-clamp-1">
-                                  {project.student.university}
-                                </p>
-                              </div>
-                    </div>
-                      <div>
-                              <p className="text-sm font-semibold text-primary line-clamp-2">
-                                {project.title}
-                              </p>
-                              <p className="text-xs text-foreground/60 line-clamp-2">
-                                {project.description}
-                              </p>
-                      </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-semibold text-foreground">{project.price}</span>
-                              <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] text-primary">
-                                <Sparkles className="h-3 w-3" />
-                                Prime Match
-                              </span>
+                  <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-white px-4 py-3 shadow-inner">
+                    <Search className="h-5 w-5 text-primary" />
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSearch();
+                        }
+                      }}
+                      placeholder='Describe your mission: "Design a mobile fintech dashboard under $2k"'
+                      className="h-12 flex-1 border-0 bg-transparent px-0 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleSearch}
+                      className="h-10 px-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold shadow-md"
+                    >
+                      Run AI
+                    </Button>
                   </div>
-                    </div>
-                        </motion.div>
-                      ))
-                    ) : (
-                      <div className="col-span-full rounded-2xl border border-primary/20 bg-white/70 p-6 text-center shadow-md">
-                        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                          <Bot className="h-6 w-6 text-primary" />
-                  </div>
-                        <h4 className="text-sm font-semibold text-foreground">AI is calibrating matches</h4>
-                        <p className="mt-2 text-xs text-foreground/60">
-                          Once top projects are featured, they will appear here for rapid deployment.
-                        </p>
-                    </div>
-                    )}
-                  </div>
-                  <div className="rounded-2xl border border-primary/30 bg-primary/10 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                      <p className="text-xs uppercase tracking-wide text-primary font-semibold">
-                        Mission Ready
-                      </p>
-                      <h4 className="text-lg font-semibold text-foreground">
-                        Deploy to marketplace for a full briefing
-                      </h4>
-                    </div>
-                      <Button
-                        variant="outline"
-                      className="border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground"
-                      onClick={() => setLocation("/marketplace")}
+                  <div className="flex flex-wrap gap-2">
+                    {aiPrompts.map((prompt) => (
+                      <button
+                        key={prompt}
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery(prompt);
+                          handlePopularSearch(prompt);
+                        }}
+                        className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs sm:text-sm font-medium text-primary hover:bg-primary/20 transition"
                       >
-                      Enter Marketplace
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                      AI BRIEF SNAPSHOT
+                    </p>
+                    <p className="text-sm text-foreground/70 mt-1">
+                      {normalizedQuery
+                        ? `AI is prioritizing categories related to “${searchQuery.trim()}”.`
+                        : "Add a brief to see how CollaboTree orchestrates your project end-to-end."}
+                    </p>
                   </div>
                 </div>
-                  </div>
+
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  {workflowMetrics.map((metric) => (
+                    <div key={metric.label} className="rounded-2xl border border-primary/15 bg-white/85 px-4 py-3 shadow-sm">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/50">
+                        {metric.label}
+                      </p>
+                      <p className="text-xl font-bold text-primary mt-1">{metric.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="w-full lg:flex-1 space-y-5"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+              >
+                <Badge className="bg-white text-primary border border-primary/30 px-4 py-1.5 uppercase tracking-wide w-max">
+                  Interactive Workflow Timeline
+                </Badge>
+                <h1 className="text-4xl sm:text-5xl font-black leading-tight text-foreground">
+                  Watch AI navigate from idea to delivery in minutes
+                </h1>
+                <p className="text-base sm:text-lg text-foreground/70 max-w-2xl">
+                  CollaboTree’s mission control makes every step transparent—see exactly how briefs become curated shortlists,
+                  aligned projects, and verified deliverables.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    <Bot className="h-3.5 w-3.5" />
+                    AI plays your co-pilot
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/20 px-3 py-1 text-xs font-semibold text-secondary-foreground">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Verified student network
+                  </span>
+                </div>
+              </motion.div>
+            </div>
+
+            <motion.div
+              className="mt-8 md:mt-10"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="overflow-x-auto pb-4">
+                <div className="flex min-w-[720px] gap-6 pb-2">
+                  {workflowSteps.map((step, index) => {
+                    const StepIcon = step.icon;
+                    const TipIcon = step.id === "ai-shortlist" ? Bot : Clock;
+                    const isShortlist = step.id === "ai-shortlist";
+                    const matchesToShow = isShortlist ? searchMatches.slice(0, 2) : [];
+
+                    return (
+                      <div key={step.id} className="relative min-w-[220px] sm:min-w-[240px]">
+                        {index !== workflowSteps.length - 1 && (
+                          <div className="absolute top-10 right-[-18px] hidden md:block h-px w-9 bg-gradient-to-r from-primary/25 via-primary/15 to-transparent" />
+                        )}
+                        <motion.div
+                          className="relative flex h-full flex-col gap-4 rounded-2xl border border-primary/15 bg-white/85 px-5 py-5 shadow-lg backdrop-blur-lg"
+                          whileHover={{ y: -6, scale: 1.02 }}
+                          animate={{ scale: isShortlist && normalizedQuery ? 1.04 : 1 }}
+                          transition={{ type: "spring", stiffness: 220, damping: 18 }}
+                        >
+                          <div className="absolute left-5 top-0 -translate-y-1/2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
+                            Step {index + 1}
+                          </div>
+                          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${step.accent} flex items-center justify-center shadow-inner`}>
+                            <StepIcon className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="space-y-2">
+                            <h3 className="text-lg font-semibold text-foreground">{step.title}</h3>
+                            <p className="text-sm text-foreground/65 leading-relaxed">
+                              {step.summary}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-medium text-primary">
+                            <TipIcon className="h-3.5 w-3.5" />
+                            {step.tip}
+                          </div>
+
+                          {isShortlist && (
+                            <div className="space-y-3">
+                              <div className="flex flex-wrap gap-2">
+                                {shortlistCategories.map((category) => (
+                                  <span
+                                    key={category}
+                                    className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary"
+                                  >
+                                    {category}
+                                  </span>
+                                ))}
+                              </div>
+                              {normalizedQuery && (
+                                <div className="space-y-2 rounded-xl border border-primary/10 bg-primary/5 p-3">
+                                  {matchesToShow.length > 0 ? (
+                                    matchesToShow.map((project) => (
+                                      <div key={project.id} className="flex items-center justify-between gap-3 rounded-lg border border-primary/15 bg-white px-3 py-2 shadow-sm">
+                                        <div className="min-w-0">
+                                          <p className="text-xs font-semibold text-foreground line-clamp-1">
+                                            {project.title}
+                                          </p>
+                                          <p className="text-[11px] text-foreground/60 line-clamp-1">
+                                            {project.student?.name || project.student?.full_name || "Verified student"}
+                                          </p>
+                                        </div>
+                                        <span className="text-xs font-semibold text-primary whitespace-nowrap">
+                                          {project.price ?? `$${Math.round(project.budget ?? 0)}`}
+                                        </span>
+                                      </div>
+                                    ))
+                                  ) : (
+                                    <p className="text-xs text-primary/70">
+                                      AI is exploring deeper matches for “{searchQuery.trim()}”.
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </motion.div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </motion.div>
-                </div>
+
+            <div className="mt-6 md:mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <p className="text-sm text-foreground/65">
+                Curious how it works in practice? Preview the buyer journey or bring your student team onboard today.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
+                  asChild
+                >
+                  <Link href="/signin">
+                    Launch AI Brief
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="border-primary/30 text-primary hover:bg-primary/10" asChild>
+                  <Link href="/how-it-works">
+                    Buyer Walkthrough
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="border-secondary/40 text-secondary-foreground hover:bg-secondary/10" asChild>
+                  <Link href="/signin">
+                    Student Onboarding
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
