@@ -723,14 +723,6 @@ export default function AdminDashboard() {
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
             Manage the platform, monitor messages, control top selections, and oversee escrow payouts.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-            <Button variant="outline" onClick={() => navigate("/dashboard/admin/messages")}>
-              Open Messages Page
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/dashboard/admin/users")}>
-              View Users Page
-            </Button>
-          </div>
         </motion.div>
 
         {/* Tabs Navigation */}
