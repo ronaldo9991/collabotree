@@ -654,47 +654,47 @@ export default function ExploreTalent() {
           <div className="flex-1 min-w-0 order-1 lg:order-2 lg:pl-4">
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 md:gap-6 items-stretch"
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
-              {filteredAndSortedProjects?.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">No projects found</h3>
-                  <p className="text-muted-foreground">
-                    Try adjusting your search criteria or browse all projects.
-                  </p>
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            {filteredAndSortedProjects?.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-muted-foreground" />
                 </div>
-              ) : loading ? (
-                // Loading skeleton
-                [...Array(6)].map((_, index) => (
-                  <motion.div key={index} variants={itemVariants}>
-                    <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 h-full flex flex-col">
-                      <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
-                      <CardContent className="p-4 flex-1 flex flex-col space-y-3">
-                        <div className="h-4 bg-muted/20 animate-pulse rounded" />
-                        <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
-                        <div className="flex-1" />
-                        <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))
-              ) : (
-                filteredAndSortedProjects?.map((project) => (
-                  <motion.div key={project.id} variants={itemVariants} className="h-full flex">
-                    <ProjectCard project={project} />
-                  </motion.div>
-                ))
-              )}
-            </motion.div>
+                <h3 className="text-lg font-medium mb-2">No projects found</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search criteria or browse all projects.
+                </p>
+              </div>
+            ) : loading ? (
+              // Loading skeleton
+              [...Array(6)].map((_, index) => (
+                <motion.div key={index} variants={itemVariants}>
+                  <Card className="glass-card bg-card/50 backdrop-blur-12 border-border/30 h-full flex flex-col">
+                    <div className="w-full h-48 bg-muted/20 animate-pulse rounded-t-lg" />
+                    <CardContent className="p-4 flex-1 flex flex-col space-y-3">
+                      <div className="h-4 bg-muted/20 animate-pulse rounded" />
+                      <div className="h-3 bg-muted/20 animate-pulse rounded w-3/4" />
+                      <div className="flex-1" />
+                      <div className="h-4 bg-muted/20 animate-pulse rounded w-1/2" />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))
+            ) : (
+              filteredAndSortedProjects?.map((project) => (
+                <motion.div key={project.id} variants={itemVariants} className="h-full flex">
+                  <ProjectCard project={project} />
+                </motion.div>
+              ))
+            )}
+          </motion.div>
           </div>
         </div>
-      </div>
-
+        </div>
+      
       {/* Footer */}
       <Footer />
     </div>

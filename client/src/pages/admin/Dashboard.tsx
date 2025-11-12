@@ -957,11 +957,11 @@ export default function AdminDashboard() {
                   </div>
             </CardHeader>
             <CardContent>
-              {filteredMessages.length > 0 ? (
+                    {filteredMessages.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                   {filteredMessages.map((message) => (
                     <div
-                      key={message.id}
+                          key={message.id}
                       className="p-4 rounded-2xl bg-gradient-to-br from-primary/5 via-background to-card border border-primary/10 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col gap-3"
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -974,16 +974,16 @@ export default function AdminDashboard() {
                             }
                             className="text-[10px] uppercase tracking-wide w-fit"
                           >
-                            {message.sender.role}
+                                {message.sender.role}
                           </Badge>
                           <span className="font-medium text-sm sm:text-base leading-tight">
                             {message.sender.name}
                           </span>
                         </div>
                         <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                          {new Date(message.createdAt).toLocaleString()}
-                        </span>
-                      </div>
+                                {new Date(message.createdAt).toLocaleString()}
+                              </span>
+                            </div>
 
                       <p className="text-sm text-foreground/90 leading-relaxed line-clamp-4">
                         {message.body}
@@ -1001,27 +1001,27 @@ export default function AdminDashboard() {
                           <strong>Student:</strong>{" "}
                           {message.room.hireRequest.student.name}
                         </p>
-                      </div>
+                        </div>
 
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
-                        disabled={loadingConversation}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewConversation(message.room.hireRequest.service.id)}
+                          disabled={loadingConversation}
                         className="text-xs max-md:min-h-[44px] max-md:w-full mt-auto"
-                      >
-                        <MessageCircle className="w-3 h-3 mr-1" />
-                        {loadingConversation ? "Loading..." : "View Full Conversation"}
-                      </Button>
-                    </div>
+                        >
+                          <MessageCircle className="w-3 h-3 mr-1" />
+                          {loadingConversation ? "Loading..." : "View Full Conversation"}
+                        </Button>
+                      </div>
                   ))}
-                </div>
-              ) : (
-                <div className="text-center text-muted-foreground py-8">
-                  <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p>No messages found</p>
-                </div>
-              )}
+                    </div>
+                ) : (
+                      <div className="text-center text-muted-foreground py-8">
+                        <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p>No messages found</p>
+                  </div>
+                )}
             </CardContent>
           </Card>
               </motion.div>
@@ -1043,7 +1043,7 @@ export default function AdminDashboard() {
                         <CardDescription>
                           Student–buyer threads grouped by service with latest updates
                         </CardDescription>
-                      </div>
+              </div>
                       <Badge variant="outline" className="max-md:self-start">
                         {filteredConversationThreads.length} active thread
                         {filteredConversationThreads.length === 1 ? "" : "s"}
@@ -1136,8 +1136,8 @@ export default function AdminDashboard() {
                         </p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+            </CardContent>
+          </Card>
               </motion.div>
             </TabsContent>
 
