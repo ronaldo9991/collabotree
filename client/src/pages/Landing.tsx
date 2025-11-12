@@ -368,9 +368,7 @@ export default function Landing() {
         </div>
 
         {/* Integrated Navbar - Top Column Inside Hero (Fixed like other pages) */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 pt-4 transition-transform duration-300 ease-in-out ${
-          isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}>
+        <nav className="hidden">
           <div className="container-unified">
             {/* Original Pill-shaped Navigation Container */}
             <div className="flex items-center justify-between h-14 px-6 rounded-full border-2 border-primary/40 dark:border-primary/60 bg-card/95 dark:bg-card/90 backdrop-blur-md shadow-lg shadow-primary/5 dark:shadow-primary/10">

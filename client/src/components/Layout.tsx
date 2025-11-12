@@ -79,7 +79,6 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation - Hidden on landing page since it's in hero */}
-      {!isLandingPage && (
         <nav className={`fixed top-0 left-0 right-0 z-50 pt-4 transition-transform duration-300 ease-in-out ${
           isNavbarVisible ? 'translate-y-0' : '-translate-y-full'
         }`}>
@@ -369,10 +368,9 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
       </nav>
-      )}
 
       {/* Main Content */}
-      <main className={isLandingPage ? "" : "pt-24"}>
+      <main className="pt-24">
         {children}
       </main>
 

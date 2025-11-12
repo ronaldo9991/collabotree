@@ -466,7 +466,7 @@ export default function ExploreTalent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container-unified py-12 md:py-16 lg:py-20">
+      <div className="container-wide py-12 md:py-16 lg:py-20">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl lg:text-4xl font-bold mb-4">Explore Talent</h1>
@@ -507,7 +507,7 @@ export default function ExploreTalent() {
         {/* Main Content Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar - Left Side */}
-          <div className="w-full lg:w-80 flex-shrink-0 order-2 lg:order-1 mb-8 lg:mb-0">
+          <div className="w-full lg:w-72 xl:w-80 flex-shrink-0 order-2 lg:order-1 mb-8 lg:mb-0">
             <Card className="glass-card bg-card/80 backdrop-blur-md border-2 border-border/50 shadow-xl sticky top-4 max-lg:static">
               <CardHeader className="pb-4 border-b border-border/30">
                 <CardTitle className="text-lg font-bold flex items-center gap-2">
@@ -652,8 +652,8 @@ export default function ExploreTalent() {
 
           {/* Results Section */}
           <div className="flex-1 min-w-0 order-1 lg:order-2 lg:pl-4">
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 items-stretch"
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 md:gap-6 items-stretch"
               initial="hidden"
               animate="visible"
               variants={containerVariants}
