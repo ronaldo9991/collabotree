@@ -709,7 +709,7 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8 sm:mb-12"
+          className="tight-container text-center mb-8 sm:mb-12"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
             <Badge variant="outline" className="gap-2 bg-primary/10 text-primary border-primary/20">
