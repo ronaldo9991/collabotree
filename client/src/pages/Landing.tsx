@@ -5,15 +5,29 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Shield, MessageSquare, Zap, Palette, Lock, CheckCircle, GraduationCap, Clock, FolderSync, Users, TrendingUp, AlertCircle, Search, Bot, Sparkles, Award, Target, Globe, Code, Smartphone, PaintBucket, FileText, BarChart3, ChevronLeft, ChevronRight, Package, UserCheck, MessageCircle, CreditCard, CheckSquare, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { Footer } from "@/components/Footer";
 import { api } from "@/lib/api";
+import { Network, Moon, Sun, Menu, LogOut, Settings, User, X, Home, ShoppingCart } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/components/ThemeProvider";
 import { CommandPalette } from "@/components/CommandPalette";
 
 export default function Landing() {
   const [location, setLocation] = useLocation();
+  const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [commandOpen, setCommandOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentNewProjectSlide, setCurrentNewProjectSlide] = useState(0);
   const [topSelectionProjects, setTopSelectionProjects] = useState<any[]>([]);
@@ -21,17 +35,12 @@ export default function Landing() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const heroStats = [
-    { label: "Verified Students", value: "2,430+" },
-    { label: "Projects Delivered", value: "9,800+" },
-    { label: "Avg. Match Time", value: "<48 hrs" },
-  ];
-
-  const aiPrompts = [
-    "Redesign our SaaS dashboard",
-    "Build an AI study assistant",
-    "Audit onboarding UX",
-    "Produce a pitch deck",
+  const navigation = [
+    { name: "Home", href: "/", icon: Home, show: true },
+    { name: "About", href: "/about", icon: Users, show: true },
+    { name: "Explore Talent", href: "/marketplace", icon: ShoppingCart, show: true },
+    { name: "How it Works", href: "/how-it-works", icon: FileText, show: true },
+    { name: "Contact", href: "/contact", icon: MessageSquare, show: true },
   ];
 
   // Fetch projects from backend
@@ -131,6 +140,32 @@ export default function Landing() {
     return () => window.removeEventListener('reviewSubmitted', handleReviewSubmitted);
   }, []);
 
+  // Scroll detection for navbar hide/show
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show navbar when at top of page
+      if (currentScrollY < 10) {
+        setIsNavbarVisible(true);
+      } else {
+        // Hide when scrolling down, show when scrolling up
+        if (currentScrollY > lastScrollY.current) {
+          // Scrolling down
+          setIsNavbarVisible(false);
+        } else {
+          // Scrolling up
+          setIsNavbarVisible(true);
+        }
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const projectsPerSlide = 3;
   const totalSlides = Math.ceil(Math.max(topSelectionProjects.length, 1) / projectsPerSlide);
   const totalNewProjectSlides = Math.ceil(Math.max(newProjects.length, 1) / projectsPerSlide);
@@ -183,7 +218,8 @@ export default function Landing() {
     setLocation(url);
   };
 
-  // Auto-slide functionality removed to keep manual control only
+
+  // Auto-slide functionality removed - user wants manual control only
 
   const features = [
     {
@@ -236,192 +272,578 @@ export default function Landing() {
     },
   };
 
-  const sampleProjects = topSelectionProjects.slice(0, 3);
-
   return (
     <div className="min-h-screen">
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#021A2E] via-[#062B4C] to-[#0B3A5C] text-white">
-        <div className="absolute inset-0">
-          <div className="absolute -top-28 -left-32 h-72 w-72 rounded-full bg-cyan-400/30 blur-3xl" />
-          <div className="absolute bottom-[-120px] right-[-160px] h-96 w-96 rounded-full bg-blue-500/25 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_60%)]" />
+      {/* Enhanced Hero Section with Integrated Navbar */}
+      <section className="relative min-h-[70vh] sm:min-h-[75vh] md:min-h-[80vh] flex flex-col overflow-hidden">
+        {/* Enhanced Gradient Background with Dynamic Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00B2FF] via-[#0077B6] to-[#023E8A]">
+          {/* Animated gradient overlay */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-tr from-[#4AC8FF]/30 via-transparent to-[#89CFF3]/25"
+            animate={{
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          
+          {/* Enhanced animated orbs - more dynamic */}
+          <motion.div
+            className="absolute top-20 right-10 w-72 h-72 bg-[#4AC8FF] rounded-full mix-blend-multiply filter blur-3xl opacity-25"
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, 30, 0],
+              y: [0, -20, 0],
+              opacity: [0.2, 0.3, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 left-10 w-96 h-96 bg-[#0096C7] rounded-full mix-blend-multiply filter blur-3xl opacity-20"
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, -30, 0],
+              y: [0, 30, 0],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2,
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-80 h-80 bg-[#89CFF3] rounded-full mix-blend-multiply filter blur-3xl opacity-15"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{
+              duration: 14,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 4,
+            }}
+          />
+          
+          {/* Enhanced texture pattern */}
+          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]"></div>
+          
+          {/* Light overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/8 to-black/15"></div>
         </div>
-        <div className="container-unified relative z-10 py-20 lg:py-28">
-          <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+
+        {/* Enhanced floating particles - more dynamic */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
             <motion.div
-              className="space-y-8"
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <Badge className="w-fit bg-white/10 text-white border border-white/20 uppercase tracking-wide px-4 py-2 shadow-sm">
-                AI Talent Match
-                  </Badge>
-              <motion.h1
-                className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight max-w-2xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-              >
-                Discover talent with <span className="text-sky-200">AI precision</span>
-              </motion.h1>
-                <motion.p
-                className="text-base sm:text-lg md:text-xl text-white/80 max-w-xl"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+              key={i}
+              className="absolute w-1.5 h-1.5 bg-white/40 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -40, 0],
+                opacity: [0.2, 0.6, 0.2],
+                scale: [1, 1.5, 1],
+              }}
+              transition={{
+                duration: 5 + Math.random() * 3,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Integrated Navbar - Top Column Inside Hero (Fixed like other pages) */}
+        <nav className="hidden">
+          <div className="container-unified">
+            {/* Original Pill-shaped Navigation Container */}
+            <div className="flex items-center justify-between h-14 px-6 rounded-full border-2 border-primary/40 dark:border-primary/60 bg-card/95 dark:bg-card/90 backdrop-blur-md shadow-lg shadow-primary/5 dark:shadow-primary/10">
+              {/* Logo */}
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="logo">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center flex-shrink-0">
+                  <Network className="h-3.5 w-3.5 text-white" />
+                </div>
+                <span className="text-lg font-semibold text-foreground">CollaboTree</span>
+              </Link>
+
+              {/* Center Navigation - Desktop */}
+              <div className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+                {navigation.map((item) => {
+                  const isActive = location === item.href || 
+                    (item.href !== "/" && location.startsWith(item.href));
+                  
+                  return item.show && (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`text-sm font-medium transition-all px-4 py-1.5 rounded-full whitespace-nowrap ${
+                        isActive
+                          ? "text-foreground border-2 border-primary/50 dark:border-primary/70 bg-card dark:bg-card/80"
+                          : "text-foreground/70 hover:text-foreground hover:bg-muted/30"
+                      }`}
+                      data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Mobile Menu Button */}
+              <div className="lg:hidden ml-auto">
+                <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="sm" className="p-2 rounded-full mobile-menu-button h-8 w-8">
+                      <Menu className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-gradient-to-b from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 backdrop-blur-12 border-l border-primary/20 mobile-sheet-content p-0" hideCloseButton={true}>
+                    <div className="flex flex-col h-full">
+                      {/* Header with Prominent Close Button */}
+                      <div className="flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-primary/20">
+                        <h2 className="text-xl font-bold text-foreground">Menu</h2>
+                        {/* Close Button - Large, prominent, and easy to tap */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="h-11 w-11 rounded-full bg-primary/15 hover:bg-primary/25 dark:bg-primary/25 dark:hover:bg-primary/35 border-2 border-primary/30 p-0 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-md hover:shadow-lg mobile-close-button min-w-[44px] min-h-[44px]"
+                          data-testid="mobile-menu-close"
+                        >
+                          <X className="h-6 w-6 text-primary font-bold" strokeWidth={2.5} />
+                          <span className="sr-only">Close</span>
+                        </Button>
+                      </div>
+                      
+                      {/* Navigation */}
+                      <nav className="flex flex-col gap-2 flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6">
+                        {navigation.map((item) => (
+                          item.show && (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item min-h-[44px]"
+                              onClick={() => setMobileMenuOpen(false)}
+                              data-testid={`mobile-nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              <item.icon className="h-5 w-5 flex-shrink-0 text-primary" />
+                              {item.name}
+                            </Link>
+                          )
+                        ))}
+                        
+                        {/* User Section - Only show when logged in */}
+                        {user && (
+                          <div className="pt-4 border-t border-primary/20 space-y-3">
+                            {/* User Profile Card */}
+                            <div className="flex items-center gap-3 p-4 rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/20">
+                              <Avatar className="h-12 w-12 border-2 border-primary/30 flex-shrink-0">
+                                <AvatarImage src="" alt={user.name} />
+                                <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                                  {user.name.split(' ').map((n: string) => n[0]).join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-base font-semibold text-foreground truncate">{user.name}</p>
+                                <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                              </div>
+                            </div>
+                            
+                            {/* Dashboard Link */}
+                            <Link
+                              href="/dashboard"
+                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item min-h-[44px]"
+                              onClick={() => setMobileMenuOpen(false)}
+                              data-testid="mobile-nav-dashboard"
+                            >
+                              <User className="h-5 w-5 flex-shrink-0 text-primary" />
+                              <span>Dashboard</span>
+                            </Link>
+                            
+                            {/* Settings Link */}
+                            <Link
+                              href={
+                                user.role === 'STUDENT' ? '/dashboard/student/settings' :
+                                user.role === 'BUYER' ? '/dashboard/buyer/settings' :
+                                user.role === 'ADMIN' ? '/dashboard/admin/settings' :
+                                '/profile'
+                              }
+                              className="flex items-center gap-4 text-base font-medium text-foreground hover:text-primary transition-all p-4 rounded-xl hover:bg-primary/10 dark:hover:bg-primary/15 border border-transparent hover:border-primary/20 hover:shadow-md hover:shadow-primary/10 mobile-nav-item min-h-[44px]"
+                              onClick={() => setMobileMenuOpen(false)}
+                              data-testid="mobile-nav-settings"
+                            >
+                              <Settings className="h-5 w-5 flex-shrink-0 text-primary" />
+                              <span>Settings</span>
+                            </Link>
+                            
+                            {/* Sign Out Button */}
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              onClick={() => {
+                                logout();
+                                setMobileMenuOpen(false);
+                              }}
+                              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-destructive/10 hover:bg-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 transition-all border-destructive/20 shadow-sm hover:shadow-md mobile-sign-out-button min-h-[52px]"
+                              data-testid="mobile-sign-out-button"
+                            >
+                              <LogOut className="h-5 w-5 text-destructive" />
+                              <span className="text-base font-medium text-destructive">Sign Out</span>
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {/* Sign In Button - Only show when NOT logged in */}
+                        {!user && (
+                          <div className="pt-4 border-t border-primary/20">
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-all border-primary/20 shadow-sm hover:shadow-md mobile-sign-in-button min-h-[52px]"
+                              asChild
+                              onClick={() => setMobileMenuOpen(false)}
+                              data-testid="mobile-sign-in-button"
+                            >
+                              <Link href="/signin">
+                                <User className="h-5 w-5 text-primary" />
+                                <span className="text-base font-medium">Sign In</span>
+                              </Link>
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {/* Theme Toggle - Moved to bottom, separate from close button */}
+                        <div className="mt-auto pt-6 border-t border-primary/20">
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={toggleTheme}
+                            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-all border-primary/20 shadow-sm hover:shadow-md mobile-theme-toggle min-h-[52px]"
+                            data-testid="mobile-theme-toggle"
+                          >
+                            {theme === "light" ? (
+                              <>
+                                <Moon className="h-5 w-5 text-primary" />
+                                <span className="text-base font-medium">Switch to Dark Mode</span>
+                              </>
+                            ) : (
+                              <>
+                                <Sun className="h-5 w-5 text-primary" />
+                                <span className="text-base font-medium">Switch to Light Mode</span>
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </nav>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
+              {/* Right Actions - Desktop */}
+              <div className="hidden lg:flex items-center gap-2">
+                {/* Theme Toggle */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTheme}
+                  className="p-2 rounded-full hover:bg-muted/30 transition-colors h-8 w-8"
+                  data-testid="theme-toggle"
                 >
-                CollaboTree connects you with verified student specialists in seconds. Describe your project and let our AI curate a shortlist that fits your budget, timeline, and tech stack.
-                </motion.p>
-                <motion.div
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                  {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                </Button>
+
+                {/* Command Palette */}
+                <Button
+                  variant="ghost"
+                  onClick={() => setCommandOpen(true)}
+                  className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/20 text-sm text-muted-foreground hover:bg-muted/30 transition-colors h-8"
+                  data-testid="command-palette-trigger"
+                >
+                  <Search className="h-3.5 w-3.5" />
+                  <span className="hidden 2xl:inline text-xs">Search</span>
+                  <Badge variant="outline" className="px-1.5 py-0.5 text-xs hidden 2xl:inline-block border-primary/30">
+                    ⌘K
+                  </Badge>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setCommandOpen(true)}
+                  className="xl:hidden p-2 rounded-full h-8 w-8"
+                  data-testid="command-palette-trigger-mobile"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+
+                {/* Auth Actions */}
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                        <Avatar className="h-8 w-8 border-2 border-primary/30">
+                          <AvatarImage src="" alt={user.name} />
+                          <AvatarFallback>
+                            {user.name.split(' ').map((n: string) => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">{user.name}</p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard" className="cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Dashboard</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={
+                          user.role === 'STUDENT' ? '/dashboard/student/settings' :
+                          user.role === 'BUYER' ? '/dashboard/buyer/settings' :
+                          user.role === 'ADMIN' ? '/dashboard/admin/settings' :
+                          '/profile'
+                        } className="cursor-pointer">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-2 border-primary/50 dark:border-primary/70 bg-transparent hover:bg-muted/30 text-foreground rounded-full px-4 py-1.5 h-8 flex items-center gap-1.5"
+                    asChild
+                    data-testid="sign-in-button"
+                  >
+                    <Link href="/signin">
+                      Get Started
+                      <span className="text-xs">→</span>
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Hero Content */}
+        <div className="relative z-10 flex-1 flex items-center container-unified w-full pt-24 pb-8 sm:pt-28 sm:pb-10 md:pt-32 md:pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 items-start lg:items-center">
+            
+            {/* Top-Left: Large Headline */}
+              <motion.div
+              className="space-y-6 sm:space-y-8"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.1] text-white">
+                    Hire{" "}
+                    <span className="relative inline-block">
+                  <span className="relative z-10 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent">
+                        Elite Talent
+                      </span>
+                      <motion.span
+                    className="absolute inset-0 bg-white/20 blur-2xl -z-10"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.3, 0.5, 0.3],
+                        }}
+                        transition={{
+                      duration: 3,
+                          repeat: Infinity,
+                      ease: "easeInOut",
+                        }}
+                      />
+                    </span>
+                    <br />
+                    From Top Universities
+                  </h1>
+                  
+              {/* Bottom-Left: Description and CTAs */}
+              <div className="space-y-6 sm:space-y-8 pt-4">
+                <motion.p
+                  className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-xl"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                >
+                  Connect directly with verified students offering professional services. Quality work, competitive rates, secure payments.
+                </motion.p>
+                
+                <motion.div
+                  className="flex flex-col sm:flex-row gap-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
                 >
                   <Button
                     size="lg"
-                  className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl text-base font-semibold bg-white text-slate-900 hover:bg-white/90 shadow-lg"
+                    className="bg-white text-[#00B2FF] hover:bg-white/90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-bold rounded-xl group"
                     asChild
                   >
-                  <Link href="/marketplace">
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Explore Talent
+                    <Link href="/signin">
+                      <Users className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Start Hiring Now
                     </Link>
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
-                  className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl text-base font-semibold border-white/40 text-white hover:bg-white/10"
+                    className="border-2 border-white/40 bg-white/5 backdrop-blur-lg hover:bg-white/15 hover:border-white/60 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-bold rounded-xl group"
                     asChild
                   >
-                  <Link href="/about">
-                    <MessageSquare className="mr-2 h-5 w-5" />
-                    See How It Works
+                    <Link href="/signin">
+                      <GraduationCap className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                      Become a Seller
                     </Link>
                   </Button>
                 </motion.div>
-              <motion.ul
-                className="space-y-3 text-sm sm:text-base text-white/70 max-w-xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                {[
-                  "Instant recommendations across 45+ skill categories",
-                  "Verified portfolios, reviews, and live availability",
-                  "Escrow-backed payments with milestone checkpoints",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <CheckCircle className="mt-1 h-5 w-5 text-sky-200" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </motion.ul>
+
+                {/* Trust Indicators */}
                 <motion.div
-                className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4"
-                initial={{ opacity: 0, y: 20 }}
+                  className="flex flex-wrap gap-6 sm:gap-8 pt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                >
+                  <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                    <span>Verified Students</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+                    <Lock className="w-5 h-5 text-white" />
+                    <span>Secure Payments</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+                    <Star className="w-5 h-5 text-white" />
+                    <span>Quality Guaranteed</span>
+                  </div>
+                </motion.div>
+              </div>
+              </motion.div>
+
+            {/* Right Column: Top-Right Search + Bottom-Right Categories */}
+            <motion.div
+              className="space-y-6 sm:space-y-8"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              {/* Top-Right: Prominent Search Card */}
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                {heroStats.map((stat) => (
-                  <div key={stat.label} className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm p-4 shadow-inner">
-                    <p className="text-xl sm:text-2xl font-semibold text-white">{stat.value}</p>
-                    <p className="text-xs uppercase tracking-wide text-white/60">{stat.label}</p>
-                  </div>
-                ))}
-                </motion.div>
-              </motion.div>
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div className="absolute -top-16 right-[-60px] h-48 w-48 rounded-full bg-sky-300/30 blur-3xl" />
-              <div className="absolute bottom-[-50px] left-[-80px] h-48 w-48 rounded-full bg-blue-500/20 blur-3xl" />
-              <div className="relative rounded-3xl border border-white/15 bg-white/95 text-slate-900 shadow-2xl backdrop-blur-xl p-6 sm:p-8 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] text-white">
-                    <Sparkles className="h-6 w-6" />
+                {/* Glowing background effect */}
+                <div className="absolute inset-0 bg-white/10 rounded-2xl blur-2xl -z-10"></div>
+                
+                {/* Search Card */}
+                <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/30 hover:shadow-[0_20px_40px_rgba(0,178,255,0.2)] transition-all duration-300">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] flex items-center justify-center">
+                        <Search className="w-5 h-5 text-white" />
                     </div>
                       <div>
-                    <p className="text-sm font-semibold text-[#005F73] uppercase tracking-wide">Smart Talent Search</p>
-                    <p className="text-xs text-slate-500">Describe your project—CollaboTree AI does the heavy lifting.</p>
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground">Find Your Perfect Service</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Search from verified student services</p>
                       </div>
                   </div>
-                <div className="space-y-3">
-                  <div className="flex items-stretch gap-2 rounded-2xl border border-slate-200 bg-white shadow-inner px-3 py-2">
-                    <Search className="h-5 w-5 text-slate-400 self-center" />
+
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                       <Input
+                        placeholder="Search services, skills, or categories..."
+                        className="h-12 sm:h-14 pl-12 pr-4 rounded-xl border-2 border-[#00B2FF]/20 focus:border-[#00B2FF] bg-white/90 dark:bg-white/95 text-black dark:text-black text-sm sm:text-base font-medium transition-all placeholder:text-gray-500 dark:placeholder:text-gray-500"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => {
-                        if (e.key === "Enter") {
+                          if (e.key === 'Enter') {
                             handleSearch();
                           }
                         }}
-                      placeholder='e.g. "Design a fintech dashboard"'
-                      className="flex-1 border-0 bg-transparent px-0 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0"
                       />
+                    </div>
+                    
                     <Button
-                      type="button"
-                      size="sm"
-                      className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#00B2FF] to-[#0096C7] text-white font-semibold"
+                      size="lg"
+                      className="w-full h-12 sm:h-14 bg-gradient-to-r from-[#00B2FF] to-[#0096C7] hover:from-[#0096C7] hover:to-[#00B2FF] text-white rounded-xl font-bold text-sm sm:text-base shadow-lg hover:shadow-xl hover:shadow-[#00B2FF]/30 transition-all transform hover:scale-[1.02]"
                       onClick={handleSearch}
                     >
-                      Ask AI
+                      <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                      Search Services
                     </Button>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Try asking</p>
-                    <div className="flex flex-wrap gap-2">
-                      {aiPrompts.map((prompt) => (
-                        <button
-                          key={prompt}
-                          type="button"
-                          onClick={() => {
-                            setSearchQuery(prompt);
-                            handlePopularSearch(prompt);
-                          }}
-                          className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs sm:text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-white transition"
-                        >
-                          {prompt}
-                        </button>
-                      ))}
                     </div>
+              </motion.div>
+
+              {/* Bottom-Right: Floating Category Chips Grid */}
+              <motion.div
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
+              >
+                <p className="text-sm sm:text-base text-white/90 font-medium mb-3">Popular Categories</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                    {[
+                      { term: 'Web Development', icon: Code },
+                      { term: 'UI/UX Design', icon: Palette },
+                      { term: 'Data Analysis', icon: BarChart3 },
+                    { term: 'Content Writing', icon: FileText },
+                    { term: 'Mobile Apps', icon: Smartphone },
+                    { term: 'Graphic Design', icon: PaintBucket }
+                  ].map(({ term, icon: Icon }, index) => (
+                    <motion.div
+                        key={term}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: 1.1 + (index * 0.1) }}
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full h-auto min-h-[60px] sm:min-h-[70px] flex flex-col items-center justify-center gap-2 p-3 sm:p-4 hover:bg-white/10 hover:border-white/50 text-white transition-all group bg-white/5 backdrop-blur-sm rounded-xl"
+                        onClick={() => handlePopularSearch(term)}
+                      >
+                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform text-[#00B2FF]" />
+                        <span className="text-xs sm:text-sm font-medium text-center leading-tight">{term}</span>
+                      </Button>
+                    </motion.div>
+                    ))}
                   </div>
-                </div>
-                <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/90 p-4">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 uppercase">
-                    <Sparkles className="h-4 w-4 text-[#0096C7]" />
-                    AI suggested matches
-                  </div>
-                  <div className="space-y-3">
-                    {sampleProjects.length > 0 ? (
-                      sampleProjects.map((project) => (
-                        <div key={project.id} className="flex items-start justify-between gap-3 rounded-xl bg-white p-3 shadow-sm">
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-slate-800 line-clamp-1">{project.title}</p>
-                            <p className="text-xs text-slate-500 line-clamp-1">
-                              {project.student?.name || project.student?.full_name || "Verified student"}
-                            </p>
-                          </div>
-                          <span className="text-sm font-semibold text-[#005F73]">
-                            {project.price ?? `$${Math.round(project.budget ?? 0)}`}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-xs text-slate-500">Describe your project to see intelligent matches appear here.</p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-3 py-2 text-xs text-slate-500">
-                    <Bot className="h-4 w-4 text-[#0096C7]" />
-                    AI confidence 92% • Based on skills, reviews & availability
-                  </div>
-                </div>
-                  </div>
+              </motion.div>
             </motion.div>
                 </div>
         </div>
