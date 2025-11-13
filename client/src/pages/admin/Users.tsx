@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
@@ -69,29 +69,18 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState<(typeof ROLE_FILTERS)[number]["value"]>("ALL");
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const [hasNext, setHasNext] = useState(false);
-  const requestIdRef = useRef(0);
 
-  const loadUsers = useCallback(async (options?: { reset?: boolean; cursor?: string }) => {
-    const requestId = ++requestIdRef.current;
-    const currentSearch = search.trim();
-    const currentRole = roleFilter;
-
-    if (options?.reset) {
-      setUsers([]);
-      setCursor(undefined);
-      setHasNext(false);
-    }
-
+  const loadUsers = async (options?: { reset?: boolean; cursor?: string }) => {
     try {
       setLoading(true);
       const params: Record<string, string | number> = { limit: 25 };
 
-      if (currentSearch) {
-        params.search = currentSearch;
+      if (search.trim()) {
+        params.search = search.trim();
       }
 
-      if (currentRole !== "ALL") {
-        params.role = currentRole;
+      if (roleFilter !== "ALL") {
+        params.role = roleFilter;
       }
 
       if (!options?.reset && options?.cursor) {
@@ -99,10 +88,6 @@ export default function AdminUsers() {
       }
 
       const response = await api.getAllUsers(params);
-      if (requestId !== requestIdRef.current) {
-        return;
-      }
-
       if (response.success) {
         const payload = response.data as UsersResponse;
         const nextUsers = payload?.data ?? [];
@@ -114,19 +99,15 @@ export default function AdminUsers() {
       }
     } catch (error) {
       console.error("Error loading users:", error);
-      if (requestId === requestIdRef.current) {
-        toast({
-          title: "Error",
-          description: "Unable to load users right now. Please try again.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Error",
+        description: "Unable to load users right now. Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      if (requestId === requestIdRef.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
-  }, [roleFilter, search, toast]);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -144,8 +125,12 @@ export default function AdminUsers() {
       return;
     }
 
+    setUsers([]);
+    setCursor(undefined);
+    setHasNext(false);
     loadUsers({ reset: true });
-  }, [user, loadUsers, navigate, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, roleFilter, search]);
 
   const filteredUsers = useMemo(() => {
     if (!search.trim()) {
@@ -273,7 +258,9 @@ export default function AdminUsers() {
 
                 <Select
                   value={roleFilter}
-                  onValueChange={(value) => setRoleFilter(value as typeof roleFilter)}
+                  onValueChange={(value) =>
+                    setRoleFilter(value as typeof roleFilter)
+                  }
                 >
                   <SelectTrigger className="min-w-[160px]">
                     <SelectValue placeholder="Filter by role" />
@@ -382,7 +369,7 @@ export default function AdminUsers() {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={loading || !hasNext || !cursor}
+                disabled={loading || !hasNext}
                 onClick={() => {
                   if (cursor) {
                     loadUsers({ cursor });
