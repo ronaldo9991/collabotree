@@ -34,15 +34,6 @@ export default function Landing() {
     "Produce a pitch deck",
   ];
 
-  const networkNodes = [
-    { id: "uiux", label: "UI/UX Designers", x: "12%", y: "18%", delay: 0 },
-    { id: "fullstack", label: "Full-stack Devs", x: "70%", y: "22%", delay: 0.6 },
-    { id: "datasci", label: "Data Scientists", x: "25%", y: "48%", delay: 0.4 },
-    { id: "product", label: "Product Strategists", x: "80%", y: "52%", delay: 0.9 },
-    { id: "content", label: "Content Experts", x: "8%", y: "65%", delay: 0.2 },
-    { id: "mobile", label: "Mobile Engineers", x: "60%", y: "70%", delay: 0.7 },
-  ];
-
   // Fetch projects from backend
   const fetchProjects = async () => {
     try {
@@ -246,160 +237,193 @@ export default function Landing() {
   };
 
   const sampleProjects = topSelectionProjects.slice(0, 3);
-  const normalizedQuery = searchQuery.trim().toLowerCase();
-  const searchMatches = normalizedQuery
-    ? sampleProjects.filter((project) => {
-        const title = project.title?.toLowerCase() || "";
-        const owner =
-          project.student?.name?.toLowerCase() ||
-          project.student?.full_name?.toLowerCase() ||
-          "";
-        const tags = Array.isArray(project.tags)
-          ? project.tags.join(" ").toLowerCase()
-          : "";
-        return (
-          title.includes(normalizedQuery) ||
-          owner.includes(normalizedQuery) ||
-          tags.includes(normalizedQuery)
-        );
-      })
-    : [];
-
 
   return (
     <div className="min-h-screen">
-      {/* Immersive Talent Discovery Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#021A2E] via-[#062B4C] to-[#0B3A5C] text-white py-16 md:py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#021A2E] via-[#062B4C] to-[#0B3A5C] text-white">
         <div className="absolute inset-0">
-          <div className="absolute -top-28 -left-40 h-72 w-72 rounded-full bg-sky-500/25 blur-3xl" />
-          <div className="absolute bottom-[-120px] right-[-120px] h-96 w-96 rounded-full bg-blue-400/20 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_65%)]" />
+          <div className="absolute -top-28 -left-32 h-72 w-72 rounded-full bg-cyan-400/30 blur-3xl" />
+          <div className="absolute bottom-[-120px] right-[-160px] h-96 w-96 rounded-full bg-blue-500/25 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_60%)]" />
         </div>
-        <div className="absolute inset-0 pointer-events-none">
-          {networkNodes.map((node) => (
+        <div className="container-unified relative z-10 py-20 lg:py-28">
+          <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
             <motion.div
-              key={node.id}
-              className="absolute flex flex-col items-center"
-              style={{ left: node.x, top: node.y }}
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 0.75, scale: 1, y: [0, -6, 0] }}
-              transition={{ duration: 6, delay: node.delay, repeat: Infinity, ease: "easeInOut" }}
+              className="space-y-8"
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <div className="rounded-full border border-white/20 bg-white/15 px-4 py-2 text-xs sm:text-sm font-semibold text-white/90 backdrop-blur-sm shadow-lg shadow-black/10">
-                {node.label}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        <div className="relative z-10 container-unified flex flex-col items-center text-center gap-8">
-          <motion.div
-            className="space-y-5 max-w-3xl"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Badge className="bg-white/10 border border-white/20 text-white tracking-wide px-4 py-2 uppercase font-semibold">
-              Immersive AI Talent Journey
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight">
-              Your AI navigator to university talent
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/80">
-              Let CollaboTree map a curated network of verified students across skills, universities, and budgets—powered by real-time AI.
-            </p>
-          </motion.div>
-          <motion.div
-            className="grid w-full max-w-3xl grid-cols-1 sm:grid-cols-3 gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            {heroStats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-white/15 bg-white/10 px-6 py-4 backdrop-blur-sm shadow-inner">
-                <p className="text-xl font-semibold">{stat.value}</p>
-                <p className="text-xs uppercase tracking-wide text-white/70">{stat.label}</p>
-              </div>
-            ))}
-          </motion.div>
-          <motion.div
-            className="w-full max-w-3xl space-y-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <div className="relative group">
-              <div className="flex items-center gap-3 rounded-2xl border border-white/20 bg-white/95 px-4 py-3 sm:px-5 sm:py-4 text-slate-900 shadow-2xl backdrop-blur-lg">
-                <Search className="h-5 w-5 text-slate-400" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSearch();
-                    }
-                  }}
-                  placeholder='Ask AI: "Find a mobile app prototyper under $500"'
-                  className="h-12 flex-1 border-0 bg-transparent px-0 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={handleSearch}
-                  className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#00B2FF] to-[#0096C7] text-white font-semibold"
-                >
-                  Ask AI
-                </Button>
-              </div>
-              <div className="pointer-events-none absolute left-0 right-0 top-full mt-3 opacity-0 transition group-hover:opacity-100">
-                <div className="pointer-events-auto flex flex-wrap justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-xs sm:text-sm backdrop-blur-sm shadow-lg">
-                  {aiPrompts.map((prompt) => (
-                    <button
-                      key={prompt}
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery(prompt);
-                        handlePopularSearch(prompt);
-                      }}
-                      className="rounded-full border border-white/30 bg-white/20 px-3 py-1 font-medium text-white/90 hover:bg-white/30 transition"
-                    >
-                      {prompt}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {normalizedQuery && (
-              <motion.div
-                className="rounded-2xl border border-white/15 bg-white/90 p-4 text-left text-slate-900 shadow-xl"
-                initial={{ opacity: 0, y: 16 }}
+              <Badge className="w-fit bg-white/10 text-white border border-white/20 uppercase tracking-wide px-4 py-2 shadow-sm">
+                AI Talent Match
+                  </Badge>
+              <motion.h1
+                className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight max-w-2xl"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
               >
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-3">
-                  Matching students from MIT, Stanford, Berkeley…
-                </p>
-                <div className="space-y-2">
-                  {searchMatches.length > 0 ? (
-                    searchMatches.map((project) => (
-                      <div key={project.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-white px-3 py-2 shadow-sm">
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 line-clamp-1">{project.title}</p>
-                          <p className="text-xs text-slate-500 line-clamp-1">
-                            {project.student?.name || project.student?.full_name || "Verified student"}
-                          </p>
-                        </div>
-                        <span className="text-sm font-semibold text-[#005F73] whitespace-nowrap">
-                          {project.price ?? `$${Math.round(project.budget ?? 0)}`}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-600">No direct matches yet. Try refining your request or explore trending prompts.</p>
-                  )}
-                </div>
+                Discover talent with <span className="text-sky-200">AI precision</span>
+              </motion.h1>
+                <motion.p
+                className="text-base sm:text-lg md:text-xl text-white/80 max-w-xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                CollaboTree connects you with verified student specialists in seconds. Describe your project and let our AI curate a shortlist that fits your budget, timeline, and tech stack.
+                </motion.p>
+                <motion.div
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  <Button
+                    size="lg"
+                  className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl text-base font-semibold bg-white text-slate-900 hover:bg-white/90 shadow-lg"
+                    asChild
+                  >
+                  <Link href="/marketplace">
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Explore Talent
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                  className="h-12 sm:h-14 px-6 sm:px-8 rounded-xl text-base font-semibold border-white/40 text-white hover:bg-white/10"
+                    asChild
+                  >
+                  <Link href="/about">
+                    <MessageSquare className="mr-2 h-5 w-5" />
+                    See How It Works
+                    </Link>
+                  </Button>
+                </motion.div>
+              <motion.ul
+                className="space-y-3 text-sm sm:text-base text-white/70 max-w-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                {[
+                  "Instant recommendations across 45+ skill categories",
+                  "Verified portfolios, reviews, and live availability",
+                  "Escrow-backed payments with milestone checkpoints",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <CheckCircle className="mt-1 h-5 w-5 text-sky-200" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </motion.ul>
+                <motion.div
+                className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                {heroStats.map((stat) => (
+                  <div key={stat.label} className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm p-4 shadow-inner">
+                    <p className="text-xl sm:text-2xl font-semibold text-white">{stat.value}</p>
+                    <p className="text-xs uppercase tracking-wide text-white/60">{stat.label}</p>
+                  </div>
+                ))}
+                </motion.div>
               </motion.div>
-            )}
-          </motion.div>
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="absolute -top-16 right-[-60px] h-48 w-48 rounded-full bg-sky-300/30 blur-3xl" />
+              <div className="absolute bottom-[-50px] left-[-80px] h-48 w-48 rounded-full bg-blue-500/20 blur-3xl" />
+              <div className="relative rounded-3xl border border-white/15 bg-white/95 text-slate-900 shadow-2xl backdrop-blur-xl p-6 sm:p-8 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#00B2FF] to-[#0096C7] text-white">
+                    <Sparkles className="h-6 w-6" />
+                    </div>
+                      <div>
+                    <p className="text-sm font-semibold text-[#005F73] uppercase tracking-wide">Smart Talent Search</p>
+                    <p className="text-xs text-slate-500">Describe your project—CollaboTree AI does the heavy lifting.</p>
+                      </div>
+                  </div>
+                <div className="space-y-3">
+                  <div className="flex items-stretch gap-2 rounded-2xl border border-slate-200 bg-white shadow-inner px-3 py-2">
+                    <Search className="h-5 w-5 text-slate-400 self-center" />
+                      <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleSearch();
+                          }
+                        }}
+                      placeholder='e.g. "Design a fintech dashboard"'
+                      className="flex-1 border-0 bg-transparent px-0 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#00B2FF] to-[#0096C7] text-white font-semibold"
+                      onClick={handleSearch}
+                    >
+                      Ask AI
+                    </Button>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Try asking</p>
+                    <div className="flex flex-wrap gap-2">
+                      {aiPrompts.map((prompt) => (
+                        <button
+                          key={prompt}
+                          type="button"
+                          onClick={() => {
+                            setSearchQuery(prompt);
+                            handlePopularSearch(prompt);
+                          }}
+                          className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs sm:text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-white transition"
+                        >
+                          {prompt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/90 p-4">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 uppercase">
+                    <Sparkles className="h-4 w-4 text-[#0096C7]" />
+                    AI suggested matches
+                  </div>
+                  <div className="space-y-3">
+                    {sampleProjects.length > 0 ? (
+                      sampleProjects.map((project) => (
+                        <div key={project.id} className="flex items-start justify-between gap-3 rounded-xl bg-white p-3 shadow-sm">
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-slate-800 line-clamp-1">{project.title}</p>
+                            <p className="text-xs text-slate-500 line-clamp-1">
+                              {project.student?.name || project.student?.full_name || "Verified student"}
+                            </p>
+                          </div>
+                          <span className="text-sm font-semibold text-[#005F73]">
+                            {project.price ?? `$${Math.round(project.budget ?? 0)}`}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-slate-500">Describe your project to see intelligent matches appear here.</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-3 py-2 text-xs text-slate-500">
+                    <Bot className="h-4 w-4 text-[#0096C7]" />
+                    AI confidence 92% • Based on skills, reviews & availability
+                  </div>
+                </div>
+                  </div>
+            </motion.div>
+                </div>
         </div>
       </section>
 
