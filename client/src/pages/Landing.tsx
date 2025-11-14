@@ -1047,104 +1047,235 @@ export default function Landing() {
             </motion.div>
           </div>
 
-          {/* How It Works Summary */}
+          {/* How It Works Summary - Redesigned */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 border-2 border-primary/10 overflow-hidden"
+            className="relative rounded-3xl sm:rounded-[2rem] p-8 sm:p-10 md:p-12 lg:p-14 overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, hsl(199, 100%, 50%, 0.08) 0%, hsl(199, 76%, 76%, 0.06) 50%, hsl(195, 100%, 82%, 0.08) 100%)',
+              border: '2px solid hsl(199, 100%, 50%, 0.15)',
+            }}
           >
-            {/* Decorative Background */}
-            <div className="absolute inset-0 bg-grid-small-white/[0.02] dark:bg-grid-small-white/[0.02]" />
-            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <motion.div
+                className="absolute top-0 right-0 w-96 h-96 bg-primary/8 rounded-full blur-3xl"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.4, 0.6, 0.4],
+                }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div
+                className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/8 rounded-full blur-3xl"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(0,169,255,0.05),_transparent_70%)]" />
+            </div>
             
-            <div className="relative z-10 text-center mb-8 sm:mb-10 md:mb-12">
-              <motion.h3 
-                className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
+            {/* Header */}
+            <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-14">
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true }}
+                className="inline-block mb-4"
               >
-                How CollaboTree Works
-              </motion.h3>
-              <motion.p 
-                className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base md:text-lg"
+                <Badge className="bg-primary/15 text-primary border border-primary/30 px-4 py-2 uppercase font-semibold tracking-wide">
+                  <Sparkles className="w-3.5 h-3.5 mr-2" />
+                  Process
+                </Badge>
+              </motion.div>
+              <motion.h3 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-5 text-foreground"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                Simple, secure, and efficient - get started in minutes
+                How CollaboTree Works
+              </motion.h3>
+              <motion.p 
+                className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg md:text-xl"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                Simple, secure, and efficient—get started in minutes
               </motion.p>
             </div>
             
-            <div className="relative">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative z-20">
+            {/* Steps Grid */}
+            <div className="relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 relative">
+                {/* Step 1 */}
                 <motion.div 
-                  className="text-center group"
+                  className="relative group"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                   viewport={{ once: true }}
+                  whileHover={{ y: -8 }}
                 >
-                  <div className="relative inline-block mb-6">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mx-auto shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-primary/20">
-                      <span className="text-3xl font-bold text-primary">1</span>
-                    </div>
-                    <div className="absolute -inset-2 bg-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-primary transition-colors">Browse & Select</h4>
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
-                    Explore verified student services, view portfolios, and read reviews to find the perfect match for your project.
-                  </p>
+                  <Card className="h-full border-2 border-primary/20 bg-card/60 backdrop-blur-md hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 overflow-hidden">
+                    <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center">
+                      {/* Icon Container */}
+                      <div className="relative mb-6">
+                        <motion.div
+                          className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-xl shadow-primary/30 group-hover:shadow-2xl group-hover:shadow-primary/40 transition-all duration-300"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                        >
+                          <Search className="w-10 h-10 text-white" />
+                          <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center shadow-lg">
+                            <span className="text-sm font-black text-primary">1</span>
+                          </div>
+                        </motion.div>
+                        <motion.div
+                          className="absolute -inset-4 bg-primary/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                          }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                      </div>
+                      
+                      <h4 className="font-bold text-xl sm:text-2xl mb-3 text-foreground group-hover:text-primary transition-colors">
+                        Browse & Select
+                      </h4>
+                      <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                        Explore verified student services, view portfolios, and read reviews to find the perfect match for your project.
+                      </p>
+                    </CardContent>
+                  </Card>
                 </motion.div>
                 
+                {/* Step 2 */}
                 <motion.div 
-                  className="text-center group"
+                  className="relative group"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
                   viewport={{ once: true }}
+                  whileHover={{ y: -8 }}
                 >
-                  <div className="relative inline-block mb-6">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center mx-auto shadow-lg shadow-secondary/20 group-hover:scale-110 transition-transform duration-300 border-2 border-secondary/20">
-                      <span className="text-3xl font-bold text-secondary">2</span>
-                    </div>
-                    <div className="absolute -inset-2 bg-secondary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-secondary transition-colors">Connect & Collaborate</h4>
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
-                    Message directly with the student, discuss requirements, set milestones, and track progress in real-time.
-                  </p>
+                  <Card className="h-full border-2 border-secondary/20 bg-card/60 backdrop-blur-md hover:border-secondary/40 hover:shadow-xl hover:shadow-secondary/10 transition-all duration-300 overflow-hidden">
+                    <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center">
+                      {/* Icon Container */}
+                      <div className="relative mb-6">
+                        <motion.div
+                          className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-secondary to-secondary/70 flex items-center justify-center shadow-xl shadow-secondary/30 group-hover:shadow-2xl group-hover:shadow-secondary/40 transition-all duration-300"
+                          whileHover={{ scale: 1.1, rotate: -5 }}
+                        >
+                          <MessageCircle className="w-10 h-10 text-white" />
+                          <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white border-2 border-secondary flex items-center justify-center shadow-lg">
+                            <span className="text-sm font-black text-secondary">2</span>
+                          </div>
+                        </motion.div>
+                        <motion.div
+                          className="absolute -inset-4 bg-secondary/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                          }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                        />
+                      </div>
+                      
+                      <h4 className="font-bold text-xl sm:text-2xl mb-3 text-foreground group-hover:text-secondary transition-colors">
+                        Connect & Collaborate
+                      </h4>
+                      <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                        Message directly with the student, discuss requirements, set milestones, and track progress in real-time.
+                      </p>
+                    </CardContent>
+                  </Card>
                 </motion.div>
                 
+                {/* Step 3 */}
                 <motion.div 
-                  className="text-center group"
+                  className="relative group"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
                   viewport={{ once: true }}
+                  whileHover={{ y: -8 }}
                 >
-                  <div className="relative inline-block mb-6">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mx-auto shadow-lg shadow-accent/20 group-hover:scale-110 transition-transform duration-300 border-2 border-accent/20">
-                      <span className="text-3xl font-bold text-accent">3</span>
-                    </div>
-                    <div className="absolute -inset-2 bg-accent/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-accent transition-colors">Review & Pay</h4>
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed max-w-xs mx-auto break-words overflow-wrap-anywhere">
-                    Review completed work, request revisions if needed, and release payment only when you're completely satisfied.
-                  </p>
+                  <Card className="h-full border-2 border-accent/20 bg-card/60 backdrop-blur-md hover:border-accent/40 hover:shadow-xl hover:shadow-accent/10 transition-all duration-300 overflow-hidden">
+                    <CardContent className="p-6 sm:p-8 flex flex-col items-center text-center">
+                      {/* Icon Container */}
+                      <div className="relative mb-6">
+                        <motion.div
+                          className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center shadow-xl shadow-accent/30 group-hover:shadow-2xl group-hover:shadow-accent/40 transition-all duration-300"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                        >
+                          <CheckCircle className="w-10 h-10 text-white" />
+                          <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white border-2 border-accent flex items-center justify-center shadow-lg">
+                            <span className="text-sm font-black text-accent">3</span>
+                          </div>
+                        </motion.div>
+                        <motion.div
+                          className="absolute -inset-4 bg-accent/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          animate={{
+                            scale: [1, 1.2, 1],
+                          }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                        />
+                      </div>
+                      
+                      <h4 className="font-bold text-xl sm:text-2xl mb-3 text-foreground group-hover:text-accent transition-colors">
+                        Review & Pay
+                      </h4>
+                      <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                        Review completed work, request revisions if needed, and release payment only when you're completely satisfied.
+                      </p>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               </div>
 
+              {/* Animated Connecting Lines for Desktop */}
+              <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2 z-0 pointer-events-none">
+                <svg className="w-full h-full" viewBox="0 0 1000 4" preserveAspectRatio="none">
+                  <motion.path
+                    d="M 50 2 L 350 2 L 650 2 L 950 2"
+                    stroke="url(#gradient-line)"
+                    strokeWidth="2"
+                    fill="none"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    transition={{ duration: 1.5, delay: 0.8 }}
+                    viewport={{ once: true }}
+                  />
+                  <defs>
+                    <linearGradient id="gradient-line" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="hsl(199, 100%, 50%)" stopOpacity="0.3" />
+                      <stop offset="50%" stopColor="hsl(199, 76%, 76%)" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="hsl(195, 100%, 82%)" stopOpacity="0.3" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {/* Animated Dots */}
+                <motion.div
+                  className="absolute top-1/2 left-[35%] w-3 h-3 rounded-full bg-primary -translate-y-1/2"
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.div
+                  className="absolute top-1/2 left-[65%] w-3 h-3 rounded-full bg-secondary -translate-y-1/2"
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                />
+              </div>
             </div>
-            
-            {/* Connecting Lines for Desktop */}
-            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 -translate-y-1/2 z-0" />
           </motion.div>
         </div>
       </section>
